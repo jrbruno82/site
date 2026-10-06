@@ -88,29 +88,60 @@
         <!-- CONTEÚDO DA ABA 1: TÉCNICO -->
         <div id="section-tech" class="space-y-6">
             <!-- Indicadores (KPIs) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center relative md:col-span-1">
                     <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
                         Último Fech. <span id="kpi-date" class="text-blue-400 font-bold ml-1"></span>
                     </p>
                     <p id="kpi-close" class="text-2xl font-bold text-white transition-all">0,00</p>
-                    <p id="kpi-maxmin-pct" class="text-[11px] font-medium mt-1"></p>
+                    <p id="kpi-maxmin-pct" class="text-[11px] font-medium mt-1 mb-2"></p>
+                    
+                    <!-- LOCAL BACANA: Container de Evolução (Retrátil e com Tooltip) -->
+                    <div id="kpi-evolution-container" class="mt-auto pt-3 border-t border-gray-700/60 hidden">
+                        <button id="btn-toggle-evo" onclick="document.getElementById('evo-grid').classList.toggle('hidden'); document.getElementById('evo-arrow').classList.toggle('rotate-180');" class="flex items-center justify-between w-full text-[9px] text-gray-400 uppercase font-bold tracking-wider cursor-pointer hover:text-white transition-colors focus:outline-none" title="Carregando evolução...">
+                            <span>Evolução Diária</span>
+                            <svg id="evo-arrow" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="evo-grid" class="grid grid-cols-2 gap-2 mt-2 hidden">
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">1 Dia</p>
+                                <p id="evo-1d" class="font-bold tracking-tight">--</p>
+                            </div>
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">3 Dias</p>
+                                <p id="evo-3d" class="font-bold tracking-tight">--</p>
+                            </div>
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">5 Dias</p>
+                                <p id="evo-5d" class="font-bold tracking-tight">--</p>
+                            </div>
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">7 Dias</p>
+                                <p id="evo-7d" class="font-bold tracking-tight">--</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
-                    <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Abertura (Período)</p>
-                    <p id="kpi-open" class="text-2xl font-bold text-white transition-all">0,00</p>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
-                    <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
-                        Máxima (Fech.) <span id="kpi-high-date" class="text-green-500 font-bold ml-1"></span>
-                    </p>
-                    <p id="kpi-high" class="text-2xl font-bold text-green-400 transition-all">0,00</p>
-                </div>
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
-                    <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
-                        Mínima (Fech.) <span id="kpi-low-date" class="text-red-500 font-bold ml-1"></span>
-                    </p>
-                    <p id="kpi-low" class="text-2xl font-bold text-red-400 transition-all">0,00</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-1 md:col-span-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                            <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Abertura (Período)</p>
+                            <p id="kpi-open" class="text-2xl font-bold text-white transition-all">0,00</p>
+                        </div>
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                            <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
+                                Máxima (Fech.) <span id="kpi-high-date" class="text-green-500 font-bold ml-1"></span>
+                            </p>
+                            <p id="kpi-high" class="text-2xl font-bold text-green-400 transition-all">0,00</p>
+                        </div>
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                            <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
+                                Mínima (Fech.) <span id="kpi-low-date" class="text-red-500 font-bold ml-1"></span>
+                            </p>
+                            <p id="kpi-low" class="text-2xl font-bold text-red-400 transition-all">0,00</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1567,6 +1598,11 @@
             document.getElementById('expert-reason').innerText = `Nenhuma cotação disponível para ${ticker}.`;
             document.getElementById('dt-insight').innerHTML = '';
             document.getElementById('recommendation-timestamp').innerText = 'Última análise: indisponível (sem dados)';
+            
+            // Ocultar container de evolução
+            const evoContainer = document.getElementById('kpi-evolution-container');
+            if(evoContainer) evoContainer.classList.add('hidden');
+
             if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
         }
 
@@ -1607,6 +1643,46 @@
             document.getElementById('kpi-high-date').innerText = `- ${maxObj.date}`;
             document.getElementById('kpi-low').innerText = formatCurrency(periodMin, currentCurrency);
             document.getElementById('kpi-low-date').innerText = `- ${minObj.date}`;
+
+            // ---- LÓGICA DE EVOLUÇÃO (1D, 3D, 5D, 7D) ----
+            const evoContainer = document.getElementById('kpi-evolution-container');
+            if (globalData.length > 1) {
+                evoContainer.classList.remove('hidden');
+                let tooltipItems = [];
+
+                const renderEvo = (days, elId, label) => {
+                    const el = document.getElementById(elId);
+                    if (globalData.length > days) {
+                        const pastPrice = globalData[globalData.length - 1 - days].close;
+                        const diff = lastDay.close - pastPrice;
+                        const pct = pastPrice !== 0 ? (diff / pastPrice) : 0;
+                        
+                        const absDiff = Math.abs(diff);
+                        const absPct = Math.abs(pct);
+                        const symbol = diff > 0 ? '+' : (diff < 0 ? '-' : '');
+                        const colorClass = diff > 0 ? 'text-green-400' : (diff < 0 ? 'text-red-400' : 'text-gray-400');
+                        
+                        const valStr = `${symbol}${formatCurrency(absDiff, currentCurrency)} (${symbol}${formatPct(absPct)})`;
+                        tooltipItems.push(`${label}: ${valStr}`);
+                        
+                        el.innerHTML = `<span class="${colorClass} text-[9px] md:text-[10px] block truncate" title="${valStr}">${valStr}</span>`;
+                    } else {
+                        el.innerHTML = `<span class="text-gray-500 text-[9px]">Sem dados</span>`;
+                        tooltipItems.push(`${label}: Sem dados`);
+                    }
+                };
+
+                renderEvo(1, 'evo-1d', '1D');
+                renderEvo(3, 'evo-3d', '3D');
+                renderEvo(5, 'evo-5d', '5D');
+                renderEvo(7, 'evo-7d', '7D');
+
+                const btnToggle = document.getElementById('btn-toggle-evo');
+                if (btnToggle) btnToggle.title = tooltipItems.join('  |  ');
+
+            } else {
+                evoContainer.classList.add('hidden');
+            }
 
             const trend = A.trend;
             const currentRSI = A.currentRSI;
