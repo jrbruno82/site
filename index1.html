@@ -96,10 +96,13 @@
                     <p id="kpi-close" class="text-2xl font-bold text-white transition-all">0,00</p>
                     <p id="kpi-maxmin-pct" class="text-[11px] font-medium mt-1 mb-2"></p>
                     
-                    <!-- LOCAL BACANA: Container de Evolução -->
+                    <!-- LOCAL BACANA: Container de Evolução (Retrátil e com Tooltip) -->
                     <div id="kpi-evolution-container" class="mt-auto pt-3 border-t border-gray-700/60 hidden">
-                        <p class="text-[9px] text-gray-400 mb-1.5 uppercase font-bold tracking-wider">Evolução Diária</p>
-                        <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-toggle-evo" onclick="document.getElementById('evo-grid').classList.toggle('hidden'); document.getElementById('evo-arrow').classList.toggle('rotate-180');" class="flex items-center justify-between w-full text-[9px] text-gray-400 uppercase font-bold tracking-wider cursor-pointer hover:text-white transition-colors focus:outline-none" title="Carregando evolução...">
+                            <span>Evolução Diária</span>
+                            <svg id="evo-arrow" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="evo-grid" class="grid grid-cols-2 gap-2 mt-2 hidden">
                             <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
                                 <p class="text-[8px] text-gray-500 uppercase font-bold">1 Dia</p>
                                 <p id="evo-1d" class="font-bold tracking-tight">--</p>
@@ -1645,8 +1648,9 @@
             const evoContainer = document.getElementById('kpi-evolution-container');
             if (globalData.length > 1) {
                 evoContainer.classList.remove('hidden');
+                let tooltipItems = [];
 
-                const renderEvo = (days, elId) => {
+                const renderEvo = (days, elId, label) => {
                     const el = document.getElementById(elId);
                     if (globalData.length > days) {
                         const pastPrice = globalData[globalData.length - 1 - days].close;
@@ -1658,16 +1662,24 @@
                         const symbol = diff > 0 ? '+' : (diff < 0 ? '-' : '');
                         const colorClass = diff > 0 ? 'text-green-400' : (diff < 0 ? 'text-red-400' : 'text-gray-400');
                         
-                        el.innerHTML = `<span class="${colorClass} text-[9px] md:text-[10px] block truncate" title="${symbol}${formatCurrency(absDiff, currentCurrency)} (${symbol}${formatPct(absPct)})">${symbol}${formatCurrency(absDiff, currentCurrency)} (${symbol}${formatPct(absPct)})</span>`;
+                        const valStr = `${symbol}${formatCurrency(absDiff, currentCurrency)} (${symbol}${formatPct(absPct)})`;
+                        tooltipItems.push(`${label}: ${valStr}`);
+                        
+                        el.innerHTML = `<span class="${colorClass} text-[9px] md:text-[10px] block truncate" title="${valStr}">${valStr}</span>`;
                     } else {
                         el.innerHTML = `<span class="text-gray-500 text-[9px]">Sem dados</span>`;
+                        tooltipItems.push(`${label}: Sem dados`);
                     }
                 };
 
-                renderEvo(1, 'evo-1d');
-                renderEvo(3, 'evo-3d');
-                renderEvo(5, 'evo-5d');
-                renderEvo(7, 'evo-7d');
+                renderEvo(1, 'evo-1d', '1D');
+                renderEvo(3, 'evo-3d', '3D');
+                renderEvo(5, 'evo-5d', '5D');
+                renderEvo(7, 'evo-7d', '7D');
+
+                const btnToggle = document.getElementById('btn-toggle-evo');
+                if (btnToggle) btnToggle.title = tooltipItems.join('  |  ');
+
             } else {
                 evoContainer.classList.add('hidden');
             }
