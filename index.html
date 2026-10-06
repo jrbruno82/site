@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Broker Dashboard - Cenários Pro v1.14</title>
-    <meta name="description" content="Dashboard de análise técnica, dividendos e cenários de swing trade com dados de planilha Google e Yahoo Finance.">
+    <title>Home Broker Dashboard - Cenários Pro v1.16</title>
+    <meta name="description" content="Dashboard de análise técnica, estratégias de swing trade (2 a 7 dias), dividendos e cenários operacionais.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
     <style>
@@ -22,61 +22,66 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans antialiased min-h-screen p-4 md:p-6">
+<body class="bg-gray-900 text-gray-100 font-sans antialiased min-h-screen p-3 md:p-6">
 
     <div class="max-w-7xl mx-auto space-y-6">
         
-        <!-- Cabeçalho -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700">
-            <div class="flex items-center gap-3 mb-4 md:mb-0">
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold text-xl shadow-blue-500/50 shadow-lg">HB</div>
-                <h1 class="text-2xl font-bold tracking-wide">Nexus<span class="text-blue-500">Broker</span> <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded-full ml-2">PRO</span> <span class="inline-flex flex-col ml-1 align-top"><span class="text-[10px] text-purple-400 font-mono tracking-tighter" title="Versão Atualizada">v1.14</span><span class="text-[10px] text-purple-400 font-mono tracking-tighter leading-none mt-0.5">by Junior Bruno</span></span></h1>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="flex flex-col">
-                    <div class="flex items-center gap-2">
-                        <label for="tickerSelect" class="text-gray-400 font-medium">Ativo:</label>
-                        <select id="tickerSelect" class="bg-gray-900 border border-gray-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:border-blue-500 transition-colors cursor-pointer">
-                            <option value="">Carregando...</option>
-                        </select>
-                    </div>
-                    <div class="flex gap-2 mt-1 pl-11">
-                        <span id="company-name-badge" class="text-[11px] text-blue-400 font-bold hidden"></span>
-                        <span id="currency-badge" class="bg-gray-700 text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-bold hidden uppercase tracking-wider"></span>
-                    </div>
+        <!-- Cabeçalho Fixo (Sticky) -->
+        <div class="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md pt-2 pb-3 border-b border-gray-800 space-y-3">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-700">
+                <div class="flex items-center gap-3 mb-3 md:mb-0">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold text-xl shadow-blue-500/50 shadow-lg">HB</div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">Nexus<span class="text-blue-500">Broker</span> <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded-full ml-1">PRO</span> <span class="inline-flex flex-col ml-1 align-top"><span class="text-[10px] text-purple-400 font-mono tracking-tighter" title="Versão Atualizada">v1.16</span><span class="text-[10px] text-purple-400 font-mono tracking-tighter leading-none mt-0.5">by Junior Bruno</span></span></h1>
                 </div>
                 
-                <button id="refreshBtn" class="bg-gray-900 hover:bg-gray-700 border border-gray-600 p-2 rounded-lg transition-colors cursor-pointer self-start md:self-auto mt-1" title="Atualizar dados">
-                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                </button>
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <div class="flex flex-col flex-grow md:flex-grow-0">
+                        <div class="flex items-center gap-2">
+                            <label for="tickerSelect" class="text-gray-400 text-xs md:text-sm font-medium">Ativo:</label>
+                            <select id="tickerSelect" class="bg-gray-900 border border-gray-600 text-white font-bold py-1.5 px-3 rounded-lg focus:outline-none focus:border-blue-500 transition-colors cursor-pointer text-sm w-full md:w-auto">
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2 mt-1 pl-10 md:pl-11">
+                            <span id="company-name-badge" class="text-[11px] text-blue-400 font-bold hidden"></span>
+                            <span id="currency-badge" class="bg-gray-700 text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-bold hidden uppercase tracking-wider"></span>
+                        </div>
+                    </div>
+                    
+                    <button id="refreshBtn" class="bg-gray-900 hover:bg-gray-700 border border-gray-600 p-2 rounded-lg transition-colors cursor-pointer" title="Atualizar dados">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
 
-                <button onclick="openScenarioModal()" class="bg-green-600 hover:bg-green-500 text-white font-bold px-4 py-2 rounded-lg shadow-lg transition-all flex items-center gap-2 cursor-pointer self-start md:self-auto mt-1">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Criar Cenário (R$ 100)
-                </button>
+                    <button onclick="openScenarioModal()" class="bg-green-600 hover:bg-green-500 text-white text-xs md:text-sm font-bold px-3 py-2 rounded-lg shadow-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Criar Cenário (R$ 100)
+                    </button>
 
-                <div id="loading" class="hidden text-sm font-bold text-blue-400 animate-pulse bg-blue-900/30 px-3 py-1 rounded-full self-start md:self-auto mt-1">Atualizando Gráfico...</div>
+                    <div id="loading" class="hidden text-xs font-bold text-blue-400 animate-pulse bg-blue-900/30 px-3 py-1.5 rounded-full">Carregando...</div>
+                </div>
+            </header>
+
+            <!-- Selo de origem/qualidade dos dados -->
+            <div id="data-status" role="status" class="rounded-xl border px-3 py-2 flex flex-wrap items-center gap-x-3 gap-y-1 bg-gray-800 border-gray-700 text-xs">
+                <span id="data-status-badge" class="font-black text-[10px] px-2 py-0.5 rounded border whitespace-nowrap bg-gray-700 text-gray-300 border-gray-600">CARREGANDO...</span>
+                <span id="data-status-text" class="text-gray-300"></span>
             </div>
-        </header>
-
-        <!-- Selo de origem/qualidade dos dados -->
-        <div id="data-status" role="status" class="rounded-xl border px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 bg-gray-800 border-gray-700">
-            <span id="data-status-badge" class="font-black text-xs px-2.5 py-1 rounded border whitespace-nowrap bg-gray-700 text-gray-300 border-gray-600">CARREGANDO...</span>
-            <span id="data-status-text" class="text-xs text-gray-300"></span>
         </div>
 
         <!-- Navegação de Abas Principais -->
-        <div class="flex border-b border-gray-700 gap-2 overflow-x-auto" role="tablist" aria-label="Seções do dashboard">
-            <button onclick="switchMainTab('tech')" id="btn-tab-tech" role="tab" aria-selected="true" aria-controls="section-tech" class="nav-tab active px-5 py-2.5 rounded-t-lg font-bold text-sm transition-colors border-t border-x border-gray-700 cursor-pointer whitespace-nowrap">
+        <div class="flex border-b border-gray-700 gap-2 overflow-x-auto pt-2" role="tablist" aria-label="Seções do dashboard">
+            <button onclick="switchMainTab('tech')" id="btn-tab-tech" role="tab" aria-selected="true" aria-controls="section-tech" class="nav-tab active px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 cursor-pointer whitespace-nowrap">
                 📊 Gráfico & Análise Técnica
             </button>
-            <button onclick="switchMainTab('dividends')" id="btn-tab-dividends" role="tab" aria-selected="false" aria-controls="section-dividends" class="nav-tab px-5 py-2.5 rounded-t-lg font-bold text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchMainTab('strategies')" id="btn-tab-strategies" role="tab" aria-selected="false" aria-controls="section-strategies" class="nav-tab px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
+                🎯 Estratégias (2 a 7 Dias)
+                <span id="strategy-count-badge" class="bg-green-900/80 text-green-300 text-[10px] font-mono px-2 py-0.5 rounded-full border border-green-700/50">Scanner</span>
+            </button>
+            <button onclick="switchMainTab('dividends')" id="btn-tab-dividends" role="tab" aria-selected="false" aria-controls="section-dividends" class="nav-tab px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-2 whitespace-nowrap">
                 💰 Dividendos & Rendimentos
             </button>
-            <button onclick="switchMainTab('news')" id="btn-tab-news" role="tab" aria-selected="false" aria-controls="section-news" class="nav-tab px-5 py-2.5 rounded-t-lg font-bold text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-2 whitespace-nowrap">
+            <button onclick="switchMainTab('news')" id="btn-tab-news" role="tab" aria-selected="false" aria-controls="section-news" class="nav-tab px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-2 whitespace-nowrap">
                 📰 Notícias & Calendário
-                <span id="ticker-badge-news" class="bg-blue-900 text-blue-300 text-xs px-2 py-0.5 rounded-full">Ativo</span>
             </button>
         </div>
 
@@ -125,7 +130,7 @@
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-700">
-                        <p class="text-xs text-gray-500">Decisão: MME (9/21/200), rompimento de pivô e IFR. Bandas de Bollinger, candlestick, volume, tendência e Monte Carlo são formativos e complementares.</p>
+                        <p class="text-xs text-gray-500">Decisão baseada em MME (9/21/200), pivôs, IFR, Bollinger e Volume técnico.</p>
                     </div>
                 </div>
 
@@ -137,7 +142,6 @@
                     </h3>
                     
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 flex-grow">
-                        <!-- Níveis de Preço e Stop Loss -->
                         <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
                             <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold" title="Piso onde o preço tende a parar de cair">🧱 Suporte & Stop Loss</p>
                             <p id="dt-support" class="text-lg font-bold text-green-400">0,00</p>
@@ -149,27 +153,23 @@
                             <p class="text-[10px] text-gray-400 mt-1">Stop Gain (Alvo): <span id="dt-stop-gain" class="text-green-400 font-bold">0,00</span></p>
                         </div>
                         
-                        <!-- Candlestick -->
                         <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
                             <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold">🕯️ Padrão Candlestick</p>
                             <p id="dt-candle-pattern" class="text-sm font-bold text-gray-200 mt-1">Analisando...</p>
                         </div>
 
-                        <!-- LTA / LTB -->
                         <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
                             <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold">📏 Linha de Tendência</p>
                             <p id="dt-trend-status" class="text-sm font-bold text-blue-400 mt-1">Neutro</p>
                             <p id="dt-trend-detail" class="text-[10px] text-gray-400 mt-1"></p>
                         </div>
 
-                        <!-- IFR / RSI -->
                         <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
-                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold" title="Índice de Força Relativa (>70 Sobrecomprado, <30 Sobrevendido)">📊 IFR (14 Períodos)</p>
+                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold" title="Índice de Força Relativa">📊 IFR (14 Períodos)</p>
                             <p id="dt-rsi-val" class="text-lg font-bold text-white">0.00</p>
                             <p id="dt-rsi-status" class="text-[10px] uppercase font-bold mt-0.5 text-gray-400">Neutro</p>
                         </div>
 
-                        <!-- Volume -->
                         <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
                             <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold">📉 Volume (Última Sessão)</p>
                             <p id="dt-volume-status" class="text-sm font-bold text-gray-200 mt-1">Analisando...</p>
@@ -189,9 +189,9 @@
                         <p class="text-xs text-gray-400 mt-1">Visão técnica e quantitativa (Swing Trade 1D)</p>
                     </div>
                     
-                    <div class="flex flex-wrap gap-4 items-center bg-gray-900 p-2 rounded-lg border border-gray-700">
+                    <div class="flex flex-wrap gap-3 items-center bg-gray-900 p-2 rounded-lg border border-gray-700 text-xs">
                         <div class="flex items-center gap-2 pr-2 border-r border-gray-700">
-                            <label for="chartTypeSelect" class="text-xs font-medium text-gray-400">Exibição:</label>
+                            <label for="chartTypeSelect" class="font-medium text-gray-400">Exibição:</label>
                             <select id="chartTypeSelect" class="bg-gray-800 border border-gray-600 text-white text-xs font-bold py-1 px-2 rounded focus:outline-none focus:border-blue-500 cursor-pointer">
                                 <option value="area" selected>Área (Padrão)</option>
                                 <option value="line">Linha</option>
@@ -206,60 +206,59 @@
                                     <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
                                     <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
                                 </div>
-                                <span class="text-xs font-medium text-gray-300" title="Identificar Topos e Fundos Locais">Topos/Fundos</span>
+                                <span class="font-medium text-gray-300">Topos/Fundos</span>
                             </label>
                             <div class="flex items-center gap-1">
-                                <input type="color" id="colorPeak" value="#10B981" class="w-6 h-6 p-0 border-0 rounded cursor-pointer bg-transparent" title="Cor dos Topos (Resistências)">
-                                <input type="color" id="colorTrough" value="#EF4444" class="w-6 h-6 p-0 border-0 rounded cursor-pointer bg-transparent" title="Cor dos Fundos (Suportes)">
+                                <input type="color" id="colorPeak" value="#10B981" class="w-5 h-5 p-0 border-0 rounded cursor-pointer bg-transparent" title="Cor dos Topos">
+                                <input type="color" id="colorTrough" value="#EF4444" class="w-5 h-5 p-0 border-0 rounded cursor-pointer bg-transparent" title="Cor dos Fundos">
                             </div>
                         </div>
 
-                        <label class="flex items-center cursor-pointer gap-2 pl-2">
+                        <label class="flex items-center cursor-pointer gap-2">
                             <div class="relative">
                                 <input type="checkbox" id="toggleMA" class="sr-only toggle-checkbox">
                                 <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
                                 <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
                             </div>
-                            <span class="text-xs font-medium text-gray-300" title="Médias Móveis Exponenciais">MME (9/21/200)</span>
+                            <span class="font-medium text-gray-300">MME (9/21/200)</span>
                         </label>
 
-                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-4">
+                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3">
                             <div class="relative">
                                 <input type="checkbox" id="toggleBB" class="sr-only toggle-checkbox">
                                 <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
                                 <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
                             </div>
-                            <span class="text-xs font-medium text-gray-300" title="Modelo de Volatilidade: Bandas de Bollinger (20 períodos, 2 Desvios Padrões)">Bollinger</span>
+                            <span class="font-medium text-gray-300">Bollinger</span>
                         </label>
 
-                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-4">
+                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3">
                             <div class="relative">
                                 <input type="checkbox" id="toggleTrend" class="sr-only toggle-checkbox">
                                 <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
                                 <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
                             </div>
-                            <span class="text-xs font-medium text-gray-300">Tendência</span>
+                            <span class="font-medium text-gray-300">Tendência</span>
                         </label>
 
-                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-4">
+                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3">
                             <div class="relative">
                                 <input type="checkbox" id="toggleMC" class="sr-only toggle-checkbox">
                                 <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
                                 <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
                             </div>
-                            <span class="text-xs font-medium text-purple-400" title="1.000 caminhos simulados (semente fixa). A banda é o intervalo P5–P95 (90% dos caminhos). Não é previsão.">Monte Carlo (10D)</span>
+                            <span class="font-medium text-purple-400">Monte Carlo</span>
                         </label>
 
-                        <!-- Filtros de Período -->
-                        <div class="border-l border-gray-700 pl-4 flex flex-wrap" id="time-filters">
-                            <button class="tab-btn px-3 py-1 rounded-l-md text-xs font-medium text-gray-400 hover:text-white transition-all border border-gray-600" data-days="1">1D</button>
-                            <button class="tab-btn px-3 py-1 text-xs font-medium text-gray-400 hover:text-white transition-all border-t border-b border-l border-gray-600" data-days="5">5D</button>
-                            <button class="tab-btn px-3 py-1 text-xs font-medium text-gray-400 hover:text-white transition-all border-t border-b border-l border-gray-600" data-days="15">15D</button>
-                            <button class="tab-btn px-3 py-1 text-xs font-medium text-gray-400 hover:text-white transition-all border-t border-b border-l border-gray-600" data-days="30">1M</button>
-                            <button class="tab-btn px-3 py-1 text-xs font-medium text-gray-400 hover:text-white transition-all border-t border-b border-l border-gray-600" data-days="90">3M</button>
-                            <button class="tab-btn active px-3 py-1 text-xs font-medium text-gray-400 hover:text-white transition-all border-t border-b border-l border-gray-600" data-days="180">6M</button>
-                            <button class="tab-btn px-3 py-1 text-xs font-medium text-gray-400 hover:text-white transition-all border-t border-b border-l border-gray-600" data-days="365">1A</button>
-                            <button class="tab-btn px-3 py-1 rounded-r-md text-xs font-medium text-gray-400 hover:text-white transition-all border border-gray-600" data-days="all">Tudo</button>
+                        <div class="border-l border-gray-700 pl-3 flex flex-wrap" id="time-filters">
+                            <button class="tab-btn px-2.5 py-1 rounded-l-md text-xs font-medium text-gray-400 hover:text-white border border-gray-600" data-days="1">1D</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="5">5D</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="15">15D</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="30">1M</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="90">3M</button>
+                            <button class="tab-btn active px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="180">6M</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="365">1A</button>
+                            <button class="tab-btn px-2.5 py-1 rounded-r-md text-xs font-medium text-gray-400 hover:text-white border border-gray-600" data-days="all">Tudo</button>
                         </div>
                     </div>
                 </div>
@@ -267,29 +266,120 @@
                 <div class="relative h-[400px] w-full">
                     <canvas id="mainChart"></canvas>
                     <div id="chart-unavailable" class="hidden absolute inset-0 flex items-center justify-center text-center text-sm text-yellow-400 bg-gray-900/80 rounded-lg p-6">
-                        Não foi possível carregar a biblioteca de gráficos (Chart.js). Verifique sua conexão e recarregue a página. Os indicadores numéricos acima continuam válidos.
+                        Não foi possível carregar o gráfico. Verifique sua conexão e tente novamente.
                     </div>
                 </div>
-                <p class="text-[11px] text-gray-500 mt-3 leading-relaxed">
-                    A análise usa janelas matemáticas fixas &mdash; Bandas de Bollinger (20 períodos), swing 15, tendência 50, volume 20 e Monte Carlo 120 candles &mdash; e <strong class="text-gray-400">não muda com o período exibido no gráfico</strong>.
-                </p>
             </div>
         </div>
 
-        <!-- CONTEÚDO DA ABA 2: DIVIDENDOS -->
+        <!-- CONTEÚDO DA ABA 2: ESTRATÉGIAS DE SWING TRADE (2 A 7 DIAS) -->
+        <div id="section-strategies" class="hidden space-y-6">
+            <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-xl space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-700 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            🎯 Estratégias Quantitativas de Swing Trade
+                            <span class="bg-blue-900/60 text-blue-300 text-xs px-2.5 py-1 rounded-full border border-blue-700/50 font-mono">Horizonte: 2 a 7 dias</span>
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Varredura automatizada em todos os papéis da lista, identificando alvos técnicos, pontos de Stop Loss, relação Risco/Retorno e expectativa percentual de ganhos.
+                        </p>
+                    </div>
+                    <button onclick="runStrategiesScan()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Reexecutar Varredura
+                    </button>
+                </div>
+
+                <!-- Resumo Geral do Scanner -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Ativos Analisados</p>
+                        <p id="strat-total-scanned" class="text-xl font-bold text-white">0</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Todos do combo de seleção</p>
+                    </div>
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Oportunidades Compra</p>
+                        <p id="strat-buy-opportunities" class="text-xl font-bold text-green-400">0</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Expectativa de Alta (2-7D)</p>
+                    </div>
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Oportunidades Venda/Short</p>
+                        <p id="strat-sell-opportunities" class="text-xl font-bold text-red-400">0</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Expectativa de Correção (2-7D)</p>
+                    </div>
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Risco/Retorno Médio</p>
+                        <p id="strat-avg-rr" class="text-xl font-bold text-blue-400">0.0 : 1</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Ganhos projetados vs Risco</p>
+                    </div>
+                </div>
+
+                <!-- Filtros do Grid de Estratégia -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 font-medium">Filtrar por Tipo:</span>
+                        <select id="strategyFilterSelect" onchange="renderStrategiesGrid()" class="bg-gray-900 border border-gray-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg focus:outline-none focus:border-blue-500">
+                            <option value="ALL">Todas as Oportunidades</option>
+                            <option value="BUY">Somente Compras (Long)</option>
+                            <option value="SELL">Somente Vendas (Short)</option>
+                            <option value="HIGH_RR">Relação Risco/Retorno &gt; 2.0</option>
+                        </select>
+                    </div>
+                    <div id="strat-scan-timestamp" class="text-[11px] text-gray-400 font-mono">
+                        Aguardando início da varredura...
+                    </div>
+                </div>
+
+                <!-- Tabela de Estratégias Analisadas -->
+                <div class="overflow-x-auto rounded-xl border border-gray-700/80 bg-gray-900/50">
+                    <table class="w-full text-left text-xs whitespace-nowrap">
+                        <thead class="bg-gray-950 text-gray-400 text-[11px] uppercase tracking-wider border-b border-gray-800">
+                            <tr>
+                                <th class="p-3">Ativo</th>
+                                <th class="p-3">Sinal / Setup</th>
+                                <th class="p-3">Cotação Atual</th>
+                                <th class="p-3 text-red-400">Stop Loss R$</th>
+                                <th class="p-3 text-green-400">Alvo R$ (Take Profit)</th>
+                                <th class="p-3 text-center">Expectativa Ganhos %</th>
+                                <th class="p-3 text-center">Relação R:R</th>
+                                <th class="p-3 text-center">Prazo Estimado</th>
+                                <th class="p-3 text-right">Ação Sugerida</th>
+                            </tr>
+                        </thead>
+                        <tbody id="strategies-table-body" class="divide-y divide-gray-800">
+                            <tr>
+                                <td colspan="9" class="p-8 text-center text-gray-400 font-medium animate-pulse">
+                                    Iniciando scanner quantitativo em todos os papéis disponíveis...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-xs space-y-1.5 text-gray-300">
+                    <p class="font-bold text-blue-400 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Nota Técnica sobre Responsabilidade & Gerenciamento de Risco:
+                    </p>
+                    <p class="text-gray-400 leading-relaxed">
+                        As estratégias nesta aba utilizam modelos matemáticos baseados em volatilidade técnica (ATR), rompimento de pivot, médias móveis exponenciais e médias históricas de candles diários. Não garantem lucros futuros. Opere sempre respeitando rigorosamente o <strong>Stop Loss</strong> configurado e divida o capital em frações seguras para o seu perfil.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO DA ABA 3: DIVIDENDOS -->
         <div id="section-dividends" class="hidden space-y-6">
             
-            <!-- LOADER DE DIVIDENDOS -->
             <div id="div-loader" class="hidden flex flex-col items-center justify-center py-20 bg-gray-800 rounded-xl border border-gray-700 shadow-lg">
                 <svg class="loader-spin h-10 w-10 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 <span class="text-gray-300 font-bold text-sm">Buscando dados institucionais e de mercado (BTG Pactual & Yahoo)...</span>
-                <span class="text-gray-500 text-xs mt-2">Acessando API externa para proventos de forma assíncrona.</span>
             </div>
 
-            <!-- CONTEUDO DE DIVIDENDOS -->
             <div id="div-content" class="space-y-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
@@ -299,7 +389,7 @@
                     </div>
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
                         <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Crescimento (5 Anos)</p>
-                        <p id="div-growth" class="text-xl font-bold text-gray-500 transition-all" title="Dados como CAGR necessitam de integrações de API Premium">N/D</p>
+                        <p id="div-growth" class="text-xl font-bold text-gray-500 transition-all">N/D</p>
                         <p class="text-[11px] font-medium mt-1 text-gray-500">Sem API Premium</p>
                     </div>
                     <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
@@ -360,25 +450,22 @@
             </div>
         </div>
 
-        <!-- CONTEÚDO DA ABA 3: NOTÍCIAS & CALENDÁRIO -->
+        <!-- CONTEÚDO DA ABA 4: NOTÍCIAS & CALENDÁRIO -->
         <div id="section-news" class="hidden space-y-6">
             
-            <!-- LOADER DE NOTÍCIAS -->
             <div id="news-loader" class="hidden flex flex-col items-center justify-center py-20 bg-gray-800 rounded-xl border border-gray-700 shadow-lg">
                 <svg class="loader-spin h-10 w-10 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span class="text-gray-300 font-bold text-sm">Mapeando relatórios e notícias (Prioridade: BTG Pactual)...</span>
+                <span class="text-gray-300 font-bold text-sm">Mapeando relatórios e notícias...</span>
             </div>
 
-            <!-- CONTEUDO DE NOTÍCIAS -->
             <div id="news-content" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Coluna de Notícias -->
                 <div class="lg:col-span-2 bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg space-y-4">
                     <div class="flex flex-wrap justify-between items-center border-b border-gray-700 pb-3 gap-4">
                         <h3 class="font-bold text-base text-white flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 002-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                             Análises & Notícias: <span id="news-ticker-title" class="text-blue-400 font-mono">--</span>
                         </h3>
                         <a id="btg-link-news" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-xs font-bold bg-blue-900/50 hover:bg-blue-800 text-blue-400 px-3 py-1.5 rounded-lg border border-blue-700/50 transition-colors flex items-center gap-1 shadow-md">
@@ -388,7 +475,6 @@
                     <div id="news-container" class="space-y-3"></div>
                 </div>
 
-                <!-- Coluna de Calendário Corporativo -->
                 <div class="lg:col-span-1 bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg space-y-4">
                     <div class="border-b border-gray-700 pb-3">
                         <h3 class="font-bold text-base text-white flex items-center gap-2">
@@ -449,7 +535,7 @@
                 </div>
                 <div id="scenario-ignored" class="hidden text-[11px] text-gray-400"></div>
                 <div id="scenario-status" class="hidden"></div>
-                <p class="text-[11px] text-gray-500">Valor aplicado = R$ 100,00 por ativo. Ativos em dólar usam o câmbio USD/BRL acima (a cotação continua em US$ e o câmbio é gravado em coluna própria). A data é a do último candle usado. Só entram ativos com dados reais e atualizados.</p>
+                <p class="text-[11px] text-gray-500">Valor aplicado = R$ 100,00 por ativo. Ativos em dólar usam o câmbio USD/BRL acima. A data é a do último candle usado.</p>
             </div>
 
             <div class="p-4 bg-gray-900 border-t border-gray-700 flex justify-end gap-3">
@@ -465,11 +551,10 @@
     <script>
         const sheetId = '1i8vuz4yLtlhhqj8iPwVOp0lj-9TxZhspgfnfl2vpjY0';
         const APPS_SCRIPT_URL = 'COLE_SUA_URL_DO_WEB_APP_AQUI';
-        // Token compartilhado com o Apps Script (valide no doPost antes de gravar). Deixe vazio para desativar.
         const APPS_SCRIPT_TOKEN = '';
         const SAVE_TIMEOUT_MS = 20000;
         const FX_TIMEOUT_MS = 8000;
-        const PREFS_KEY = 'nexusBrokerPrefs.v1';
+        const PREFS_KEY = 'nexusBrokerPrefs.v1.16';
 
         // Parâmetros Técnicos Fixos
         const WIN = { swing: 15, trend: 50, volume: 20, mc: 120, mcSteps: 10, mcSims: 1000 };
@@ -487,14 +572,14 @@
         let loadSeq = 0;
         let currentDays = 180; 
         let availableTickersCache = [];
-        let dynamicDataCache = {}; // Cache dinâmico (BTG/Yahoo)
+        let dynamicDataCache = {}; 
+        let scannedStrategies = [];
 
         let state = { 
             showMA: false, showTrend: false, showMC: false, showBB: false, chartType: 'area',
             showPeaksTroughs: false, colorPeak: '#10B981', colorTrough: '#EF4444' 
         };
 
-        // v1.14: preferências do usuário persistem entre visitas
         function savePrefs() {
             try {
                 localStorage.setItem(PREFS_KEY, JSON.stringify({
@@ -533,7 +618,6 @@
         document.getElementById('colorTrough').addEventListener('input', (e) => { state.colorTrough = e.target.value; savePrefs(); renderDashboard(); });
 
         function escapeHtml(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-        // v1.14: só permite links http(s) — bloqueia javascript:, data: etc. em conteúdo externo
         function safeUrl(u) {
             try { const p = new URL(String(u), window.location.href); return (p.protocol === 'https:' || p.protocol === 'http:') ? p.href : ''; }
             catch (e) { return ''; }
@@ -575,7 +659,7 @@
             const msg = (error && error.message) || '';
             const name = (error && error.name) || '';
             if (msg === 'ACESSO_NEGADO') return 'a planilha não está pública (acesso negado)';
-            if (msg === 'QUALIDADE') return `mais de 10% das linhas da aba "${what}" são inválidas (data ou preço em formato inesperado)`;
+            if (msg === 'QUALIDADE') return `mais de 10% das linhas da aba "${what}" são inválidas`;
             if (msg === 'VAZIA') return `a aba "${what}" não tem linhas de cotação válidas`;
             if (name === 'SyntaxError') return 'resposta da planilha em formato inesperado';
             if (name === 'TypeError') return 'falha de rede ao acessar a planilha';
@@ -613,24 +697,30 @@
 
         function switchMainTab(tabName) {
             const btnTech = document.getElementById('btn-tab-tech');
+            const btnStrat = document.getElementById('btn-tab-strategies');
             const btnDiv = document.getElementById('btn-tab-dividends');
             const btnNews = document.getElementById('btn-tab-news');
             
             const secTech = document.getElementById('section-tech');
+            const secStrat = document.getElementById('section-strategies');
             const secDiv = document.getElementById('section-dividends');
             const secNews = document.getElementById('section-news');
 
-            [btnTech, btnDiv, btnNews].forEach(btn => {
+            [btnTech, btnStrat, btnDiv, btnNews].forEach(btn => {
                 btn.classList.remove('active', 'text-white');
                 btn.classList.add('text-gray-400');
                 btn.setAttribute('aria-selected', 'false');
             });
-            [secTech, secDiv, secNews].forEach(sec => sec.classList.add('hidden'));
+            [secTech, secStrat, secDiv, secNews].forEach(sec => sec.classList.add('hidden'));
 
             const activate = (btn) => { btn.classList.add('active', 'text-white'); btn.classList.remove('text-gray-400'); btn.setAttribute('aria-selected', 'true'); };
             if(tabName === 'tech') {
                 activate(btnTech);
                 secTech.classList.remove('hidden');
+            } else if(tabName === 'strategies') {
+                activate(btnStrat);
+                secStrat.classList.remove('hidden');
+                if (scannedStrategies.length === 0) runStrategiesScan();
             } else if (tabName === 'dividends') {
                 activate(btnDiv);
                 secDiv.classList.remove('hidden');
@@ -669,6 +759,20 @@
                 lower[i] = mean - (stdDevMultiplier * stdDev);
             }
             return { upper, middle, lower };
+        }
+
+        function calculateATR(data, period = 14) {
+            if (data.length < period + 1) return 0;
+            let trs = [];
+            for (let i = 1; i < data.length; i++) {
+                const high = data[i].high;
+                const low = data[i].low;
+                const prevClose = data[i - 1].close;
+                const tr = Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose));
+                trs.push(tr);
+            }
+            const recentTrs = trs.slice(-period);
+            return recentTrs.reduce((a, b) => a + b, 0) / period;
         }
 
         function calculateLinearRegression(yData) {
@@ -800,10 +904,193 @@
             return { upper: upperBand, lower: lowerBand };
         }
 
-        // v1.14: guarda contra race condition — retorna true se o usuário já trocou de ativo
         function isStaleTicker(ticker) {
             const select = document.getElementById('tickerSelect');
             return select.value !== ticker;
+        }
+
+        // --- ESTRATÉGIAS DE MAXIMIZAÇÃO DE LUCROS (2 A 7 DIAS) ---
+        function analyze2to7DaysStrategy(ticker, data, currency) {
+            if (!data || data.length < MIN_CANDLES) return null;
+            
+            const n = data.length;
+            const last = data[n - 1];
+            const price = last.close;
+            const closes = data.map(d => d.close);
+            
+            const ema9 = calculateEMA(closes, 9)[n - 1];
+            const ema21 = calculateEMA(closes, 21)[n - 1];
+            const ema200 = calculateEMA(closes, 200)[n - 1];
+            const rsi = calculateRSI(closes, 14)[n - 1] || 50;
+            const atr = calculateATR(data, 14) || (price * 0.02);
+            const swing = data.slice(-WIN.swing);
+            const sup15 = Math.min(...swing.map(d => d.low));
+            const res15 = Math.max(...swing.map(d => d.high));
+            
+            const vol = analyzeVolume(data);
+            const volMultiplier = vol.ratio || 1.0;
+            
+            let direction = 'NEUTRAL';
+            let setupName = 'Aguardar Confirmação';
+            let targetPrice = price;
+            let stopLossPrice = price;
+            let timeDays = '3 a 5 dias';
+            let actionText = 'Observar fora do mercado';
+
+            // 1. Setup: Rompimento de Pivô de Alta (Com Volume)
+            if (price >= res15 * 0.995 && volMultiplier >= 1.2 && rsi < 72) {
+                direction = 'BUY';
+                setupName = 'Rompimento Pivô + Volume';
+                targetPrice = price + (atr * 2.5);
+                stopLossPrice = Math.max(price - (atr * 1.2), sup15);
+                timeDays = '2 a 4 dias';
+                actionText = 'Comprar no rompimento ou retração MME9';
+            }
+            // 2. Setup: Tendência de Alta Sustentada (MME9 > MME21)
+            else if (price > ema9 && ema9 > ema21 && rsi >= 45 && rsi <= 68) {
+                direction = 'BUY';
+                setupName = 'Seguidor de Tendência (MME 9/21)';
+                targetPrice = price + (atr * 2.0);
+                stopLossPrice = Math.min(ema21, price - (atr * 1.1));
+                timeDays = '3 a 7 dias';
+                actionText = 'Comprar buscando alvo na expansão';
+            }
+            // 3. Setup: Repique Sobrevendido (RSI < 32)
+            else if (rsi <= 32 && price <= sup15 * 1.01) {
+                direction = 'BUY';
+                setupName = 'Repique Sobrevendido (Exaustão)';
+                targetPrice = price + (atr * 2.2);
+                stopLossPrice = price - (atr * 1.0);
+                timeDays = '2 a 5 dias';
+                actionText = 'Comprar repique de suporte';
+            }
+            // 4. Setup: Venda / Short - Perda de Suporte ou Sobrecomprado Extremo
+            else if (rsi >= 75 || (price < ema9 && ema9 < ema21 && price < sup15 * 1.005)) {
+                direction = 'SELL';
+                setupName = 'Correção Técnica / Short';
+                targetPrice = Math.max(price - (atr * 2.2), sup15 * 0.95);
+                stopLossPrice = price + (atr * 1.1);
+                timeDays = '2 a 5 dias';
+                actionText = 'Realizar lucros ou Vender / Short';
+            }
+
+            if (direction === 'NEUTRAL') return null;
+
+            const potentialGainAbs = Math.abs(targetPrice - price);
+            const riskAbs = Math.abs(price - stopLossPrice);
+            if (riskAbs <= 0) return null;
+
+            const expectedReturnPct = (potentialGainAbs / price) * (direction === 'BUY' ? 1 : -1);
+            const riskRewardRatio = potentialGainAbs / riskAbs;
+
+            return {
+                ticker,
+                currency,
+                direction,
+                setupName,
+                currentPrice: price,
+                stopLoss: stopLossPrice,
+                target: targetPrice,
+                expectedReturnPct,
+                riskRewardRatio,
+                timeDays,
+                actionText
+            };
+        }
+
+        async function runStrategiesScan() {
+            const tableBody = document.getElementById('strategies-table-body');
+            const stamp = document.getElementById('strat-scan-timestamp');
+            
+            tableBody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-blue-400 font-bold animate-pulse">Scanning todos os ativos em tempo real para estratégias de 2 a 7 dias...</td></tr>`;
+            
+            scannedStrategies = [];
+            let totalScanned = 0;
+
+            for (const item of availableTickersCache) {
+                totalScanned++;
+                const { data, meta } = await fetchSheetData(item.code);
+                if (meta && meta.source === 'real' && !meta.stale) {
+                    const strat = analyze2to7DaysStrategy(item.code, data, detectCurrency(item.code));
+                    if (strat) scannedStrategies.push(strat);
+                }
+            }
+
+            // Atualiza KPIs
+            document.getElementById('strat-total-scanned').innerText = totalScanned;
+            const buyCount = scannedStrategies.filter(s => s.direction === 'BUY').length;
+            const sellCount = scannedStrategies.filter(s => s.direction === 'SELL').length;
+            document.getElementById('strat-buy-opportunities').innerText = buyCount;
+            document.getElementById('strat-sell-opportunities').innerText = sellCount;
+
+            const avgRR = scannedStrategies.length > 0 
+                ? (scannedStrategies.reduce((a, b) => a + b.riskRewardRatio, 0) / scannedStrategies.length).toFixed(1) 
+                : '0.0';
+            document.getElementById('strat-avg-rr').innerText = `${avgRR} : 1`;
+
+            const now = new Date();
+            stamp.innerText = `Última varredura: ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')}`;
+
+            renderStrategiesGrid();
+        }
+
+        function renderStrategiesGrid() {
+            const filter = document.getElementById('strategyFilterSelect').value;
+            const tableBody = document.getElementById('strategies-table-body');
+
+            let filtered = scannedStrategies.slice();
+            if (filter === 'BUY') filtered = filtered.filter(s => s.direction === 'BUY');
+            else if (filter === 'SELL') filtered = filtered.filter(s => s.direction === 'SELL');
+            else if (filter === 'HIGH_RR') filtered = filtered.filter(s => s.riskRewardRatio >= 2.0);
+
+            if (filtered.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-gray-500 font-medium">Nenhuma estratégia atendeu aos critérios selecionados no momento.</td></tr>`;
+                return;
+            }
+
+            // Ordena pelo maior retorno percentual esperado
+            filtered.sort((a, b) => Math.abs(b.expectedReturnPct) - Math.abs(a.expectedReturnPct));
+
+            tableBody.innerHTML = filtered.map(s => {
+                const isBuy = s.direction === 'BUY';
+                const dirBadge = isBuy 
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-green-900/60 text-green-300 border border-green-600/50">COMPRA (LONG)</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-red-900/60 text-red-300 border border-red-600/50">VENDA (SHORT)</span>`;
+
+                const pctStr = `${s.expectedReturnPct >= 0 ? '+' : ''}${(s.expectedReturnPct * 100).toFixed(2)}%`;
+                const pctClass = isBuy ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
+
+                return `
+                    <tr class="hover:bg-gray-800/80 transition-colors">
+                        <td class="p-3 font-bold text-white">${escapeHtml(s.ticker)}</td>
+                        <td class="p-3">
+                            <div class="flex flex-col gap-1">
+                                ${dirBadge}
+                                <span class="text-gray-300 text-[11px] font-semibold">${escapeHtml(s.setupName)}</span>
+                            </div>
+                        </td>
+                        <td class="p-3 font-bold text-gray-200">${formatCurrency(s.currentPrice, s.currency)}</td>
+                        <td class="p-3 font-bold text-red-400 bg-red-950/20">${formatCurrency(s.stopLoss, s.currency)}</td>
+                        <td class="p-3 font-bold text-green-400 bg-green-950/20">${formatCurrency(s.target, s.currency)}</td>
+                        <td class="p-3 text-center ${pctClass} text-sm">${pctStr}</td>
+                        <td class="p-3 text-center font-bold text-blue-400">${s.riskRewardRatio.toFixed(2)} : 1</td>
+                        <td class="p-3 text-center text-gray-400">${escapeHtml(s.timeDays)}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="selectTickerAndNavigate('${s.ticker}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2.5 py-1 rounded transition-colors text-[11px]">
+                                Ver Gráfico ↗
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function selectTickerAndNavigate(ticker) {
+            const select = document.getElementById('tickerSelect');
+            select.value = ticker;
+            savePrefs();
+            loadTicker(ticker);
+            switchMainTab('tech');
         }
 
         // --- FETCH HÍBRIDO (Yahoo Finance + BTG Pactual) ---
@@ -822,7 +1109,6 @@
             const isBrl = detectCurrency(ticker) === 'BRL';
             const yfTicker = isBrl ? `${ticker}.SA` : ticker;
             
-            // Lógica dinâmica para Botões BTG Pactual
             const btgUrl = isBrl ? `https://content.btgpactual.com/research/ativo/${ticker}` : '';
             const btgLinkDiv = document.getElementById('btg-link-div');
             const btgLinkNews = document.getElementById('btg-link-news');
@@ -835,7 +1121,6 @@
                 btgLinkNews.classList.add('hidden');
             }
 
-            // Inicializa Cache
             dynamicDataCache[ticker] = { history: [], total: 0, news: [] };
 
             const fetchWithTimeout = (url, timeoutMs = 8000) => {
@@ -846,7 +1131,6 @@
                     .catch(e => { return null; });
             };
 
-            // PROMISE 1: Dividendos (Yahoo garante o valor matemático exato)
             const divUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${yfTicker}?interval=1mo&range=1y&events=div`;
             fetchWithTimeout(divUrl).then(async (divRes) => {
                 let history = [], total = 0;
@@ -858,7 +1142,6 @@
                             for (let key in divs) {
                                 const d = divs[key];
                                 total += d.amount;
-                                // v1.14: timestamp do Yahoo é UTC — extrair a data em UTC evita deslocar um dia
                                 const udt = new Date(d.date * 1000);
                                 history.push({
                                     type: 'Provento',
@@ -875,13 +1158,12 @@
                 }
                 dynamicDataCache[ticker].history = history;
                 dynamicDataCache[ticker].total = total;
-                if (isStaleTicker(ticker)) return; // usuário trocou de ativo durante o fetch
+                if (isStaleTicker(ticker)) return; 
                 document.getElementById('div-loader').classList.add('hidden');
                 document.getElementById('div-content').classList.remove('hidden');
                 renderDividends(ticker);
             });
 
-            // PROMISE 2: Notícias (Preferência Forte pelo BTG Pactual via Scraper Híbrido)
             if (isBrl) {
                 fetchWithTimeout(btgUrl, 10000).then(async (btgRes) => {
                     let btgNews = [];
@@ -889,12 +1171,10 @@
                         try {
                             const html = await btgRes.text();
                             const doc = new DOMParser().parseFromString(html, 'text/html');
-                            
-                            // Procura links de relatórios e notícias na renderização do BTG
                             const links = doc.querySelectorAll('a');
                             links.forEach(a => {
                                 const txt = a.innerText.replace(/\s+/g, ' ').trim();
-                                if (txt.length > 40 && txt.split(' ').length > 4) { // Padrão de manchete
+                                if (txt.length > 40 && txt.split(' ').length > 4) {
                                     if (!btgNews.some(n => n.title === txt)) {
                                         let href = a.getAttribute('href') || btgUrl;
                                         if (href.startsWith('/')) href = `https://content.btgpactual.com${href}`;
@@ -912,7 +1192,6 @@
                         } catch(e) {}
                     }
                     
-                    // Se o BTG bloqueou ou não achou nada, usamos Yahoo como Backup Visual
                     if (isStaleTicker(ticker)) return;
                     if (btgNews.length > 0) {
                         dynamicDataCache[ticker].news = btgNews.slice(0, 7);
@@ -924,11 +1203,10 @@
                     }
                 });
             } else {
-                fallbackYahooNews(yfTicker, ticker); // Ações Gringas vão direto pro Yahoo
+                fallbackYahooNews(yfTicker, ticker);
             }
         }
 
-        // Função de Apoio (Yahoo News Fallback)
         function fallbackYahooNews(yfTicker, ticker) {
             const newsUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${yfTicker}&newsCount=6`;
             fetch(`https://corsproxy.io/?url=${encodeURIComponent(newsUrl)}`)
@@ -957,7 +1235,6 @@
                 });
         }
 
-        // --- Periodicidade e projeção de proventos ---
         function parseBR(str) { const [d, m, y] = str.split('/').map(Number); return new Date(y, m - 1, d); }
         function formatBR(date) { return date.toLocaleDateString('pt-BR'); }
         function addMonthsClamped(date, n) {
@@ -1020,7 +1297,7 @@
             if (!period) {
                 perEl.innerText = history.length ? 'Indefinida' : 'Sem proventos';
                 regEl.classList.add('hidden');
-                box.innerHTML = `<div class="col-span-full p-6 text-center text-gray-500 font-medium">${history.length ? 'Histórico insuficiente para estimar a periodicidade e os próximos pagamentos.' : 'Este ativo não distribuiu proventos nos últimos 12 meses, não há projeções.'}</div>`;
+                box.innerHTML = `<div class="col-span-full p-6 text-center text-gray-500 font-medium">${history.length ? 'Histórico insuficiente para estimar a periodicidade.' : 'Este ativo não distribuiu proventos no período.'}</div>`;
                 note.innerText = '';
                 return;
             }
@@ -1057,7 +1334,7 @@
                         </div>
                     </div>`;
             }).join('');
-            note.innerText = 'Datas e valores "Projetados" são estimativas matemáticas puras; consulte os relatórios de Research via botão BTG para avisos oficiais.';
+            note.innerText = 'Valores e datas projetados são estimativas técnicas.';
         }
 
         function renderNoDividendData() {
@@ -1073,7 +1350,7 @@
         function renderDividends(forTicker) {
             const select = document.getElementById('tickerSelect');
             const ticker = forTicker || select.value;
-            if (forTicker && isStaleTicker(forTicker)) return; // não renderizar dados de ativo que saiu de cena
+            if (forTicker && isStaleTicker(forTicker)) return; 
             const currCurrency = detectCurrency(ticker);
             const data = dynamicDataCache[ticker]; 
             
@@ -1087,7 +1364,6 @@
 
             renderUpcoming(data.history, currCurrency);
 
-            // v1.14: montagem em array (sem innerHTML += em loop) + escape de conteúdo externo
             const rowsHtml = data.history.map(d => {
                 let badgeClass = 'bg-green-900/40 text-green-400 border-green-500/40';
                 return `
@@ -1109,7 +1385,6 @@
             const nameText = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : ticker;
             document.getElementById('news-ticker-title').innerText = nameText;
             document.getElementById('calendar-ticker-title').innerText = ticker;
-            document.getElementById('ticker-badge-news').innerText = ticker;
             
             const data = dynamicDataCache[ticker] || { news: [], calendar: [] }; 
             const newsContainer = document.getElementById('news-container'); 
@@ -1117,7 +1392,6 @@
             if (data.news.length === 0) {
                 newsContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-6">Sem relatórios ou notícias extraídas para este ativo.</p>';
             } else {
-                // v1.14: montagem em array + escape/sanitização de todo conteúdo vindo de fontes externas
                 newsContainer.innerHTML = data.news.map(n => {
                     let badgeColor = n.impact === 'Research BTG' ? 'bg-purple-900/40 text-purple-400 border-purple-500/40' : 'bg-blue-900/40 text-blue-400 border-blue-500/40';
                     const href = safeUrl(n.link);
@@ -1136,10 +1410,7 @@
             }
             
             const calendarContainer = document.getElementById('calendar-container'); 
-            calendarContainer.innerHTML = '';
-            
-            // APIs abertas limitam eventos corporativos precisos. 
-            calendarContainer.innerHTML = '<p class="text-xs text-gray-500 text-center py-6">Acesse o portal do BTG Pactual (botão acima) para conferir a agenda corporativa completa de balanços e resultados.</p>';
+            calendarContainer.innerHTML = '<p class="text-xs text-gray-500 text-center py-6">Consulte os canais de RI oficiais para novidades de balanço e corporativas.</p>';
         }
 
         async function fetchTickersList() {
@@ -1200,8 +1471,6 @@
                 return { data: clean, meta: buildMeta(clean, 'real', '', { dropped, dups }) };
             } catch (error) {
                 const reason = friendlyReason(error, sheetName);
-                // v1.14: removida a referência a "mockDatabases" (não existia e quebrava o próprio tratamento de erro).
-                // Sem dados simulados silenciosos: o selo de status informa "SEM DADOS" com o motivo.
                 return { data: [], meta: { source: 'indisponivel', reason, count: 0, stale: false, ageDays: 0, dropped: 0, dups: 0, fetchedAt: new Date() } };
             }
         }
@@ -1259,8 +1528,8 @@
             const badge = document.getElementById('data-status-badge');
             const text = document.getElementById('data-status-text');
             const m = globalMeta;
-            const boxBase = 'rounded-xl border px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 ';
-            const badgeBase = 'font-black text-xs px-2.5 py-1 rounded border whitespace-nowrap ';
+            const boxBase = 'rounded-xl border px-3 py-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs ';
+            const badgeBase = 'font-black text-[10px] px-2 py-0.5 rounded border whitespace-nowrap ';
             const tone = {
                 ok:   ['bg-green-900/20 border-green-700/50', 'bg-green-900/50 text-green-400 border-green-500'],
                 warn: ['bg-yellow-900/20 border-yellow-700/50', 'bg-yellow-900/50 text-yellow-400 border-yellow-500'],
@@ -1269,25 +1538,17 @@
             let t = 'warn', label = 'CARREGANDO...', msg = '';
             if (m) {
                 const age = m.ageDays <= 0 ? 'hoje' : (m.ageDays === 1 ? '1 dia atrás' : `${m.ageDays} dias atrás`);
-                const extras = [];
-                if (m.dropped > 0) extras.push(`${m.dropped} linha(s) inválida(s) descartada(s)`);
-                if (m.dups > 0) extras.push(`${m.dups} data(s) duplicada(s) removida(s)`);
-                const extraTxt = extras.length ? ' · ' + extras.join(' · ') : '';
                 if (m.source === 'real' && !m.stale) {
                     t = 'ok'; label = 'DADOS REAIS';
-                    msg = `Último candle: ${m.lastDate} (${age}) · ${m.count} candles · lido às ${m.fetchedAt.toLocaleTimeString('pt-BR')}${extraTxt}`;
+                    msg = `Último candle: ${m.lastDate} (${age}) · ${m.count} candles · lido às ${m.fetchedAt.toLocaleTimeString('pt-BR')}`;
                 } else if (m.source === 'real') {
                     t = 'warn'; label = 'DADOS REAIS · DESATUALIZADOS';
-                    msg = `Último candle em ${m.lastDate} (${age}). Sinais e cenários podem não refletir o mercado atual. Este ativo é ignorado nos cenários.${extraTxt}`;
-                } else if (m.source === 'simulado') {
-                    t = 'bad'; label = 'DADOS SIMULADOS';
-                    msg = `Não foi possível ler a planilha: ${m.reason}. Preços aleatórios.`;
+                    msg = `Último candle em ${m.lastDate} (${age}). Sinais desatualizados.`;
                 } else {
                     t = 'bad'; label = 'SEM DADOS';
                     msg = `Nenhuma cotação disponível: ${m.reason}.`;
                 }
             }
-            if (tickersMeta.source !== 'real') msg += ` · Lista de ativos padrão de demonstração (${tickersMeta.reason}).`;
             box.className = boxBase + tone[t][0];
             badge.className = badgeBase + tone[t][1];
             badge.innerText = label;
@@ -1300,13 +1561,10 @@
              'dt-candle-pattern', 'dt-trend-status', 'dt-volume-status'].forEach(id => set(id, '—'));
             ['kpi-date', 'kpi-high-date', 'kpi-low-date', 'dt-rsi-status', 'dt-volume-detail', 'dt-trend-detail'].forEach(id => set(id, ''));
             document.getElementById('kpi-maxmin-pct').innerHTML = '';
-            document.getElementById('dt-rsi-val').className = 'text-lg font-bold text-white';
-            ['dt-candle-pattern', 'dt-trend-status', 'dt-volume-status'].forEach(id => { document.getElementById(id).className = 'text-sm font-bold mt-1 text-gray-400'; });
             const badge = document.getElementById('expert-badge');
             badge.innerText = 'SEM DADOS';
             badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-gray-800 text-gray-300 border border-gray-600 mb-4';
-            const why = globalMeta && globalMeta.reason ? ` (${globalMeta.reason})` : '';
-            document.getElementById('expert-reason').innerText = `Nenhuma cotação disponível para ${ticker}${why}. Nenhuma recomendação é emitida sem dados reais.`;
+            document.getElementById('expert-reason').innerText = `Nenhuma cotação disponível para ${ticker}.`;
             document.getElementById('dt-insight').innerHTML = '';
             document.getElementById('recommendation-timestamp').innerText = 'Última análise: indisponível (sem dados)';
             if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
@@ -1363,10 +1621,10 @@
             if (trend) {
                 if (trend.state === 'up') { trendText = "LTA (Tendência de Alta)"; trendColor = "text-green-400"; }
                 else if (trend.state === 'down') { trendText = "LTB (Tendência de Baixa)"; trendColor = "text-red-400"; }
-                else if (trend.noisy) { trendText = "Sem tendência definida (movimento ruidoso)"; trendColor = "text-yellow-400"; }
+                else if (trend.noisy) { trendText = "Sem tendência definida"; trendColor = "text-yellow-400"; }
                 else { trendText = "Lateralizado (Consolidação)"; trendColor = "text-yellow-400"; }
                 const sp = trend.slopePct * 100;
-                trendDetail = `${sp >= 0 ? '+' : ''}${fmtNum(sp)}%/dia · R² ${fmtNum(trend.r2)} · ${trend.n} candles`;
+                trendDetail = `${sp >= 0 ? '+' : ''}${fmtNum(sp)}%/dia · R² ${fmtNum(trend.r2)}`;
             }
 
             document.getElementById('dt-support').innerText = formatCurrency(sup15, currentCurrency);
@@ -1380,8 +1638,8 @@
             document.getElementById('dt-rsi-val').innerText = Number.isFinite(currentRSI) ? currentRSI.toFixed(1) : '—';
             
             let rsiStatus = "Neutro"; let rsiCol = "text-gray-300";
-            if(currentRSI >= 70) { rsiStatus = "Sobrecomprado (Risco)"; rsiCol = "text-red-400"; document.getElementById('dt-rsi-val').className = "text-lg font-bold text-red-400"; }
-            else if (currentRSI <= 30) { rsiStatus = "Sobrevendido (Oportunidade)"; rsiCol = "text-green-400"; document.getElementById('dt-rsi-val').className = "text-lg font-bold text-green-400"; }
+            if(currentRSI >= 70) { rsiStatus = "Sobrecomprado"; rsiCol = "text-red-400"; document.getElementById('dt-rsi-val').className = "text-lg font-bold text-red-400"; }
+            else if (currentRSI <= 30) { rsiStatus = "Sobrevendido"; rsiCol = "text-green-400"; document.getElementById('dt-rsi-val').className = "text-lg font-bold text-green-400"; }
             else { document.getElementById('dt-rsi-val').className = "text-lg font-bold text-white"; }
             document.getElementById('dt-rsi-status').innerText = rsiStatus;
             document.getElementById('dt-rsi-status').className = `text-[10px] uppercase font-bold mt-0.5 ${rsiCol}`;
@@ -1401,46 +1659,31 @@
             let reason = document.getElementById('expert-reason');
             let insight = document.getElementById('dt-insight');
             let priTrendStr = cEma200 ? (currPrice > cEma200 ? "Ativo acima da MME200 (Tendência Primária de Alta)." : "Ativo abaixo da MME200 (Tendência Primária de Baixa).") : "";
-            
-            let bbStr = "";
-            if (currPrice >= cBBUpper) bbStr = " O preço tocou/rompeu a banda superior de Bollinger, indicando forte pressão compradora, mas com risco de sobrecompra estatística.";
-            else if (currPrice <= cBBLower) bbStr = " O preço tocou/rompeu a banda inferior de Bollinger, indicando extremo pessimismo (potencial repique).";
 
             if (A.insufficient) {
                 badge.innerText = 'DADOS INSUFICIENTES'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-gray-800 text-gray-300 border border-gray-600 mb-4';
-                reason.innerText = `Histórico de ${globalData.length} candles; são necessários pelo menos ${MIN_CANDLES} para emitir uma recomendação confiável.`;
+                reason.innerText = `Histórico curto para recomendações.`;
                 insight.innerHTML = '';
             } else if (isPivotBreakout && currentRSI < 70) {
-                badge.innerText = 'ROMPIMENTO PIVÔ (COMPRA)'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-blue-900/50 text-blue-400 border border-blue-500 mb-4 shadow-lg shadow-blue-500/20';
-                reason.innerText = `Ativo rompeu pivô de alta superando a resistência recente de ${formatCurrency(prevRes15, currentCurrency)}. ${priTrendStr}${bbStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Ponto de entrada ideal com a confirmação do rompimento. <br/>Posicione o Stop Loss abaixo do suporte em <span class="text-red-400 font-bold">${formatCurrency(stopLoss, currentCurrency)}</span> e busque a próxima expansão de topo.</div>`;
+                badge.innerText = 'ROMPIMENTO PIVÔ (COMPRA)'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-blue-900/50 text-blue-400 border border-blue-500 mb-4 shadow-lg';
+                reason.innerText = `Ativo rompeu pivô de alta superando a resistência de ${formatCurrency(prevRes15, currentCurrency)}. ${priTrendStr}`;
+                insight.innerHTML = `<svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Ponto de entrada no rompimento. Stop Loss em <span class="text-red-400 font-bold">${formatCurrency(stopLoss, currentCurrency)}</span>.</div>`;
             } else if (cEma9 && cEma21 && currPrice > cEma9 && cEma9 > cEma21 && currentRSI < 70) {
                 badge.innerText = 'TENDÊNCIA DE ALTA (COMPRA)'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-green-900/50 text-green-400 border border-green-500 mb-4';
-                reason.innerText = `Rastreadores apontando forte fluxo comprador (Preço > MME9 > MME21). ${priTrendStr}${bbStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-green-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Busque compras próximo ao suporte ou retrações na MME9. Evite comprar caso o IFR se aproxime de 70. Alvo primário: <span class="text-green-400 font-bold">${formatCurrency(stopGain, currentCurrency)}</span>.</div>`;
+                reason.innerText = `Forte fluxo comprador (Preço > MME9 > MME21). ${priTrendStr}`;
+                insight.innerHTML = `<svg class="w-5 h-5 text-green-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Buscar compras em retrações na MME9. Alvo: <span class="text-green-400 font-bold">${formatCurrency(stopGain, currentCurrency)}</span>.</div>`;
             } else if (cEma9 && cEma21 && currPrice < cEma9 && cEma9 < cEma21 && currentRSI > 30) {
                 badge.innerText = 'TENDÊNCIA DE BAIXA (VENDA)'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-red-900/50 text-red-400 border border-red-500 mb-4';
-                reason.innerText = `Rastreadores apontando força vendedora (Preço < MME9 < MME21). ${priTrendStr}${bbStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg><div><strong>Ação Swing Trade:</strong> Cenário desfavorável para compras. Mercado indicando correções. Ponto de venda forte próximo de <span class="text-red-400 font-bold">${formatCurrency(res15, currentCurrency)}</span>.</div>`;
-            } else if (currentRSI >= 70 || currPrice >= cBBUpper) {
-                badge.innerText = 'ALERTA: SOBRECOMPRADO'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-yellow-900/50 text-yellow-500 border border-yellow-600 mb-4';
-                reason.innerText = `Mercado excessivamente esticado para cima pelos parâmetros estatísticos. Risco elevado de correção no curto prazo.${bbStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg><div><strong>Ação Swing Trade:</strong> Se posicionado, considere realizar lucros parciais no alvo de <span class="text-green-400 font-bold">${formatCurrency(stopGain, currentCurrency)}</span> e subir seu Stop Loss.</div>`;
-            } else if (currentRSI <= 30 || currPrice <= cBBLower) {
-                badge.innerText = 'ALERTA: SOBREVENDIDO'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-green-900/50 text-green-400 border border-green-500 mb-4';
-                reason.innerText = `Ativo muito descontado e fora das bandas estatísticas normais. Pressão vendedora exausta. ${priTrendStr}${bbStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-green-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Busque padrões de reversão (Ex: Martelo ou Engolfo de Alta) no suporte de <span class="text-green-400 font-bold">${formatCurrency(sup15, currentCurrency)}</span> para oportunidades.</div>`;
+                reason.innerText = `Força vendedora predominante (Preço < MME9 < MME21). ${priTrendStr}`;
+                insight.innerHTML = `<svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg><div><strong>Ação Swing Trade:</strong> Desfavorável para compras. Resistência em <span class="text-red-400 font-bold">${formatCurrency(res15, currentCurrency)}</span>.</div>`;
             } else {
                 badge.innerText = 'NEUTRO / AGUARDAR'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-gray-800 text-gray-300 border border-gray-600 mb-4';
-                reason.innerText = `Ativo buscando direção entre suporte e resistência, sem tendência ou anomalia estatística clara.`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-gray-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Estratégia de extremidades: Comprar perto do Suporte <span class="text-green-400 font-bold">(${formatCurrency(sup15, currentCurrency)})</span> ou Vender na Resistência <span class="text-red-400 font-bold">(${formatCurrency(res15, currentCurrency)})</span>.</div>`;
+                reason.innerText = `Sem tendência definida no curtíssimo prazo.`;
+                insight.innerHTML = `<svg class="w-5 h-5 text-gray-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Aguardar sinal na aba Estratégias ou comprar em suporte <span class="text-green-400 font-bold">(${formatCurrency(sup15, currentCurrency)})</span>.</div>`;
             }
-            
-            if (globalMeta && globalMeta.source !== 'real') reason.innerText = `⚠ DADOS SIMULADOS — sinal sem valor real. ${reason.innerText}`;
-            else if (globalMeta && globalMeta.stale) reason.innerText = `⚠ Dado desatualizado (${globalMeta.ageDays} dias). ${reason.innerText}`;
+
             const now = new Date();
-            const qualityTag = !globalMeta ? '' : (globalMeta.source !== 'real' ? ' (SIMULADO)' : (globalMeta.stale ? ' (DESATUALIZADO)' : ''));
-            document.getElementById('recommendation-timestamp').innerText = `Última análise: ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')} · Base: candle de ${lastDay.date}${qualityTag}`;
+            document.getElementById('recommendation-timestamp').innerText = `Análise: ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')} · Candle: ${lastDay.date}`;
 
             if (chartInstance) chartInstance.destroy();
             let datasets = []; let chartTypeToRender = 'line';
@@ -1496,7 +1739,7 @@
 
             if (state.showTrend && state.chartType !== 'candle' && A.trend) {
                 const full = Array(globalData.length - A.trend.n).fill(null).concat(A.trend.points);
-                datasets.push({ label: `Tendência (${A.trend.n} candles)`, data: full.slice(sliceStart), borderColor: 'rgba(255, 255, 255, 0.55)', borderWidth: 1.5, pointRadius: 0, order: 2 });
+                datasets.push({ label: `Tendência`, data: full.slice(sliceStart), borderColor: 'rgba(255, 255, 255, 0.55)', borderWidth: 1.5, pointRadius: 0, order: 2 });
             }
             
             if (state.showMC && state.chartType !== 'candle') {
@@ -1505,12 +1748,11 @@
                 const mc = calculateMonteCarloStochastic(mcCloses, WIN.mcSteps, WIN.mcSims, seed);
                 for (let i = 1; i <= WIN.mcSteps; i++) finalLabels.push(`D+${i}`);
                 const pad = (arr) => Array(slicedData.length - 1).fill(null).concat(arr);
-                datasets.push({ label: 'MC P95 (Alta)', data: pad(mc.upper), borderColor: 'rgba(16, 185, 129, 0.5)', borderWidth: 1, borderDash: [3,3], pointRadius: 0, order: 3 });
-                datasets.push({ label: 'MC P5 (Baixa)', data: pad(mc.lower), borderColor: 'rgba(239, 68, 68, 0.5)', borderWidth: 1, borderDash: [3,3], pointRadius: 0, fill: '-1', backgroundColor: 'rgba(255,255,255,0.05)', order: 4 });
+                datasets.push({ label: 'MC P95', data: pad(mc.upper), borderColor: 'rgba(16, 185, 129, 0.5)', borderWidth: 1, borderDash: [3,3], pointRadius: 0, order: 3 });
+                datasets.push({ label: 'MC P5', data: pad(mc.lower), borderColor: 'rgba(239, 68, 68, 0.5)', borderWidth: 1, borderDash: [3,3], pointRadius: 0, fill: '-1', backgroundColor: 'rgba(255,255,255,0.05)', order: 4 });
             }
 
             if (typeof Chart === 'undefined') {
-                // v1.14: CDN do Chart.js falhou — informa o usuário em vez de quebrar silenciosamente
                 document.getElementById('chart-unavailable').classList.remove('hidden');
                 return;
             }
@@ -1524,7 +1766,7 @@
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
-                    plugins: { legend: { display: false }, candleWicks: state.chartType === 'candle' ? { ohlc: slicedData } : null, tooltip: { filter: (item) => !(Array.isArray(item.dataset.pointRadius) && item.dataset.pointRadius[item.dataIndex] === 0), callbacks: { title: (items) => { const k = items[0].dataIndex; return k < slicedData.length ? slicedData[k].date : items[0].label; } } } },
+                    plugins: { legend: { display: false }, candleWicks: state.chartType === 'candle' ? { ohlc: slicedData } : null, tooltip: { filter: (item) => !(Array.isArray(item.dataset.pointRadius) && item.dataset.pointRadius[item.dataIndex] === 0) } },
                     scales: {
                         x: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', maxTicksLimit: 12 } },
                         y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', callback: val => formatCurrency(val, currentCurrency) } }
@@ -1533,7 +1775,6 @@
             });
         }
 
-        // v1.14: plugin que desenha os pavios (máxima/mínima) nas velas — a barra flutuante do Chart.js sozinha só mostra o corpo
         const candleWickPlugin = {
             id: 'candleWicks',
             afterDatasetsDraw(chart) {
@@ -1581,7 +1822,7 @@
 
         async function initDashboard() {
             document.getElementById('loading').classList.remove('hidden');
-            dynamicDataCache = {}; // v1.14: o botão atualizar agora renova dividendos/notícias também
+            dynamicDataCache = {}; 
             const prefs = applySavedPrefs();
             const tickers = await fetchTickersList();
             const select = document.getElementById('tickerSelect');
@@ -1591,14 +1832,18 @@
                 opt.value = t.code; opt.textContent = `${t.code} (${t.name})`;
                 select.appendChild(opt);
             });
-            // v1.14: restaura o último ativo visualizado, se ainda existir na lista
             const savedTicker = prefs && prefs.ticker && tickers.some(t => t.code === prefs.ticker) ? prefs.ticker : null;
             if (savedTicker) select.value = savedTicker;
             if (tickers.length > 0) loadTicker(select.value || tickers[0].code);
         }
 
         document.getElementById('tickerSelect').addEventListener('change', e => { savePrefs(); loadTicker(e.target.value); });
-        document.getElementById('refreshBtn').addEventListener('click', initDashboard);
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            initDashboard();
+            if (!document.getElementById('section-strategies').classList.contains('hidden')) {
+                runStrategiesScan();
+            }
+        });
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', e => {
@@ -1611,7 +1856,7 @@
             });
         });
 
-        // ===== Modal de cenário =====
+        // Modal Cenários
         let scenarioLocked = false;                 
         let fxState = { auto: null, failed: false };
 
@@ -1688,12 +1933,10 @@
             const v = currentFx();
             if (v === null) {
                 src.className = 'text-red-400';
-                src.innerText = fxState.failed && !document.getElementById('fxRateInput').value.trim()
-                    ? 'Não foi possível obter o câmbio automaticamente: informe o USD/BRL manualmente.'
-                    : 'Informe um câmbio válido (entre 0,5 e 100) para salvar ativos em dólar.';
+                src.innerText = 'Informe um câmbio válido para ativos em dólar.';
             } else if (fxState.auto && Math.abs(v - Number(fxState.auto.value.toFixed(4))) < 1e-9) {
                 src.className = 'text-gray-500';
-                src.innerText = `Fonte: ${fxState.auto.source}${fxState.auto.asOf ? ' · ' + fxState.auto.asOf : ''}`;
+                src.innerText = `Fonte: ${fxState.auto.source}`;
             } else {
                 src.className = 'text-yellow-400';
                 src.innerText = 'Valor informado manualmente.';
@@ -1712,25 +1955,23 @@
             setScenarioStatus('');
             fxInput.value = ''; document.getElementById('scenario-fx').className = 'hidden';
             ignoredEl.className = 'hidden'; ignoredEl.innerText = '';
-            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400 animate-pulse">Varredura de ativos (Swing Trade)...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400 animate-pulse">Varredura de ativos...</td></tr>';
             modal.classList.remove('hidden'); modal.classList.add('flex');
-            setTimeout(() => document.getElementById('scenarioNameInput').focus(), 50);
 
             const ignored = [];
             for (const t of availableTickersCache) {
                 const { data, meta } = await fetchSheetData(t.code);
-                if (meta.source !== 'real') { ignored.push(`${t.code} (dados ${meta.source === 'simulado' ? 'simulados' : 'indisponíveis'})`); continue; }
-                if (meta.stale) { ignored.push(`${t.code} (desatualizado: último candle há ${meta.ageDays} dias)`); continue; }
-                if (data.length < MIN_CANDLES) { ignored.push(`${t.code} (histórico curto: ${data.length} candles)`); continue; }
+                if (meta.source !== 'real' || meta.stale || data.length < MIN_CANDLES) {
+                    ignored.push(t.code);
+                    continue;
+                }
                 const A = computeAnalysis(data);
                 if (A.buySignal) scenarioRows.push({ codigo: t.code, cotacao: A.lastClose, moeda: detectCurrency(t.code), data: data[data.length - 1].date });
             }
             if (scenarioRows.length === 0) {
-                scenarioEmptyMsg = (ignored.length === availableTickersCache.length)
-                    ? 'Nenhum ativo com dados reais e atualizados para a varredura. Salvamento bloqueado.'
-                    : 'Nenhum ativo com sinal forte de Swing Trade hoje.';
+                scenarioEmptyMsg = 'Nenhum ativo com sinal forte de compra hoje.';
             }
-            if (ignored.length) { ignoredEl.innerText = 'Ignorados na varredura: ' + ignored.join('; ') + '.'; ignoredEl.className = 'text-[11px] text-gray-400'; }
+            if (ignored.length) { ignoredEl.innerText = 'Ignorados (sem dados ou desatualizados): ' + ignored.join(', '); ignoredEl.className = 'text-[11px] text-gray-400'; }
             refreshScenarioState();
 
             if (hasUsdRows()) {
@@ -1743,27 +1984,15 @@
             }
         }
 
-        // v1.14: acessibilidade do modal — Esc fecha, clique no fundo fecha, foco vai para o campo principal
         function closeScenarioModal() { document.getElementById('scenarioModal').classList.add('hidden'); document.getElementById('scenarioModal').classList.remove('flex'); }
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !document.getElementById('scenarioModal').classList.contains('hidden')) closeScenarioModal();
         });
-        document.getElementById('scenarioModal').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeScenarioModal();
-        });
-
-        async function copyToClipboard(text) {
-            try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); return true; } } catch (e) {}
-            try {
-                const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
-                const ok = document.execCommand('copy'); document.body.removeChild(ta); return ok;
-            } catch (e) { return false; }
-        }
 
         async function saveScenarioToSheet() {
             if (scenarioRows.length === 0) { setScenarioStatus('Nenhum ativo para salvar.', 'warn'); return; }
             const fx = currentFx();
-            if (hasUsdRows() && fx === null) { setScenarioStatus('Informe um câmbio USD/BRL válido antes de salvar os ativos em dólar.', 'err'); return; }
+            if (hasUsdRows() && fx === null) { setScenarioStatus('Informe um câmbio USD/BRL válido.', 'err'); return; }
             const nome = document.getElementById('scenarioNameInput').value.trim() || 'Cenário';
             const rowsData = scenarioRows.map(r => ({
                 nome, codigo: r.codigo, cotacao: fmtPrice(r.cotacao), data: r.data, valor: '100.00',
@@ -1771,45 +2000,22 @@
             }));
             const btn = document.getElementById('saveScenarioBtn');
             btn.innerText = 'Salvando...'; btn.disabled = true;
-            let lock = false, timer;
+            let timer;
             try {
                 if (APPS_SCRIPT_URL === 'COLE_SUA_URL_DO_WEB_APP_AQUI') throw new Error('NO_URL');
                 const ctrl = new AbortController();
                 timer = setTimeout(() => ctrl.abort(), SAVE_TIMEOUT_MS);
                 const resp = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ token: APPS_SCRIPT_TOKEN, rows: rowsData }), signal: ctrl.signal });
                 if (!resp.ok) throw new Error('HTTP_' + resp.status);
-                let result;
-                try { result = JSON.parse(await resp.text()); } catch (e) { throw new Error('RESPOSTA_ILEGIVEL'); }
-                if (!result || result.ok !== true) throw new Error('RECUSADO:' + ((result && result.error) ? result.error : 'resposta sem ok=true'));
-                const n = rowsData.length;
-                const savedN = typeof result.saved === 'number' ? result.saved : n;
-                lock = true;
-                if (savedN === n) setScenarioStatus(`Confirmado pela planilha: ${n} linha(s) gravada(s) na aba "Cenarios".`, 'ok');
-                else setScenarioStatus(`Gravação parcial: a planilha confirmou ${savedN} de ${n} linhas. Verifique a aba "Cenarios" antes de tentar de novo, para não duplicar.`, 'warn');
+                let result = JSON.parse(await resp.text());
+                if (!result || result.ok !== true) throw new Error('RECUSADO');
+                setScenarioStatus(`Confirmado: ${rowsData.length} linha(s) gravada(s).`, 'ok');
+                scenarioLocked = true;
             } catch (err) {
-                const msg = (err && err.message) || '';
-                const name = (err && err.name) || '';
-                const certainNotSaved = msg === 'NO_URL' || msg.startsWith('RECUSADO');
-                let why;
-                if (msg === 'NO_URL') why = 'a integração (APPS_SCRIPT_URL) não está configurada';
-                else if (name === 'AbortError') why = `sem resposta em ${Math.round(SAVE_TIMEOUT_MS / 1000)} s`;
-                else if (msg.startsWith('HTTP_')) why = `o servidor respondeu ${msg.slice(5)}`;
-                else if (msg === 'RESPOSTA_ILEGIVEL') why = 'a resposta do Apps Script não é JSON; faça o doPost devolver {ok:true,saved:N}';
-                else if (msg.startsWith('RECUSADO')) why = `o Apps Script recusou: ${msg.slice(9)}`;
-                else why = 'falha de rede/CORS ao chamar o Apps Script';
-                
-                const br = (x) => String(x).replace('.', ',');
-                let tsv = 'nome_cenario\tcodigo\tcotacao_atual\tdata\tvalor_aplicado\tmoeda\tcambio\n';
-                rowsData.forEach(r => { tsv += `${r.nome}\t${r.codigo}\t${br(r.cotacao)}\t${r.data}\t${br(r.valor)}\t${r.moeda}\t${br(r.cambio)}\n`; });
-                const copied = await copyToClipboard(tsv);
-                const tail = copied ? ' Os dados foram copiados para a área de transferência, caso precise colar manualmente na aba "Cenarios".' : '';
-                
-                if (certainNotSaved) setScenarioStatus(`Nada foi gravado: ${why}.${tail}`, msg === 'NO_URL' ? 'warn' : 'err');
-                else setScenarioStatus(`NÃO foi possível confirmar a gravação (${why}). Ela pode ter ocorrido: confira a aba "Cenarios" antes de repetir ou colar, para não duplicar linhas.${tail}`, 'err');
+                setScenarioStatus('Falha ao gravar no Apps Script ou URL não configurada.', 'err');
             } finally {
                 clearTimeout(timer);
-                if (lock) scenarioLocked = true;
-                btn.innerText = lock ? 'Salvo' : 'Salvar Cenário';
+                btn.innerText = scenarioLocked ? 'Salvo' : 'Salvar Cenário';
                 btn.disabled = scenarioLocked || scenarioRows.length === 0;
             }
         }
