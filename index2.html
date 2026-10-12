@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Broker Dashboard - Cenários Pro v1.16</title>
+    <meta name="description" content="Dashboard de análise técnica, estratégias de swing trade (2 a 7 dias), dividendos e cenários operacionais.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+        .tab-btn.active { background-color: #3B82F6; color: white; border-color: #3B82F6; }
+        .nav-tab.active { background-color: #2563EB; color: white; border-color: #3B82F6; }
+        .toggle-checkbox:checked { right: 0; border-color: #3B82F6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #3B82F6; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+        .loader-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans antialiased min-h-screen p-3 md:p-6">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- Cabeçalho -->
+        <div class="pt-2 pb-3 border-b border-gray-800 space-y-3">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-700">
+                <div class="flex items-center gap-3 mb-3 md:mb-0">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold text-xl shadow-blue-500/50 shadow-lg">HB</div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">Nexus<span class="text-blue-500">Broker</span> <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded-full ml-1">PRO</span> <span class="inline-flex flex-col ml-1 align-top"><span class="text-[10px] text-purple-400 font-mono tracking-tighter" title="Versão Atualizada">v1.16</span><span class="text-[10px] text-purple-400 font-mono tracking-tighter leading-none mt-0.5">by Junior Bruno</span></span></h1>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <div class="flex flex-col flex-grow md:flex-grow-0">
+                        <div class="flex items-center gap-2">
+                            <label for="tickerSelect" class="text-gray-400 text-xs md:text-sm font-medium">Ativo:</label>
+                            <select id="tickerSelect" class="bg-gray-900 border border-gray-600 text-white font-bold py-1.5 px-3 rounded-lg focus:outline-none focus:border-blue-500 transition-colors cursor-pointer text-sm w-full md:w-auto">
+                                <option value="">Carregando...</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2 mt-1 pl-10 md:pl-11">
+                            <span id="company-name-badge" class="text-[11px] text-blue-400 font-bold hidden"></span>
+                            <span id="currency-badge" class="bg-gray-700 text-gray-300 text-[10px] px-1.5 py-0.5 rounded font-bold hidden uppercase tracking-wider"></span>
+                        </div>
+                    </div>
+                    
+                    <button id="refreshBtn" class="bg-gray-900 hover:bg-gray-700 border border-gray-600 p-2 rounded-lg transition-colors cursor-pointer" title="Atualizar dados">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
+
+                    <button onclick="openScenarioModal()" class="bg-green-600 hover:bg-green-500 text-white text-xs md:text-sm font-bold px-3 py-2 rounded-lg shadow-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Criar Cenário (R$ 100)
+                    </button>
+
+                    <div id="loading" class="hidden text-xs font-bold text-blue-400 animate-pulse bg-blue-900/30 px-3 py-1.5 rounded-full">Carregando...</div>
+                </div>
+            </header>
+
+            <!-- Selo de origem/qualidade dos dados -->
+            <div id="data-status" role="status" class="rounded-xl border px-3 py-2 flex flex-wrap items-center gap-x-3 gap-y-1 bg-gray-800 border-gray-700 text-xs">
+                <span id="data-status-badge" class="font-black text-[10px] px-2 py-0.5 rounded border whitespace-nowrap bg-gray-700 text-gray-300 border-gray-600">CARREGANDO...</span>
+                <span id="data-status-text" class="text-gray-300"></span>
+            </div>
+        </div>
+
+        <!-- Navegação de Abas Principais -->
+        <div class="flex border-b border-gray-700 gap-2 overflow-x-auto pt-2" role="tablist" aria-label="Seções do dashboard">
+            <button onclick="switchMainTab('tech')" id="btn-tab-tech" role="tab" aria-selected="true" aria-controls="section-tech" class="nav-tab active px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 cursor-pointer whitespace-nowrap">
+                📊 Gráfico & Análise Técnica
+            </button>
+            <button onclick="switchMainTab('strategies')" id="btn-tab-strategies" role="tab" aria-selected="false" aria-controls="section-strategies" class="nav-tab px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-1.5 whitespace-nowrap">
+                🎯 Estratégias (2 a 7 Dias)
+                <span id="strategy-count-badge" class="bg-green-900/80 text-green-300 text-[10px] font-mono px-2 py-0.5 rounded-full border border-green-700/50">Scanner</span>
+            </button>
+            <button onclick="switchMainTab('dividends')" id="btn-tab-dividends" role="tab" aria-selected="false" aria-controls="section-dividends" class="nav-tab px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-2 whitespace-nowrap">
+                💰 Dividendos & Rendimentos
+            </button>
+            <button onclick="switchMainTab('news')" id="btn-tab-news" role="tab" aria-selected="false" aria-controls="section-news" class="nav-tab px-4 py-2 rounded-t-lg font-bold text-xs md:text-sm transition-colors border-t border-x border-gray-700 text-gray-400 hover:text-white cursor-pointer flex items-center gap-2 whitespace-nowrap">
+                📰 Notícias & Calendário
+            </button>
+        </div>
+
+        <!-- CONTEÚDO DA ABA 1: TÉCNICO -->
+        <div id="section-tech" class="space-y-6">
+            <!-- Indicadores (KPIs) -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center relative md:col-span-1">
+                    <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
+                        Último Fech. <span id="kpi-date" class="text-blue-400 font-bold ml-1"></span>
+                    </p>
+                    <p id="kpi-close" class="text-2xl font-bold text-white transition-all">0,00</p>
+                    <p id="kpi-maxmin-pct" class="text-[11px] font-medium mt-1 mb-2"></p>
+                    
+                    <!-- LOCAL BACANA: Container de Evolução (Retrátil e com Tooltip) -->
+                    <div id="kpi-evolution-container" class="mt-auto pt-3 border-t border-gray-700/60 hidden">
+                        <button id="btn-toggle-evo" onclick="document.getElementById('evo-grid').classList.toggle('hidden'); document.getElementById('evo-arrow').classList.toggle('rotate-180');" class="flex items-center justify-between w-full text-[9px] text-gray-400 uppercase font-bold tracking-wider cursor-pointer hover:text-white transition-colors focus:outline-none" title="Carregando evolução...">
+                            <span>Evolução Diária</span>
+                            <svg id="evo-arrow" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="evo-grid" class="grid grid-cols-2 gap-2 mt-2 hidden">
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">1 Dia</p>
+                                <p id="evo-1d" class="font-bold tracking-tight">--</p>
+                            </div>
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">3 Dias</p>
+                                <p id="evo-3d" class="font-bold tracking-tight">--</p>
+                            </div>
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">5 Dias</p>
+                                <p id="evo-5d" class="font-bold tracking-tight">--</p>
+                            </div>
+                            <div class="bg-gray-900/50 rounded p-1.5 border border-gray-700/50">
+                                <p class="text-[8px] text-gray-500 uppercase font-bold">7 Dias</p>
+                                <p id="evo-7d" class="font-bold tracking-tight">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-1 md:col-span-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                            <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Abertura (Período)</p>
+                            <p id="kpi-open" class="text-2xl font-bold text-white transition-all">0,00</p>
+                        </div>
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                            <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
+                                Máxima (Fech.) <span id="kpi-high-date" class="text-green-500 font-bold ml-1"></span>
+                            </p>
+                            <p id="kpi-high" class="text-2xl font-bold text-green-400 transition-all">0,00</p>
+                        </div>
+                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                            <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">
+                                Mínima (Fech.) <span id="kpi-low-date" class="text-red-500 font-bold ml-1"></span>
+                            </p>
+                            <p id="kpi-low" class="text-2xl font-bold text-red-400 transition-all">0,00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Análise e Swing Trade -->
+            <div class="grid grid-cols-1 xl:grid-cols-4 gap-4">
+                <div class="col-span-1 bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-2">Recomendação Algorítmica</h3>
+                        <div id="expert-badge" class="inline-block px-4 py-2 rounded-lg text-xl font-bold bg-gray-700 text-white mb-4">
+                            AGUARDANDO...
+                        </div>
+                        <p id="expert-reason" class="text-sm text-gray-300 leading-relaxed mb-3">
+                            Analisando os dados técnicos do ativo...
+                        </p>
+                        <div id="recommendation-timestamp" class="text-[11px] text-blue-400 font-mono bg-blue-950/40 p-2 rounded border border-blue-900/30">
+                            Última análise: --/--/---- --:--:--
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-700">
+                        <p class="text-xs text-gray-500">Decisão baseada em MME (9/21/200), pivôs, IFR, Bollinger e Volume técnico.</p>
+                    </div>
+                </div>
+
+                <!-- Radar Swing Trade -->
+                <div class="col-span-1 xl:col-span-3 bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg flex flex-col">
+                    <h3 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Gerenciamento de Risco & Análise Gráfica
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 flex-grow">
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold" title="Piso onde o preço tende a parar de cair">🧱 Suporte & Stop Loss</p>
+                            <p id="dt-support" class="text-lg font-bold text-green-400">0,00</p>
+                            <p class="text-[10px] text-gray-400 mt-1">Stop Loss Ideal: <span id="dt-stop-loss" class="text-red-400 font-bold">0,00</span></p>
+                        </div>
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold" title="Teto onde o preço tende a parar de subir">🧱 Resistência & Alvo</p>
+                            <p id="dt-resistance" class="text-lg font-bold text-red-400">0,00</p>
+                            <p class="text-[10px] text-gray-400 mt-1">Stop Gain (Alvo): <span id="dt-stop-gain" class="text-green-400 font-bold">0,00</span></p>
+                        </div>
+                        
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold">🕯️ Padrão Candlestick</p>
+                            <p id="dt-candle-pattern" class="text-sm font-bold text-gray-200 mt-1">Analisando...</p>
+                        </div>
+
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold">📏 Linha de Tendência</p>
+                            <p id="dt-trend-status" class="text-sm font-bold text-blue-400 mt-1">Neutro</p>
+                            <p id="dt-trend-detail" class="text-[10px] text-gray-400 mt-1"></p>
+                        </div>
+
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold" title="Índice de Força Relativa">📊 IFR (14 Períodos)</p>
+                            <p id="dt-rsi-val" class="text-lg font-bold text-white">0.00</p>
+                            <p id="dt-rsi-status" class="text-[10px] uppercase font-bold mt-0.5 text-gray-400">Neutro</p>
+                        </div>
+
+                        <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
+                            <p class="text-[11px] text-gray-400 mb-1 uppercase font-bold">📉 Volume (Última Sessão)</p>
+                            <p id="dt-volume-status" class="text-sm font-bold text-gray-200 mt-1">Analisando...</p>
+                            <p id="dt-volume-detail" class="text-[10px] text-gray-400 mt-1"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-sm text-gray-300 bg-blue-900/20 border border-blue-800/30 p-3 rounded-lg flex items-start gap-3" id="dt-insight"></div>
+                </div>
+            </div>
+
+            <!-- Gráfico e Ferramentas Pro -->
+            <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg">
+                <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 gap-4 border-b border-gray-700 pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-200" id="chart-title">Evolução do Preço</h2>
+                        <p class="text-xs text-gray-400 mt-1">Visão técnica e quantitativa (Swing Trade 1D)</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-3 items-center bg-gray-900 p-2 rounded-lg border border-gray-700 text-xs">
+                        <div class="flex items-center gap-2 pr-2 border-r border-gray-700">
+                            <label for="chartTypeSelect" class="font-medium text-gray-400">Exibição:</label>
+                            <select id="chartTypeSelect" class="bg-gray-800 border border-gray-600 text-white text-xs font-bold py-1 px-2 rounded focus:outline-none focus:border-blue-500 cursor-pointer">
+                                <option value="area" selected>Área (Padrão)</option>
+                                <option value="line">Linha</option>
+                                <option value="candle">Vela (Candles)</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-center gap-3 pr-2 border-r border-gray-700">
+                            <label class="flex items-center cursor-pointer gap-2">
+                                <div class="relative">
+                                    <input type="checkbox" id="togglePeaksTroughs" class="sr-only toggle-checkbox">
+                                    <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
+                                    <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
+                                </div>
+                                <span class="font-medium text-gray-300">Topos/Fundos</span>
+                            </label>
+                            <div class="flex items-center gap-1">
+                                <input type="color" id="colorPeak" value="#10B981" class="w-5 h-5 p-0 border-0 rounded cursor-pointer bg-transparent" title="Cor dos Topos">
+                                <input type="color" id="colorTrough" value="#EF4444" class="w-5 h-5 p-0 border-0 rounded cursor-pointer bg-transparent" title="Cor dos Fundos">
+                            </div>
+                        </div>
+
+                        <label class="flex items-center cursor-pointer gap-2">
+                            <div class="relative">
+                                <input type="checkbox" id="toggleMA" class="sr-only toggle-checkbox">
+                                <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
+                            </div>
+                            <span class="font-medium text-gray-300">MME (9/21/200)</span>
+                        </label>
+
+                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3">
+                            <div class="relative">
+                                <input type="checkbox" id="toggleBB" class="sr-only toggle-checkbox">
+                                <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
+                            </div>
+                            <span class="font-medium text-gray-300">Bollinger</span>
+                        </label>
+
+                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3">
+                            <div class="relative">
+                                <input type="checkbox" id="toggleTrend" class="sr-only toggle-checkbox">
+                                <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
+                            </div>
+                            <span class="font-medium text-gray-300">Tendência</span>
+                        </label>
+
+                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3">
+                            <div class="relative">
+                                <input type="checkbox" id="toggleMC" class="sr-only toggle-checkbox">
+                                <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
+                            </div>
+                            <span class="font-medium text-purple-400">Monte Carlo</span>
+                        </label>
+
+                        <div class="border-l border-gray-700 pl-3 flex flex-wrap" id="time-filters">
+                            <button class="tab-btn px-2.5 py-1 rounded-l-md text-xs font-medium text-gray-400 hover:text-white border border-gray-600" data-days="1">1D</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="5">5D</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="15">15D</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="30">1M</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="90">3M</button>
+                            <button class="tab-btn active px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="180">6M</button>
+                            <button class="tab-btn px-2.5 py-1 text-xs font-medium text-gray-400 hover:text-white border-t border-b border-l border-gray-600" data-days="365">1A</button>
+                            <button class="tab-btn px-2.5 py-1 rounded-r-md text-xs font-medium text-gray-400 hover:text-white border border-gray-600" data-days="all">Tudo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative h-[400px] w-full">
+                    <canvas id="mainChart"></canvas>
+                    <div id="chart-unavailable" class="hidden absolute inset-0 flex items-center justify-center text-center text-sm text-yellow-400 bg-gray-900/80 rounded-lg p-6">
+                        Não foi possível carregar o gráfico. Verifique sua conexão e tente novamente.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO DA ABA 2: ESTRATÉGIAS DE SWING TRADE (2 A 7 DIAS) -->
+        <div id="section-strategies" class="hidden space-y-6">
+            <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-xl space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-700 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            🎯 Estratégias Quantitativas de Swing Trade
+                            <span class="bg-blue-900/60 text-blue-300 text-xs px-2.5 py-1 rounded-full border border-blue-700/50 font-mono">Horizonte: 2 a 7 dias</span>
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Varredura automatizada em todos os papéis da lista, identificando alvos técnicos, pontos de Stop Loss, relação Risco/Retorno e expectativa percentual de ganhos.
+                        </p>
+                    </div>
+                    <button onclick="runStrategiesScan()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Reexecutar Varredura
+                    </button>
+                </div>
+
+                <!-- Resumo Geral do Scanner -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Ativos Analisados</p>
+                        <p id="strat-total-scanned" class="text-xl font-bold text-white">0</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Todos do combo de seleção</p>
+                    </div>
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Oportunidades Compra</p>
+                        <p id="strat-buy-opportunities" class="text-xl font-bold text-green-400">0</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Expectativa de Alta (2-7D)</p>
+                    </div>
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Oportunidades Venda/Short</p>
+                        <p id="strat-sell-opportunities" class="text-xl font-bold text-red-400">0</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Expectativa de Correção (2-7D)</p>
+                    </div>
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Risco/Retorno Médio</p>
+                        <p id="strat-avg-rr" class="text-xl font-bold text-blue-400">0.0 : 1</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Ganhos projetados vs Risco</p>
+                    </div>
+                </div>
+
+                <!-- Filtros do Grid de Estratégia -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-400 font-medium">Filtrar por Tipo:</span>
+                        <select id="strategyFilterSelect" onchange="renderStrategiesGrid()" class="bg-gray-900 border border-gray-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg focus:outline-none focus:border-blue-500">
+                            <option value="ALL">Todas as Oportunidades</option>
+                            <option value="BUY">Somente Compras (Long)</option>
+                            <option value="SELL">Somente Vendas (Short)</option>
+                            <option value="HIGH_RR">Relação Risco/Retorno &gt; 2.0</option>
+                        </select>
+                    </div>
+                    <div id="strat-scan-timestamp" class="text-[11px] text-gray-400 font-mono">
+                        Aguardando início da varredura...
+                    </div>
+                </div>
+
+                <!-- Tabela de Estratégias Analisadas -->
+                <div class="overflow-x-auto rounded-xl border border-gray-700/80 bg-gray-900/50">
+                    <table class="w-full text-left text-xs whitespace-nowrap">
+                        <thead class="bg-gray-950 text-gray-400 text-[11px] uppercase tracking-wider border-b border-gray-800">
+                            <tr>
+                                <th class="p-3">Ativo</th>
+                                <th class="p-3">Sinal / Setup</th>
+                                <th class="p-3">Cotação Atual</th>
+                                <th class="p-3 text-red-400">Stop Loss R$</th>
+                                <th class="p-3 text-green-400">Alvo R$ (Take Profit)</th>
+                                <th class="p-3 text-center">Expectativa Ganhos %</th>
+                                <th class="p-3 text-center">Relação R:R</th>
+                                <th class="p-3 text-center">Prazo Estimado</th>
+                                <th class="p-3 text-right">Ação Sugerida</th>
+                            </tr>
+                        </thead>
+                        <tbody id="strategies-table-body" class="divide-y divide-gray-800">
+                            <tr>
+                                <td colspan="9" class="p-8 text-center text-gray-400 font-medium animate-pulse">
+                                    Iniciando scanner quantitativo em todos os papéis disponíveis...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-xs space-y-1.5 text-gray-300">
+                    <p class="font-bold text-blue-400 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Nota Técnica sobre Responsabilidade & Gerenciamento de Risco:
+                    </p>
+                    <p class="text-gray-400 leading-relaxed">
+                        As estratégias nesta aba utilizam modelos matemáticos baseados em volatilidade técnica (ATR), rompimento de pivot, médias móveis exponenciais e médias históricas de candles diários. Não garantem lucros futuros. Opere sempre respeitando rigorosamente o <strong>Stop Loss</strong> configurado e divida o capital em frações seguras para o seu perfil.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO DA ABA 3: DIVIDENDOS -->
+        <div id="section-dividends" class="hidden space-y-6">
+            
+            <div id="div-loader" class="hidden flex flex-col items-center justify-center py-20 bg-gray-800 rounded-xl border border-gray-700 shadow-lg">
+                <svg class="loader-spin h-10 w-10 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-gray-300 font-bold text-sm">Buscando dados institucionais e de mercado (BTG Pactual & Yahoo)...</span>
+            </div>
+
+            <div id="div-content" class="space-y-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                        <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Dividend Yield</p>
+                        <p id="div-yield" class="text-2xl font-bold text-green-400 transition-all">0,00%</p>
+                        <p class="text-[11px] font-medium mt-1 text-gray-400">Últimos 12 meses</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                        <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Crescimento (5 Anos)</p>
+                        <p id="div-growth" class="text-xl font-bold text-gray-500 transition-all">N/D</p>
+                        <p class="text-[11px] font-medium mt-1 text-gray-500">Sem API Premium</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                        <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Payout</p>
+                        <p id="div-payout" class="text-xl font-bold text-gray-500 transition-all">N/D</p>
+                        <p class="text-[11px] font-medium mt-1 text-gray-500">Sem API Premium</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md flex flex-col justify-center">
+                        <p class="text-gray-400 font-medium mb-1 uppercase tracking-wider text-[11px] md:text-xs">Total Distribuído</p>
+                        <p id="div-total" class="text-2xl font-bold text-white transition-all">R$ 0,00</p>
+                        <p class="text-[11px] font-medium mt-1 text-gray-400">Por ação (12M)</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg">
+                    <div class="flex flex-wrap justify-between items-center gap-3 border-b border-gray-700 pb-3 mb-4">
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Próximos 4 Pagamentos Previstos
+                        </h3>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="text-gray-400 font-medium">Periodicidade:</span>
+                            <span id="div-periodicity" class="font-bold px-2.5 py-1 rounded border bg-blue-900/40 text-blue-400 border-blue-500/40">—</span>
+                            <span id="div-regularity" class="font-bold px-2.5 py-1 rounded border hidden"></span>
+                        </div>
+                    </div>
+                    <div id="div-upcoming" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                    <p id="div-upcoming-note" class="text-[11px] text-gray-500 mt-4"></p>
+                </div>
+
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg">
+                    <div class="flex flex-wrap justify-between items-center border-b border-gray-700 pb-3 mb-4 gap-4">
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Histórico de Pagamentos (Últimos 12 Meses)
+                        </h3>
+                        <a id="btg-link-div" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-xs font-bold bg-blue-900/50 hover:bg-blue-800 text-blue-400 px-3 py-1.5 rounded-lg border border-blue-700/50 transition-colors flex items-center gap-1 shadow-md">
+                            Acessar Research BTG Pactual ↗
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="bg-gray-900 text-gray-400 text-xs uppercase rounded-t-lg">
+                                <tr>
+                                    <th class="p-3 rounded-tl-lg">Tipo</th>
+                                    <th class="p-3">Data Base (Com)</th>
+                                    <th class="p-3">Data Pagamento</th>
+                                    <th class="p-3 text-right">Valor Bruto</th>
+                                    <th class="p-3 text-right rounded-tr-lg">Detalhe</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dividends-table-body" class="divide-y divide-gray-700/50 bg-gray-800/50">
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO DA ABA 4: NOTÍCIAS & CALENDÁRIO -->
+        <div id="section-news" class="hidden space-y-6">
+            
+            <div id="news-loader" class="hidden flex flex-col items-center justify-center py-20 bg-gray-800 rounded-xl border border-gray-700 shadow-lg">
+                <svg class="loader-spin h-10 w-10 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-gray-300 font-bold text-sm">Mapeando relatórios e notícias...</span>
+            </div>
+
+            <div id="news-content" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg space-y-4">
+                    <div class="flex flex-wrap justify-between items-center border-b border-gray-700 pb-3 gap-4">
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 002-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                            Análises & Notícias: <span id="news-ticker-title" class="text-blue-400 font-mono">--</span>
+                        </h3>
+                        <a id="btg-link-news" href="#" target="_blank" rel="noopener noreferrer" class="hidden text-xs font-bold bg-blue-900/50 hover:bg-blue-800 text-blue-400 px-3 py-1.5 rounded-lg border border-blue-700/50 transition-colors flex items-center gap-1 shadow-md">
+                            Central de Análises BTG ↗
+                        </a>
+                    </div>
+                    <div id="news-container" class="space-y-3"></div>
+                </div>
+
+                <div class="lg:col-span-1 bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-lg space-y-4">
+                    <div class="border-b border-gray-700 pb-3">
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Calendário Corporativo
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-1">Eventos para <span id="calendar-ticker-title" class="text-green-400 font-mono font-bold">--</span></p>
+                    </div>
+                    <div id="calendar-container" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal de Criação de Cenários -->
+    <div id="scenarioModal" role="dialog" aria-modal="true" aria-labelledby="scenario-modal-title" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 border border-gray-700 rounded-2xl w-full max-w-2xl flex flex-col max-h-[95vh] overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-gray-700 flex justify-between items-center bg-gray-900">
+                <h3 id="scenario-modal-title" class="font-bold text-lg text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    Gerar Cenário de Compra
+                </h3>
+                <button onclick="closeScenarioModal()" class="text-gray-400 hover:text-white font-bold text-xl">&times;</button>
+            </div>
+            
+            <div class="p-6 space-y-4 overflow-y-auto">
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Nome do Cenário</label>
+                    <input type="text" id="scenarioNameInput" value="Carteira Recomendada" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-400 mb-2">Papéis com <strong class="text-green-400">TENDÊNCIA DE COMPRA</strong> (MME 9 > MME 21):</p>
+                    <div class="bg-gray-900 rounded-xl border border-gray-700 overflow-y-auto max-h-80">
+                        <table class="w-full text-left text-sm relative">
+                            <thead class="bg-gray-950 text-gray-400 text-xs uppercase sticky top-0 z-10 shadow-md">
+                                <tr>
+                                    <th class="p-3">nome_cenario</th>
+                                    <th class="p-3">codigo</th>
+                                    <th class="p-3">cotacao_atual</th>
+                                    <th class="p-3">data</th>
+                                    <th class="p-3 text-right">valor_aplicado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scenario-preview-body" class="divide-y divide-gray-800">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="scenario-fx" class="hidden">
+                    <div class="flex flex-wrap items-center gap-2 text-xs bg-gray-900 border border-gray-700 rounded-lg p-3">
+                        <label for="fxRateInput" class="text-gray-300 font-semibold">Câmbio USD/BRL</label>
+                        <input id="fxRateInput" type="text" inputmode="decimal" placeholder="ex.: 5,40" class="w-24 bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white focus:outline-none focus:border-blue-500">
+                        <span id="fxRateSource" class="text-gray-500"></span>
+                    </div>
+                </div>
+                <div id="scenario-ignored" class="hidden text-[11px] text-gray-400"></div>
+                <div id="scenario-status" class="hidden"></div>
+                <p class="text-[11px] text-gray-500">Valor aplicado = R$ 100,00 por ativo. Ativos em dólar usam o câmbio USD/BRL acima. A data é a do último candle usado.</p>
+            </div>
+
+            <div class="p-4 bg-gray-900 border-t border-gray-700 flex justify-end gap-3">
+                <button onclick="closeScenarioModal()" class="px-4 py-2 rounded-lg text-sm bg-gray-700 hover:bg-gray-600 text-white font-medium transition-colors">Fechar</button>
+                <button id="saveScenarioBtn" onclick="saveScenarioToSheet()" class="px-4 py-2 rounded-lg text-sm bg-green-600 hover:bg-green-500 text-white font-bold transition-colors flex items-center gap-2 cursor-pointer shadow-lg">
+                    Salvar Cenário
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
