@@ -1,6 +1,7 @@
 import { DashboardPage } from './pages/DashboardPage.js';
 import { safeAsyncRun } from './services/errorHandler.js';
 import { getElement } from './utils.js';
+import { bindUiControls } from './ui/render.js';
 
 window.__nexusBrokerModuleBootstrapped__ = true;
 
@@ -9,11 +10,7 @@ async function initDashboard() {
 
   const result = await safeAsyncRun('initDashboard', async () => {
     page.bindRefresh(() => page.viewModel.onRefresh());
-    page.bindChartType((value) => {
-      const chartTypeSelect = getElement('chartTypeSelect');
-      if (chartTypeSelect) chartTypeSelect.value = value;
-    });
-
+    bindUiControls();
     await page.init();
   });
 

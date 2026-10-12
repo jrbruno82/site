@@ -30,13 +30,6 @@ export class DashboardPage {
     }
   }
 
-  bindChartType(handler) {
-    const chartTypeSelect = getElement('chartTypeSelect');
-    if (chartTypeSelect) {
-      chartTypeSelect.onchange = (event) => handler(event.target.value);
-    }
-  }
-
   async init() {
     this.view.setStatus('Arquitetura por pages e view-model ativada.', 'success');
     await this.viewModel.init();

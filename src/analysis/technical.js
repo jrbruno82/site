@@ -103,7 +103,35 @@ export function calculateTrend(closes, windowSize = 50) {
   if (r2 >= 0.3 && slopePct >= 0.0005) state = 'up';
   else if (r2 >= 0.3 && slopePct <= -0.0005) state = 'down';
 
-  return { slope, slopePct, r2, state, points: slice.map((_, index) => (slope * index) + (sumY / slice.length - slope * (sumX / slice.length))) };
+  return {
+    slope,
+    slopePct,
+    r2,
+    state,
+    n: slice.length,
+    points: slice.map((_, index) => (slope * index) + (sumY / slice.length - slope * (sumX / slice.length))),
+  };
+}
+
+export function findPivots(values, windowSize = 3) {
+  const peaks = Array(values.length).fill(null);
+  const troughs = Array(values.length).fill(null);
+
+  for (let index = windowSize; index < values.length - windowSize; index += 1) {
+    let isPeak = true;
+    let isTrough = true;
+
+    for (let neighbor = index - windowSize; neighbor <= index + windowSize; neighbor += 1) {
+      if (neighbor === index) continue;
+      if (values[index] <= values[neighbor]) isPeak = false;
+      if (values[index] >= values[neighbor]) isTrough = false;
+    }
+
+    if (isPeak) peaks[index] = values[index];
+    if (isTrough) troughs[index] = values[index];
+  }
+
+  return { peaks, troughs };
 }
 
 export function detectCandlestickPattern(data) {
@@ -144,6 +172,7 @@ export function computeAnalysis(data) {
     rsi,
     currentRSI: rsi[rsi.length - 1] ?? 50,
     trend: calculateTrend(closes, 50),
+    pivots: findPivots(closes),
     candle: detectCandlestickPattern(data),
     insufficient: data.length < 30,
     buySignal: Boolean(last.close > ema9[ema9.length - 1] && ema9[ema9.length - 1] > ema21[ema21.length - 1]),

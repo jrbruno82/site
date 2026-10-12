@@ -3,7 +3,7 @@ import { computeAnalysis } from '../analysis/technical.js';
 import { buildStrategyRows } from '../analysis/strategies.js';
 import { buildScenarioRows } from '../features/scenarios.js';
 import { renderNewsPanel } from '../features/news.js';
-import { renderDashboard, renderDataStatus } from '../ui/render.js';
+import { renderDashboard, renderDataStatus, syncChartControls } from '../ui/render.js';
 import { state, setAvailableTickers, setCurrentTicker, setGlobalData, hydrateStateFromPrefs, saveStateSnapshot } from '../store/store.js';
 import { getElement, loadPrefs } from '../utils.js';
 import { clearCache } from '../services/cache.js';
@@ -35,6 +35,7 @@ export class DashboardViewModel {
   applySavedPrefs() {
     const prefs = loadPrefs();
     hydrateStateFromPrefs(prefs);
+    syncChartControls();
   }
 
   async loadTicker(ticker) {
