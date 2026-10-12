@@ -16,6 +16,10 @@
         .nav-tab.active { background-color: #2563EB; color: white; border-color: #3B82F6; }
         .toggle-checkbox:checked { right: 0; border-color: #3B82F6; }
         .toggle-checkbox:checked + .toggle-label { background-color: #3B82F6; }
+        /* Cores pro toggle ATR */
+        #toggleATR:checked ~ .toggle-label { background-color: #F97316; }
+        #toggleATR:checked ~ .dot { border-color: #F97316; }
+
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
         .loader-spin { animation: spin 1s linear infinite; }
@@ -61,7 +65,6 @@
                 </div>
             </header>
 
-            <!-- Selo de origem/qualidade dos dados -->
             <div id="data-status" role="status" class="rounded-xl border px-3 py-2 flex flex-wrap items-center gap-x-3 gap-y-1 bg-gray-800 border-gray-700 text-xs">
                 <span id="data-status-badge" class="font-black text-[10px] px-2 py-0.5 rounded border whitespace-nowrap bg-gray-700 text-gray-300 border-gray-600">CARREGANDO...</span>
                 <span id="data-status-text" class="text-gray-300"></span>
@@ -96,7 +99,6 @@
                     <p id="kpi-close" class="text-2xl font-bold text-white transition-all">0,00</p>
                     <p id="kpi-maxmin-pct" class="text-[11px] font-medium mt-1 mb-2"></p>
                     
-                    <!-- LOCAL BACANA: Container de Evolução (Retrátil e com Tooltip) -->
                     <div id="kpi-evolution-container" class="mt-auto pt-3 border-t border-gray-700/60 hidden">
                         <button id="btn-toggle-evo" onclick="document.getElementById('evo-grid').classList.toggle('hidden'); document.getElementById('evo-arrow').classList.toggle('rotate-180');" class="flex items-center justify-between w-full text-[9px] text-gray-400 uppercase font-bold tracking-wider cursor-pointer hover:text-white transition-colors focus:outline-none" title="Carregando evolução...">
                             <span>Evolução Diária</span>
@@ -209,6 +211,9 @@
                     </div>
                     
                     <div class="mt-4 text-sm text-gray-300 bg-blue-900/20 border border-blue-800/30 p-3 rounded-lg flex items-start gap-3" id="dt-insight"></div>
+                    
+                    <!-- Resumo Dinâmico do ATR adicionado -->
+                    <div id="atr-summary-container" class="mt-3 hidden transition-all"></div>
                 </div>
             </div>
 
@@ -279,6 +284,16 @@
                                 <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
                             </div>
                             <span class="font-medium text-purple-400">Monte Carlo</span>
+                        </label>
+
+                        <!-- Novo Botão ATR -->
+                        <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3" title="Average True Range (Volatilidade)">
+                            <div class="relative">
+                                <input type="checkbox" id="toggleATR" class="sr-only toggle-checkbox">
+                                <div class="block bg-gray-600 w-10 h-6 rounded-full toggle-label transition-colors"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300"></div>
+                            </div>
+                            <span class="font-medium text-orange-400">ATR</span>
                         </label>
 
                         <div class="border-l border-gray-700 pl-3 flex flex-wrap" id="time-filters">
@@ -606,8 +621,9 @@
         let dynamicDataCache = {}; 
         let scannedStrategies = [];
 
+        // Adicionado o ATR no State
         let state = { 
-            showMA: false, showTrend: false, showMC: false, showBB: false, chartType: 'area',
+            showMA: false, showTrend: false, showMC: false, showBB: false, showATR: false, chartType: 'area',
             showPeaksTroughs: false, colorPeak: '#10B981', colorTrough: '#EF4444' 
         };
 
@@ -631,6 +647,7 @@
             document.getElementById('toggleBB').checked = state.showBB;
             document.getElementById('toggleTrend').checked = state.showTrend;
             document.getElementById('toggleMC').checked = state.showMC;
+            document.getElementById('toggleATR').checked = state.showATR; // Restaura estado do ATR
             document.getElementById('togglePeaksTroughs').checked = state.showPeaksTroughs;
             document.getElementById('chartTypeSelect').value = state.chartType;
             document.getElementById('colorPeak').value = state.colorPeak;
@@ -643,6 +660,9 @@
         document.getElementById('toggleBB').addEventListener('change', (e) => { state.showBB = e.target.checked; savePrefs(); renderDashboard(); });
         document.getElementById('toggleTrend').addEventListener('change', (e) => { state.showTrend = e.target.checked; savePrefs(); renderDashboard(); });
         document.getElementById('toggleMC').addEventListener('change', (e) => { state.showMC = e.target.checked; savePrefs(); renderDashboard(); });
+        // Handler do ATR
+        document.getElementById('toggleATR').addEventListener('change', (e) => { state.showATR = e.target.checked; savePrefs(); renderDashboard(); });
+        
         document.getElementById('chartTypeSelect').addEventListener('change', (e) => { state.chartType = e.target.value; savePrefs(); renderDashboard(); });
         document.getElementById('togglePeaksTroughs').addEventListener('change', (e) => { state.showPeaksTroughs = e.target.checked; savePrefs(); renderDashboard(); });
         document.getElementById('colorPeak').addEventListener('input', (e) => { state.colorPeak = e.target.value; savePrefs(); renderDashboard(); });
@@ -804,6 +824,27 @@
             }
             const recentTrs = trs.slice(-period);
             return recentTrs.reduce((a, b) => a + b, 0) / period;
+        }
+
+        // Nova Função que gera a Array Completa do ATR para desenhar no gráfico
+        function calculateATRSeries(data, period = 14) {
+            let atr = Array(data.length).fill(null);
+            if (data.length <= period) return atr;
+            let trs = [0]; // Index 0 não possui True Range
+            for (let i = 1; i < data.length; i++) {
+                const high = data[i].high;
+                const low = data[i].low;
+                const prevClose = data[i - 1].close;
+                trs.push(Math.max(high - low, Math.abs(high - prevClose), Math.abs(low - prevClose)));
+            }
+            let sum = 0;
+            for (let i = 1; i <= period; i++) sum += trs[i];
+            atr[period] = sum / period;
+
+            for (let i = period + 1; i < data.length; i++) {
+                atr[i] = (atr[i - 1] * (period - 1) + trs[i]) / period; // Wilder's Smoothing
+            }
+            return atr;
         }
 
         function calculateLinearRegression(yData) {
@@ -968,7 +1009,6 @@
             let timeDays = '3 a 5 dias';
             let actionText = 'Observar fora do mercado';
 
-            // 1. Setup: Rompimento de Pivô de Alta (Com Volume)
             if (price >= res15 * 0.995 && volMultiplier >= 1.2 && rsi < 72) {
                 direction = 'BUY';
                 setupName = 'Rompimento Pivô + Volume';
@@ -977,7 +1017,6 @@
                 timeDays = '2 a 4 dias';
                 actionText = 'Comprar no rompimento ou retração MME9';
             }
-            // 2. Setup: Tendência de Alta Sustentada (MME9 > MME21)
             else if (price > ema9 && ema9 > ema21 && rsi >= 45 && rsi <= 68) {
                 direction = 'BUY';
                 setupName = 'Seguidor de Tendência (MME 9/21)';
@@ -986,7 +1025,6 @@
                 timeDays = '3 a 7 dias';
                 actionText = 'Comprar buscando alvo na expansão';
             }
-            // 3. Setup: Repique Sobrevendido (RSI < 32)
             else if (rsi <= 32 && price <= sup15 * 1.01) {
                 direction = 'BUY';
                 setupName = 'Repique Sobrevendido (Exaustão)';
@@ -995,7 +1033,6 @@
                 timeDays = '2 a 5 dias';
                 actionText = 'Comprar repique de suporte';
             }
-            // 4. Setup: Venda / Short - Perda de Suporte ou Sobrecomprado Extremo
             else if (rsi >= 75 || (price < ema9 && ema9 < ema21 && price < sup15 * 1.005)) {
                 direction = 'SELL';
                 setupName = 'Correção Técnica / Short';
@@ -1047,7 +1084,6 @@
                 }
             }
 
-            // Atualiza KPIs
             document.getElementById('strat-total-scanned').innerText = totalScanned;
             const buyCount = scannedStrategies.filter(s => s.direction === 'BUY').length;
             const sellCount = scannedStrategies.filter(s => s.direction === 'SELL').length;
@@ -1079,7 +1115,6 @@
                 return;
             }
 
-            // Ordena pelo maior retorno percentual esperado
             filtered.sort((a, b) => Math.abs(b.expectedReturnPct) - Math.abs(a.expectedReturnPct));
 
             tableBody.innerHTML = filtered.map(s => {
@@ -1532,6 +1567,10 @@
             const rsiLast = rsiArr[n - 1];
             const currentRSI = (rsiLast === null || rsiLast === undefined) ? NaN : rsiLast;
 
+            // Extração de dados ATR
+            const atrSeries = calculateATRSeries(data, 14);
+            const currentATR = atrSeries[n - 1];
+
             const swing = data.slice(-WIN.swing);
             const sup = Math.min(...swing.map(d => d.low));
             const res = Math.max(...swing.map(d => d.high));
@@ -1543,6 +1582,7 @@
             return {
                 n, closes, lastClose: last.close, lastTs: last.ts,
                 ema9, ema21, ema200, bb, currentRSI,
+                atrSeries, currentATR, // Adicionado no retorno
                 sup, res, stopLoss: sup * 0.99, stopGain: res * 0.995,
                 prevRes, isPivotBreakout,
                 trend: calculateTrend(closes, WIN.trend),
@@ -1597,9 +1637,9 @@
             badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-gray-800 text-gray-300 border border-gray-600 mb-4';
             document.getElementById('expert-reason').innerText = `Nenhuma cotação disponível para ${ticker}.`;
             document.getElementById('dt-insight').innerHTML = '';
+            document.getElementById('atr-summary-container').classList.add('hidden');
             document.getElementById('recommendation-timestamp').innerText = 'Última análise: indisponível (sem dados)';
             
-            // Ocultar container de evolução
             const evoContainer = document.getElementById('kpi-evolution-container');
             if(evoContainer) evoContainer.classList.add('hidden');
 
@@ -1632,11 +1672,12 @@
                 if (d.close < minObj.close) minObj = d; 
             });
             const periodMax = maxObj.close; const periodMin = minObj.close;
+            const currPrice = lastDay.close;
 
-            document.getElementById('kpi-close').innerText = formatCurrency(lastDay.close, currentCurrency);
+            document.getElementById('kpi-close').innerText = formatCurrency(currPrice, currentCurrency);
             document.getElementById('kpi-date').innerText = `- ${lastDay.date}`;
-            const pctFromMin = periodMin === 0 ? 0 : ((lastDay.close - periodMin) / periodMin);
-            const pctFromMax = periodMax === 0 ? 0 : ((lastDay.close - periodMax) / periodMax);
+            const pctFromMin = periodMin === 0 ? 0 : ((currPrice - periodMin) / periodMin);
+            const pctFromMax = periodMax === 0 ? 0 : ((currPrice - periodMax) / periodMax);
             document.getElementById('kpi-maxmin-pct').innerHTML = `<span class="${pctFromMin >= 0 ? 'text-green-400' : 'text-red-400'}">${pctFromMin >= 0 ? '+' : ''}${formatPct(pctFromMin)} da Mín</span> <span class="text-gray-600 mx-1">|</span> <span class="${pctFromMax > 0 ? 'text-green-400' : 'text-red-400'}">${pctFromMax > 0 ? '+' : ''}${formatPct(pctFromMax)} da Máx</span>`;
             document.getElementById('kpi-open').innerText = formatCurrency(firstDay.open, currentCurrency); 
             document.getElementById('kpi-high').innerText = formatCurrency(periodMax, currentCurrency);
@@ -1644,7 +1685,6 @@
             document.getElementById('kpi-low').innerText = formatCurrency(periodMin, currentCurrency);
             document.getElementById('kpi-low-date').innerText = `- ${minObj.date}`;
 
-            // ---- LÓGICA DE EVOLUÇÃO (1D, 3D, 5D, 7D) ----
             const evoContainer = document.getElementById('kpi-evolution-container');
             if (globalData.length > 1) {
                 evoContainer.classList.remove('hidden');
@@ -1654,7 +1694,7 @@
                     const el = document.getElementById(elId);
                     if (globalData.length > days) {
                         const pastPrice = globalData[globalData.length - 1 - days].close;
-                        const diff = lastDay.close - pastPrice;
+                        const diff = currPrice - pastPrice;
                         const pct = pastPrice !== 0 ? (diff / pastPrice) : 0;
                         
                         const absDiff = Math.abs(diff);
@@ -1724,12 +1764,9 @@
             document.getElementById('dt-volume-detail').innerText = A.volume.detail || '';
             document.getElementById('dt-trend-detail').innerText = trendDetail;
 
-            const currPrice = lastDay.close;
             const cEma9 = ema9[ema9.length-1];
             const cEma21 = ema21[ema21.length-1];
             const cEma200 = ema200[ema200.length-1];
-            const cBBUpper = A.bb.upper[A.bb.upper.length-1];
-            const cBBLower = A.bb.lower[A.bb.lower.length-1];
 
             let badge = document.getElementById('expert-badge');
             let reason = document.getElementById('expert-reason');
@@ -1758,6 +1795,35 @@
                 insight.innerHTML = `<svg class="w-5 h-5 text-gray-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Aguardar sinal na aba Estratégias ou comprar em suporte <span class="text-green-400 font-bold">(${formatCurrency(sup15, currentCurrency)})</span>.</div>`;
             }
 
+            // Exibir resumo dinâmico do ATR se o toggle estiver ativo
+            const atrSummaryDiv = document.getElementById('atr-summary-container');
+            if (state.showATR && !A.insufficient && A.currentATR) {
+                atrSummaryDiv.classList.remove('hidden');
+                
+                const atrValueStr = formatCurrency(A.currentATR, currentCurrency);
+                const atrPct = ((A.currentATR / currPrice) * 100).toFixed(2);
+                
+                let volStatus = "Normal"; let volColor = "text-gray-300";
+                if (atrPct > 4) { volStatus = "Alta"; volColor = "text-red-400"; }
+                else if (atrPct < 1.5) { volStatus = "Baixa"; volColor = "text-blue-400"; }
+
+                const stopLoss2x = currPrice - (A.currentATR * 2);
+
+                atrSummaryDiv.innerHTML = `
+                    <div class="bg-orange-900/20 border border-orange-800/30 p-3 rounded-lg flex gap-3 items-start">
+                        <svg class="w-5 h-5 text-orange-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <div>
+                            <p class="text-[11px] uppercase font-bold text-orange-400 mb-1">Resumo: Average True Range (ATR)</p>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                O ATR (14) atual mede <strong class="text-white">${atrValueStr}</strong> de oscilação, o que representa aprox. <strong>${atrPct}%</strong> do preço base indicando volatilidade <strong class="${volColor}">${volStatus}</strong>.
+                                <br><span class="inline-block mt-1"><strong>Estratégia Prática:</strong> Posicione um Stop Loss seguro (fator 2x ATR) em torno de <strong class="text-red-400">${formatCurrency(stopLoss2x, currentCurrency)}</strong> para absorver flutuações e evitar falsos rompimentos.</span>
+                            </p>
+                        </div>
+                    </div>`;
+            } else {
+                if(atrSummaryDiv) atrSummaryDiv.classList.add('hidden');
+            }
+
             const now = new Date();
             document.getElementById('recommendation-timestamp').innerText = `Análise: ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')} · Candle: ${lastDay.date}`;
 
@@ -1774,6 +1840,23 @@
                     label: 'Vela (OHLC)', data: slicedData.map(d => [d.open, d.close]),
                     backgroundColor: slicedData.map(d => d.close >= d.open ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)'),
                     borderColor: slicedData.map(d => d.close >= d.open ? '#10B981' : '#EF4444'), borderWidth: 1, order: 10
+                });
+            }
+
+            // Plotagem do ATR usando Eixo Secundário
+            if (state.showATR && A.atrSeries) {
+                const atrArrView = A.atrSeries.slice(sliceStart);
+                datasets.push({
+                    type: 'line', 
+                    label: 'ATR (14)',
+                    data: atrArrView,
+                    borderColor: '#F97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    borderWidth: 1.5,
+                    fill: true,
+                    pointRadius: 0,
+                    yAxisID: 'y1',
+                    order: 1
                 });
             }
 
@@ -1820,7 +1903,7 @@
             
             if (state.showMC && state.chartType !== 'candle') {
                 const mcCloses = A.closes.slice(-WIN.mc);
-                const seed = hashSeed(`${ticker}|${A.lastTs}|${A.lastClose.toFixed(4)}|${WIN.mc}`);
+                const seed = hashSeed(`${ticker}|${A.lastTs}|${currPrice.toFixed(4)}|${WIN.mc}`);
                 const mc = calculateMonteCarloStochastic(mcCloses, WIN.mcSteps, WIN.mcSims, seed);
                 for (let i = 1; i <= WIN.mcSteps; i++) finalLabels.push(`D+${i}`);
                 const pad = (arr) => Array(slicedData.length - 1).fill(null).concat(arr);
@@ -1845,7 +1928,15 @@
                     plugins: { legend: { display: false }, candleWicks: state.chartType === 'candle' ? { ohlc: slicedData } : null, tooltip: { filter: (item) => !(Array.isArray(item.dataset.pointRadius) && item.dataset.pointRadius[item.dataIndex] === 0) } },
                     scales: {
                         x: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', maxTicksLimit: 12 } },
-                        y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', callback: val => formatCurrency(val, currentCurrency) } }
+                        y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', callback: val => formatCurrency(val, currentCurrency) } },
+                        // Eixo Y Secundário para plotar o ATR sem comprimir o preço base
+                        y1: {
+                            type: 'linear',
+                            display: state.showATR,
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#F97316', callback: val => formatCurrency(val, currentCurrency) }
+                        }
                     }
                 }
             });
