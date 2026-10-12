@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Broker Dashboard - Cenários Pro v1.16</title>
+    <title>Home Broker Dashboard - Cenários Pro v1.17</title>
     <meta name="description" content="Dashboard de análise técnica, estratégias de swing trade (2 a 7 dias), dividendos e cenários operacionais.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
@@ -286,7 +286,7 @@
                             <span class="font-medium text-purple-400">Monte Carlo</span>
                         </label>
 
-                        <!-- Novo Botão ATR -->
+                        <!-- Botão ATR -->
                         <label class="flex items-center cursor-pointer gap-2 border-l border-gray-700 pl-3" title="Average True Range (Volatilidade)">
                             <div class="relative">
                                 <input type="checkbox" id="toggleATR" class="sr-only toggle-checkbox">
@@ -621,7 +621,6 @@
         let dynamicDataCache = {}; 
         let scannedStrategies = [];
 
-        // Adicionado o ATR no State
         let state = { 
             showMA: false, showTrend: false, showMC: false, showBB: false, showATR: false, chartType: 'area',
             showPeaksTroughs: false, colorPeak: '#10B981', colorTrough: '#EF4444' 
@@ -647,7 +646,7 @@
             document.getElementById('toggleBB').checked = state.showBB;
             document.getElementById('toggleTrend').checked = state.showTrend;
             document.getElementById('toggleMC').checked = state.showMC;
-            document.getElementById('toggleATR').checked = state.showATR; // Restaura estado do ATR
+            document.getElementById('toggleATR').checked = state.showATR;
             document.getElementById('togglePeaksTroughs').checked = state.showPeaksTroughs;
             document.getElementById('chartTypeSelect').value = state.chartType;
             document.getElementById('colorPeak').value = state.colorPeak;
@@ -660,7 +659,6 @@
         document.getElementById('toggleBB').addEventListener('change', (e) => { state.showBB = e.target.checked; savePrefs(); renderDashboard(); });
         document.getElementById('toggleTrend').addEventListener('change', (e) => { state.showTrend = e.target.checked; savePrefs(); renderDashboard(); });
         document.getElementById('toggleMC').addEventListener('change', (e) => { state.showMC = e.target.checked; savePrefs(); renderDashboard(); });
-        // Handler do ATR
         document.getElementById('toggleATR').addEventListener('change', (e) => { state.showATR = e.target.checked; savePrefs(); renderDashboard(); });
         
         document.getElementById('chartTypeSelect').addEventListener('change', (e) => { state.chartType = e.target.value; savePrefs(); renderDashboard(); });
@@ -781,7 +779,6 @@
             }
         }
 
-        // --- Algoritmos Técnicos ---
         function calculateEMA(data, period) {
             let emaArr = Array(data.length).fill(null);
             if (data.length < period) return emaArr;
@@ -826,11 +823,10 @@
             return recentTrs.reduce((a, b) => a + b, 0) / period;
         }
 
-        // Nova Função que gera a Array Completa do ATR para desenhar no gráfico
         function calculateATRSeries(data, period = 14) {
             let atr = Array(data.length).fill(null);
             if (data.length <= period) return atr;
-            let trs = [0]; // Index 0 não possui True Range
+            let trs = [0]; 
             for (let i = 1; i < data.length; i++) {
                 const high = data[i].high;
                 const low = data[i].low;
@@ -842,7 +838,7 @@
             atr[period] = sum / period;
 
             for (let i = period + 1; i < data.length; i++) {
-                atr[i] = (atr[i - 1] * (period - 1) + trs[i]) / period; // Wilder's Smoothing
+                atr[i] = (atr[i - 1] * (period - 1) + trs[i]) / period;
             }
             return atr;
         }
@@ -981,7 +977,6 @@
             return select.value !== ticker;
         }
 
-        // --- ESTRATÉGIAS DE MAXIMIZAÇÃO DE LUCROS (2 A 7 DIAS) ---
         function analyze2to7DaysStrategy(ticker, data, currency) {
             if (!data || data.length < MIN_CANDLES) return null;
             
@@ -1159,7 +1154,6 @@
             switchMainTab('tech');
         }
 
-        // --- FETCH HÍBRIDO (Yahoo Finance + BTG Pactual) ---
         async function fetchDynamicData(ticker) {
             if (dynamicDataCache[ticker]) {
                 renderDividends(ticker);
@@ -1567,7 +1561,6 @@
             const rsiLast = rsiArr[n - 1];
             const currentRSI = (rsiLast === null || rsiLast === undefined) ? NaN : rsiLast;
 
-            // Extração de dados ATR
             const atrSeries = calculateATRSeries(data, 14);
             const currentATR = atrSeries[n - 1];
 
@@ -1582,7 +1575,7 @@
             return {
                 n, closes, lastClose: last.close, lastTs: last.ts,
                 ema9, ema21, ema200, bb, currentRSI,
-                atrSeries, currentATR, // Adicionado no retorno
+                atrSeries, currentATR,
                 sup, res, stopLoss: sup * 0.99, stopGain: res * 0.995,
                 prevRes, isPivotBreakout,
                 trend: calculateTrend(closes, WIN.trend),
@@ -1795,7 +1788,6 @@
                 insight.innerHTML = `<svg class="w-5 h-5 text-gray-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Aguardar sinal na aba Estratégias ou comprar em suporte <span class="text-green-400 font-bold">(${formatCurrency(sup15, currentCurrency)})</span>.</div>`;
             }
 
-            // Exibir resumo dinâmico do ATR se o toggle estiver ativo
             const atrSummaryDiv = document.getElementById('atr-summary-container');
             if (state.showATR && !A.insufficient && A.currentATR) {
                 atrSummaryDiv.classList.remove('hidden');
@@ -1809,14 +1801,36 @@
 
                 const stopLoss2x = currPrice - (A.currentATR * 2);
 
+                // Cálculo de projeção estatística para 10 pregões
+                const atr10Days = A.currentATR * Math.sqrt(10);
+                const rangeUpper = currPrice + atr10Days;
+                const rangeLower = currPrice - atr10Days;
+                const rangePct10 = ((atr10Days / currPrice) * 100).toFixed(2);
+
                 atrSummaryDiv.innerHTML = `
-                    <div class="bg-orange-900/20 border border-orange-800/30 p-3 rounded-lg flex gap-3 items-start">
-                        <svg class="w-5 h-5 text-orange-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        <div>
-                            <p class="text-[11px] uppercase font-bold text-orange-400 mb-1">Resumo: Average True Range (ATR)</p>
+                    <div class="bg-orange-900/20 border border-orange-800/30 p-4 rounded-xl flex flex-col gap-3 shadow-sm">
+                        <div class="flex gap-3 items-start">
+                            <svg class="w-5 h-5 text-orange-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <div>
+                                <p class="text-[11px] uppercase font-bold text-orange-400 mb-1">Resumo: Average True Range (ATR)</p>
+                                <p class="text-xs text-gray-300 leading-relaxed">
+                                    O ATR (14) atual mede <strong class="text-white">${atrValueStr}</strong> de oscilação, o que representa aprox. <strong>${atrPct}%</strong> do preço base indicando volatilidade <strong class="${volColor}">${volStatus}</strong>.
+                                    <br><span class="inline-block mt-1"><strong>Estratégia Prática:</strong> Posicione um Stop Loss seguro (fator 2x ATR) em torno de <strong class="text-red-400">${formatCurrency(stopLoss2x, currentCurrency)}</strong> para absorver ruídos do mercado.</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-900/60 p-3 rounded-lg border border-gray-700/50 ml-8">
+                            <p class="text-[11px] uppercase font-bold text-gray-400 mb-1 flex items-center gap-1">
+                                <svg class="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Diagnóstico Volatilidade Acumulada (10 Pregões)
+                            </p>
                             <p class="text-xs text-gray-300 leading-relaxed">
-                                O ATR (14) atual mede <strong class="text-white">${atrValueStr}</strong> de oscilação, o que representa aprox. <strong>${atrPct}%</strong> do preço base indicando volatilidade <strong class="${volColor}">${volStatus}</strong>.
-                                <br><span class="inline-block mt-1"><strong>Estratégia Prática:</strong> Posicione um Stop Loss seguro (fator 2x ATR) em torno de <strong class="text-red-400">${formatCurrency(stopLoss2x, currentCurrency)}</strong> para absorver flutuações e evitar falsos rompimentos.</span>
+                                Com base na oscilação recente, projeta-se estatisticamente uma variação de até <strong class="text-white">± ${formatCurrency(atr10Days, currentCurrency)} (${rangePct10}%)</strong> nos próximos 10 dias úteis.
+                                <br>
+                                <span class="flex items-center gap-4 mt-2">
+                                    <span><strong>Projeção (+) :</strong> <span class="text-green-400 font-bold">${formatCurrency(rangeUpper, currentCurrency)}</span></span>
+                                    <span><strong>Projeção (-) :</strong> <span class="text-red-400 font-bold">${formatCurrency(rangeLower, currentCurrency)}</span></span>
+                                </span>
                             </p>
                         </div>
                     </div>`;
@@ -1843,7 +1857,6 @@
                 });
             }
 
-            // Plotagem do ATR usando Eixo Secundário
             if (state.showATR && A.atrSeries) {
                 const atrArrView = A.atrSeries.slice(sliceStart);
                 datasets.push({
@@ -1929,7 +1942,6 @@
                     scales: {
                         x: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', maxTicksLimit: 12 } },
                         y: { grid: { color: '#374151' }, ticks: { color: '#9CA3AF', callback: val => formatCurrency(val, currentCurrency) } },
-                        // Eixo Y Secundário para plotar o ATR sem comprimir o preço base
                         y1: {
                             type: 'linear',
                             display: state.showATR,
