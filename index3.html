@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Broker Dashboard - Cenários Pro v1.16</title>
+    <title>Home Broker Dashboard - Cenários Pro v1.17</title>
     <meta name="description" content="Dashboard de análise técnica, estratégias de swing trade (2 a 7 dias), dividendos e cenários operacionais.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
@@ -31,7 +31,7 @@
             <header class="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-700">
                 <div class="flex items-center gap-3 mb-3 md:mb-0">
                     <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-bold text-xl shadow-blue-500/50 shadow-lg">HB</div>
-                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">Nexus<span class="text-blue-500">Broker</span> <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded-full ml-1">PRO</span> <span class="inline-flex flex-col ml-1 align-top"><span class="text-[10px] text-purple-400 font-mono tracking-tighter" title="Versão Atualizada">v1.16</span><span class="text-[10px] text-purple-400 font-mono tracking-tighter leading-none mt-0.5">by Junior Bruno</span></span></h1>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">Nexus<span class="text-blue-500">Broker</span> <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded-full ml-1">PRO</span> <span class="inline-flex flex-col ml-1 align-top"><span class="text-[10px] text-purple-400 font-mono tracking-tighter" title="Versão Atualizada">v1.17</span><span class="text-[10px] text-purple-400 font-mono tracking-tighter leading-none mt-0.5">by Junior Bruno</span></span></h1>
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
@@ -308,15 +308,15 @@
             <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 shadow-xl space-y-4">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-700 pb-4">
                     <div>
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            🎯 Estratégias Quantitativas de Swing Trade
-                            <span class="bg-blue-900/60 text-blue-300 text-xs px-2.5 py-1 rounded-full border border-blue-700/50 font-mono">Horizonte: 2 a 7 dias</span>
+                        <h2 class="text-xl font-bold text-white flex flex-wrap items-center gap-2">
+                            🎯 Estratégias de Swing Trade
+                            <span class="bg-blue-900/60 text-blue-300 text-xs px-2.5 py-1 rounded-full border border-blue-700/50 font-mono">Horizonte: 2 a 7 pregões</span>
                         </h2>
-                        <p class="text-xs text-gray-400 mt-1">
-                            Varredura automatizada em todos os papéis da lista, identificando alvos técnicos, pontos de Stop Loss, relação Risco/Retorno e expectativa percentual de ganhos.
+                        <p class="text-xs text-gray-400 mt-1 max-w-3xl">
+                            Cada sinal passa por filtros de tendência, relação ganho/risco, liquidez, eventos conhecidos e pelo histórico do próprio setup. Só aparece como <strong class="text-green-300">OPERÁVEL</strong> o que passou em tudo; o restante mostra o motivo.
                         </p>
                     </div>
-                    <button onclick="runStrategiesScan()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                    <button onclick="runStrategiesScan(true)" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                         Reexecutar Varredura
                     </button>
@@ -326,35 +326,37 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
                         <p class="text-[11px] text-gray-400 uppercase font-bold">Ativos Analisados</p>
-                        <p id="strat-total-scanned" class="text-xl font-bold text-white">0</p>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Todos do combo de seleção</p>
+                        <p id="strat-total-scanned" class="text-xl font-bold text-white">—</p>
+                        <p id="strat-total-sub" class="text-[10px] text-gray-500 mt-0.5">com dados válidos / total da lista</p>
                     </div>
                     <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
-                        <p class="text-[11px] text-gray-400 uppercase font-bold">Oportunidades Compra</p>
-                        <p id="strat-buy-opportunities" class="text-xl font-bold text-green-400">0</p>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Expectativa de Alta (2-7D)</p>
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Compras Operáveis</p>
+                        <p id="strat-buy-opportunities" class="text-xl font-bold text-green-400">—</p>
+                        <p id="strat-buy-sub" class="text-[10px] text-gray-500 mt-0.5">passaram em todos os filtros</p>
                     </div>
                     <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
-                        <p class="text-[11px] text-gray-400 uppercase font-bold">Oportunidades Venda/Short</p>
-                        <p id="strat-sell-opportunities" class="text-xl font-bold text-red-400">0</p>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Expectativa de Correção (2-7D)</p>
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Vendas Operáveis</p>
+                        <p id="strat-sell-opportunities" class="text-xl font-bold text-red-400">—</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">só em tendência de baixa · exige aluguel</p>
                     </div>
-                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80">
-                        <p class="text-[11px] text-gray-400 uppercase font-bold">Risco/Retorno Médio</p>
-                        <p id="strat-avg-rr" class="text-xl font-bold text-blue-400">0.0 : 1</p>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Ganhos projetados vs Risco</p>
+                    <div class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/80" title="Resultado médio, em múltiplos do risco (R), de todos os sinais que o motor teria dado no histórico disponível, sem custos.">
+                        <p class="text-[11px] text-gray-400 uppercase font-bold">Histórico dos Sinais</p>
+                        <p id="strat-avg-rr" class="text-xl font-bold text-gray-400">—</p>
+                        <p id="strat-hist-sub" class="text-[10px] text-gray-500 mt-0.5">resultado médio por sinal (R)</p>
                     </div>
                 </div>
 
                 <!-- Filtros do Grid de Estratégia -->
                 <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
                     <div class="flex items-center gap-2">
-                        <span class="text-xs text-gray-400 font-medium">Filtrar por Tipo:</span>
+                        <span class="text-xs text-gray-400 font-medium">Mostrar:</span>
                         <select id="strategyFilterSelect" onchange="renderStrategiesGrid()" class="bg-gray-900 border border-gray-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg focus:outline-none focus:border-blue-500">
-                            <option value="ALL">Todas as Oportunidades</option>
-                            <option value="BUY">Somente Compras (Long)</option>
-                            <option value="SELL">Somente Vendas (Short)</option>
-                            <option value="HIGH_RR">Relação Risco/Retorno &gt; 2.0</option>
+                            <option value="OPERABLE">Somente operáveis</option>
+                            <option value="ALL">Todos os sinais (com motivos)</option>
+                            <option value="BUY">Compras</option>
+                            <option value="SELL">Vendas (short)</option>
+                            <option value="HIGH_RR">R:R ≥ 2,0</option>
+                            <option value="ISSUES">Em atenção ou bloqueados</option>
                         </select>
                     </div>
                     <div id="strat-scan-timestamp" class="text-[11px] text-gray-400 font-mono">
@@ -368,35 +370,45 @@
                         <thead class="bg-gray-950 text-gray-400 text-[11px] uppercase tracking-wider border-b border-gray-800">
                             <tr>
                                 <th class="p-3">Ativo</th>
+                                <th class="p-3">Status</th>
                                 <th class="p-3">Sinal / Setup</th>
-                                <th class="p-3">Cotação Atual</th>
-                                <th class="p-3 text-red-400">Stop Loss R$</th>
-                                <th class="p-3 text-green-400">Alvo R$ (Take Profit)</th>
-                                <th class="p-3 text-center">Expectativa Ganhos %</th>
-                                <th class="p-3 text-center">Relação R:R</th>
-                                <th class="p-3 text-center">Prazo Estimado</th>
-                                <th class="p-3 text-right">Ação Sugerida</th>
+                                <th class="p-3">Cotação</th>
+                                <th class="p-3 text-red-400">Stop</th>
+                                <th class="p-3 text-green-400">Alvo</th>
+                                <th class="p-3 text-center">R:R · Prazo</th>
+                                <th class="p-3 text-center" title="Resultado do mesmo setup no histórico disponível, em múltiplos do risco (R). Expectativa = R médio × risco % desta entrada.">Histórico do setup</th>
+                                <th class="p-3">Motivos e alertas</th>
+                                <th class="p-3 text-right">Ação</th>
                             </tr>
                         </thead>
                         <tbody id="strategies-table-body" class="divide-y divide-gray-800">
                             <tr>
-                                <td colspan="9" class="p-8 text-center text-gray-400 font-medium animate-pulse">
-                                    Iniciando scanner quantitativo em todos os papéis disponíveis...
+                                <td colspan="10" class="p-8 text-center text-gray-400 font-medium animate-pulse">
+                                    Iniciando varredura em todos os papéis disponíveis...
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-xs space-y-1.5 text-gray-300">
-                    <p class="font-bold text-blue-400 flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Nota Técnica sobre Responsabilidade & Gerenciamento de Risco:
-                    </p>
-                    <p class="text-gray-400 leading-relaxed">
-                        As estratégias nesta aba utilizam modelos matemáticos baseados em volatilidade técnica (ATR), rompimento de pivot, médias móveis exponenciais e médias históricas de candles diários. Não garantem lucros futuros. Opere sempre respeitando rigorosamente o <strong>Stop Loss</strong> configurado e divida o capital em frações seguras para o seu perfil.
-                    </p>
+                <!-- Painéis de contexto -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 text-xs">
+                    <div id="strat-failures" class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-gray-300"></div>
+                    <div id="strat-alerts" class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-gray-300"></div>
+                    <div id="strat-corr" class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-gray-300"></div>
+                    <div id="strat-events" class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-gray-300"></div>
                 </div>
+
+                <details class="p-4 bg-gray-900/90 border border-gray-700/80 rounded-xl text-xs text-gray-300">
+                    <summary class="font-bold text-blue-400 cursor-pointer">Como os sinais são gerados (metodologia e limites)</summary>
+                    <div class="mt-3 space-y-2 text-gray-400 leading-relaxed">
+                        <p><strong class="text-gray-200">Setups.</strong> <em>Rompimento</em>: fechamento acima da máxima dos 15 pregões anteriores com volume ≥ 1,2× a média e tendência de 50 dias não baixista. <em>Recuo em tendência de alta</em>: regressão de 50 dias em alta (R² ≥ 0,30), MME9 &gt; MME21 e preço até 1,5 ATR acima da MME21 (não esticado), IFR entre 40 e 65. <em>Repique</em>: IFR ≤ 30 junto ao fundo de 15 dias com candle de reversão, nunca em queda forte (contra-tendência, sempre em atenção). <em>Venda</em>: somente em tendência de baixa confirmada (preço &lt; MME9 &lt; MME21); IFR alto em ativo que sobe <strong>não</strong> gera venda, apenas o alerta de "esticado".</p>
+                        <p><strong class="text-gray-200">Stop e alvo.</strong> O stop fica abaixo da mínima dos últimos 5 pregões ou da MME21 (o que for mais baixo), com folga de 0,25 ATR. O alvo é o topo de 15 dias quando existe espaço; caso contrário, é uma projeção por ATR, indicada na tabela. Por isso o R:R varia de ativo para ativo.</p>
+                        <p><strong class="text-gray-200">Filtros.</strong> R:R ≥ 1,5; alvo ≥ 1,2%; liquidez média ≥ R$ 10 mi/dia (B3) ou US$ 20 mi/dia (EUA); stop a no máximo 2,5 ATR; evento cadastrado em até 10 dias bloqueia, até 16 dias gera alerta. O candle do dia só é usado após o fechamento (B3 18h, NY 16h30 ET).</p>
+                        <p><strong class="text-gray-200">Histórico.</strong> Cada setup é testado em todo o histórico da planilha: entrada no fechamento do sinal, saída no stop, no alvo ou no 7º pregão; stop considerado antes do alvo no mesmo candle; gap além do stop sai na abertura. Custos, impostos e escorregamento não estão incluídos. Setup com R médio ≤ 0 em 30+ sinais fica em atenção.</p>
+                        <p><strong class="text-gray-200">Limites.</strong> Resultado passado não garante resultado futuro; a amostra cobre poucos anos e poucos ativos. Eventos fora da aba "Eventos" (balanços, decisões de juros, notícias) não são detectados. Isto não é recomendação de investimento: defina o tamanho da posição pelo risco até o stop e pelo seu capital.</p>
+                    </div>
+                </details>
             </div>
         </div>
 
@@ -604,7 +616,6 @@
         let currentDays = 180; 
         let availableTickersCache = [];
         let dynamicDataCache = {}; 
-        let scannedStrategies = [];
 
         let state = { 
             showMA: false, showTrend: false, showMC: false, showBB: false, chartType: 'area',
@@ -686,10 +697,20 @@
             else str = str.replace(',', '.');
             return parseFloat(str) || 0;
         }
+        // Volume: usa o número bruto quando a célula é numérica; se vier formatado ("R$ 21.539.700,00"),
+        // interpreta o padrão brasileiro em vez de apenas remover não-dígitos (que multiplicava por 100).
+        function extVolume(cell) {
+            if (!cell || cell.v === null || cell.v === undefined) return 0;
+            if (typeof cell.v === 'number') return Number.isFinite(cell.v) && cell.v > 0 ? cell.v : 0;
+            const v = extNum(cell);
+            return Number.isFinite(v) && v > 0 ? v : 0;
+        }
         function friendlyReason(error, what) {
             const msg = (error && error.message) || '';
             const name = (error && error.name) || '';
             if (msg === 'ACESSO_NEGADO') return 'a planilha não está pública (acesso negado)';
+            if (msg === 'ABA_INEXISTENTE') return `não existe aba "${what}" na planilha`;
+            if (msg === 'SO_FECHAMENTO') return `a aba "${what}" só tem fechamento (abertura/máxima/mínima vazias ou #N/A)`;
             if (msg === 'QUALIDADE') return `mais de 10% das linhas da aba "${what}" são inválidas`;
             if (msg === 'VAZIA') return `a aba "${what}" não tem linhas de cotação válidas`;
             if (name === 'SyntaxError') return 'resposta da planilha em formato inesperado';
@@ -718,7 +739,7 @@
         function detectCurrency(ticker) {
             const known = (typeof availableTickersCache !== 'undefined') ? availableTickersCache.find(x => x.code === ticker) : null;
             if (known && known.currency) return known.currency;
-            return /[0-9]$/.test(ticker) ? 'BRL' : 'USD';
+            return (/[0-9]$/.test(ticker) || /BRL$/i.test(ticker) || /^BVMF:/i.test(ticker)) ? 'BRL' : 'USD';
         }
         function formatCurrency(val, currency) {
             if (currency === 'USD') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
@@ -751,7 +772,7 @@
             } else if(tabName === 'strategies') {
                 activate(btnStrat);
                 secStrat.classList.remove('hidden');
-                if (scannedStrategies.length === 0) runStrategiesScan();
+                if (!scanState.at && !scanState.running) runStrategiesScan();
             } else if (tabName === 'dividends') {
                 activate(btnDiv);
                 secDiv.classList.remove('hidden');
@@ -940,180 +961,482 @@
             return select.value !== ticker;
         }
 
-        // --- ESTRATÉGIAS DE MAXIMIZAÇÃO DE LUCROS (2 A 7 DIAS) ---
-        function analyze2to7DaysStrategy(ticker, data, currency) {
-            if (!data || data.length < MIN_CANDLES) return null;
-            
-            const n = data.length;
-            const last = data[n - 1];
-            const price = last.close;
-            const closes = data.map(d => d.close);
-            
-            const ema9 = calculateEMA(closes, 9)[n - 1];
-            const ema21 = calculateEMA(closes, 21)[n - 1];
-            const ema200 = calculateEMA(closes, 200)[n - 1];
-            const rsi = calculateRSI(closes, 14)[n - 1] || 50;
-            const atr = calculateATR(data, 14) || (price * 0.02);
-            const swing = data.slice(-WIN.swing);
-            const sup15 = Math.min(...swing.map(d => d.low));
-            const res15 = Math.max(...swing.map(d => d.high));
-            
-            const vol = analyzeVolume(data);
-            const volMultiplier = vol.ratio || 1.0;
-            
-            let direction = 'NEUTRAL';
-            let setupName = 'Aguardar Confirmação';
-            let targetPrice = price;
-            let stopLossPrice = price;
-            let timeDays = '3 a 5 dias';
-            let actionText = 'Observar fora do mercado';
+        // =====================================================================
+        // MOTOR DE SINAIS SWING TRADE (2 A 7 DIAS) — v1.17
+        // Mesmo motor usado pela aba Estratégias, pela aba Técnica e pelo modal de Cenários.
+        // Princípios: só operar a favor da tendência de 50 dias; stop e alvo em níveis de
+        // preço reais (não múltiplos fixos); filtros de R:R, liquidez, eventos e histórico.
+        // =====================================================================
+        const STRAT = {
+            horizonBars: 7,          // prazo máximo da operação (pregões)
+            minRR: 1.5,              // relação ganho/risco mínima para operar
+            minTargetPct: 0.012,     // alvo precisa pagar custos/spread (>= 1,2%)
+            minAtrPct: 0.006,        // ativo precisa se mover o suficiente no prazo
+            maxRiskAtr: 2.5,         // stop estrutural não pode ficar a mais de 2,5 ATR
+            minLiq: { BRL: 10e6, USD: 20e6 },  // volume financeiro médio 20d mínimo
+            eventBlockDays: 10,      // evento conhecido dentro do prazo bloqueia a entrada
+            eventWarnDays: 16,       // evento logo depois do prazo gera alerta
+            corrWindow: 60, corrThreshold: 0.6,
+            minHistSamples: 30,      // amostra mínima para avaliar o setup
+            backtestFrom: 60,        // candles de aquecimento antes de testar
+            cacheMs: 5 * 60 * 1000, concurrency: 6
+        };
 
-            // 1. Setup: Rompimento de Pivô de Alta (Com Volume)
-            if (price >= res15 * 0.995 && volMultiplier >= 1.2 && rsi < 72) {
-                direction = 'BUY';
-                setupName = 'Rompimento Pivô + Volume';
-                targetPrice = price + (atr * 2.5);
-                stopLossPrice = Math.max(price - (atr * 1.2), sup15);
-                timeDays = '2 a 4 dias';
-                actionText = 'Comprar no rompimento ou retração MME9';
-            }
-            // 2. Setup: Tendência de Alta Sustentada (MME9 > MME21)
-            else if (price > ema9 && ema9 > ema21 && rsi >= 45 && rsi <= 68) {
-                direction = 'BUY';
-                setupName = 'Seguidor de Tendência (MME 9/21)';
-                targetPrice = price + (atr * 2.0);
-                stopLossPrice = Math.min(ema21, price - (atr * 1.1));
-                timeDays = '3 a 7 dias';
-                actionText = 'Comprar buscando alvo na expansão';
-            }
-            // 3. Setup: Repique Sobrevendido (RSI < 32)
-            else if (rsi <= 32 && price <= sup15 * 1.01) {
-                direction = 'BUY';
-                setupName = 'Repique Sobrevendido (Exaustão)';
-                targetPrice = price + (atr * 2.2);
-                stopLossPrice = price - (atr * 1.0);
-                timeDays = '2 a 5 dias';
-                actionText = 'Comprar repique de suporte';
-            }
-            // 4. Setup: Venda / Short - Perda de Suporte ou Sobrecomprado Extremo
-            else if (rsi >= 75 || (price < ema9 && ema9 < ema21 && price < sup15 * 1.005)) {
-                direction = 'SELL';
-                setupName = 'Correção Técnica / Short';
-                targetPrice = Math.max(price - (atr * 2.2), sup15 * 0.95);
-                stopLossPrice = price + (atr * 1.1);
-                timeDays = '2 a 5 dias';
-                actionText = 'Realizar lucros ou Vender / Short';
-            }
+        // Eventos conhecidos (fallback). Mantenha a aba "Eventos" da planilha atualizada:
+        // colunas Data | Escopo (ticker, BR, US ou *) | Descrição.
+        const DEFAULT_EVENTS = [
+            { date: '2026-10-14', scope: 'MS',   desc: 'Resultado 3T26 Morgan Stanley' },
+            { date: '2026-10-21', scope: 'TSLA', desc: 'Resultado 3T26 Tesla' },
+            { date: '2026-10-25', scope: 'BR',   desc: '2º turno da eleição presidencial' }
+        ];
 
-            if (direction === 'NEUTRAL') return null;
+        const SETUPS = {
+            BREAKOUT:  { name: 'Rompimento com volume',          dir: 'BUY',  prazo: '2 a 5 pregões' },
+            PULLBACK:  { name: 'Recuo em tendência de alta',     dir: 'BUY',  prazo: '3 a 7 pregões' },
+            REBOUND:   { name: 'Repique (contra-tendência)',     dir: 'BUY',  prazo: '2 a 5 pregões' },
+            DOWNTREND: { name: 'Venda em tendência de baixa',    dir: 'SELL', prazo: '3 a 7 pregões' }
+        };
 
-            const potentialGainAbs = Math.abs(targetPrice - price);
-            const riskAbs = Math.abs(price - stopLossPrice);
-            if (riskAbs <= 0) return null;
+        function marketOf(currency) { return currency === 'BRL' ? 'BR' : 'US'; }
+        function isoDate(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 
-            const expectedReturnPct = (potentialGainAbs / price) * (direction === 'BUY' ? 1 : -1);
-            const riskRewardRatio = potentialGainAbs / riskAbs;
-
-            return {
-                ticker,
-                currency,
-                direction,
-                setupName,
-                currentPrice: price,
-                stopLoss: stopLossPrice,
-                target: targetPrice,
-                expectedReturnPct,
-                riskRewardRatio,
-                timeDays,
-                actionText
-            };
+        function marketNow(tz) {
+            const parts = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+            const g = t => (parts.find(p => p.type === t) || {}).value;
+            return { date: `${g('year')}-${g('month')}-${g('day')}`, mins: (+g('hour')) * 60 + (+g('minute')) };
+        }
+        // O candle de hoje só é usado depois do fechamento (B3 ~18h com call/atraso; NY 16h30 ET).
+        function isLastCandlePartial(data, currency) {
+            if (!data.length) return false;
+            const last = new Date(data[data.length - 1].ts);
+            const tz = currency === 'BRL' ? 'America/Sao_Paulo' : 'America/New_York';
+            const closeMins = currency === 'BRL' ? 18 * 60 : 16 * 60 + 30;
+            const now = marketNow(tz);
+            return isoDate(last) === now.date && now.mins < closeMins;
         }
 
-        async function runStrategiesScan() {
+        function buildIndicators(data) {
+            const n = data.length, closes = data.map(d => d.close);
+            const ema9 = calculateEMA(closes, 9), ema21 = calculateEMA(closes, 21);
+            const rsi = calculateRSI(closes, 14);
+            const atr = Array(n).fill(null);
+            let sum = 0; const tr = [0];
+            for (let i = 1; i < n; i++) {
+                tr.push(Math.max(data[i].high - data[i].low, Math.abs(data[i].high - data[i - 1].close), Math.abs(data[i].low - data[i - 1].close)));
+                sum += tr[i]; if (i > 14) sum -= tr[i - 14];
+                if (i >= 14) atr[i] = sum / 14;
+            }
+            const vol = data.map(d => Number(d.volume) || 0);
+            const volRatio = Array(n).fill(null), liq = Array(n).fill(null);
+            for (let i = 0; i < n; i++) {
+                const base = vol.slice(Math.max(0, i - WIN.volume), i).filter(v => v > 0);
+                if (base.length >= 5 && vol[i] > 0) volRatio[i] = vol[i] / (base.reduce((a, b) => a + b, 0) / base.length);
+                const fin = []; for (let k = Math.max(0, i - 19); k <= i; k++) if (vol[k] > 0) fin.push(vol[k] * data[k].close);
+                if (fin.length >= 5) liq[i] = fin.reduce((a, b) => a + b, 0) / fin.length;
+            }
+            return { closes, ema9, ema21, rsi, atr, volRatio, liq };
+        }
+
+        // Avalia o candle i usando apenas dados até i (sem olhar o futuro).
+        function evaluateAt(data, ind, i) {
+            const price = data[i].close, atr = ind.atr[i], e9 = ind.ema9[i], e21 = ind.ema21[i], rsi = ind.rsi[i];
+            if (i < MIN_CANDLES || !atr || !e9 || !e21 || rsi === null || rsi === undefined) return { kind: 'NONE' };
+            const trend = calculateTrend(ind.closes.slice(0, i + 1), WIN.trend);
+            const win = data.slice(Math.max(0, i - WIN.swing + 1), i + 1);
+            const prevWin = data.slice(Math.max(0, i - WIN.swing), i);
+            const sup15 = Math.min(...win.map(d => d.low)), res15 = Math.max(...win.map(d => d.high));
+            const prevRes = Math.max(...prevWin.map(d => d.high));
+            const last5 = data.slice(Math.max(0, i - 4), i + 1);
+            const low5 = Math.min(...last5.map(d => d.low)), high5 = Math.max(...last5.map(d => d.high));
+            const ext = (price - e21) / atr;           // distância da MME21 em ATRs
+            const vr = ind.volRatio[i];
+            const ctx = { price, atr, atrPct: atr / price, e9, e21, rsi, trend, sup15, res15, ext, volRatio: vr, liq: ind.liq[i] };
+            const tState = trend ? trend.state : 'side';
+
+            let key = null, stop, target, basis;
+            if (price > prevRes && vr !== null && vr >= 1.2 && rsi < 75 && tState !== 'down' && ext <= 3) {
+                key = 'BREAKOUT';
+                stop = Math.min(low5, prevRes) - 0.2 * atr;
+                target = price + 2.5 * atr; basis = 'projeção 2,5 ATR (sem topo acima em 15d)';
+            } else if (tState === 'up' && e9 > e21 && price > e21 && ext <= 1.5 && rsi >= 40 && rsi <= 65) {
+                key = 'PULLBACK';
+                stop = Math.min(low5, e21) - 0.25 * atr;
+                if (res15 - price >= atr) { target = res15; basis = 'topo de 15 dias'; }
+                else { target = price + 2 * atr; basis = 'projeção 2 ATR (preço no topo)'; }
+            } else if (rsi <= 30 && price <= sup15 * 1.01 && i > 0 && price > data[i].open && price > data[i - 1].close
+                       && !(tState === 'down' && trend.r2 >= 0.6)) {
+                key = 'REBOUND';
+                stop = sup15 - 0.25 * atr;
+                if (e21 - price >= atr) { target = e21; basis = 'volta à MME21'; }
+                else { target = price + 1.5 * atr; basis = 'projeção 1,5 ATR'; }
+            } else if (tState === 'down' && price < e9 && e9 < e21 && ext >= -1.5 && rsi >= 35 && rsi <= 60) {
+                key = 'DOWNTREND';
+                stop = Math.max(high5, e21) + 0.25 * atr;
+                if (price - sup15 >= atr) { target = sup15; basis = 'fundo de 15 dias'; }
+                else { target = price - 2 * atr; basis = 'projeção 2 ATR (preço no fundo)'; }
+            }
+
+            if (!key) {
+                if ((rsi >= 75 || ext > 2.5) && ctx.atrPct >= STRAT.minAtrPct) return { kind: 'ALERT', ctx,
+                    note: rsi >= 75 ? `IFR ${fmtNum(rsi, 1)}: esticado` : `${fmtNum(ext, 1)} ATR acima da MME21: esticado` };
+                return { kind: 'NONE', ctx };
+            }
+            const isBuy = SETUPS[key].dir === 'BUY';
+            const risk = isBuy ? price - stop : stop - price;
+            const gain = isBuy ? target - price : price - target;
+            if (!(risk > 0) || !(gain > 0)) return { kind: 'NONE', ctx };
+            return { kind: 'TRADE', key, setup: SETUPS[key].name, direction: SETUPS[key].dir, prazo: SETUPS[key].prazo,
+                     price, stop, target, basis, risk, gain, rr: gain / risk, riskPct: risk / price, gainPct: gain / price, ctx };
+        }
+
+        // Filtros que dependem só dos dados (também aplicados no teste histórico).
+        function qualityIssues(sig, currency) {
+            const block = [];
+            if (sig.rr < STRAT.minRR - 1e-9) block.push(`R:R ${fmtNum(sig.rr)} abaixo do mínimo ${fmtNum(STRAT.minRR, 1)}`);
+            if (sig.gainPct < STRAT.minTargetPct) block.push(`alvo de ${fmtNum(sig.gainPct * 100)}% não paga custos`);
+            if (sig.ctx.atrPct < STRAT.minAtrPct) block.push('volatilidade baixa demais para 2–7 dias');
+            if (sig.risk > STRAT.maxRiskAtr * sig.ctx.atr) block.push('stop técnico longe demais (> 2,5 ATR)');
+            const minLiq = STRAT.minLiq[currency] || STRAT.minLiq.USD;
+            if (sig.ctx.liq === null) block.push('sem dado de volume para medir liquidez');
+            else if (sig.ctx.liq < minLiq) block.push(`liquidez baixa (${currency === 'BRL' ? 'R$' : 'US$'} ${fmtNum(sig.ctx.liq / 1e6, 1)} mi/dia)`);
+            return block;
+        }
+
+        // Teste histórico: entrada no fechamento do sinal; stop antes do alvo se ambos no mesmo candle;
+        // gap além do stop sai na abertura (perda maior que 1R); sem custos.
+        function backtestAsset(data, ind, currency) {
+            const out = [];
+            for (let i = STRAT.backtestFrom; i < data.length - 1; i++) {
+                const s = evaluateAt(data, ind, i);
+                if (s.kind !== 'TRADE' || qualityIssues(s, currency).length) continue;
+                const isBuy = s.direction === 'BUY';
+                let R = null, res = null;
+                const lastJ = Math.min(i + STRAT.horizonBars, data.length - 1);
+                for (let j = i + 1; j <= lastJ; j++) {
+                    const c = data[j];
+                    if (isBuy ? c.open <= s.stop : c.open >= s.stop) { R = (isBuy ? c.open - s.price : s.price - c.open) / s.risk; res = 'stop'; break; }
+                    if (isBuy ? c.low <= s.stop : c.high >= s.stop) { R = -1; res = 'stop'; break; }
+                    if (isBuy ? c.high >= s.target : c.low <= s.target) { R = s.gain / s.risk; res = 'alvo'; break; }
+                }
+                if (res === null) {
+                    if (i + STRAT.horizonBars > data.length - 1) continue; // janela incompleta
+                    const ex = data[lastJ].close; R = (isBuy ? ex - s.price : s.price - ex) / s.risk; res = 'prazo';
+                }
+                out.push({ key: s.key, R, res });
+            }
+            return out;
+        }
+        function summarizeTrades(list) {
+            const n = list.length; if (!n) return { n: 0 };
+            const wins = list.filter(t => t.R > 0).length;
+            return { n, winRate: wins / n, avgR: list.reduce((a, t) => a + t.R, 0) / n,
+                     hitTarget: list.filter(t => t.res === 'alvo').length / n, hitStop: list.filter(t => t.res === 'stop').length / n };
+        }
+
+        function eventsFor(ticker, currency, refDate, events) {
+            const mkt = marketOf(currency);
+            const ref = startOfDay(refDate);
+            return events.filter(ev => {
+                const sc = String(ev.scope || '*').toUpperCase();
+                return sc === '*' || sc === mkt || sc === String(ticker).toUpperCase() || sc === String(ticker).toUpperCase().replace(/^BVMF:/, '');
+            }).map(ev => ({ ...ev, days: Math.round((startOfDay(ev.dateObj) - ref) / 86400000) }))
+              .filter(ev => ev.days >= 0 && ev.days <= STRAT.eventWarnDays)
+              .sort((a, b) => a.days - b.days);
+        }
+
+        // Monta o sinal completo de um ativo, com status e motivos.
+        function buildSignal(ticker, rawData, opts) {
+            opts = opts || {};
+            const currency = detectCurrency(ticker);
+            const partial = isLastCandlePartial(rawData, currency);
+            const data = partial ? rawData.slice(0, -1) : rawData;
+            if (data.length < MIN_CANDLES + 5) return { ticker, currency, kind: 'NONE', insufficient: true, partial };
+            const ind = opts.ind || buildIndicators(data);
+            const i = data.length - 1;
+            const s = evaluateAt(data, ind, i);
+            const base = { ticker, currency, partial, candleDate: data[i].date, ctx: s.ctx };
+            if (s.kind !== 'TRADE') return { ...base, kind: s.kind, note: s.note };
+
+            const block = qualityIssues(s, currency), warn = [], info = [];
+            const evs = eventsFor(ticker, currency, new Date(), opts.events || []);
+            evs.forEach(ev => {
+                const when = ev.days === 0 ? 'hoje' : (ev.days === 1 ? 'amanhã' : `em ${ev.days} dias`);
+                (ev.days <= STRAT.eventBlockDays ? block : warn).push(`${ev.desc} ${when} (${fmtDateBR(ev.dateObj)})`);
+            });
+            if (s.key === 'REBOUND') warn.push('operação contra a tendência: menor confiabilidade');
+            const hs = opts.histStats && opts.histStats[s.key];
+            if (hs && hs.n >= STRAT.minHistSamples && hs.avgR <= 0) warn.push(`setup sem vantagem no histórico (R médio ${fmtNum(hs.avgR)} em ${hs.n} sinais)`);
+            if (!opts.histStats) info.push('histórico do setup ainda não calculado (abra a aba Estratégias)');
+            else if (!hs || hs.n < STRAT.minHistSamples) warn.push(`histórico do setup insuficiente (${hs ? hs.n : 0} sinais; mínimo ${STRAT.minHistSamples})`);
+            if (s.direction === 'SELL') info.push(currency === 'BRL' ? 'short exige aluguel de ações (BTC)' : 'short exige aluguel/margem na corretora');
+            if (partial) info.push(`candle de hoje em formação: usando fechamento de ${data[i].date}`);
+
+            const status = block.length ? 'BLOQUEADO' : (warn.length ? 'ATENÇÃO' : 'OPERÁVEL');
+            const histExp = hs && hs.n >= STRAT.minHistSamples ? hs.avgR * s.riskPct : null;
+            return { ...base, ...s, status, block, warn, info, hist: hs || null, histAsset: opts.histAsset || null, histExp, events: evs };
+        }
+
+        function pearson(a, b) {
+            const n = a.length; if (n < 20) return null;
+            const ma = a.reduce((x, y) => x + y, 0) / n, mb = b.reduce((x, y) => x + y, 0) / n;
+            let sab = 0, saa = 0, sbb = 0;
+            for (let k = 0; k < n; k++) { const da = a[k] - ma, db = b[k] - mb; sab += da * db; saa += da * da; sbb += db * db; }
+            return saa && sbb ? sab / Math.sqrt(saa * sbb) : null;
+        }
+        // Correlação de retornos diários (datas em comum) entre os ativos com sinal.
+        function correlatedPairs(sigs, dataByTicker) {
+            const rets = {};
+            sigs.forEach(s => {
+                const d = dataByTicker[s.ticker] || [];
+                const m = new Map();
+                for (let k = Math.max(1, d.length - STRAT.corrWindow); k < d.length; k++) m.set(isoDate(new Date(d[k].ts)), d[k].close / d[k - 1].close - 1);
+                rets[s.ticker] = m;
+            });
+            const pairs = [];
+            for (let x = 0; x < sigs.length; x++) for (let y = x + 1; y < sigs.length; y++) {
+                const A = rets[sigs[x].ticker], B = rets[sigs[y].ticker], va = [], vb = [];
+                A.forEach((v, k) => { if (B.has(k)) { va.push(v); vb.push(B.get(k)); } });
+                const c = pearson(va, vb);
+                const sameSide = sigs[x].direction === sigs[y].direction;
+                if (c !== null && ((sameSide && c >= STRAT.corrThreshold) || (!sameSide && c <= -STRAT.corrThreshold)))
+                    pairs.push({ a: sigs[x].ticker, b: sigs[y].ticker, c });
+            }
+            return pairs.sort((p, q) => Math.abs(q.c) - Math.abs(p.c));
+        }
+
+        // ----------------------- VARREDURA DA ABA ESTRATÉGIAS -----------------------
+        let scanState = { running: false, results: [], alerts: [], failures: [], pairs: [], histStats: {}, overall: null,
+                          events: [], eventsSource: '', at: null, total: 0, valid: 0 };
+        let sheetCache = {};
+
+        async function fetchSheetCached(code, force) {
+            const c = sheetCache[code];
+            if (!force && c && Date.now() - c.at < STRAT.cacheMs) return c.res;
+            const res = await fetchSheetData(code);
+            sheetCache[code] = { res, at: Date.now() };
+            return res;
+        }
+        async function poolMap(items, limit, fn) {
+            const out = new Array(items.length); let next = 0;
+            const worker = async () => { while (next < items.length) { const k = next++; out[k] = await fn(items[k], k); } };
+            await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+            return out;
+        }
+        const yieldUI = () => new Promise(r => setTimeout(r, 0));
+
+        async function loadEvents() {
+            const fromList = (list, source) => ({
+                events: list.map(e => ({ ...e, dateObj: e.dateObj || (() => { const [y, m, d] = e.date.split('-').map(Number); return new Date(y, m - 1, d); })() })),
+                source
+            });
+            try {
+                const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=Eventos`;
+                const text = await (await fetch(url)).text();
+                if (text.toLowerCase().includes('<!doctype html>')) throw new Error('ACESSO_NEGADO');
+                const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+                const cols = (json.table && json.table.cols) || [], rows = (json.table && json.table.rows) || [];
+                if (String(cols[0]?.label || '').trim().toLowerCase() === 'codigo' || String(rows[0]?.c?.[0]?.v ?? '').trim().toLowerCase() === 'codigo') throw new Error('ABA_INEXISTENTE');
+                const evs = [];
+                rows.forEach(r => {
+                    const dt = r.c && parseSheetDate(r.c[0]);
+                    if (!dt) return;
+                    evs.push({ dateObj: dt, date: isoDate(dt), scope: String(r.c[1]?.v ?? '*').trim() || '*', desc: String(r.c[2]?.v ?? 'Evento').trim() || 'Evento' });
+                });
+                if (!evs.length) throw new Error('VAZIA');
+                return fromList(evs, 'aba "Eventos" da planilha');
+            } catch (e) {
+                return fromList(DEFAULT_EVENTS, 'lista interna do código (crie a aba "Eventos" na planilha para manter atualizada)');
+            }
+        }
+
+        async function runStrategiesScan(force) {
+            if (scanState.running) return;
+            scanState.running = true;
             const tableBody = document.getElementById('strategies-table-body');
             const stamp = document.getElementById('strat-scan-timestamp');
-            
-            tableBody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-blue-400 font-bold animate-pulse">Scanning todos os ativos em tempo real para estratégias de 2 a 7 dias...</td></tr>`;
-            
-            scannedStrategies = [];
-            let totalScanned = 0;
+            const progress = (msg) => { tableBody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-blue-400 font-bold animate-pulse">${escapeHtml(msg)}</td></tr>`; };
+            try {
+                progress('Carregando calendário de eventos...');
+                const ev = await loadEvents();
+                const tickers = availableTickersCache.slice();
+                let done = 0;
+                progress(`Lendo cotações 0/${tickers.length}...`);
+                const loaded = await poolMap(tickers, STRAT.concurrency, async (t) => {
+                    const r = await fetchSheetCached(t.code, force === true);
+                    done++; progress(`Lendo cotações ${done}/${tickers.length}...`);
+                    return { t, r };
+                });
 
-            for (const item of availableTickersCache) {
-                totalScanned++;
-                const { data, meta } = await fetchSheetData(item.code);
-                if (meta && meta.source === 'real' && !meta.stale) {
-                    const strat = analyze2to7DaysStrategy(item.code, data, detectCurrency(item.code));
-                    if (strat) scannedStrategies.push(strat);
+                const failures = [], valid = [];
+                loaded.forEach(({ t, r }) => {
+                    const m = r.meta;
+                    if (!m || m.source !== 'real') failures.push({ ticker: t.code, reason: (m && m.reason) || 'sem dados' });
+                    else if (m.stale) failures.push({ ticker: t.code, reason: `dados desatualizados (último candle ${m.lastDate})` });
+                    else if (r.data.length < MIN_CANDLES + 5) failures.push({ ticker: t.code, reason: `histórico curto (${r.data.length} candles)` });
+                    else valid.push({ code: t.code, data: r.data });
+                });
+
+                progress('Testando os setups no histórico de cada ativo...');
+                await yieldUI();
+                const prepared = {}, allTrades = [];
+                for (const v of valid) {
+                    const currency = detectCurrency(v.code);
+                    const data = isLastCandlePartial(v.data, currency) ? v.data.slice(0, -1) : v.data;
+                    const ind = buildIndicators(data);
+                    const trades = backtestAsset(data, ind, currency);
+                    prepared[v.code] = { ind, trades };
+                    allTrades.push(...trades);
+                    await yieldUI();
                 }
+                const histStats = {};
+                Object.keys(SETUPS).forEach(k => { histStats[k] = summarizeTrades(allTrades.filter(t => t.key === k)); });
+
+                const results = [], alerts = [], dataByTicker = {};
+                valid.forEach(v => {
+                    dataByTicker[v.code] = v.data;
+                    const p = prepared[v.code];
+                    const s0 = buildSignal(v.code, v.data, { ind: p.ind, events: ev.events, histStats });
+                    if (s0.kind === 'TRADE') {
+                        s0.histAsset = summarizeTrades(p.trades.filter(t => t.key === s0.key));
+                        results.push(s0);
+                    } else if (s0.kind === 'ALERT') alerts.push(s0);
+                });
+                const pairs = correlatedPairs(results.filter(s => s.status !== 'BLOQUEADO'), dataByTicker);
+                results.forEach(s => {
+                    s.corr = pairs.filter(p => p.a === s.ticker || p.b === s.ticker).map(p => ({ other: p.a === s.ticker ? p.b : p.a, c: p.c }));
+                });
+
+                scanState = { running: false, results, alerts, failures, pairs, histStats, overall: summarizeTrades(allTrades),
+                              events: ev.events, eventsSource: ev.source, at: new Date(), total: tickers.length, valid: valid.length };
+                const now = scanState.at;
+                stamp.innerText = `Última varredura: ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')}`;
+                renderStrategiesGrid();
+            } catch (e) {
+                console.error(e);
+                progress('Falha na varredura. Tente novamente.');
+            } finally {
+                scanState.running = false;
             }
-
-            // Atualiza KPIs
-            document.getElementById('strat-total-scanned').innerText = totalScanned;
-            const buyCount = scannedStrategies.filter(s => s.direction === 'BUY').length;
-            const sellCount = scannedStrategies.filter(s => s.direction === 'SELL').length;
-            document.getElementById('strat-buy-opportunities').innerText = buyCount;
-            document.getElementById('strat-sell-opportunities').innerText = sellCount;
-
-            const avgRR = scannedStrategies.length > 0 
-                ? (scannedStrategies.reduce((a, b) => a + b.riskRewardRatio, 0) / scannedStrategies.length).toFixed(1) 
-                : '0.0';
-            document.getElementById('strat-avg-rr').innerText = `${avgRR} : 1`;
-
-            const now = new Date();
-            stamp.innerText = `Última varredura: ${now.toLocaleDateString('pt-BR')} ${now.toLocaleTimeString('pt-BR')}`;
-
-            renderStrategiesGrid();
         }
 
+        const STATUS_ORDER = { 'OPERÁVEL': 0, 'ATENÇÃO': 1, 'BLOQUEADO': 2 };
+        const STATUS_STYLE = {
+            'OPERÁVEL': 'bg-green-900/60 text-green-300 border-green-600/60',
+            'ATENÇÃO': 'bg-yellow-900/50 text-yellow-300 border-yellow-600/60',
+            'BLOQUEADO': 'bg-red-900/50 text-red-300 border-red-600/60'
+        };
+        function fmtSignedPct(v, digits = 2) { return `${v >= 0 ? '+' : '−'}${fmtNum(Math.abs(v) * 100, digits)}%`; }
+        function fmtR(v) { return `${v >= 0 ? '+' : '−'}${fmtNum(Math.abs(v))} R`; }
+
         function renderStrategiesGrid() {
+            const S = scanState;
             const filter = document.getElementById('strategyFilterSelect').value;
             const tableBody = document.getElementById('strategies-table-body');
+            const R = S.results;
+            const op = R.filter(s => s.status === 'OPERÁVEL');
 
-            let filtered = scannedStrategies.slice();
-            if (filter === 'BUY') filtered = filtered.filter(s => s.direction === 'BUY');
-            else if (filter === 'SELL') filtered = filtered.filter(s => s.direction === 'SELL');
-            else if (filter === 'HIGH_RR') filtered = filtered.filter(s => s.riskRewardRatio >= 2.0);
+            // KPIs
+            document.getElementById('strat-total-scanned').innerText = `${S.valid}/${S.total}`;
+            document.getElementById('strat-total-sub').innerText = S.failures.length ? `${S.failures.length} sem dados válidos (ver abaixo)` : 'todos com dados válidos';
+            document.getElementById('strat-buy-opportunities').innerText = op.filter(s => s.direction === 'BUY').length;
+            document.getElementById('strat-sell-opportunities').innerText = op.filter(s => s.direction === 'SELL').length;
+            const attn = R.filter(s => s.status === 'ATENÇÃO').length, blk = R.filter(s => s.status === 'BLOQUEADO').length;
+            document.getElementById('strat-buy-sub').innerText = `${attn} em atenção · ${blk} bloqueados`;
+            const ov = S.overall;
+            document.getElementById('strat-avg-rr').innerText = ov && ov.n ? fmtR(ov.avgR) : '—';
+            document.getElementById('strat-avg-rr').className = 'text-xl font-bold ' + (ov && ov.n ? (ov.avgR > 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400');
+            document.getElementById('strat-hist-sub').innerText = ov && ov.n ? `${ov.n} sinais testados · ${fmtNum(ov.winRate * 100, 0)}% positivos` : 'sem histórico suficiente';
+            const badge = document.getElementById('strategy-count-badge');
+            if (badge) badge.innerText = `${op.length} operáveis`;
 
-            if (filtered.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-gray-500 font-medium">Nenhuma estratégia atendeu aos critérios selecionados no momento.</td></tr>`;
-                return;
+            let rows = R.slice();
+            if (filter === 'OPERABLE') rows = rows.filter(s => s.status === 'OPERÁVEL');
+            else if (filter === 'BUY') rows = rows.filter(s => s.direction === 'BUY');
+            else if (filter === 'SELL') rows = rows.filter(s => s.direction === 'SELL');
+            else if (filter === 'HIGH_RR') rows = rows.filter(s => s.rr >= 2 - 1e-9);
+            else if (filter === 'ISSUES') rows = rows.filter(s => s.status !== 'OPERÁVEL');
+
+            rows.sort((a, b) => (STATUS_ORDER[a.status] - STATUS_ORDER[b.status])
+                || ((b.histExp ?? -9) - (a.histExp ?? -9)) || (b.rr - a.rr));
+
+            if (rows.length === 0) {
+                const msg = filter === 'OPERABLE' && R.length
+                    ? `Nenhuma entrada passou em todos os filtros hoje. ${R.length} sinal(is) com ressalvas — escolha "Todos os sinais" para ver os motivos.`
+                    : 'Nenhum sinal atendeu aos critérios no momento.';
+                tableBody.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-gray-400 font-medium">${escapeHtml(msg)}</td></tr>`;
+            } else {
+                tableBody.innerHTML = rows.map(renderSignalRow).join('');
             }
+            renderScanPanels();
+        }
 
-            // Ordena pelo maior retorno percentual esperado
-            filtered.sort((a, b) => Math.abs(b.expectedReturnPct) - Math.abs(a.expectedReturnPct));
+        function renderSignalRow(s) {
+            const isBuy = s.direction === 'BUY';
+            const dirBadge = isBuy
+                ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-green-900/60 text-green-300 border border-green-600/50">COMPRA</span>`
+                : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-red-900/60 text-red-300 border border-red-600/50">VENDA (SHORT)</span>`;
+            const h = s.hist, ha = s.histAsset;
+            const histTxt = h && h.n
+                ? `<div class="${h.avgR > 0 ? 'text-green-400' : 'text-red-400'} font-bold">${fmtR(h.avgR)} <span class="text-gray-500 font-normal">em ${h.n}</span></div>
+                   <div class="text-[10px] text-gray-400">${fmtNum(h.hitTarget * 100, 0)}% alvo · ${fmtNum(h.hitStop * 100, 0)}% stop</div>
+                   ${ha && ha.n ? `<div class="text-[10px] text-gray-500">neste ativo: ${fmtR(ha.avgR)} (${ha.n})</div>` : ''}`
+                : '<span class="text-gray-500">sem amostra</span>';
+            const expTxt = s.histExp === null ? '<span class="text-gray-500">—</span>'
+                : `<span class="${s.histExp > 0 ? 'text-green-400' : 'text-red-400'} font-bold">${fmtSignedPct(s.histExp)}</span>`;
+            const reasons = [
+                ...s.block.map(r => `<li class="text-red-300">⛔ ${escapeHtml(r)}</li>`),
+                ...s.warn.map(r => `<li class="text-yellow-300">⚠️ ${escapeHtml(r)}</li>`),
+                ...(s.corr || []).map(c => `<li class="text-blue-300">🔗 move junto com ${escapeHtml(c.other)} (ρ ${fmtNum(c.c)})</li>`),
+                ...s.info.map(r => `<li class="text-gray-400">ℹ️ ${escapeHtml(r)}</li>`)
+            ];
+            const trendTxt = s.ctx.trend ? `Tendência 50d: ${s.ctx.trend.state === 'up' ? 'alta' : s.ctx.trend.state === 'down' ? 'baixa' : 'lateral'} (R² ${fmtNum(s.ctx.trend.r2)}) · IFR ${fmtNum(s.ctx.rsi, 1)}` : '';
+            return `
+                <tr class="hover:bg-gray-800/80 transition-colors align-top">
+                    <td class="p-3 font-bold text-white">${escapeHtml(s.ticker)}<div class="text-[10px] text-gray-500 font-normal">${s.currency === 'BRL' ? 'B3 · R$' : 'EUA · US$'}</div></td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-black border ${STATUS_STYLE[s.status]}">${s.status}</span></td>
+                    <td class="p-3"><div class="flex flex-col gap-1">${dirBadge}<span class="text-gray-300 text-[11px] font-semibold">${escapeHtml(s.setup)}</span><span class="text-[10px] text-gray-500 whitespace-normal">${escapeHtml(trendTxt)}</span></div></td>
+                    <td class="p-3 font-bold text-gray-200">${formatCurrency(s.price, s.currency)}<div class="text-[10px] text-gray-500 font-normal">fech. ${escapeHtml(s.candleDate)}</div></td>
+                    <td class="p-3 font-bold text-red-400 bg-red-950/20">${formatCurrency(s.stop, s.currency)}<div class="text-[10px] text-red-300/70 font-normal">risco ${fmtNum(s.riskPct * 100)}%</div></td>
+                    <td class="p-3 font-bold text-green-400 bg-green-950/20">${formatCurrency(s.target, s.currency)}<div class="text-[10px] text-green-300/70 font-normal">${fmtSignedPct(isBuy ? s.gainPct : -s.gainPct)} · ${escapeHtml(s.basis)}</div></td>
+                    <td class="p-3 text-center font-bold ${s.rr >= STRAT.minRR ? 'text-blue-400' : 'text-red-400'}">${fmtNum(s.rr)} : 1<div class="text-[10px] text-gray-500 font-normal">${escapeHtml(s.prazo)}</div></td>
+                    <td class="p-3 text-center text-xs">${histTxt}<div class="mt-1 text-[10px] text-gray-400">expect.: ${expTxt}</div></td>
+                    <td class="p-3 text-[11px] whitespace-normal min-w-[240px]"><ul class="space-y-0.5">${reasons.join('') || '<li class="text-green-300">✓ passou em todos os filtros</li>'}</ul></td>
+                    <td class="p-3 text-right">
+                        <button data-t="${escapeHtml(s.ticker)}" onclick="selectTickerAndNavigate(this.dataset.t)" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2.5 py-1 rounded transition-colors text-[11px]">Ver Gráfico ↗</button>
+                    </td>
+                </tr>`;
+        }
 
-            tableBody.innerHTML = filtered.map(s => {
-                const isBuy = s.direction === 'BUY';
-                const dirBadge = isBuy 
-                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-green-900/60 text-green-300 border border-green-600/50">COMPRA (LONG)</span>`
-                    : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-red-900/60 text-red-300 border border-red-600/50">VENDA (SHORT)</span>`;
+        function renderScanPanels() {
+            const S = scanState;
+            const fail = document.getElementById('strat-failures');
+            fail.innerHTML = S.failures.length
+                ? `<p class="font-bold text-red-300 mb-1">Ativos não analisados (${S.failures.length})</p><ul class="space-y-0.5">${S.failures.map(f => `<li><span class="font-bold text-white">${escapeHtml(f.ticker)}</span> — ${escapeHtml(f.reason)}</li>`).join('')}</ul>`
+                : '<p class="text-green-300 font-bold">Todos os ativos da lista foram lidos com dados válidos.</p>';
 
-                const pctStr = `${s.expectedReturnPct >= 0 ? '+' : ''}${(s.expectedReturnPct * 100).toFixed(2)}%`;
-                const pctClass = isBuy ? 'text-green-400 font-bold' : 'text-red-400 font-bold';
+            const al = document.getElementById('strat-alerts');
+            al.innerHTML = S.alerts.length
+                ? `<p class="font-bold text-yellow-300 mb-1">Esticados — não iniciar compra (${S.alerts.length})</p><ul class="space-y-0.5">${S.alerts.map(a => `<li><span class="font-bold text-white">${escapeHtml(a.ticker)}</span> — ${escapeHtml(a.note)}. Para quem já está comprado: proteger lucro com stop móvel; não é sinal de venda a descoberto.</li>`).join('')}</ul>`
+                : '<p class="text-gray-400">Nenhum ativo excessivamente esticado.</p>';
 
-                return `
-                    <tr class="hover:bg-gray-800/80 transition-colors">
-                        <td class="p-3 font-bold text-white">${escapeHtml(s.ticker)}</td>
-                        <td class="p-3">
-                            <div class="flex flex-col gap-1">
-                                ${dirBadge}
-                                <span class="text-gray-300 text-[11px] font-semibold">${escapeHtml(s.setupName)}</span>
-                            </div>
-                        </td>
-                        <td class="p-3 font-bold text-gray-200">${formatCurrency(s.currentPrice, s.currency)}</td>
-                        <td class="p-3 font-bold text-red-400 bg-red-950/20">${formatCurrency(s.stopLoss, s.currency)}</td>
-                        <td class="p-3 font-bold text-green-400 bg-green-950/20">${formatCurrency(s.target, s.currency)}</td>
-                        <td class="p-3 text-center ${pctClass} text-sm">${pctStr}</td>
-                        <td class="p-3 text-center font-bold text-blue-400">${s.riskRewardRatio.toFixed(2)} : 1</td>
-                        <td class="p-3 text-center text-gray-400">${escapeHtml(s.timeDays)}</td>
-                        <td class="p-3 text-right">
-                            <button onclick="selectTickerAndNavigate('${s.ticker}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2.5 py-1 rounded transition-colors text-[11px]">
-                                Ver Gráfico ↗
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            const co = document.getElementById('strat-corr');
+            const byMkt = {};
+            S.results.filter(s => s.status !== 'BLOQUEADO').forEach(s => { const k = `${marketOf(s.currency)}|${s.direction}`; byMkt[k] = (byMkt[k] || 0) + 1; });
+            const mktTxt = Object.entries(byMkt).filter(([, n]) => n >= 3).map(([k, n]) => { const [m, d] = k.split('|'); return `${n} sinais de ${d === 'BUY' ? 'compra' : 'venda'} em ${m === 'BR' ? 'ações brasileiras' : 'ações americanas'}`; });
+            co.innerHTML = (S.pairs.length || mktTxt.length)
+                ? `<p class="font-bold text-blue-300 mb-1">Concentração de risco</p>
+                   ${mktTxt.length ? `<p class="mb-1 text-gray-300">${escapeHtml(mktTxt.join(' · '))}: dependem do mesmo mercado e tendem a ganhar ou perder juntos.</p>` : ''}
+                   ${S.pairs.length ? `<ul class="space-y-0.5">${S.pairs.slice(0, 8).map(p => `<li>${escapeHtml(p.a)} ↔ ${escapeHtml(p.b)}: correlação ${fmtNum(p.c)} (${STRAT.corrWindow} pregões)</li>`).join('')}</ul>` : ''}
+                   <p class="mt-1 text-gray-500">Some o risco desses sinais como se fosse uma única posição.</p>`
+                : '<p class="text-gray-400">Sem concentração relevante entre os sinais.</p>';
+
+            const evb = document.getElementById('strat-events');
+            const today = startOfDay(new Date());
+            const upcoming = S.events.map(e => ({ ...e, days: Math.round((startOfDay(e.dateObj) - today) / 86400000) }))
+                .filter(e => e.days >= 0 && e.days <= 45).sort((a, b) => a.days - b.days);
+            evb.innerHTML = `<p class="font-bold text-purple-300 mb-1">Eventos considerados</p>
+                ${upcoming.length ? `<ul class="space-y-0.5">${upcoming.map(e => `<li><span class="font-bold text-white">${fmtDateBR(e.dateObj)}</span> · ${escapeHtml(e.scope)} · ${escapeHtml(e.desc)}${e.days <= STRAT.eventBlockDays ? ' <span class="text-red-300">(bloqueia)</span>' : e.days <= STRAT.eventWarnDays ? ' <span class="text-yellow-300">(alerta)</span>' : ''}</li>`).join('')}</ul>` : '<p class="text-gray-400">Nenhum evento próximo cadastrado.</p>'}
+                <p class="mt-1 text-gray-500">Fonte: ${escapeHtml(S.eventsSource)}. Eventos não cadastrados (balanços, dados macro, decisões de juros) não são detectados.</p>`;
         }
 
         function selectTickerAndNavigate(ticker) {
@@ -1481,16 +1804,24 @@
                 const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
                 const rows = (json.table && json.table.rows) || [];
                 let parsed = []; let dropped = 0;
+                // Quando a aba não existe, o Google devolve a PRIMEIRA aba da planilha (lista de papéis) em vez de erro.
+                const firstLabel = String(((json.table && json.table.cols) || [])[0]?.label || '').trim().toLowerCase();
+                const firstCell = String(rows[0]?.c?.[0]?.v ?? '').trim().toLowerCase();
+                if (firstLabel === 'codigo' || firstCell === 'codigo') throw new Error('ABA_INEXISTENTE');
+                let onlyClose = 0, datedRows = 0, tickerLike = 0;
                 rows.forEach(row => {
-                    if (!row.c || !row.c[0] || row.c[0].v === null || row.c[0].v === undefined || row.c[0].v === '') return; 
+                    if (!row.c || !row.c[0] || row.c[0].v === null || row.c[0].v === undefined || row.c[0].v === '') return;
                     const dt = parseSheetDate(row.c[0]);
+                    if (dt) datedRows++; else if (/^[A-Z0-9:.]{2,14}$/.test(String(row.c[0].v).trim())) tickerLike++;
                     const open = extNum(row.c[1]), high = extNum(row.c[2]), low = extNum(row.c[3]), close = extNum(row.c[4]);
+                    if (dt && close > 0 && !(open > 0 && high > 0 && low > 0)) onlyClose++;
                     const coherent = high >= low && high >= Math.max(open, close) * 0.995 && low <= Math.min(open, close) * 1.005;
                     const valid = dt && [open, high, low, close].every(x => Number.isFinite(x) && x > 0) && coherent;
                     if (!valid) { dropped++; return; }
-                    const volVal = row.c[5] ? (row.c[5].v || row.c[5].f || '0').toString().replace(/\D/g, '') : '0';
-                    parsed.push({ ts: dt.getTime(), date: fmtDateBR(dt), label: fmtLabelBR(dt), open, high, low, close, volume: volVal });
+                    parsed.push({ ts: dt.getTime(), date: fmtDateBR(dt), label: fmtLabelBR(dt), open, high, low, close, volume: extVolume(row.c[5]) });
                 });
+                if (datedRows === 0 && tickerLike > 0) throw new Error('ABA_INEXISTENTE');
+                if (datedRows > 0 && onlyClose / datedRows > 0.10) throw new Error('SO_FECHAMENTO');
                 if (parsed.length + dropped > 0 && dropped / (parsed.length + dropped) > 0.10) throw new Error('QUALIDADE');
                 parsed.sort((a, b) => a.ts - b.ts);
                 const clean = []; let dups = 0;
@@ -1508,7 +1839,7 @@
 
         function analyzeVolume(data) {
             const n = data.length;
-            const vols = data.map(d => parseInt(d.volume, 10));
+            const vols = data.map(d => Number(d.volume));
             const lastVol = vols[n - 1];
             const base = vols.slice(Math.max(0, n - 1 - WIN.volume), n - 1).filter(v => Number.isFinite(v) && v > 0);
             if (!Number.isFinite(lastVol) || lastVol <= 0 || base.length < 5) {
@@ -1736,26 +2067,37 @@
             let insight = document.getElementById('dt-insight');
             let priTrendStr = cEma200 ? (currPrice > cEma200 ? "Ativo acima da MME200 (Tendência Primária de Alta)." : "Ativo abaixo da MME200 (Tendência Primária de Baixa).") : "";
 
-            if (A.insufficient) {
-                badge.innerText = 'DADOS INSUFICIENTES'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-gray-800 text-gray-300 border border-gray-600 mb-4';
+            // Recomendação da aba Técnica = mesmo motor da aba Estratégias (sem contradições entre abas).
+            const evList = scanState.events.length ? scanState.events
+                : DEFAULT_EVENTS.map(e => { const [y, m, d] = e.date.split('-').map(Number); return { ...e, dateObj: new Date(y, m - 1, d) }; });
+            const sig = A.insufficient ? null : buildSignal(ticker, globalData, { events: evList, histStats: scanState.at ? scanState.histStats : null });
+            const badgeBase = 'inline-block px-4 py-2 rounded-lg text-lg font-black mb-4 border ';
+            const iconSvg = (cls) => `<svg class="w-5 h-5 ${cls} shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            const tr = sig && sig.ctx && sig.ctx.trend;
+            const trendPhrase = tr ? `Tendência de 50 dias: ${tr.state === 'up' ? 'alta' : tr.state === 'down' ? 'baixa' : 'lateral'} (R² ${fmtNum(tr.r2)}).` : '';
+
+            if (!sig || sig.insufficient) {
+                badge.innerText = 'DADOS INSUFICIENTES'; badge.className = badgeBase + 'bg-gray-800 text-gray-300 border-gray-600';
                 reason.innerText = `Histórico curto para recomendações.`;
                 insight.innerHTML = '';
-            } else if (isPivotBreakout && currentRSI < 70) {
-                badge.innerText = 'ROMPIMENTO PIVÔ (COMPRA)'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-blue-900/50 text-blue-400 border border-blue-500 mb-4 shadow-lg';
-                reason.innerText = `Ativo rompeu pivô de alta superando a resistência de ${formatCurrency(prevRes15, currentCurrency)}. ${priTrendStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Ponto de entrada no rompimento. Stop Loss em <span class="text-red-400 font-bold">${formatCurrency(stopLoss, currentCurrency)}</span>.</div>`;
-            } else if (cEma9 && cEma21 && currPrice > cEma9 && cEma9 > cEma21 && currentRSI < 70) {
-                badge.innerText = 'TENDÊNCIA DE ALTA (COMPRA)'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-green-900/50 text-green-400 border border-green-500 mb-4';
-                reason.innerText = `Forte fluxo comprador (Preço > MME9 > MME21). ${priTrendStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-green-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Buscar compras em retrações na MME9. Alvo: <span class="text-green-400 font-bold">${formatCurrency(stopGain, currentCurrency)}</span>.</div>`;
-            } else if (cEma9 && cEma21 && currPrice < cEma9 && cEma9 < cEma21 && currentRSI > 30) {
-                badge.innerText = 'TENDÊNCIA DE BAIXA (VENDA)'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-red-900/50 text-red-400 border border-red-500 mb-4';
-                reason.innerText = `Força vendedora predominante (Preço < MME9 < MME21). ${priTrendStr}`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg><div><strong>Ação Swing Trade:</strong> Desfavorável para compras. Resistência em <span class="text-red-400 font-bold">${formatCurrency(res15, currentCurrency)}</span>.</div>`;
+            } else if (sig.kind === 'TRADE') {
+                const isBuy = sig.direction === 'BUY';
+                const tone = sig.status === 'OPERÁVEL'
+                    ? (isBuy ? 'bg-green-900/50 text-green-400 border-green-500' : 'bg-red-900/50 text-red-400 border-red-500')
+                    : sig.status === 'ATENÇÃO' ? 'bg-yellow-900/40 text-yellow-300 border-yellow-500' : 'bg-gray-800 text-gray-300 border-red-500/60';
+                badge.innerText = `${isBuy ? 'COMPRA' : 'VENDA'} · ${sig.status}`;
+                badge.className = badgeBase + tone;
+                const firstIssue = sig.block[0] || sig.warn[0];
+                reason.innerText = `${sig.setup}. ${trendPhrase} ${priTrendStr}${firstIssue ? ` Ressalva: ${firstIssue}.` : ''}`;
+                insight.innerHTML = `${iconSvg(isBuy ? 'text-green-400' : 'text-red-400')}<div><strong>Plano (${escapeHtml(sig.prazo)}):</strong> entrada ~${formatCurrency(sig.price, currentCurrency)} · stop <span class="text-red-400 font-bold">${formatCurrency(sig.stop, currentCurrency)}</span> (risco ${fmtNum(sig.riskPct * 100)}%) · alvo <span class="text-green-400 font-bold">${formatCurrency(sig.target, currentCurrency)}</span> (${escapeHtml(sig.basis)}) · R:R ${fmtNum(sig.rr)}. ${sig.partial ? 'Candle de hoje em formação: usado o fechamento anterior. ' : ''}Filtros completos e histórico do setup na aba Estratégias.</div>`;
+            } else if (sig.kind === 'ALERT') {
+                badge.innerText = 'ESTICADO · NÃO COMPRAR'; badge.className = badgeBase + 'bg-yellow-900/40 text-yellow-300 border-yellow-500';
+                reason.innerText = `${sig.note}. ${trendPhrase} Entrar agora significa comprar longe do suporte, com stop distante.`;
+                insight.innerHTML = `${iconSvg('text-yellow-300')}<div><strong>Ação Swing Trade:</strong> aguardar recuo até a MME9 (${formatCurrency(sig.ctx.e9, currentCurrency)}) ou MME21 (${formatCurrency(sig.ctx.e21, currentCurrency)}). Quem já está comprado pode proteger o lucro com stop móvel. IFR alto em tendência de alta <strong>não</strong> é sinal de venda a descoberto.</div>`;
             } else {
-                badge.innerText = 'NEUTRO / AGUARDAR'; badge.className = 'inline-block px-4 py-2 rounded-lg text-lg font-black bg-gray-800 text-gray-300 border border-gray-600 mb-4';
-                reason.innerText = `Sem tendência definida no curtíssimo prazo.`;
-                insight.innerHTML = `<svg class="w-5 h-5 text-gray-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><div><strong>Ação Swing Trade:</strong> Aguardar sinal na aba Estratégias ou comprar em suporte <span class="text-green-400 font-bold">(${formatCurrency(sup15, currentCurrency)})</span>.</div>`;
+                badge.innerText = 'NEUTRO / AGUARDAR'; badge.className = badgeBase + 'bg-gray-800 text-gray-300 border-gray-600';
+                reason.innerText = `Nenhum setup válido no último fechamento. ${trendPhrase} ${priTrendStr}`;
+                insight.innerHTML = `${iconSvg('text-gray-400')}<div><strong>Ação Swing Trade:</strong> sem entrada. Suporte de 15 dias em <span class="text-green-400 font-bold">${formatCurrency(sup15, currentCurrency)}</span> e resistência em <span class="text-red-400 font-bold">${formatCurrency(res15, currentCurrency)}</span>.</div>`;
             }
 
             const now = new Date();
@@ -1915,9 +2257,12 @@
 
         document.getElementById('tickerSelect').addEventListener('change', e => { savePrefs(); loadTicker(e.target.value); });
         document.getElementById('refreshBtn').addEventListener('click', () => {
+            sheetCache = {};
             initDashboard();
             if (!document.getElementById('section-strategies').classList.contains('hidden')) {
-                runStrategiesScan();
+                runStrategiesScan(true);
+            } else {
+                scanState.at = null; // força nova varredura ao abrir a aba
             }
         });
 
@@ -2036,16 +2381,19 @@
 
             const ignored = [];
             for (const t of availableTickersCache) {
-                const { data, meta } = await fetchSheetData(t.code);
+                const { data, meta } = await fetchSheetCached(t.code, false);
                 if (meta.source !== 'real' || meta.stale || data.length < MIN_CANDLES) {
                     ignored.push(t.code);
                     continue;
                 }
-                const A = computeAnalysis(data);
-                if (A.buySignal) scenarioRows.push({ codigo: t.code, cotacao: A.lastClose, moeda: detectCurrency(t.code), data: data[data.length - 1].date });
+                const evList = scanState.events.length ? scanState.events
+                    : DEFAULT_EVENTS.map(e => { const [y, m, d] = e.date.split('-').map(Number); return { ...e, dateObj: new Date(y, m - 1, d) }; });
+                const sig = buildSignal(t.code, data, { events: evList, histStats: scanState.at ? scanState.histStats : null });
+                if (sig.kind === 'TRADE' && sig.direction === 'BUY' && sig.status === 'OPERÁVEL')
+                    scenarioRows.push({ codigo: t.code, cotacao: sig.price, moeda: detectCurrency(t.code), data: sig.candleDate });
             }
             if (scenarioRows.length === 0) {
-                scenarioEmptyMsg = 'Nenhum ativo com sinal forte de compra hoje.';
+                scenarioEmptyMsg = 'Nenhum ativo com compra operável hoje (mesmos filtros da aba Estratégias).';
             }
             if (ignored.length) { ignoredEl.innerText = 'Ignorados (sem dados ou desatualizados): ' + ignored.join(', '); ignoredEl.className = 'text-[11px] text-gray-400'; }
             refreshScenarioState();
