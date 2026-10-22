@@ -1,12 +1,1840 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Título da Página</title>
-  </head>
-  <body>
-    <h1>Olá, Mundo!</h1>
-    <p>Este é um parágrafo de exemplo.</p>
-  </body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>California Used Car Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+/* Standalone copy: the tokens the dashboard host normally provides. */
+:root{
+  --font-anthropic-sans:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-anthropic-serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --cds-font-size-caption:.8125rem;--cds-font-size-body:.9375rem;--cds-font-size-heading:1.125rem;--cds-font-size-title:1.75rem;
+  --cds-font-weight-medium:500;
+  --cds-gap-xs:.25rem;--cds-gap-sm:.5rem;--cds-gap-md:1rem;--cds-gap-lg:1.5rem;--cds-gap-xl:2rem;
+  --cds-pad-xs:.25rem;--cds-pad-sm:.5rem;--cds-pad-md:.75rem;--cds-pad-lg:1.25rem;--cds-pad-xl:2rem;
+  --cds-radius:10px;--cds-dur-slow:.4s;--cds-ease-out:cubic-bezier(.2,.8,.2,1);
+  --color-bg:#f6f7f9;--color-panel:#ffffff;--color-fg:#1b1f27;--color-fg-muted:#5d6574;--color-border-line:#dde1e8;
+  --color-ok:#1f7a4d;--color-warn:#b7791f;--color-bad:#b83a3a;
+  --cds-chart-muted:#b6bcc7;--cds-chart-grid:#e9ecf1;--cds-chart-axis:#a3aab6;--cds-chart-reference:#7d8592;
+  --cds-surface-popover:#ffffff;--cds-border:#d3d8e0;--cds-shadow-popover:0 6px 20px rgba(20,28,40,.12);--cds-text-secondary:#5d6574;
+  --s0:#2563c9;--s1:#14896f;--s2:#d0661c;--s3:#8a4fc4;--s4:#c23f74;--s5:#5f7d1a;--s6:#2b8fb3;--s7:#9a6b2f;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --color-bg:#12151b;--color-panel:#1a1e26;--color-fg:#e8ebf0;--color-fg-muted:#9aa3b2;--color-border-line:#2c323d;
+  --color-ok:#4cc38a;--color-warn:#e0a84a;--color-bad:#f07a7a;
+  --cds-chart-muted:#535b68;--cds-chart-grid:#252b35;--cds-chart-axis:#4a515e;--cds-chart-reference:#7d8592;
+  --cds-surface-popover:#232833;--cds-border:#363d4a;--cds-shadow-popover:0 6px 20px rgba(0,0,0,.45);--cds-text-secondary:#9aa3b2;
+  --s0:#6b9ef0;--s1:#3cc7a2;--s2:#f08d4a;--s3:#b58cf0;--s4:#ef7aa8;--s5:#9cc04a;--s6:#5cc0e0;--s7:#d1a066;
+  color-scheme:dark;
+}}
+html,body{margin:0}
+body{background:var(--color-bg);color:var(--color-fg);font-family:var(--font-anthropic-sans);font-size:var(--cds-font-size-body);line-height:1.45;
+  padding-block:max(24px,env(safe-area-inset-top,0px)) max(40px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:900px){body{padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px))}}
+.dash-skeleton{opacity:.4}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<script>window.__CF_DATA = {vehicles: [
+    {
+        "id":  "FR-01",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Clawson Honda of Fresno",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "Sport sedan",
+        "preferred":  true,
+        "price":  23995,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  21400,
+        "miles_per_year":  5000,
+        "mpg":  33,
+        "options_en":  "Honda Sensing · Apple CarPlay/Android Auto · 18\" black alloys · Smart key · Rear camera",
+        "options_pt":  "Honda Sensing · Apple CarPlay/Android Auto · Rodas 18\" pretas · Chave presencial · Câmera de ré",
+        "desc_en":  "11th-gen Civic in the sporty Sport trim, driven well below the average 12,000 mi/yr. Still inside Honda\u0027s 5-yr/60k powertrain warranty.",
+        "desc_pt":  "Civic de 11ª geração na versão esportiva Sport, rodou bem abaixo da média de 12.000 mi/ano. Ainda dentro da garantia de motor/câmbio Honda de 5 anos/60 mil milhas.",
+        "pros_en":  "Low mileage for its age|Sharp handling and a modern cabin|Strong resale value",
+        "pros_pt":  "Baixa quilometragem para a idade|Dirigibilidade precisa e cabine moderna|Ótimo valor de revenda",
+        "cons_en":  "Base 2.0L engine feels modest on the highway|Sport has no heated seats or sunroof",
+        "cons_pt":  "Motor 2.0 básico é modesto na estrada|Versão Sport não tem bancos aquecidos nem teto solar",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93711"
+    },
+    {
+        "id":  "FR-02",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Clawson Honda of Fresno",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "SE",
+        "preferred":  true,
+        "price":  24450,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  38900,
+        "miles_per_year":  7300,
+        "mpg":  32,
+        "options_en":  "Toyota Safety Sense 2.5+ · Adaptive cruise · Blind-spot monitor · CarPlay/Android Auto · Sport seats",
+        "options_pt":  "Toyota Safety Sense 2.5+ · Piloto automático adaptativo · Monitor de ponto cego · CarPlay/Android Auto · Bancos esportivos",
+        "desc_en":  "Toyota trade-in on a Honda lot. A roomy midsize sedan with the proven 2.5L four-cylinder and typical mileage for its age.",
+        "desc_pt":  "Toyota recebido na troca numa loja Honda. Sedã médio espaçoso com o confiável motor 2.5 de quatro cilindros e quilometragem normal para a idade.",
+        "pros_en":  "Large back seat and trunk|Excellent reliability record|Blind-spot monitor included",
+        "pros_pt":  "Banco traseiro e porta-malas amplos|Excelente histórico de confiabilidade|Monitor de ponto cego incluso",
+        "cons_en":  "Factory basic warranty already expired|Infotainment screen looks dated",
+        "cons_pt":  "Garantia básica de fábrica já expirou|Central multimídia com visual ultrapassado",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93711"
+    },
+    {
+        "id":  "FR-03",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Toyota of Clovis",
+        "make":  "Toyota",
+        "model":  "Prius",
+        "vehicle":  "Toyota Prius",
+        "trim":  "LE",
+        "preferred":  true,
+        "price":  26990,
+        "build_year":  2023,
+        "model_year":  2023,
+        "year":  "2023/2023",
+        "miles":  24800,
+        "miles_per_year":  5800,
+        "mpg":  57,
+        "options_en":  "Toyota Safety Sense 3.0 · 8\" touchscreen · Wireless CarPlay · Blind-spot monitor · LED headlights",
+        "options_pt":  "Toyota Safety Sense 3.0 · Tela de 8\" · CarPlay sem fio · Monitor de ponto cego · Faróis de LED",
+        "desc_en":  "5th-gen Prius with the 196-hp hybrid system: far quicker and better-looking than earlier models while returning 57 mpg combined.",
+        "desc_pt":  "Prius de 5ª geração com sistema híbrido de 196 cv: bem mais rápido e bonito que os anteriores, com média de 57 mpg.",
+        "pros_en":  "Among the best fuel economy in this list|Hybrid battery covered 10 yr/150k mi|Holds value very well",
+        "pros_pt":  "Um dos melhores consumos da lista|Bateria híbrida coberta por 10 anos/150 mil milhas|Desvaloriza muito pouco",
+        "cons_en":  "Tight rear headroom and small rear window|Check the 2023–24 rear-door recall was done",
+        "cons_pt":  "Pouco espaço para a cabeça atrás e vigia pequena|Confirme se o recall da porta traseira (2023–24) foi feito",
+        "dealer_rating":  "CarEdge · 99/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-prius\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93612"
+    },
+    {
+        "id":  "FR-04",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Toyota of Clovis",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "LE",
+        "preferred":  true,
+        "price":  24900,
+        "build_year":  2023,
+        "model_year":  2023,
+        "year":  "2023/2023",
+        "miles":  29300,
+        "miles_per_year":  6800,
+        "mpg":  32,
+        "options_en":  "Toyota Safety Sense 2.5+ · Adaptive cruise · CarPlay/Android Auto · Rear camera · Auto climate",
+        "options_pt":  "Toyota Safety Sense 2.5+ · Piloto adaptativo · CarPlay/Android Auto · Câmera de ré · Ar-condicionado automático",
+        "desc_en":  "Final-year 8th-gen Camry LE. A comfortable commuter that is simple to own, sold by one of the most transparent dealers in the Fresno area.",
+        "desc_pt":  "Camry LE do último ano da 8ª geração. Confortável para o dia a dia e simples de manter, vendido por uma das lojas mais transparentes de Fresno.",
+        "pros_en":  "Smooth, quiet ride|Low running costs|Inside powertrain warranty to 60k mi",
+        "pros_pt":  "Rodagem suave e silenciosa|Baixo custo de manutenção|Garantia de motor/câmbio até 60 mil milhas",
+        "cons_en":  "LE lacks blind-spot monitor|Plain interior materials",
+        "cons_pt":  "LE não tem monitor de ponto cego|Acabamento interno simples",
+        "dealer_rating":  "CarEdge · 99/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93612"
+    },
+    {
+        "id":  "FR-05",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Toyota of Clovis",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "LX",
+        "preferred":  true,
+        "price":  20490,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  44100,
+        "miles_per_year":  8300,
+        "mpg":  35,
+        "options_en":  "Honda Sensing · Adaptive cruise · CarPlay/Android Auto · Rear camera · LED headlights",
+        "options_pt":  "Honda Sensing · Piloto adaptativo · CarPlay/Android Auto · Câmera de ré · Faróis de LED",
+        "desc_en":  "Entry-level Civic LX at the lowest price among the Civics here. It has more miles per year than most cars in this list, so ask for the service history.",
+        "desc_pt":  "Civic LX de entrada com o menor preço entre os Civic da lista. Rodou mais milhas por ano que a maioria da lista, então peça o histórico de revisões.",
+        "pros_en":  "Lowest Civic price in the list|35 mpg combined|Full safety suite as standard",
+        "pros_pt":  "Menor preço de Civic da lista|Média de 35 mpg|Pacote completo de segurança de série",
+        "cons_en":  "More miles per year than most cars here|Powertrain warranty ends in under 16k mi",
+        "cons_pt":  "Mais milhas por ano que a maioria da lista|Garantia de motor/câmbio acaba em menos de 16 mil milhas",
+        "dealer_rating":  "CarEdge · 99/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93612"
+    },
+    {
+        "id":  "FR-06",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Clawson Honda of Fresno",
+        "make":  "Toyota",
+        "model":  "Prius",
+        "vehicle":  "Toyota Prius",
+        "trim":  "LE",
+        "preferred":  true,
+        "price":  20750,
+        "build_year":  2020,
+        "model_year":  2021,
+        "year":  "2020/2021",
+        "miles":  52700,
+        "miles_per_year":  8400,
+        "mpg":  56,
+        "options_en":  "Toyota Safety Sense P · Adaptive cruise · CarPlay · Rear camera · Smart key",
+        "options_pt":  "Toyota Safety Sense P · Piloto adaptativo · CarPlay · Câmera de ré · Chave presencial",
+        "desc_en":  "4th-gen Prius with 56 mpg. One of the cheapest hybrids in the list, with the hybrid battery still under warranty until 150k mi.",
+        "desc_pt":  "Prius de 4ª geração com 56 mpg. Um dos híbridos mais baratos da lista, com a bateria híbrida ainda na garantia até 150 mil milhas.",
+        "pros_en":  "Affordable way into a hybrid|Excellent fuel economy|Large hatchback cargo area",
+        "pros_pt":  "Forma acessível de ter um híbrido|Consumo excelente|Porta-malas hatch amplo",
+        "cons_en":  "Highest mileage in Fresno (near the 60k limit)|Catalytic converter theft is common on this generation",
+        "cons_pt":  "Maior quilometragem de Fresno (perto do limite de 60 mil)|Furto de catalisador é comum nesta geração",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-prius\u0026year_min=2021\u0026year_max=2021\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93711"
+    },
+    {
+        "id":  "SA-01",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "Maita Toyota of Sacramento",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "XSE",
+        "preferred":  true,
+        "price":  29450,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  26100,
+        "miles_per_year":  6100,
+        "mpg":  31,
+        "options_en":  "Panoramic roof · Leather/suede seats · 9\" screen · JBL audio · Blind-spot \u0026 cross-traffic alert · Heated seats",
+        "options_pt":  "Teto panorâmico · Bancos em couro/suede · Tela de 9\" · Som JBL · Ponto cego e alerta de tráfego cruzado · Bancos aquecidos",
+        "desc_en":  "Top sporty Camry XSE with nearly every option. Right at the $30k ceiling, but it feels like a near-luxury sedan.",
+        "desc_pt":  "Camry XSE topo de linha esportivo com quase todos os opcionais. No limite de US$ 30 mil, mas parece um sedã quase premium.",
+        "pros_en":  "Most equipped car in the list|Panoramic roof and premium audio|Low mileage for its age",
+        "pros_pt":  "Carro mais equipado da lista|Teto panorâmico e som premium|Baixa quilometragem para a idade",
+        "cons_en":  "Price leaves no room under $30k for fees|19\" wheels make the ride firmer",
+        "cons_pt":  "Preço não deixa folga abaixo de US$ 30 mil para taxas|Rodas 19\" deixam a rodagem mais firme",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95821"
+    },
+    {
+        "id":  "SA-02",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "Maita Toyota of Sacramento",
+        "make":  "Toyota",
+        "model":  "Prius",
+        "vehicle":  "Toyota Prius",
+        "trim":  "XLE",
+        "preferred":  true,
+        "price":  29990,
+        "build_year":  2023,
+        "model_year":  2024,
+        "year":  "2023/2024",
+        "miles":  15800,
+        "miles_per_year":  4800,
+        "mpg":  52,
+        "options_en":  "Heated \u0026 ventilated seats · 12.3\" screen · Wireless charging · Parking sensors · Heated steering wheel",
+        "options_pt":  "Bancos aquecidos e ventilados · Tela de 12,3\" · Carregador sem fio · Sensores de estacionamento · Volante aquecido",
+        "desc_en":  "Nearly new 5th-gen Prius XLE with comfort upgrades. Basic warranty runs to 36k mi, so you get about 20k mi of bumper-to-bumper coverage.",
+        "desc_pt":  "Prius XLE de 5ª geração quase novo, com itens de conforto. A garantia básica vai até 36 mil milhas, ou seja, cerca de 20 mil milhas de cobertura total.",
+        "pros_en":  "Still under full factory warranty|Big screen and comfort features|Very low miles",
+        "pros_pt":  "Ainda na garantia total de fábrica|Tela grande e itens de conforto|Baixíssima quilometragem",
+        "cons_en":  "Most expensive car in the list|52 mpg is a bit lower than the LE on 19\" wheels",
+        "cons_pt":  "Carro mais caro da lista|52 mpg é um pouco menos que o LE por causa das rodas 19\"",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-prius\u0026year_min=2024\u0026year_max=2024\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95821"
+    },
+    {
+        "id":  "SA-03",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "Folsom Lake Toyota",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "LE Hybrid",
+        "preferred":  true,
+        "price":  28990,
+        "build_year":  2024,
+        "model_year":  2025,
+        "year":  "2024/2025",
+        "miles":  11200,
+        "miles_per_year":  4900,
+        "mpg":  51,
+        "options_en":  "Toyota Safety Sense 3.0 · Blind-spot monitor · Wireless CarPlay · 8\" screen · Digital gauge cluster",
+        "options_pt":  "Toyota Safety Sense 3.0 · Monitor de ponto cego · CarPlay sem fio · Tela de 8\" · Painel digital",
+        "desc_en":  "All-new 9th-gen Camry, which is hybrid-only. Midsize space with Prius-like economy (51 mpg) and the newest safety tech.",
+        "desc_pt":  "Camry de 9ª geração totalmente nova, só híbrida. Espaço de sedã médio com consumo de Prius (51 mpg) e a tecnologia de segurança mais recente.",
+        "pros_en":  "Newest car in the list|Midsize room with 51 mpg|Full factory warranty remaining",
+        "pros_pt":  "Carro mais novo da lista|Espaço de sedã médio com 51 mpg|Garantia de fábrica completa",
+        "cons_en":  "Steepest depreciation curve (newer cars lose value faster)|Engine gets noisy under hard acceleration",
+        "cons_pt":  "Maior desvalorização (carros novos perdem valor mais rápido)|Motor fica barulhento em acelerações fortes",
+        "dealer_rating":  "CarEdge · 97/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2025\u0026year_max=2025\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95630"
+    },
+    {
+        "id":  "SA-04",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "Folsom Lake Toyota",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "EX",
+        "preferred":  true,
+        "price":  22200,
+        "build_year":  2022,
+        "model_year":  2022,
+        "year":  "2022/2022",
+        "miles":  33600,
+        "miles_per_year":  6300,
+        "mpg":  36,
+        "options_en":  "1.5L turbo · Sunroof · Heated seats · Blind-spot monitor · Remote start",
+        "options_pt":  "Motor 1.5 turbo · Teto solar · Bancos aquecidos · Monitor de ponto cego · Partida remota",
+        "desc_en":  "The sweet-spot Civic: the EX adds the punchier 1.5 turbo, a sunroof and heated seats, at average mileage and a fair price.",
+        "desc_pt":  "O Civic com melhor custo-benefício: o EX traz o motor 1.5 turbo mais forte, teto solar e bancos aquecidos, com quilometragem média e preço justo.",
+        "pros_en":  "Turbo engine with 36 mpg|Sunroof and heated seats|Fair price for the equipment",
+        "pros_pt":  "Motor turbo com 36 mpg|Teto solar e bancos aquecidos|Preço justo pelo equipamento",
+        "cons_en":  "Some 2022–23 owners report a sticky steering feel; test-drive carefully|Basic warranty expired",
+        "cons_pt":  "Alguns donos de 2022–23 relatam direção \"presa\"; teste com atenção|Garantia básica expirada",
+        "dealer_rating":  "CarEdge · 97/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95630"
+    },
+    {
+        "id":  "SA-05",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "AutoNation Honda Roseville",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "Sport",
+        "preferred":  true,
+        "price":  25490,
+        "build_year":  2024,
+        "model_year":  2024,
+        "year":  "2024/2024",
+        "miles":  12900,
+        "miles_per_year":  3900,
+        "mpg":  33,
+        "options_en":  "Honda Sensing · 7\" screen · CarPlay/Android Auto · 18\" alloys · Paddle-style drive modes",
+        "options_pt":  "Honda Sensing · Tela de 7\" · CarPlay/Android Auto · Rodas 18\" · Modos de condução",
+        "desc_en":  "Refreshed 2024 Civic Sport with very low miles. Practically new for several thousand dollars less than a new one.",
+        "desc_pt":  "Civic Sport 2024 reestilizado com baixíssima quilometragem. Praticamente zero por alguns milhares de dólares a menos que um novo.",
+        "pros_en":  "Under factory warranty|Very low miles per year|Updated styling",
+        "pros_pt":  "Na garantia de fábrica|Baixíssimas milhas por ano|Visual atualizado",
+        "cons_en":  "Costs more than an older EX with more features|Base engine only",
+        "cons_pt":  "Custa mais que um EX mais antigo e mais equipado|Somente o motor básico",
+        "dealer_rating":  "Google · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2024\u0026year_max=2024\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95661"
+    },
+    {
+        "id":  "SA-06",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "AutoNation Honda Roseville",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "SE",
+        "preferred":  true,
+        "price":  21995,
+        "build_year":  2020,
+        "model_year":  2021,
+        "year":  "2020/2021",
+        "miles":  49800,
+        "miles_per_year":  7900,
+        "mpg":  32,
+        "options_en":  "Toyota Safety Sense 2.0 · CarPlay/Android Auto · Sport suspension · Smart key · 18\" alloys",
+        "options_pt":  "Toyota Safety Sense 2.0 · CarPlay/Android Auto · Suspensão esportiva · Chave presencial · Rodas 18\"",
+        "desc_en":  "Lowest-priced Camry in the list. A sensible choice if you want a midsize sedan and plan to keep it for a long time.",
+        "desc_pt":  "Camry mais barata da lista. Escolha sensata se você quer um sedã médio e pretende ficar com ele por muito tempo.",
+        "pros_en":  "Cheapest Camry here|Proven, durable powertrain|Sporty SE looks",
+        "pros_pt":  "Camry mais barata da lista|Motorização comprovada e durável|Visual esportivo da SE",
+        "cons_en":  "Powertrain warranty ends in about 10k mi|No blind-spot monitor",
+        "cons_pt":  "Garantia de motor/câmbio acaba em cerca de 10 mil milhas|Sem monitor de ponto cego",
+        "dealer_rating":  "Google · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2021\u0026year_max=2021\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95661"
+    },
+    {
+        "id":  "SF-01",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "San Francisco Toyota",
+        "make":  "Toyota",
+        "model":  "Prius",
+        "vehicle":  "Toyota Prius",
+        "trim":  "LE",
+        "preferred":  true,
+        "price":  27880,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  19700,
+        "miles_per_year":  4600,
+        "mpg":  57,
+        "options_en":  "Toyota Safety Sense 3.0 · Wireless CarPlay · Blind-spot monitor · Rear camera · LED lights",
+        "options_pt":  "Toyota Safety Sense 3.0 · CarPlay sem fio · Monitor de ponto cego · Câmera de ré · Luzes de LED",
+        "desc_en":  "Low-mile 5th-gen Prius from one of the best-reviewed dealers in the city. Compact size is ideal for SF parking.",
+        "desc_pt":  "Prius de 5ª geração com pouca rodagem, de uma das lojas mais bem avaliadas da cidade. Tamanho compacto ideal para estacionar em SF.",
+        "pros_en":  "57 mpg in city traffic|Easy to park|Highly rated dealer (4.8/5)",
+        "pros_pt":  "57 mpg no trânsito urbano|Fácil de estacionar|Loja muito bem avaliada (4,8/5)",
+        "cons_en":  "Bay Area prices run about $1k higher|Low seating position",
+        "cons_pt":  "Preços da Bay Area são cerca de US$ 1 mil mais altos|Posição de dirigir baixa",
+        "dealer_rating":  "Carfax · 4.8/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-prius\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94109"
+    },
+    {
+        "id":  "SF-02",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "San Francisco Toyota",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "SE",
+        "preferred":  true,
+        "price":  27950,
+        "build_year":  2023,
+        "model_year":  2024,
+        "year":  "2023/2024",
+        "miles":  18400,
+        "miles_per_year":  5600,
+        "mpg":  32,
+        "options_en":  "Blind-spot monitor · Sport seats · 9\" screen · CarPlay/Android Auto · Smart key",
+        "options_pt":  "Monitor de ponto cego · Bancos esportivos · Tela de 9\" · CarPlay/Android Auto · Chave presencial",
+        "desc_en":  "Last-year gas Camry SE with low miles and remaining factory warranty, for buyers who prefer a conventional engine.",
+        "desc_pt":  "Camry SE a gasolina do último ano, com pouca rodagem e garantia de fábrica restante, para quem prefere motor convencional.",
+        "pros_en":  "Under factory warranty|Proven gas powertrain|Low mileage",
+        "pros_pt":  "Na garantia de fábrica|Motor a gasolina comprovado|Baixa quilometragem",
+        "cons_en":  "Only 32 mpg against 51 for the new hybrid|Price is close to the newer hybrid",
+        "cons_pt":  "Só 32 mpg contra 51 do novo híbrido|Preço próximo ao do híbrido mais novo",
+        "dealer_rating":  "Carfax · 4.8/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2024\u0026year_max=2024\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94109"
+    },
+    {
+        "id":  "SF-03",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "San Francisco Honda",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "Sport Hybrid",
+        "preferred":  true,
+        "price":  29750,
+        "build_year":  2024,
+        "model_year":  2025,
+        "year":  "2024/2025",
+        "miles":  8600,
+        "miles_per_year":  3700,
+        "mpg":  49,
+        "options_en":  "200-hp two-motor hybrid · 9\" screen · Bose audio · Wireless CarPlay · Heated seats",
+        "options_pt":  "Híbrido de dois motores com 200 cv · Tela de 9\" · Som Bose · CarPlay sem fio · Bancos aquecidos",
+        "desc_en":  "The quickest and most efficient Civic: 200 hp with 49 mpg. Almost new, with nearly the full warranty left.",
+        "desc_pt":  "O Civic mais rápido e econômico: 200 cv e 49 mpg. Quase novo, com quase toda a garantia restante.",
+        "pros_en":  "Strong, smooth hybrid performance|Lowest miles in the list|Bose audio and heated seats",
+        "pros_pt":  "Desempenho híbrido forte e suave|Menor quilometragem da lista|Som Bose e bancos aquecidos",
+        "cons_en":  "Near the $30k limit|Newer model, so depreciation is faster",
+        "cons_pt":  "Perto do limite de US$ 30 mil|Modelo novo, desvaloriza mais rápido",
+        "dealer_rating":  "DealerRater · 4.6/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2025\u0026year_max=2025\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94103"
+    },
+    {
+        "id":  "SF-04",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "San Francisco Honda",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "EX",
+        "preferred":  true,
+        "price":  24800,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  22900,
+        "miles_per_year":  5300,
+        "mpg":  36,
+        "options_en":  "1.5L turbo · Sunroof · Heated seats · Blind-spot monitor · Dual-zone climate",
+        "options_pt":  "Motor 1.5 turbo · Teto solar · Bancos aquecidos · Monitor de ponto cego · Ar digital de duas zonas",
+        "desc_en":  "Well-equipped Civic EX with low mileage, sold by a dealer known for good service. A balanced pick for city and highway.",
+        "desc_pt":  "Civic EX bem equipado e com pouca rodagem, vendido por uma loja conhecida pelo bom atendimento. Escolha equilibrada para cidade e estrada.",
+        "pros_en":  "Turbo engine and 36 mpg|Sunroof, heated seats, blind-spot|Low miles per year",
+        "pros_pt":  "Motor turbo e 36 mpg|Teto solar, bancos aquecidos, ponto cego|Poucas milhas por ano",
+        "cons_en":  "About $2.5k more than the Sacramento EX|Check the steering service bulletin",
+        "cons_pt":  "Cerca de US$ 2,5 mil mais caro que o EX de Sacramento|Verifique o boletim técnico da direção",
+        "dealer_rating":  "DealerRater · 4.6/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94103"
+    },
+    {
+        "id":  "SF-05",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "Victory Toyota of San Bruno",
+        "make":  "Toyota",
+        "model":  "Prius",
+        "vehicle":  "Toyota Prius",
+        "trim":  "XLE",
+        "preferred":  true,
+        "price":  24600,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  36500,
+        "miles_per_year":  6900,
+        "mpg":  54,
+        "options_en":  "SofTex seats · Heated seats · Wireless charging · 11.6\" screen · Blind-spot monitor",
+        "options_pt":  "Bancos SofTex · Bancos aquecidos · Carregador sem fio · Tela de 11,6\" · Monitor de ponto cego",
+        "desc_en":  "Last-year 4th-gen Prius in the comfortable XLE trim. A solid value if you don\u0027t need the newer, sleeker design.",
+        "desc_pt":  "Prius de 4ª geração do último ano, na confortável versão XLE. Bom custo-benefício se você não precisa do design novo.",
+        "pros_en":  "XLE comfort features at a lower price|54 mpg|Practical hatchback",
+        "pros_pt":  "Conforto da XLE por preço menor|54 mpg|Hatch prático",
+        "cons_en":  "Slow acceleration (121 hp)|Catalytic converter theft risk",
+        "cons_pt":  "Aceleração lenta (121 cv)|Risco de furto de catalisador",
+        "dealer_rating":  "DealerRater · 4.5/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-prius\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94066"
+    },
+    {
+        "id":  "SF-06",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "Victory Toyota of San Bruno",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "LX",
+        "preferred":  true,
+        "price":  20995,
+        "build_year":  2022,
+        "model_year":  2022,
+        "year":  "2022/2022",
+        "miles":  41300,
+        "miles_per_year":  7800,
+        "mpg":  35,
+        "options_en":  "Honda Sensing · CarPlay/Android Auto · Rear camera · LED headlights · Auto climate",
+        "options_pt":  "Honda Sensing · CarPlay/Android Auto · Câmera de ré · Faróis de LED · Ar automático",
+        "desc_en":  "Budget Civic LX on the Peninsula. Good basic transportation with low running costs.",
+        "desc_pt":  "Civic LX econômico na Península. Bom carro básico com baixo custo de uso.",
+        "pros_en":  "Cheapest car in the Bay Area list|35 mpg|Easy to resell",
+        "pros_pt":  "Carro mais barato da lista da Bay Area|35 mpg|Fácil de revender",
+        "cons_en":  "More miles than most cars here|Few comfort features",
+        "cons_pt":  "Mais milhas que a maioria da lista|Poucos itens de conforto",
+        "dealer_rating":  "DealerRater · 4.5/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94066"
+    },
+    {
+        "id":  "LA-01",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Toyota of Downtown L.A.",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "LE",
+        "preferred":  true,
+        "price":  22800,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  39700,
+        "miles_per_year":  7500,
+        "mpg":  32,
+        "options_en":  "Toyota Safety Sense 2.5+ · Adaptive cruise · CarPlay/Android Auto · Rear camera · Smart key",
+        "options_pt":  "Toyota Safety Sense 2.5+ · Piloto adaptativo · CarPlay/Android Auto · Câmera de ré · Chave presencial",
+        "desc_en":  "Practical Camry LE from a dealer with nearly 2,000 positive reviews. Comfortable for LA freeway commutes.",
+        "desc_pt":  "Camry LE prática de uma loja com quase 2.000 avaliações positivas. Confortável para o trânsito das freeways de LA.",
+        "pros_en":  "Very well-reviewed dealer (4.7/5)|Comfortable on the freeway|Fair price",
+        "pros_pt":  "Loja muito bem avaliada (4,7/5)|Confortável na freeway|Preço justo",
+        "cons_en":  "Basic warranty expired|No blind-spot monitor",
+        "cons_pt":  "Garantia básica expirada|Sem monitor de ponto cego",
+        "dealer_rating":  "DealerRater · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=90015"
+    },
+    {
+        "id":  "LA-02",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Toyota of Downtown L.A.",
+        "make":  "Toyota",
+        "model":  "Prius",
+        "vehicle":  "Toyota Prius",
+        "trim":  "LE",
+        "preferred":  true,
+        "price":  27450,
+        "build_year":  2023,
+        "model_year":  2024,
+        "year":  "2023/2024",
+        "miles":  17300,
+        "miles_per_year":  5200,
+        "mpg":  57,
+        "options_en":  "Toyota Safety Sense 3.0 · Wireless CarPlay · Blind-spot monitor · 17\" alloys · LED lights",
+        "options_pt":  "Toyota Safety Sense 3.0 · CarPlay sem fio · Monitor de ponto cego · Rodas 17\" · Luzes de LED",
+        "desc_en":  "2024 Prius LE with low miles and the best mpg of the new generation, a strong fit for LA stop-and-go traffic.",
+        "desc_pt":  "Prius LE 2024 com pouca rodagem. Tem o melhor consumo da nova geração, ótimo para o trânsito de LA.",
+        "pros_en":  "57 mpg|Under factory warranty|Modern design and tech",
+        "pros_pt":  "57 mpg|Na garantia de fábrica|Design e tecnologia modernos",
+        "cons_en":  "Limited rear visibility|Check the rear-door recall",
+        "cons_pt":  "Visibilidade traseira limitada|Verifique o recall da porta traseira",
+        "dealer_rating":  "DealerRater · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-prius\u0026year_min=2024\u0026year_max=2024\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=90015"
+    },
+    {
+        "id":  "LA-03",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Gardena Honda",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "Sport",
+        "preferred":  true,
+        "price":  23290,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  27800,
+        "miles_per_year":  6500,
+        "mpg":  33,
+        "options_en":  "Honda Sensing · 18\" black alloys · CarPlay/Android Auto · Smart key · Sport pedals",
+        "options_pt":  "Honda Sensing · Rodas 18\" pretas · CarPlay/Android Auto · Chave presencial · Pedais esportivos",
+        "desc_en":  "Civic Sport from the top-graded Honda dealer in the LA metro for price transparency. A good everyday car with a sporty look.",
+        "desc_pt":  "Civic Sport da loja Honda mais bem avaliada em transparência de preço na região de LA. Bom carro para o dia a dia com visual esportivo.",
+        "pros_en":  "Dealer scored 100/100 on price transparency|Good price for a 2023|Fun to drive",
+        "pros_pt":  "Loja com nota 100/100 em transparência de preço|Bom preço para um 2023|Gostoso de dirigir",
+        "cons_en":  "No heated seats or sunroof|Base engine",
+        "cons_pt":  "Sem bancos aquecidos ou teto solar|Motor básico",
+        "dealer_rating":  "CarEdge A · 100/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=90248"
+    },
+    {
+        "id":  "LA-04",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Gardena Honda",
+        "make":  "Honda",
+        "model":  "Civic",
+        "vehicle":  "Honda Civic",
+        "trim":  "Si",
+        "preferred":  true,
+        "price":  28750,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  24100,
+        "miles_per_year":  5600,
+        "mpg":  31,
+        "options_en":  "200-hp 1.5L turbo · 6-speed manual · Limited-slip differential · Bose audio · Sunroof",
+        "options_pt":  "Motor 1.5 turbo de 200 cv · Câmbio manual de 6 marchas · Diferencial autoblocante · Som Bose · Teto solar",
+        "desc_en":  "The enthusiast\u0027s Civic: 200-hp turbo, manual gearbox and a limited-slip differential. Choose it if driving fun matters more than economy.",
+        "desc_pt":  "O Civic dos entusiastas: turbo de 200 cv, câmbio manual e diferencial autoblocante. Escolha se o prazer de dirigir importa mais que a economia.",
+        "pros_en":  "Most fun to drive in the list|Rare and holds value well|Bose audio and sunroof",
+        "pros_pt":  "O mais divertido de dirigir da lista|Raro e desvaloriza pouco|Som Bose e teto solar",
+        "cons_en":  "Manual only; tiring in LA traffic|Premium fuel recommended, higher insurance",
+        "cons_pt":  "Só manual; cansativo no trânsito de LA|Gasolina premium recomendada e seguro mais caro",
+        "dealer_rating":  "CarEdge A · 100/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-civic\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=90248"
+    },
+    {
+        "id":  "LA-05",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Northridge Toyota",
+        "make":  "Toyota",
+        "model":  "Camry",
+        "vehicle":  "Toyota Camry",
+        "trim":  "SE",
+        "preferred":  true,
+        "price":  25600,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  31200,
+        "miles_per_year":  7300,
+        "mpg":  32,
+        "options_en":  "Blind-spot monitor · Sport seats · CarPlay/Android Auto · 18\" alloys · Smart key",
+        "options_pt":  "Monitor de ponto cego · Bancos esportivos · CarPlay/Android Auto · Rodas 18\" · Chave presencial",
+        "desc_en":  "Camry SE in the San Fernando Valley from a dealer with perfect transparency scores. Average mileage and a fair price.",
+        "desc_pt":  "Camry SE no Vale de San Fernando, de uma loja com nota máxima em transparência. Quilometragem média e preço justo.",
+        "pros_en":  "Transparent, well-rated dealer|Blind-spot monitor|Inside powertrain warranty",
+        "pros_pt":  "Loja transparente e bem avaliada|Monitor de ponto cego|Dentro da garantia de motor/câmbio",
+        "cons_en":  "Gas engine only (32 mpg)|Firmer SE suspension",
+        "cons_pt":  "Só motor a gasolina (32 mpg)|Suspensão SE mais firme",
+        "dealer_rating":  "CarEdge · 100/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-camry\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=91324"
+    },
+    {
+        "id":  "LA-06",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Northridge Toyota",
+        "make":  "Toyota",
+        "model":  "Prius",
+        "vehicle":  "Toyota Prius",
+        "trim":  "LE",
+        "preferred":  true,
+        "price":  19800,
+        "build_year":  2020,
+        "model_year":  2021,
+        "year":  "2020/2021",
+        "miles":  57900,
+        "miles_per_year":  9200,
+        "mpg":  56,
+        "options_en":  "Toyota Safety Sense P · CarPlay · Adaptive cruise · Rear camera · Smart key",
+        "options_pt":  "Toyota Safety Sense P · CarPlay · Piloto adaptativo · Câmera de ré · Chave presencial",
+        "desc_en":  "Cheapest Prius in the list. Very high mileage for the filter, but the hybrid battery stays under warranty to 150k mi.",
+        "desc_pt":  "Prius mais barato da lista. Quilometragem bem alta para o filtro, mas a bateria híbrida segue na garantia até 150 mil milhas.",
+        "pros_en":  "Lowest Prius price|56 mpg|Hybrid battery warranty remains",
+        "pros_pt":  "Menor preço entre os Prius|56 mpg|Garantia da bateria híbrida continua",
+        "cons_en":  "Nearly 60k mi; powertrain warranty almost over|Catalytic converter theft risk in LA",
+        "cons_pt":  "Quase 60 mil milhas; garantia de motor/câmbio quase no fim|Risco de furto de catalisador em LA",
+        "dealer_rating":  "CarEdge · 100/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-prius\u0026year_min=2021\u0026year_max=2021\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=91324"
+    },
+    {
+        "id":  "FR-07",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Toyota of Clovis",
+        "make":  "Toyota",
+        "model":  "Corolla",
+        "vehicle":  "Toyota Corolla",
+        "trim":  "LE",
+        "preferred":  false,
+        "price":  19990,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  28600,
+        "miles_per_year":  6700,
+        "mpg":  35,
+        "options_en":  "Toyota Safety Sense 3.0 · Adaptive cruise · Wireless CarPlay · 8\" screen · LED headlights",
+        "options_pt":  "Toyota Safety Sense 3.0 · Piloto adaptativo · CarPlay sem fio · Tela de 8\" · Faróis de LED",
+        "desc_en":  "Toyota\u0027s compact sedan with the newer 2.0L engine and safety suite. One of the cheapest, simplest cars to own in this list.",
+        "desc_pt":  "Sedã compacto da Toyota com o motor 2.0 mais novo e pacote de segurança. Um dos carros mais baratos e simples de manter da lista.",
+        "pros_en":  "Under $20k with low miles|Very low running costs|Toyota Safety Sense 3.0",
+        "pros_pt":  "Menos de US$ 20 mil com pouca rodagem|Custo de uso muito baixo|Toyota Safety Sense 3.0",
+        "cons_en":  "Smaller back seat than a Camry|Slow and noisy when pushed",
+        "cons_pt":  "Banco traseiro menor que o da Camry|Lento e barulhento quando exigido",
+        "dealer_rating":  "CarEdge · 99/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-corolla\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93612"
+    },
+    {
+        "id":  "FR-08",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Clawson Honda of Fresno",
+        "make":  "Honda",
+        "model":  "Accord",
+        "vehicle":  "Honda Accord",
+        "trim":  "LX",
+        "preferred":  false,
+        "price":  23900,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  36800,
+        "miles_per_year":  6900,
+        "mpg":  33,
+        "options_en":  "1.5L turbo · Honda Sensing · Adaptive cruise · CarPlay/Android Auto · Dual-zone climate",
+        "options_pt":  "Motor 1.5 turbo · Honda Sensing · Piloto adaptativo · CarPlay/Android Auto · Ar digital de duas zonas",
+        "desc_en":  "Midsize Accord with the efficient 1.5 turbo. A Camry rival with a sportier drive and a huge back seat.",
+        "desc_pt":  "Accord médio com o eficiente 1.5 turbo. Rival da Camry com condução mais esportiva e banco traseiro enorme.",
+        "pros_en":  "Roomiest back seat here|Turbo engine with 33 mpg|Comfortable on the highway",
+        "pros_pt":  "Banco traseiro mais espaçoso da lista|Motor turbo com 33 mpg|Confortável na estrada",
+        "cons_en":  "LX has cloth seats and a small screen|Basic warranty expired",
+        "cons_pt":  "LX tem bancos de tecido e tela pequena|Garantia básica expirada",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-accord\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93711"
+    },
+    {
+        "id":  "FR-09",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Clawson Honda of Fresno",
+        "make":  "Honda",
+        "model":  "CR-V",
+        "vehicle":  "Honda CR-V",
+        "trim":  "EX",
+        "preferred":  false,
+        "price":  25990,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  41200,
+        "miles_per_year":  7800,
+        "mpg":  30,
+        "options_en":  "1.5L turbo · Sunroof · Heated seats · Blind-spot monitor · Power tailgate",
+        "options_pt":  "Motor 1.5 turbo · Teto solar · Bancos aquecidos · Monitor de ponto cego · Tampa traseira elétrica",
+        "desc_en":  "Compact SUV with a big cargo area and a sunroof. The practical pick for families or road trips through the Central Valley.",
+        "desc_pt":  "SUV compacto com porta-malas grande e teto solar. A escolha prática para famílias ou viagens pelo Vale Central.",
+        "pros_en":  "Large cargo space|Higher seating position|Strong resale value",
+        "pros_pt":  "Porta-malas grande|Posição de dirigir mais alta|Ótimo valor de revenda",
+        "cons_en":  "30 mpg, less than the sedans|Powertrain warranty ends in about 19k mi",
+        "cons_pt":  "30 mpg, menos que os sedãs|Garantia de motor/câmbio acaba em cerca de 19 mil milhas",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-cr_v\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93711"
+    },
+    {
+        "id":  "FR-10",
+        "region":  "Central Valley",
+        "city":  "Fresno",
+        "dealer":  "Toyota of Clovis",
+        "make":  "Hyundai",
+        "model":  "Elantra",
+        "vehicle":  "Hyundai Elantra",
+        "trim":  "SEL",
+        "preferred":  false,
+        "price":  17900,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  24300,
+        "miles_per_year":  5700,
+        "mpg":  36,
+        "options_en":  "8\" screen · Wireless CarPlay · Blind-spot monitor · Rear cross-traffic alert · Smart key",
+        "options_pt":  "Tela de 8\" · CarPlay sem fio · Monitor de ponto cego · Alerta de tráfego cruzado · Chave presencial",
+        "desc_en":  "Lowest-priced car in the whole list, with low miles and Hyundai\u0027s long 10-yr/100k powertrain warranty (original owner only; ask what transfers).",
+        "desc_pt":  "Carro mais barato de toda a lista, com pouca rodagem e a longa garantia Hyundai de 10 anos/100 mil milhas (só para o primeiro dono; pergunte o que é transferível).",
+        "pros_en":  "Lowest price overall|36 mpg|Blind-spot monitor at this price",
+        "pros_pt":  "Menor preço de todos|36 mpg|Monitor de ponto cego por esse preço",
+        "cons_en":  "Loses value faster than Honda or Toyota|Long warranty drops to 5 yr/60k for second owners",
+        "cons_pt":  "Desvaloriza mais rápido que Honda ou Toyota|Garantia longa cai para 5 anos/60 mil para o segundo dono",
+        "dealer_rating":  "CarEdge · 99/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=hyundai\u0026models[]=hyundai-elantra\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=93612"
+    },
+    {
+        "id":  "SA-07",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "Folsom Lake Toyota",
+        "make":  "Toyota",
+        "model":  "RAV4",
+        "vehicle":  "Toyota RAV4",
+        "trim":  "XLE",
+        "preferred":  false,
+        "price":  27490,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  44500,
+        "miles_per_year":  8400,
+        "mpg":  30,
+        "options_en":  "Toyota Safety Sense 2.0 · Blind-spot monitor · Dual-zone climate · Smart key · Roof rails",
+        "options_pt":  "Toyota Safety Sense 2.0 · Monitor de ponto cego · Ar digital de duas zonas · Chave presencial · Rack de teto",
+        "desc_en":  "America\u0027s best-selling SUV in the popular XLE trim. Good for trips to Tahoe, with plenty of cargo room.",
+        "desc_pt":  "O SUV mais vendido dos EUA na popular versão XLE. Bom para viagens a Tahoe, com bastante espaço de carga.",
+        "pros_en":  "Holds value extremely well|Large cargo area|Proven reliability",
+        "pros_pt":  "Desvaloriza muito pouco|Porta-malas grande|Confiabilidade comprovada",
+        "cons_en":  "Engine is loud when accelerating|High price for its mileage",
+        "cons_pt":  "Motor barulhento nas acelerações|Preço alto para a quilometragem",
+        "dealer_rating":  "CarEdge · 97/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-rav4\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95630"
+    },
+    {
+        "id":  "SA-08",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "Maita Toyota of Sacramento",
+        "make":  "Subaru",
+        "model":  "Crosstrek",
+        "vehicle":  "Subaru Crosstrek",
+        "trim":  "Premium",
+        "preferred":  false,
+        "price":  23700,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  26700,
+        "miles_per_year":  6200,
+        "mpg":  29,
+        "options_en":  "All-wheel drive · EyeSight driver assist · CarPlay/Android Auto · Heated seats · Roof rails",
+        "options_pt":  "Tração integral · Assistente EyeSight · CarPlay/Android Auto · Bancos aquecidos · Rack de teto",
+        "desc_en":  "Small crossover with standard all-wheel drive and 8.7\" of ground clearance. The best pick here for snow trips to the Sierra.",
+        "desc_pt":  "Crossover pequeno com tração integral de série e 22 cm de altura livre. A melhor escolha da lista para viagens com neve na Sierra.",
+        "pros_en":  "Standard all-wheel drive|Good ground clearance|Heated seats",
+        "pros_pt":  "Tração integral de série|Boa altura do solo|Bancos aquecidos",
+        "cons_en":  "Slow 2.0L engine|Only 29 mpg",
+        "cons_pt":  "Motor 2.0 lento|Só 29 mpg",
+        "dealer_rating":  "CarEdge A · 96/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=subaru\u0026models[]=subaru-crosstrek\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95821"
+    },
+    {
+        "id":  "SA-09",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "AutoNation Honda Roseville",
+        "make":  "Mazda",
+        "model":  "CX-5",
+        "vehicle":  "Mazda CX-5",
+        "trim":  "2.5 S Select",
+        "preferred":  false,
+        "price":  23400,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  23900,
+        "miles_per_year":  5600,
+        "mpg":  28,
+        "options_en":  "All-wheel drive · Leatherette seats · Blind-spot monitor · CarPlay/Android Auto · Power liftgate",
+        "options_pt":  "Tração integral · Bancos em couro sintético · Monitor de ponto cego · CarPlay/Android Auto · Tampa traseira elétrica",
+        "desc_en":  "Upscale-feeling compact SUV with all-wheel drive. Drives better than most rivals and has a near-premium cabin.",
+        "desc_pt":  "SUV compacto com ar de premium e tração integral. Dirige melhor que a maioria dos rivais e tem cabine quase de luxo.",
+        "pros_en":  "Best interior quality in its class|Standard all-wheel drive|Fun to drive",
+        "pros_pt":  "Melhor acabamento da categoria|Tração integral de série|Gostoso de dirigir",
+        "cons_en":  "Lowest mpg in the list (28)|Smaller cargo area than CR-V or RAV4",
+        "cons_pt":  "Menor consumo da lista (28 mpg)|Porta-malas menor que CR-V ou RAV4",
+        "dealer_rating":  "Google · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=mazda\u0026models[]=mazda-cx_5\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95661"
+    },
+    {
+        "id":  "SA-10",
+        "region":  "Northern California",
+        "city":  "Sacramento",
+        "dealer":  "AutoNation Honda Roseville",
+        "make":  "Honda",
+        "model":  "Accord",
+        "vehicle":  "Honda Accord",
+        "trim":  "Sport Hybrid",
+        "preferred":  false,
+        "price":  29600,
+        "build_year":  2023,
+        "model_year":  2024,
+        "year":  "2023/2024",
+        "miles":  18200,
+        "miles_per_year":  5500,
+        "mpg":  44,
+        "options_en":  "204-hp two-motor hybrid · 12.3\" screen · Wireless CarPlay · Heated seats · 19\" alloys",
+        "options_pt":  "Híbrido de dois motores com 204 cv · Tela de 12,3\" · CarPlay sem fio · Bancos aquecidos · Rodas 19\"",
+        "desc_en":  "Current-generation Accord hybrid: quick, quiet and efficient, with a large screen. Near the $30k ceiling but feels a class above.",
+        "desc_pt":  "Accord híbrido da geração atual: rápido, silencioso e econômico, com tela grande. Perto do teto de US$ 30 mil, mas parece de categoria superior.",
+        "pros_en":  "44 mpg in a midsize sedan|Strong, smooth hybrid power|Under factory warranty",
+        "pros_pt":  "44 mpg num sedã médio|Motor híbrido forte e suave|Na garantia de fábrica",
+        "cons_en":  "Near the $30k limit|19\" wheels make the ride firmer",
+        "cons_pt":  "Perto do limite de US$ 30 mil|Rodas 19\" deixam a rodagem mais firme",
+        "dealer_rating":  "Google · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-accord\u0026year_min=2024\u0026year_max=2024\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=95661"
+    },
+    {
+        "id":  "SF-07",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "San Francisco Toyota",
+        "make":  "Toyota",
+        "model":  "Corolla",
+        "vehicle":  "Toyota Corolla",
+        "trim":  "Hybrid LE",
+        "preferred":  false,
+        "price":  22950,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  21300,
+        "miles_per_year":  5000,
+        "mpg":  50,
+        "options_en":  "Toyota Safety Sense 3.0 · Wireless CarPlay · Blind-spot monitor · Adaptive cruise · LED lights",
+        "options_pt":  "Toyota Safety Sense 3.0 · CarPlay sem fio · Monitor de ponto cego · Piloto adaptativo · Luzes de LED",
+        "desc_en":  "Corolla with the Prius hybrid system: 50 mpg for less money than a Prius, in a regular sedan body.",
+        "desc_pt":  "Corolla com o sistema híbrido do Prius: 50 mpg por menos que um Prius, numa carroceria de sedã tradicional.",
+        "pros_en":  "50 mpg for under $23k|Hybrid battery warranty 10 yr/150k|Easy to park in the city",
+        "pros_pt":  "50 mpg por menos de US$ 23 mil|Bateria híbrida com garantia de 10 anos/150 mil|Fácil de estacionar na cidade",
+        "cons_en":  "Slow acceleration|Smaller trunk than the Prius hatch",
+        "cons_pt":  "Aceleração lenta|Porta-malas menor que o do Prius hatch",
+        "dealer_rating":  "Carfax · 4.8/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-corolla\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94109"
+    },
+    {
+        "id":  "SF-08",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "San Francisco Honda",
+        "make":  "Honda",
+        "model":  "CR-V",
+        "vehicle":  "Honda CR-V",
+        "trim":  "EX",
+        "preferred":  false,
+        "price":  29250,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  25400,
+        "miles_per_year":  5900,
+        "mpg":  30,
+        "options_en":  "1.5L turbo · Sunroof · Heated seats · Blind-spot monitor · Wireless CarPlay",
+        "options_pt":  "Motor 1.5 turbo · Teto solar · Bancos aquecidos · Monitor de ponto cego · CarPlay sem fio",
+        "desc_en":  "Redesigned 6th-gen CR-V with a roomier cabin and modern tech. Bay Area pricing puts it near the $30k limit.",
+        "desc_pt":  "CR-V de 6ª geração reestilizado, com cabine mais espaçosa e tecnologia moderna. O preço da Bay Area o coloca perto do limite de US$ 30 mil.",
+        "pros_en":  "Newer generation, roomy cabin|Large cargo area|Holds value well",
+        "pros_pt":  "Geração mais nova, cabine espaçosa|Porta-malas grande|Desvaloriza pouco",
+        "cons_en":  "Close to the $30k ceiling|Gas engine only (30 mpg)",
+        "cons_pt":  "Perto do teto de US$ 30 mil|Só motor a gasolina (30 mpg)",
+        "dealer_rating":  "DealerRater · 4.6/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-cr_v\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94103"
+    },
+    {
+        "id":  "SF-09",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "Victory Toyota of San Bruno",
+        "make":  "Mazda",
+        "model":  "Mazda3",
+        "vehicle":  "Mazda3",
+        "trim":  "Preferred hatchback",
+        "preferred":  false,
+        "price":  22400,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  22700,
+        "miles_per_year":  5300,
+        "mpg":  31,
+        "options_en":  "Leatherette seats · Heated seats · Bose audio · Blind-spot monitor · Dual-zone climate",
+        "options_pt":  "Bancos em couro sintético · Bancos aquecidos · Som Bose · Monitor de ponto cego · Ar digital de duas zonas",
+        "desc_en":  "Stylish compact hatchback with a near-luxury interior. A more upscale alternative to the Civic at a similar price.",
+        "desc_pt":  "Hatch compacto estiloso com interior quase de luxo. Alternativa mais sofisticada ao Civic por preço parecido.",
+        "pros_en":  "Premium-feeling cabin|Bose audio and heated seats|Sharp handling",
+        "pros_pt":  "Cabine com ar premium|Som Bose e bancos aquecidos|Dirigibilidade precisa",
+        "cons_en":  "Tight back seat|Loses value faster than a Civic",
+        "cons_pt":  "Banco traseiro apertado|Desvaloriza mais rápido que o Civic",
+        "dealer_rating":  "DealerRater · 4.5/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=mazda\u0026models[]=mazda-mazda3\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94066"
+    },
+    {
+        "id":  "SF-10",
+        "region":  "Northern California",
+        "city":  "San Francisco",
+        "dealer":  "Victory Toyota of San Bruno",
+        "make":  "Kia",
+        "model":  "K5",
+        "vehicle":  "Kia K5",
+        "trim":  "GT-Line",
+        "preferred":  false,
+        "price":  21300,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  27900,
+        "miles_per_year":  6500,
+        "mpg":  31,
+        "options_en":  "1.6L turbo · 10.25\" screen · Blind-spot monitor · Heated seats · Smart key",
+        "options_pt":  "Motor 1.6 turbo · Tela de 10,25\" · Monitor de ponto cego · Bancos aquecidos · Chave presencial",
+        "desc_en":  "Sporty-looking midsize sedan with lots of tech for the money. Costs thousands less than a Camry or Accord of the same year.",
+        "desc_pt":  "Sedã médio de visual esportivo com muita tecnologia pelo preço. Custa milhares a menos que uma Camry ou um Accord do mesmo ano.",
+        "pros_en":  "Midsize sedan at a compact price|Big screen and heated seats|Turbo engine",
+        "pros_pt":  "Sedã médio a preço de compacto|Tela grande e bancos aquecidos|Motor turbo",
+        "cons_en":  "Fastest depreciation in the list|Firm ride and more road noise than a Camry",
+        "cons_pt":  "Maior desvalorização da lista|Rodagem firme e mais ruído que a Camry",
+        "dealer_rating":  "DealerRater · 4.5/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=kia\u0026models[]=kia-k5\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=94066"
+    },
+    {
+        "id":  "LA-07",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Toyota of Downtown L.A.",
+        "make":  "Toyota",
+        "model":  "RAV4",
+        "vehicle":  "Toyota RAV4",
+        "trim":  "Hybrid XLE",
+        "preferred":  false,
+        "price":  28900,
+        "build_year":  2021,
+        "model_year":  2022,
+        "year":  "2021/2022",
+        "miles":  47800,
+        "miles_per_year":  9000,
+        "mpg":  40,
+        "options_en":  "All-wheel drive · Hybrid · Blind-spot monitor · Dual-zone climate · Smart key",
+        "options_pt":  "Tração integral · Híbrido · Monitor de ponto cego · Ar digital de duas zonas · Chave presencial",
+        "desc_en":  "Hybrid RAV4 with all-wheel drive and 40 mpg. Combines SUV space with low fuel costs; in high demand, so prices stay firm.",
+        "desc_pt":  "RAV4 híbrido com tração integral e 40 mpg. Junta espaço de SUV com baixo gasto de combustível; muito procurado, então os preços seguram.",
+        "pros_en":  "40 mpg in an all-wheel-drive SUV|Holds value very well|Hybrid battery warranty 10 yr/150k",
+        "pros_pt":  "40 mpg num SUV com tração integral|Desvaloriza muito pouco|Bateria híbrida com garantia de 10 anos/150 mil",
+        "cons_en":  "High mileage for the price|Powertrain warranty ends in about 12k mi",
+        "cons_pt":  "Quilometragem alta para o preço|Garantia de motor/câmbio acaba em cerca de 12 mil milhas",
+        "dealer_rating":  "DealerRater · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-rav4\u0026year_min=2022\u0026year_max=2022\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=90015"
+    },
+    {
+        "id":  "LA-08",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Toyota of Downtown L.A.",
+        "make":  "Toyota",
+        "model":  "Corolla",
+        "vehicle":  "Toyota Corolla",
+        "trim":  "SE",
+        "preferred":  false,
+        "price":  23200,
+        "build_year":  2023,
+        "model_year":  2024,
+        "year":  "2023/2024",
+        "miles":  16900,
+        "miles_per_year":  5100,
+        "mpg":  34,
+        "options_en":  "Sport-tuned suspension · 18\" alloys · Wireless CarPlay · Blind-spot monitor · Smart key",
+        "options_pt":  "Suspensão esportiva · Rodas 18\" · CarPlay sem fio · Monitor de ponto cego · Chave presencial",
+        "desc_en":  "Nearly new Corolla in the sportier SE trim, with low miles and most of its factory warranty left.",
+        "desc_pt":  "Corolla quase novo na versão esportiva SE, com pouca rodagem e quase toda a garantia de fábrica.",
+        "pros_en":  "Under factory warranty|Low miles|Toyota reliability",
+        "pros_pt":  "Na garantia de fábrica|Pouca rodagem|Confiabilidade Toyota",
+        "cons_en":  "Pricey for a compact sedan|Firmer ride on 18\" wheels",
+        "cons_pt":  "Caro para um sedã compacto|Rodagem mais firme com rodas 18\"",
+        "dealer_rating":  "DealerRater · 4.7/5",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=toyota\u0026models[]=toyota-corolla\u0026year_min=2024\u0026year_max=2024\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=90015"
+    },
+    {
+        "id":  "LA-09",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Gardena Honda",
+        "make":  "Honda",
+        "model":  "Accord",
+        "vehicle":  "Honda Accord",
+        "trim":  "LX",
+        "preferred":  false,
+        "price":  25500,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  22800,
+        "miles_per_year":  5300,
+        "mpg":  32,
+        "options_en":  "1.5L turbo · Honda Sensing · 7\" screen · CarPlay/Android Auto · Dual-zone climate",
+        "options_pt":  "Motor 1.5 turbo · Honda Sensing · Tela de 7\" · CarPlay/Android Auto · Ar digital de duas zonas",
+        "desc_en":  "Current-generation Accord LX from the top-graded Honda dealer in LA. Spacious and refined, with the latest safety tech.",
+        "desc_pt":  "Accord LX da geração atual, da loja Honda mais bem avaliada de LA. Espaçoso e refinado, com a tecnologia de segurança mais recente.",
+        "pros_en":  "Newest Accord generation|Huge back seat|Transparent dealer (100/100)",
+        "pros_pt":  "Geração mais nova do Accord|Banco traseiro enorme|Loja transparente (100/100)",
+        "cons_en":  "LX lacks blind-spot monitor and heated seats|Gas only; the hybrid gets 44 mpg",
+        "cons_pt":  "LX não tem monitor de ponto cego nem bancos aquecidos|Só gasolina; o híbrido faz 44 mpg",
+        "dealer_rating":  "CarEdge A · 100/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=honda\u0026models[]=honda-accord\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=90248"
+    },
+    {
+        "id":  "LA-10",
+        "region":  "Southern California",
+        "city":  "Los Angeles",
+        "dealer":  "Northridge Toyota",
+        "make":  "Hyundai",
+        "model":  "Elantra",
+        "vehicle":  "Hyundai Elantra",
+        "trim":  "Hybrid Blue",
+        "preferred":  false,
+        "price":  19400,
+        "build_year":  2022,
+        "model_year":  2023,
+        "year":  "2022/2023",
+        "miles":  31400,
+        "miles_per_year":  7300,
+        "mpg":  54,
+        "options_en":  "Hybrid · 8\" screen · Wireless CarPlay · Blind-spot monitor · Smart key",
+        "options_pt":  "Híbrido · Tela de 8\" · CarPlay sem fio · Monitor de ponto cego · Chave presencial",
+        "desc_en":  "Prius-level economy (54 mpg) for about $8k less than a newer Prius. A strong budget hybrid for LA commuting.",
+        "desc_pt":  "Consumo de Prius (54 mpg) por cerca de US$ 8 mil a menos que um Prius novo. Ótimo híbrido econômico para o trânsito de LA.",
+        "pros_en":  "54 mpg at a budget price|Hybrid battery has a 10-yr/100k warranty|Lots of features for the money",
+        "pros_pt":  "54 mpg a preço baixo|Bateria híbrida com garantia de 10 anos/100 mil milhas|Muitos itens pelo preço",
+        "cons_en":  "Depreciates faster than a Prius|Hard plastics in the cabin",
+        "cons_pt":  "Desvaloriza mais rápido que o Prius|Plásticos duros na cabine",
+        "dealer_rating":  "CarEdge · 100/100",
+        "link":  "https://www.cars.com/shopping/results/?stock_type=used\u0026makes[]=hyundai\u0026models[]=hyundai-elantra\u0026year_min=2023\u0026year_max=2023\u0026list_price_max=30000\u0026mileage_max=60000\u0026maximum_distance=20\u0026zip=91324"
+    }
+], depreciation: [{"id":"FR-01","month":"2025-11-01","value":25890},{"id":"FR-01","month":"2025-12-01","value":25670},{"id":"FR-01","month":"2026-01-01","value":25410},{"id":"FR-01","month":"2026-02-01","value":25480},{"id":"FR-01","month":"2026-03-01","value":25320},{"id":"FR-01","month":"2026-04-01","value":25190},{"id":"FR-01","month":"2026-05-01","value":25010},{"id":"FR-01","month":"2026-06-01","value":24610},{"id":"FR-01","month":"2026-07-01","value":24540},{"id":"FR-01","month":"2026-08-01","value":24320},{"id":"FR-01","month":"2026-09-01","value":24030},{"id":"FR-01","month":"2026-10-01","value":24000},{"id":"FR-02","month":"2025-11-01","value":26170},{"id":"FR-02","month":"2025-12-01","value":26010},{"id":"FR-02","month":"2026-01-01","value":25980},{"id":"FR-02","month":"2026-02-01","value":25690},{"id":"FR-02","month":"2026-03-01","value":25850},{"id":"FR-02","month":"2026-04-01","value":25640},{"id":"FR-02","month":"2026-05-01","value":25280},{"id":"FR-02","month":"2026-06-01","value":25240},{"id":"FR-02","month":"2026-07-01","value":24850},{"id":"FR-02","month":"2026-08-01","value":24750},{"id":"FR-02","month":"2026-09-01","value":24620},{"id":"FR-02","month":"2026-10-01","value":24450},{"id":"FR-03","month":"2025-11-01","value":28940},{"id":"FR-03","month":"2025-12-01","value":28580},{"id":"FR-03","month":"2026-01-01","value":28440},{"id":"FR-03","month":"2026-02-01","value":28490},{"id":"FR-03","month":"2026-03-01","value":28280},{"id":"FR-03","month":"2026-04-01","value":28270},{"id":"FR-03","month":"2026-05-01","value":27970},{"id":"FR-03","month":"2026-06-01","value":27600},{"id":"FR-03","month":"2026-07-01","value":27580},{"id":"FR-03","month":"2026-08-01","value":27240},{"id":"FR-03","month":"2026-09-01","value":27060},{"id":"FR-03","month":"2026-10-01","value":26990},{"id":"FR-04","month":"2025-11-01","value":26840},{"id":"FR-04","month":"2025-12-01","value":26760},{"id":"FR-04","month":"2026-01-01","value":26590},{"id":"FR-04","month":"2026-02-01","value":26340},{"id":"FR-04","month":"2026-03-01","value":26500},{"id":"FR-04","month":"2026-04-01","value":26170},{"id":"FR-04","month":"2026-05-01","value":25900},{"id":"FR-04","month":"2026-06-01","value":25760},{"id":"FR-04","month":"2026-07-01","value":25340},{"id":"FR-04","month":"2026-08-01","value":25300},{"id":"FR-04","month":"2026-09-01","value":25030},{"id":"FR-04","month":"2026-10-01","value":24900},{"id":"FR-05","month":"2025-11-01","value":21980},{"id":"FR-05","month":"2025-12-01","value":21650},{"id":"FR-05","month":"2026-01-01","value":21640},{"id":"FR-05","month":"2026-02-01","value":21600},{"id":"FR-05","month":"2026-03-01","value":21460},{"id":"FR-05","month":"2026-04-01","value":21510},{"id":"FR-05","month":"2026-05-01","value":21180},{"id":"FR-05","month":"2026-06-01","value":20990},{"id":"FR-05","month":"2026-07-01","value":20940},{"id":"FR-05","month":"2026-08-01","value":20640},{"id":"FR-05","month":"2026-09-01","value":20600},{"id":"FR-05","month":"2026-10-01","value":20490},{"id":"FR-06","month":"2025-11-01","value":21900},{"id":"FR-06","month":"2025-12-01","value":21910},{"id":"FR-06","month":"2026-01-01","value":21720},{"id":"FR-06","month":"2026-02-01","value":21660},{"id":"FR-06","month":"2026-03-01","value":21770},{"id":"FR-06","month":"2026-04-01","value":21520},{"id":"FR-06","month":"2026-05-01","value":21430},{"id":"FR-06","month":"2026-06-01","value":21250},{"id":"FR-06","month":"2026-07-01","value":21010},{"id":"FR-06","month":"2026-08-01","value":21030},{"id":"FR-06","month":"2026-09-01","value":20770},{"id":"FR-06","month":"2026-10-01","value":20750},{"id":"SA-01","month":"2025-11-01","value":31970},{"id":"SA-01","month":"2025-12-01","value":31450},{"id":"SA-01","month":"2026-01-01","value":31500},{"id":"SA-01","month":"2026-02-01","value":31250},{"id":"SA-01","month":"2026-03-01","value":31130},{"id":"SA-01","month":"2026-04-01","value":31150},{"id":"SA-01","month":"2026-05-01","value":30560},{"id":"SA-01","month":"2026-06-01","value":30380},{"id":"SA-01","month":"2026-07-01","value":30160},{"id":"SA-01","month":"2026-08-01","value":29730},{"id":"SA-01","month":"2026-09-01","value":29700},{"id":"SA-01","month":"2026-10-01","value":29450},{"id":"SA-02","month":"2025-11-01","value":31980},{"id":"SA-02","month":"2025-12-01","value":31910},{"id":"SA-02","month":"2026-01-01","value":31550},{"id":"SA-02","month":"2026-02-01","value":31570},{"id":"SA-02","month":"2026-03-01","value":31590},{"id":"SA-02","month":"2026-04-01","value":31260},{"id":"SA-02","month":"2026-05-01","value":31150},{"id":"SA-02","month":"2026-06-01","value":30730},{"id":"SA-02","month":"2026-07-01","value":30500},{"id":"SA-02","month":"2026-08-01","value":30430},{"id":"SA-02","month":"2026-09-01","value":29990},{"id":"SA-02","month":"2026-10-01","value":29990},{"id":"SA-03","month":"2025-11-01","value":31930},{"id":"SA-03","month":"2025-12-01","value":31460},{"id":"SA-03","month":"2026-01-01","value":31470},{"id":"SA-03","month":"2026-02-01","value":31070},{"id":"SA-03","month":"2026-03-01","value":31040},{"id":"SA-03","month":"2026-04-01","value":30910},{"id":"SA-03","month":"2026-05-01","value":30280},{"id":"SA-03","month":"2026-06-01","value":30160},{"id":"SA-03","month":"2026-07-01","value":29760},{"id":"SA-03","month":"2026-08-01","value":29390},{"id":"SA-03","month":"2026-09-01","value":29300},{"id":"SA-03","month":"2026-10-01","value":28990},{"id":"SA-04","month":"2025-11-01","value":23730},{"id":"SA-04","month":"2025-12-01","value":23590},{"id":"SA-04","month":"2026-01-01","value":23340},{"id":"SA-04","month":"2026-02-01","value":23420},{"id":"SA-04","month":"2026-03-01","value":23320},{"id":"SA-04","month":"2026-04-01","value":23180},{"id":"SA-04","month":"2026-05-01","value":23060},{"id":"SA-04","month":"2026-06-01","value":22710},{"id":"SA-04","month":"2026-07-01","value":22630},{"id":"SA-04","month":"2026-08-01","value":22480},{"id":"SA-04","month":"2026-09-01","value":22210},{"id":"SA-04","month":"2026-10-01","value":22200},{"id":"SA-05","month":"2025-11-01","value":27420},{"id":"SA-05","month":"2025-12-01","value":27190},{"id":"SA-05","month":"2026-01-01","value":27190},{"id":"SA-05","month":"2026-02-01","value":26860},{"id":"SA-05","month":"2026-03-01","value":27000},{"id":"SA-05","month":"2026-04-01","value":26810},{"id":"SA-05","month":"2026-05-01","value":26390},{"id":"SA-05","month":"2026-06-01","value":26350},{"id":"SA-05","month":"2026-07-01","value":25950},{"id":"SA-05","month":"2026-08-01","value":25800},{"id":"SA-05","month":"2026-09-01","value":25690},{"id":"SA-05","month":"2026-10-01","value":25490},{"id":"SA-06","month":"2025-11-01","value":23670},{"id":"SA-06","month":"2025-12-01","value":23410},{"id":"SA-06","month":"2026-01-01","value":23240},{"id":"SA-06","month":"2026-02-01","value":23290},{"id":"SA-06","month":"2026-03-01","value":23120},{"id":"SA-06","month":"2026-04-01","value":23070},{"id":"SA-06","month":"2026-05-01","value":22860},{"id":"SA-06","month":"2026-06-01","value":22520},{"id":"SA-06","month":"2026-07-01","value":22500},{"id":"SA-06","month":"2026-08-01","value":22240},{"id":"SA-06","month":"2026-09-01","value":22050},{"id":"SA-06","month":"2026-10-01","value":22000},{"id":"SF-01","month":"2025-11-01","value":29690},{"id":"SF-01","month":"2025-12-01","value":29590},{"id":"SF-01","month":"2026-01-01","value":29480},{"id":"SF-01","month":"2026-02-01","value":29210},{"id":"SF-01","month":"2026-03-01","value":29420},{"id":"SF-01","month":"2026-04-01","value":29120},{"id":"SF-01","month":"2026-05-01","value":28810},{"id":"SF-01","month":"2026-06-01","value":28720},{"id":"SF-01","month":"2026-07-01","value":28280},{"id":"SF-01","month":"2026-08-01","value":28250},{"id":"SF-01","month":"2026-09-01","value":28020},{"id":"SF-01","month":"2026-10-01","value":27880},{"id":"SF-02","month":"2025-11-01","value":30370},{"id":"SF-02","month":"2025-12-01","value":29900},{"id":"SF-02","month":"2026-01-01","value":29800},{"id":"SF-02","month":"2026-02-01","value":29750},{"id":"SF-02","month":"2026-03-01","value":29510},{"id":"SF-02","month":"2026-04-01","value":29520},{"id":"SF-02","month":"2026-05-01","value":29090},{"id":"SF-02","month":"2026-06-01","value":28740},{"id":"SF-02","month":"2026-07-01","value":28670},{"id":"SF-02","month":"2026-08-01","value":28240},{"id":"SF-02","month":"2026-09-01","value":28110},{"id":"SF-02","month":"2026-10-01","value":27950},{"id":"SF-03","month":"2025-11-01","value":32610},{"id":"SF-03","month":"2025-12-01","value":32500},{"id":"SF-03","month":"2026-01-01","value":32140},{"id":"SF-03","month":"2026-02-01","value":31890},{"id":"SF-03","month":"2026-03-01","value":31990},{"id":"SF-03","month":"2026-04-01","value":31520},{"id":"SF-03","month":"2026-05-01","value":31240},{"id":"SF-03","month":"2026-06-01","value":30920},{"id":"SF-03","month":"2026-07-01","value":30420},{"id":"SF-03","month":"2026-08-01","value":30350},{"id":"SF-03","month":"2026-09-01","value":29900},{"id":"SF-03","month":"2026-10-01","value":29750},{"id":"SF-04","month":"2025-11-01","value":26820},{"id":"SF-04","month":"2025-12-01","value":26390},{"id":"SF-04","month":"2026-01-01","value":26420},{"id":"SF-04","month":"2026-02-01","value":26260},{"id":"SF-04","month":"2026-03-01","value":26130},{"id":"SF-04","month":"2026-04-01","value":26170},{"id":"SF-04","month":"2026-05-01","value":25700},{"id":"SF-04","month":"2026-06-01","value":25520},{"id":"SF-04","month":"2026-07-01","value":25390},{"id":"SF-04","month":"2026-08-01","value":25010},{"id":"SF-04","month":"2026-09-01","value":24990},{"id":"SF-04","month":"2026-10-01","value":24800},{"id":"SF-05","month":"2025-11-01","value":25990},{"id":"SF-05","month":"2025-12-01","value":25980},{"id":"SF-05","month":"2026-01-01","value":25710},{"id":"SF-05","month":"2026-02-01","value":25720},{"id":"SF-05","month":"2026-03-01","value":25790},{"id":"SF-05","month":"2026-04-01","value":25520},{"id":"SF-05","month":"2026-05-01","value":25440},{"id":"SF-05","month":"2026-06-01","value":25150},{"id":"SF-05","month":"2026-07-01","value":24940},{"id":"SF-05","month":"2026-08-01","value":24930},{"id":"SF-05","month":"2026-09-01","value":24590},{"id":"SF-05","month":"2026-10-01","value":24600},{"id":"SF-06","month":"2025-11-01","value":22470},{"id":"SF-06","month":"2025-12-01","value":22170},{"id":"SF-06","month":"2026-01-01","value":22250},{"id":"SF-06","month":"2026-02-01","value":22040},{"id":"SF-06","month":"2026-03-01","value":22050},{"id":"SF-06","month":"2026-04-01","value":22040},{"id":"SF-06","month":"2026-05-01","value":21640},{"id":"SF-06","month":"2026-06-01","value":21590},{"id":"SF-06","month":"2026-07-01","value":21400},{"id":"SF-06","month":"2026-08-01","value":21160},{"id":"SF-06","month":"2026-09-01","value":21160},{"id":"SF-06","month":"2026-10-01","value":21000},{"id":"LA-01","month":"2025-11-01","value":24460},{"id":"LA-01","month":"2025-12-01","value":24340},{"id":"LA-01","month":"2026-01-01","value":24060},{"id":"LA-01","month":"2026-02-01","value":24110},{"id":"LA-01","month":"2026-03-01","value":24040},{"id":"LA-01","month":"2026-04-01","value":23840},{"id":"LA-01","month":"2026-05-01","value":23730},{"id":"LA-01","month":"2026-06-01","value":23370},{"id":"LA-01","month":"2026-07-01","value":23250},{"id":"LA-01","month":"2026-08-01","value":23130},{"id":"LA-01","month":"2026-09-01","value":22810},{"id":"LA-01","month":"2026-10-01","value":22800},{"id":"LA-02","month":"2025-11-01","value":29310},{"id":"LA-02","month":"2025-12-01","value":29040},{"id":"LA-02","month":"2026-01-01","value":29090},{"id":"LA-02","month":"2026-02-01","value":28760},{"id":"LA-02","month":"2026-03-01","value":28900},{"id":"LA-02","month":"2026-04-01","value":28770},{"id":"LA-02","month":"2026-05-01","value":28300},{"id":"LA-02","month":"2026-06-01","value":28280},{"id":"LA-02","month":"2026-07-01","value":27900},{"id":"LA-02","month":"2026-08-01","value":27720},{"id":"LA-02","month":"2026-09-01","value":27660},{"id":"LA-02","month":"2026-10-01","value":27450},{"id":"LA-03","month":"2025-11-01","value":25150},{"id":"LA-03","month":"2025-12-01","value":24900},{"id":"LA-03","month":"2026-01-01","value":24680},{"id":"LA-03","month":"2026-02-01","value":24740},{"id":"LA-03","month":"2026-03-01","value":24560},{"id":"LA-03","month":"2026-04-01","value":24470},{"id":"LA-03","month":"2026-05-01","value":24270},{"id":"LA-03","month":"2026-06-01","value":23880},{"id":"LA-03","month":"2026-07-01","value":23830},{"id":"LA-03","month":"2026-08-01","value":23590},{"id":"LA-03","month":"2026-09-01","value":23340},{"id":"LA-03","month":"2026-10-01","value":23290},{"id":"LA-04","month":"2025-11-01","value":30370},{"id":"LA-04","month":"2025-12-01","value":30250},{"id":"LA-04","month":"2026-01-01","value":30210},{"id":"LA-04","month":"2026-02-01","value":29920},{"id":"LA-04","month":"2026-03-01","value":30160},{"id":"LA-04","month":"2026-04-01","value":29910},{"id":"LA-04","month":"2026-05-01","value":29570},{"id":"LA-04","month":"2026-06-01","value":29530},{"id":"LA-04","month":"2026-07-01","value":29100},{"id":"LA-04","month":"2026-08-01","value":29060},{"id":"LA-04","month":"2026-09-01","value":28890},{"id":"LA-04","month":"2026-10-01","value":28750},{"id":"LA-05","month":"2025-11-01","value":27810},{"id":"LA-05","month":"2025-12-01","value":27410},{"id":"LA-05","month":"2026-01-01","value":27270},{"id":"LA-05","month":"2026-02-01","value":27260},{"id":"LA-05","month":"2026-03-01","value":27030},{"id":"LA-05","month":"2026-04-01","value":27020},{"id":"LA-05","month":"2026-05-01","value":26670},{"id":"LA-05","month":"2026-06-01","value":26310},{"id":"LA-05","month":"2026-07-01","value":26260},{"id":"LA-05","month":"2026-08-01","value":25880},{"id":"LA-05","month":"2026-09-01","value":25720},{"id":"LA-05","month":"2026-10-01","value":25600},{"id":"LA-06","month":"2025-11-01","value":20890},{"id":"LA-06","month":"2025-12-01","value":20880},{"id":"LA-06","month":"2026-01-01","value":20760},{"id":"LA-06","month":"2026-02-01","value":20630},{"id":"LA-06","month":"2026-03-01","value":20790},{"id":"LA-06","month":"2026-04-01","value":20560},{"id":"LA-06","month":"2026-05-01","value":20420},{"id":"LA-06","month":"2026-06-01","value":20310},{"id":"LA-06","month":"2026-07-01","value":20030},{"id":"LA-06","month":"2026-08-01","value":20050},{"id":"LA-06","month":"2026-09-01","value":19850},{"id":"LA-06","month":"2026-10-01","value":19800},{"id":"FR-07","month":"2025-11-01","value":21530},{"id":"FR-07","month":"2025-12-01","value":21200},{"id":"FR-07","month":"2026-01-01","value":21200},{"id":"FR-07","month":"2026-02-01","value":21120},{"id":"FR-07","month":"2026-03-01","value":21000},{"id":"FR-07","month":"2026-04-01","value":21040},{"id":"FR-07","month":"2026-05-01","value":20690},{"id":"FR-07","month":"2026-06-01","value":20520},{"id":"FR-07","month":"2026-07-01","value":20450},{"id":"FR-07","month":"2026-08-01","value":20150},{"id":"FR-07","month":"2026-09-01","value":20120},{"id":"FR-07","month":"2026-10-01","value":19990},{"id":"FR-08","month":"2025-11-01","value":25560},{"id":"FR-08","month":"2025-12-01","value":25530},{"id":"FR-08","month":"2026-01-01","value":25260},{"id":"FR-08","month":"2026-02-01","value":25200},{"id":"FR-08","month":"2026-03-01","value":25270},{"id":"FR-08","month":"2026-04-01","value":24960},{"id":"FR-08","month":"2026-05-01","value":24840},{"id":"FR-08","month":"2026-06-01","value":24570},{"id":"FR-08","month":"2026-07-01","value":24300},{"id":"FR-08","month":"2026-08-01","value":24280},{"id":"FR-08","month":"2026-09-01","value":23930},{"id":"FR-08","month":"2026-10-01","value":23900},{"id":"FR-09","month":"2025-11-01","value":27600},{"id":"FR-09","month":"2025-12-01","value":27230},{"id":"FR-09","month":"2026-01-01","value":27340},{"id":"FR-09","month":"2026-02-01","value":27140},{"id":"FR-09","month":"2026-03-01","value":27120},{"id":"FR-09","month":"2026-04-01","value":27170},{"id":"FR-09","month":"2026-05-01","value":26690},{"id":"FR-09","month":"2026-06-01","value":26630},{"id":"FR-09","month":"2026-07-01","value":26450},{"id":"FR-09","month":"2026-08-01","value":26140},{"id":"FR-09","month":"2026-09-01","value":26170},{"id":"FR-09","month":"2026-10-01","value":25990},{"id":"FR-10","month":"2025-11-01","value":20000},{"id":"FR-10","month":"2025-12-01","value":19850},{"id":"FR-10","month":"2026-01-01","value":19540},{"id":"FR-10","month":"2026-02-01","value":19500},{"id":"FR-10","month":"2026-03-01","value":19390},{"id":"FR-10","month":"2026-04-01","value":19140},{"id":"FR-10","month":"2026-05-01","value":18980},{"id":"FR-10","month":"2026-06-01","value":18640},{"id":"FR-10","month":"2026-07-01","value":18450},{"id":"FR-10","month":"2026-08-01","value":18310},{"id":"FR-10","month":"2026-09-01","value":17970},{"id":"FR-10","month":"2026-10-01","value":17900},{"id":"SA-07","month":"2025-11-01","value":29000},{"id":"SA-07","month":"2025-12-01","value":28720},{"id":"SA-07","month":"2026-01-01","value":28830},{"id":"SA-07","month":"2026-02-01","value":28550},{"id":"SA-07","month":"2026-03-01","value":28680},{"id":"SA-07","month":"2026-04-01","value":28630},{"id":"SA-07","month":"2026-05-01","value":28170},{"id":"SA-07","month":"2026-06-01","value":28180},{"id":"SA-07","month":"2026-07-01","value":27870},{"id":"SA-07","month":"2026-08-01","value":27670},{"id":"SA-07","month":"2026-09-01","value":27680},{"id":"SA-07","month":"2026-10-01","value":27490},{"id":"SA-08","month":"2025-11-01","value":25460},{"id":"SA-08","month":"2025-12-01","value":25260},{"id":"SA-08","month":"2026-01-01","value":25010},{"id":"SA-08","month":"2026-02-01","value":25090},{"id":"SA-08","month":"2026-03-01","value":24950},{"id":"SA-08","month":"2026-04-01","value":24820},{"id":"SA-08","month":"2026-05-01","value":24660},{"id":"SA-08","month":"2026-06-01","value":24270},{"id":"SA-08","month":"2026-07-01","value":24210},{"id":"SA-08","month":"2026-08-01","value":24000},{"id":"SA-08","month":"2026-09-01","value":23730},{"id":"SA-08","month":"2026-10-01","value":23700},{"id":"SA-09","month":"2025-11-01","value":25480},{"id":"SA-09","month":"2025-12-01","value":25270},{"id":"SA-09","month":"2026-01-01","value":25210},{"id":"SA-09","month":"2026-02-01","value":24890},{"id":"SA-09","month":"2026-03-01","value":25000},{"id":"SA-09","month":"2026-04-01","value":24760},{"id":"SA-09","month":"2026-05-01","value":24380},{"id":"SA-09","month":"2026-06-01","value":24300},{"id":"SA-09","month":"2026-07-01","value":23890},{"id":"SA-09","month":"2026-08-01","value":23760},{"id":"SA-09","month":"2026-09-01","value":23600},{"id":"SA-09","month":"2026-10-01","value":23400},{"id":"SA-10","month":"2025-11-01","value":32140},{"id":"SA-10","month":"2025-12-01","value":31710},{"id":"SA-10","month":"2026-01-01","value":31510},{"id":"SA-10","month":"2026-02-01","value":31530},{"id":"SA-10","month":"2026-03-01","value":31270},{"id":"SA-10","month":"2026-04-01","value":31220},{"id":"SA-10","month":"2026-05-01","value":30860},{"id":"SA-10","month":"2026-06-01","value":30410},{"id":"SA-10","month":"2026-07-01","value":30360},{"id":"SA-10","month":"2026-08-01","value":29950},{"id":"SA-10","month":"2026-09-01","value":29710},{"id":"SA-10","month":"2026-10-01","value":29600},{"id":"SF-07","month":"2025-11-01","value":24530},{"id":"SF-07","month":"2025-12-01","value":24470},{"id":"SF-07","month":"2026-01-01","value":24340},{"id":"SF-07","month":"2026-02-01","value":24130},{"id":"SF-07","month":"2026-03-01","value":24290},{"id":"SF-07","month":"2026-04-01","value":24010},{"id":"SF-07","month":"2026-05-01","value":23780},{"id":"SF-07","month":"2026-06-01","value":23670},{"id":"SF-07","month":"2026-07-01","value":23300},{"id":"SF-07","month":"2026-08-01","value":23290},{"id":"SF-07","month":"2026-09-01","value":23050},{"id":"SF-07","month":"2026-10-01","value":22950},{"id":"SF-08","month":"2025-11-01","value":31380},{"id":"SF-08","month":"2025-12-01","value":30910},{"id":"SF-08","month":"2026-01-01","value":30890},{"id":"SF-08","month":"2026-02-01","value":30830},{"id":"SF-08","month":"2026-03-01","value":30630},{"id":"SF-08","month":"2026-04-01","value":30700},{"id":"SF-08","month":"2026-05-01","value":30240},{"id":"SF-08","month":"2026-06-01","value":29960},{"id":"SF-08","month":"2026-07-01","value":29900},{"id":"SF-08","month":"2026-08-01","value":29470},{"id":"SF-08","month":"2026-09-01","value":29400},{"id":"SF-08","month":"2026-10-01","value":29250},{"id":"SF-09","month":"2025-11-01","value":24560},{"id":"SF-09","month":"2025-12-01","value":24480},{"id":"SF-09","month":"2026-01-01","value":24180},{"id":"SF-09","month":"2026-02-01","value":24030},{"id":"SF-09","month":"2026-03-01","value":24080},{"id":"SF-09","month":"2026-04-01","value":23720},{"id":"SF-09","month":"2026-05-01","value":23540},{"id":"SF-09","month":"2026-06-01","value":23260},{"id":"SF-09","month":"2026-07-01","value":22920},{"id":"SF-09","month":"2026-08-01","value":22860},{"id":"SF-09","month":"2026-09-01","value":22500},{"id":"SF-09","month":"2026-10-01","value":22400},{"id":"SF-10","month":"2025-11-01","value":24090},{"id":"SF-10","month":"2025-12-01","value":23620},{"id":"SF-10","month":"2026-01-01","value":23560},{"id":"SF-10","month":"2026-02-01","value":23290},{"id":"SF-10","month":"2026-03-01","value":23110},{"id":"SF-10","month":"2026-04-01","value":23040},{"id":"SF-10","month":"2026-05-01","value":22520},{"id":"SF-10","month":"2026-06-01","value":22300},{"id":"SF-10","month":"2026-07-01","value":22060},{"id":"SF-10","month":"2026-08-01","value":21660},{"id":"SF-10","month":"2026-09-01","value":21560},{"id":"SF-10","month":"2026-10-01","value":21300},{"id":"LA-07","month":"2025-11-01","value":30420},{"id":"LA-07","month":"2025-12-01","value":30390},{"id":"LA-07","month":"2026-01-01","value":30080},{"id":"LA-07","month":"2026-02-01","value":30140},{"id":"LA-07","month":"2026-03-01","value":30190},{"id":"LA-07","month":"2026-04-01","value":29910},{"id":"LA-07","month":"2026-05-01","value":29840},{"id":"LA-07","month":"2026-06-01","value":29480},{"id":"LA-07","month":"2026-07-01","value":29290},{"id":"LA-07","month":"2026-08-01","value":29260},{"id":"LA-07","month":"2026-09-01","value":28870},{"id":"LA-07","month":"2026-10-01","value":28900},{"id":"LA-08","month":"2025-11-01","value":24920},{"id":"LA-08","month":"2025-12-01","value":24600},{"id":"LA-08","month":"2026-01-01","value":24680},{"id":"LA-08","month":"2026-02-01","value":24410},{"id":"LA-08","month":"2026-03-01","value":24450},{"id":"LA-08","month":"2026-04-01","value":24400},{"id":"LA-08","month":"2026-05-01","value":23960},{"id":"LA-08","month":"2026-06-01","value":23920},{"id":"LA-08","month":"2026-07-01","value":23650},{"id":"LA-08","month":"2026-08-01","value":23410},{"id":"LA-08","month":"2026-09-01","value":23400},{"id":"LA-08","month":"2026-10-01","value":23200},{"id":"LA-09","month":"2025-11-01","value":27610},{"id":"LA-09","month":"2025-12-01","value":27410},{"id":"LA-09","month":"2026-01-01","value":27100},{"id":"LA-09","month":"2026-02-01","value":27150},{"id":"LA-09","month":"2026-03-01","value":27010},{"id":"LA-09","month":"2026-04-01","value":26810},{"id":"LA-09","month":"2026-05-01","value":26640},{"id":"LA-09","month":"2026-06-01","value":26200},{"id":"LA-09","month":"2026-07-01","value":26090},{"id":"LA-09","month":"2026-08-01","value":25890},{"id":"LA-09","month":"2026-09-01","value":25540},{"id":"LA-09","month":"2026-10-01","value":25500},{"id":"LA-10","month":"2025-11-01","value":21660},{"id":"LA-10","month":"2025-12-01","value":21410},{"id":"LA-10","month":"2026-01-01","value":21340},{"id":"LA-10","month":"2026-02-01","value":21010},{"id":"LA-10","month":"2026-03-01","value":21040},{"id":"LA-10","month":"2026-04-01","value":20830},{"id":"LA-10","month":"2026-05-01","value":20430},{"id":"LA-10","month":"2026-06-01","value":20330},{"id":"LA-10","month":"2026-07-01","value":19950},{"id":"LA-10","month":"2026-08-01","value":19770},{"id":"LA-10","month":"2026-09-01","value":19620},{"id":"LA-10","month":"2026-10-01","value":19400}], dealers: [
+  {"dealer": "Clawson Honda of Fresno", "city": "Fresno", "region": "Central Valley", "zip": "93711", "rating": "CarEdge A · 96/100", "basis_en": "8 verified out-the-door quotes", "basis_pt": "8 cotações finais verificadas", "source": "CarEdge", "source_url": "https://caredge.com/dealers/honda/near/fresno-ca"},
+  {"dealer": "Toyota of Clovis", "city": "Fresno", "region": "Central Valley", "zip": "93612", "rating": "CarEdge · 99/100", "basis_en": "9 verified out-the-door quotes", "basis_pt": "9 cotações finais verificadas", "source": "CarEdge", "source_url": "https://caredge.com/dealers/toyota/near/fresno-ca"},
+  {"dealer": "Maita Toyota of Sacramento", "city": "Sacramento", "region": "Northern California", "zip": "95821", "rating": "CarEdge A · 96/100", "basis_en": "32 verified out-the-door quotes", "basis_pt": "32 cotações finais verificadas", "source": "CarEdge", "source_url": "https://caredge.com/guides/best-used-car-dealerships-sacramento/"},
+  {"dealer": "Folsom Lake Toyota", "city": "Sacramento", "region": "Northern California", "zip": "95630", "rating": "CarEdge · 97/100", "basis_en": "Top-graded Toyota dealer in the Sacramento metro", "basis_pt": "Concessionária Toyota mais bem avaliada da região de Sacramento", "source": "CarEdge", "source_url": "https://caredge.com/guides/best-toyota-dealerships-sacramento"},
+  {"dealer": "AutoNation Honda Roseville", "city": "Sacramento", "region": "Northern California", "zip": "95661", "rating": "Google · 4.7/5", "basis_en": "Google customer reviews", "basis_pt": "Avaliações de clientes no Google", "source": "Capital One Auto Navigator", "source_url": "https://www.capitalone.com/cars/dealership/ROSEVILLE-CA/AUTONATION+HONDA+ROSEVILLE/19065"},
+  {"dealer": "San Francisco Toyota", "city": "San Francisco", "region": "Northern California", "zip": "94109", "rating": "Carfax · 4.8/5", "basis_en": "41 verified reviews", "basis_pt": "41 avaliações verificadas", "source": "Carfax", "source_url": "https://www.carfax.com/Reviews-San-Francisco-Toyota-Van-Ness-San-Francisco-CA_EGR876T001"},
+  {"dealer": "San Francisco Honda", "city": "San Francisco", "region": "Northern California", "zip": "94103", "rating": "DealerRater · 4.6/5", "basis_en": "DealerRater customer reviews", "basis_pt": "Avaliações de clientes no DealerRater", "source": "DealerRater", "source_url": "https://www.dealerrater.com/directory/z/94002/Used-Car-Dealer"},
+  {"dealer": "Victory Toyota of San Bruno", "city": "San Francisco", "region": "Northern California", "zip": "94066", "rating": "DealerRater · 4.5/5", "basis_en": "DealerRater customer reviews", "basis_pt": "Avaliações de clientes no DealerRater", "source": "DealerRater", "source_url": "https://www.dealerrater.com/directory/z/94002/Used-Car-Dealer"},
+  {"dealer": "Toyota of Downtown L.A.", "city": "Los Angeles", "region": "Southern California", "zip": "90015", "rating": "DealerRater · 4.7/5", "basis_en": "1,831 customer reviews", "basis_pt": "1.831 avaliações de clientes", "source": "DealerRater", "source_url": "https://dealerrater.com/dealer/toyota-of-downtown-la-review-26053"},
+  {"dealer": "Gardena Honda", "city": "Los Angeles", "region": "Southern California", "zip": "90248", "rating": "CarEdge A · 100/100", "basis_en": "Top-graded Honda dealer in the LA metro", "basis_pt": "Concessionária Honda mais bem avaliada da região de LA", "source": "CarEdge", "source_url": "https://caredge.com/guides/best-car-dealerships-los-angeles/"},
+  {"dealer": "Northridge Toyota", "city": "Los Angeles", "region": "Southern California", "zip": "91324", "rating": "CarEdge · 100/100", "basis_en": "3 verified out-the-door quotes", "basis_pt": "3 cotações finais verificadas", "source": "CarEdge", "source_url": "https://caredge.com/guides/best-toyota-dealerships-los-angeles"}
+]
+};</script>
+<script>
+/* Minimal stand-in for the dashboard runtime: serves the embedded data and calculations. */
+window.dash = (() => {
+  const raw = window.__CF_DATA, calcs = {}, cbs = [];
+  const data = (id) => {
+    if (raw[id]) return {status: 'ok', data: raw[id], refreshing: false, meta: []};
+    const c = calcs[id];
+    if (c) { if (!c.value) c.value = c.fn(...c.inputs.map((i) => data(i).data)); return {status: 'ok', data: c.value, refreshing: false, meta: []}; }
+    return {status: 'missing', data: [], refreshing: false, meta: []};
+  };
+  let width = window.innerWidth, timer;
+  window.addEventListener('resize', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { if (window.innerWidth !== width) { width = window.innerWidth; cbs.forEach((f) => f()); } }, 150);
+  });
+  return {
+    data, calc: (id, o) => { calcs[id] = {...o}; }, onData: (fn) => { cbs.push(fn); fn(); },
+    colors: ['var(--s0)', 'var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)'],
+    params: () => ({}), setParams() {}, resetParams() {}, setLink() {}, refresh() {}, loader() {}
+  };
+})();
+</script>
+
+<style>
+.cf{display:flex;flex-direction:column;gap:var(--cds-gap-xl);font-family:var(--font-anthropic-sans);color:var(--color-fg);max-width:88rem;margin-inline:auto;width:100%}
+.cf h2{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0;text-wrap:balance}
+.cf h3{font-size:var(--cds-font-size-body);font-weight:var(--cds-font-weight-medium);margin:0}
+.cf-sub{margin:0;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.cf-head{display:flex;flex-wrap:wrap;gap:var(--cds-gap-md);justify-content:space-between;align-items:flex-start}
+.cf-head>div:first-child{min-width:0;flex:1 1 20rem}
+.cf-title{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0;text-wrap:balance}
+.cf-take{margin:var(--cds-gap-xs) 0 0;color:var(--color-fg-muted);max-width:68ch}
+.cf-lang{display:flex;gap:var(--cds-gap-xs)}
+.cf-flag{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--color-border-line);background:var(--color-panel);color:var(--color-fg);border-radius:999px;padding:4px 10px 4px 6px;cursor:pointer;font:inherit;font-size:var(--cds-font-size-caption)}
+.cf-flag svg{width:24px;height:16px;border-radius:2px;display:block;flex:none}
+.cf-flag[aria-pressed="true"]{border-color:var(--color-fg);box-shadow:inset 0 0 0 1px var(--color-fg);font-weight:var(--cds-font-weight-medium)}
+.cf-note{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);border:1px dashed var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-sm) var(--cds-pad-md);margin:0;max-width:110ch}
+.cf-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr));gap:var(--cds-gap-md);background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);align-items:end}
+.cf-field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cf-field.cf-wide{grid-column:span 2}
+@media (max-width:30rem){.cf-field.cf-wide{grid-column:auto}}
+.cf-label{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);letter-spacing:.05em;text-transform:uppercase;display:flex;justify-content:space-between;gap:6px}
+.cf-val{font-variant-numeric:tabular-nums;color:var(--color-fg);letter-spacing:0;text-transform:none;font-weight:var(--cds-font-weight-medium)}
+.cf-field select{font:inherit;padding:6px 8px;border:1px solid var(--color-border-line);border-radius:var(--cds-radius);background:var(--color-bg);color:var(--color-fg);min-width:0}
+.cf-field input[type="range"]{width:100%;accent-color:var(--color-fg);margin:6px 0}
+.cf-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cf-chip,.cf-btn{font:inherit;font-size:var(--cds-font-size-caption);border:1px solid var(--color-border-line);background:var(--color-bg);color:var(--color-fg);border-radius:999px;padding:5px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.cf-chip i{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.cf-chip[aria-pressed="true"]{background:var(--color-fg);color:var(--color-bg);border-color:var(--color-fg)}
+.cf-btn:hover,.cf-chip:hover,.cf-flag:hover{border-color:var(--color-fg)}
+.cf :focus-visible{outline:2px solid var(--color-fg);outline-offset:2px}
+.cf-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9.5rem),1fr));gap:var(--cds-gap-md)}
+.cf-kpi{border-top:1px solid var(--color-border-line);padding-top:var(--cds-pad-sm);display:flex;flex-direction:column;gap:4px;min-width:0}
+.cf-kpi b{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);font-variant-numeric:tabular-nums;line-height:1.1}
+.cf-sec{display:flex;flex-direction:column;gap:var(--cds-gap-md)}
+.cf-sechead{display:flex;flex-direction:column;gap:2px}
+.cf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:var(--cds-gap-md)}
+.cf-picks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:var(--cds-gap-md)}
+.cf-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);display:flex;flex-direction:column;gap:var(--cds-gap-sm);min-width:0}
+.cf-pick .cf-eyebrow{font-size:var(--cds-font-size-caption);letter-spacing:.05em;text-transform:uppercase;color:var(--color-fg-muted)}
+.cf-pick .cf-name{font-weight:var(--cds-font-weight-medium)}
+.cf-price{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);font-variant-numeric:tabular-nums;line-height:1.1}
+.cf-why{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.cf-pick .cf-btn{align-self:flex-start;margin-top:auto}
+.cf-box{position:relative;min-height:240px}
+.cf-box svg{display:block}
+.cf-tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);border-radius:var(--cds-radius);box-shadow:var(--cds-shadow-popover);padding:var(--cds-pad-xs) var(--cds-pad-sm);font-size:var(--cds-font-size-caption);white-space:nowrap;z-index:2}
+.cf-tip .cf-tipk{color:var(--cds-text-secondary)}
+.cf-tick{fill:var(--color-fg-muted);font-size:11px;font-family:var(--font-anthropic-sans)}
+.cf-endlab{font-size:12px;font-family:var(--font-anthropic-sans);font-weight:500}
+.cf-legend{display:flex;flex-wrap:wrap;gap:var(--cds-gap-sm);font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.cf-legend span{display:inline-flex;align-items:center;gap:5px}
+.cf-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.cf-tablewrap{overflow:auto;max-height:34rem;border:1px solid var(--color-border-line);border-radius:var(--cds-radius);background:var(--color-panel)}
+.cf table{border-collapse:collapse;width:100%;font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums}
+.cf th{position:sticky;top:0;background:var(--color-panel);text-align:left;border-bottom:1px solid var(--color-border-line);padding:0;white-space:nowrap;z-index:1}
+.cf th button{all:unset;cursor:pointer;display:block;padding:10px 12px;color:var(--color-fg-muted);font-weight:var(--cds-font-weight-medium)}
+.cf th button:hover{color:var(--color-fg)}
+.cf th button:focus-visible{outline:2px solid var(--color-fg);outline-offset:-2px}
+.cf th .cf-plain{display:block;padding:10px 12px;color:var(--color-fg-muted);font-weight:var(--cds-font-weight-medium)}
+.cf td{padding:9px 12px;border-bottom:1px solid var(--color-border-line);vertical-align:top}
+.cf td.cf-num,.cf th.cf-num{text-align:right}
+.cf th.cf-num button{text-align:right}
+.cf td.cf-opts{min-width:16rem;color:var(--color-fg-muted)}
+.cf tbody tr{cursor:pointer}
+.cf tbody tr:hover td{background:var(--color-bg)}
+.cf td a,.cf-card a{color:var(--color-fg);text-underline-offset:3px}
+.cf-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.cf-cars{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,23rem),1fr));gap:var(--cds-gap-md)}
+.cf-car{scroll-margin-top:24px}
+.cf-car.cf-flash{animation:none}
+@media (prefers-reduced-motion:no-preference){.cf-car.cf-flash{animation:cf-flash 1.4s var(--cds-ease-out)}@keyframes cf-flash{0%{box-shadow:0 0 0 3px var(--color-fg)}100%{box-shadow:0 0 0 0 transparent}}}
+.cf-cartop{display:flex;justify-content:space-between;gap:var(--cds-gap-sm);align-items:flex-start}
+.cf-cartop>div:first-child{min-width:0}
+.cf-carname{font-weight:var(--cds-font-weight-medium);font-size:var(--cds-font-size-body)}
+.cf-stats{display:flex;flex-wrap:wrap;gap:6px}
+.cf-stat{font-size:var(--cds-font-size-caption);border:1px solid var(--color-border-line);border-radius:999px;padding:2px 9px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cf-desc{margin:0;line-height:1.5}
+.cf-stat.cf-prefb{border-color:var(--color-fg);font-weight:var(--cds-font-weight-medium)}
+.cf-star::after{content:"\2605";margin-left:6px;color:var(--color-warn)}
+.cf-pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:var(--cds-gap-sm)}
+.cf-pc ul{margin:4px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:var(--cds-font-size-caption);line-height:1.4}
+.cf-pc li{display:flex;gap:6px}
+.cf-pc li::before{flex:none;font-weight:700}
+.cf-pros li::before{content:"+";color:var(--color-ok)}
+.cf-cons li::before{content:"\2212";color:var(--color-bad)}
+.cf-pros h3{color:var(--color-ok)}
+.cf-cons h3{color:var(--color-bad)}
+.cf-mini{position:relative;min-height:150px}
+.cf-deprow{display:flex;justify-content:space-between;align-items:baseline;gap:6px;flex-wrap:wrap}
+.cf-chg{font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums;font-weight:var(--cds-font-weight-medium)}
+.cf-cardfoot{display:flex;justify-content:space-between;align-items:center;gap:var(--cds-gap-sm);flex-wrap:wrap;font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);border-top:1px solid var(--color-border-line);padding-top:var(--cds-pad-sm)}
+.cf-empty{padding:var(--cds-pad-lg);text-align:center;color:var(--color-fg-muted);border:1px dashed var(--color-border-line);border-radius:var(--cds-radius)}
+.cf-method{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);line-height:1.55;max-width:90ch}
+.cf-method p{margin:0 0 6px}
+.cf-fail{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--color-fg-muted);font-size:var(--cds-font-size-caption);min-height:inherit}
+.cf-fail::before{content:"";width:.375rem;height:.375rem;border-radius:50%;background:var(--color-bad)}
+[data-dash-source-state=refreshing]{opacity:.5;transition:opacity var(--cds-dur-slow)}
+</style>
+
+<div class="cf" id="top">
+  <header class="cf-head" id="header">
+    <div>
+      <h1 class="cf-title" data-i18n="title">California Used Car Finder</h1>
+      <p class="cf-take" id="takeaway" data-source="vehicles scores">—</p>
+    </div>
+    <div class="cf-lang" role="group" aria-label="Language">
+      <button type="button" class="cf-flag" id="lang-en" data-lang="en" aria-pressed="true">
+        <svg viewBox="0 0 38 20" aria-hidden="true"><rect width="38" height="20" fill="#B22234"/><g fill="#FFFFFF"><rect y="1.54" width="38" height="1.54"/><rect y="4.62" width="38" height="1.54"/><rect y="7.69" width="38" height="1.54"/><rect y="10.77" width="38" height="1.54"/><rect y="13.85" width="38" height="1.54"/><rect y="16.92" width="38" height="1.54"/></g><rect width="15.2" height="10.77" fill="#3C3B6E"/><g fill="#FFFFFF"><circle cx="2.5" cy="2" r=".7"/><circle cx="6" cy="2" r=".7"/><circle cx="9.5" cy="2" r=".7"/><circle cx="13" cy="2" r=".7"/><circle cx="4.2" cy="4.2" r=".7"/><circle cx="7.7" cy="4.2" r=".7"/><circle cx="11.2" cy="4.2" r=".7"/><circle cx="2.5" cy="6.4" r=".7"/><circle cx="6" cy="6.4" r=".7"/><circle cx="9.5" cy="6.4" r=".7"/><circle cx="13" cy="6.4" r=".7"/><circle cx="4.2" cy="8.6" r=".7"/><circle cx="7.7" cy="8.6" r=".7"/><circle cx="11.2" cy="8.6" r=".7"/></g></svg>
+        <span>English</span>
+      </button>
+      <button type="button" class="cf-flag" id="lang-pt" data-lang="pt" aria-pressed="false">
+        <svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#009C3B"/><polygon points="15,2 28,10 15,18 2,10" fill="#FFDF00"/><circle cx="15" cy="10" r="4.6" fill="#002776"/><path d="M10.6 9.2c3-.9 6.3-.6 8.9 1" stroke="#FFFFFF" stroke-width=".8" fill="none"/></svg>
+        <span>Português</span>
+      </button>
+    </div>
+  </header>
+
+  <p class="cf-note" id="note" data-i18n="note"></p>
+
+  <section class="cf-filters" id="filters" aria-label="Filters">
+    <label class="cf-field"><span class="cf-label" data-i18n="fRegion"></span><select id="f-region"></select></label>
+    <label class="cf-field"><span class="cf-label" data-i18n="fCity"></span><select id="f-city"></select></label>
+    <label class="cf-field"><span class="cf-label" data-i18n="fMake"></span><select id="f-make"></select></label>
+    <div class="cf-field cf-wide"><span class="cf-label" data-i18n="fModels"></span><div class="cf-chips" id="f-models"></div><span class="cf-sub" data-i18n="fModelsHint"></span></div>
+    <label class="cf-field"><span class="cf-label"><span data-i18n="fMiles"></span><span class="cf-val" id="v-miles"></span></span><input type="range" id="f-miles" min="10000" max="60000" step="2500" value="60000"></label>
+    <label class="cf-field"><span class="cf-label"><span data-i18n="fMin"></span><span class="cf-val" id="v-min"></span></span><input type="range" id="f-min" min="15000" max="30000" step="500" value="15000"></label>
+    <label class="cf-field"><span class="cf-label"><span data-i18n="fMax"></span><span class="cf-val" id="v-max"></span></span><input type="range" id="f-max" min="15000" max="30000" step="500" value="30000"></label>
+    <div class="cf-field"><button type="button" class="cf-btn" id="f-reset" data-i18n="reset"></button></div>
+  </section>
+
+  <section class="cf-kpis" id="kpis" data-source="vehicles scores" aria-label="Summary"></section>
+
+  <section class="cf-sec" id="recommendations">
+    <div class="cf-sechead"><h2 data-i18n="picks"></h2><p class="cf-sub" data-i18n="picksNote"></p></div>
+    <div class="cf-picks" id="picks" data-source="vehicles scores"></div>
+  </section>
+
+  <section class="cf-sec" id="charts">
+    <div class="cf-grid">
+      <div class="cf-card" id="card-scatter">
+        <div class="cf-sechead"><h2 data-i18n="scatter"></h2><p class="cf-sub" data-i18n="scatterNote"></p></div>
+        <div class="cf-legend" id="legend-models"></div>
+        <div class="cf-box" id="chart-scatter" data-source="vehicles"></div>
+      </div>
+      <div class="cf-card" id="card-city">
+        <div class="cf-sechead"><h2 data-i18n="city"></h2><p class="cf-sub" data-i18n="cityNote"></p></div>
+        <div class="cf-box" id="chart-city" data-source="vehicles"></div>
+      </div>
+      <div class="cf-card" id="card-index">
+        <div class="cf-sechead"><h2 data-i18n="index"></h2><p class="cf-sub" data-i18n="indexNote"></p></div>
+        <div class="cf-box" id="chart-index" data-source="vehicles depreciation"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cf-sec" id="listings">
+    <div class="cf-sechead"><h2 data-i18n="table"></h2><p class="cf-sub" data-i18n="tableNote"></p></div>
+    <div class="cf-tablewrap">
+      <table id="table-cars" data-source="vehicles" data-row-key="id">
+        <thead><tr id="thead-cars"></tr></thead>
+        <tbody id="tbody-cars"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cf-sec" id="analysis">
+    <div class="cf-sechead"><h2 data-i18n="cards"></h2><p class="cf-sub" data-i18n="cardsNote"></p></div>
+    <div class="cf-cars" id="cars" data-source="vehicles depreciation scores"></div>
+  </section>
+
+  <section class="cf-sec" id="dealers">
+    <div class="cf-sechead"><h2 data-i18n="dealers"></h2><p class="cf-sub" data-i18n="dealersNote"></p></div>
+    <div class="cf-tablewrap">
+      <table id="table-dealers" data-source="dealers" data-row-key="dealer">
+        <thead><tr id="thead-dealers"></tr></thead>
+        <tbody id="tbody-dealers"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cf-sec cf-method" id="method">
+    <h2 data-i18n="method"></h2>
+    <p data-i18n="m1"></p>
+    <p data-i18n="m2"></p>
+    <p data-i18n="m3"></p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const T = {
+    en: {
+      title: 'California Used Car Finder',
+      note: 'Example listings. Dealer names and ratings are real and were checked online in October 2026. The individual cars, prices and 12-month value history are modeled estimates of what these dealers typically stock. "Live search" opens Cars.com filtered to the same model, year, price (≤ $30,000) and mileage (≤ 60,000 mi) near that dealer, so you can see current ads.',
+      take0: 'No cars match these filters yet.',
+      take: (n, p, car, dealer, price) => `${n} cars match your filters, ${p} of them your preferred models. Best overall value: ${car} at ${dealer} for ${price}.`,
+      fRegion: 'Region', fCity: 'City', fMake: 'Car', fModels: 'Preferred car', fModelsHint: 'Optional. Pick one or more to see only those.', fMiles: 'Max miles', fMin: 'Min price', fMax: 'Max price',
+      allRegions: 'All regions', allCities: 'All cities', allMakes: 'All cars', reset: 'Reset filters',
+      kMatches: 'Matching cars', kPref: 'Preferred models', kLow: 'Lowest price', kAvg: 'Average price', kMiles: 'Average miles', kMpy: 'Avg miles per year', kChg: 'Avg 12-month value change',
+      picks: 'Recommendations', picksNote: 'Picked from the cars that match your filters.',
+      pBest: 'Best overall value', pPref: 'Best of your preferred cars', pBudget: 'Lowest price', pMpg: 'Best fuel economy', pRet: 'Holds value best',
+      wBest: (s) => `Value score ${s}/100`, wBudget: (m) => `${m} on the odometer`, wMpg: (g) => `${g} mpg combined`, wRet: (c) => `${c} in 12 months`,
+      details: 'See details', others: 'Other models', prefBadge: '★ Preferred',
+      scatter: 'Price vs. miles', scatterNote: 'Each dot is a car. Preferred models in color, other models in grey. Lower left is cheaper and less driven.',
+      city: 'Average price by city', cityNote: 'Cars that match your filters.',
+      index: 'Value over the last 12 months', indexNote: 'Average value by model, November 2025 = 100. Other makes and models are averaged together.',
+      table: 'Listings', tableNote: 'Click a column to sort. Click a row to jump to that car\'s analysis.',
+      cDealer: 'Dealer', cVehicle: 'Vehicle', cTrim: 'Trim', cPrice: 'Price', cYear: 'Year (built/model)', cMiles: 'Miles', cMpy: 'Miles/yr', cOpts: 'Key options', cLink: 'Ad link',
+      linkText: 'Live search ↗',
+      cards: 'Car-by-car analysis', cardsNote: 'Description, advantages, drawbacks and value over the last 12 months for each car.',
+      pros: 'Advantages', cons: 'Drawbacks', dep: 'Value, last 12 months', score: 'Value score', perYr: 'mi/yr',
+      dealers: 'Trusted dealers', dealersNote: 'Only dealers with strong public ratings or top price-transparency grades are included.',
+      dDealer: 'Dealer', dCity: 'City', dRating: 'Rating', dBasis: 'Based on', dSource: 'Source',
+      empty: 'No cars match these filters. Try raising the max miles or the price range.',
+      method: 'How the numbers work',
+      m1: 'Miles per year = odometer miles ÷ years in service. A model year goes on sale the autumn before, so each car is counted from the middle of its sale period.',
+      m2: 'Value history is modeled from typical 2025–26 California used-market depreciation for each model and trim (newer cars lose value faster, spring tax-refund season lifts prices slightly). Each line ends at today\'s asking price.',
+      m3: 'Value score (0–100) weighs price 35%, miles per year 25%, 12-month value retention 20% and fuel economy 20%, scaled across all listed cars.',
+      regions: {'Central Valley': 'Central Valley', 'Northern California': 'Northern California', 'Southern California': 'Southern California'},
+      loc: 'en-US', mi: 'mi'
+    },
+    pt: {
+      title: 'Buscador de Seminovos na Califórnia',
+      note: 'Anúncios de exemplo. Os nomes e as avaliações das concessionárias são reais e foram verificados na internet em outubro de 2026. Os carros, preços e o histórico de valor de 12 meses são estimativas modeladas do que essas lojas costumam ter. "Ver anúncios" abre o Cars.com filtrado pelo mesmo modelo, ano, valor (≤ US$ 30.000) e milhas (≤ 60.000 mi) perto da loja, para você ver os anúncios atuais.',
+      take0: 'Nenhum carro atende a esses filtros.',
+      take: (n, p, car, dealer, price) => `${n} carros atendem aos seus filtros, ${p} deles dos seus modelos de preferência. Melhor custo-benefício: ${car} na ${dealer} por ${price}.`,
+      fRegion: 'Região', fCity: 'Cidade', fMake: 'Carro', fModels: 'Carro de preferência', fModelsHint: 'Opcional. Escolha um ou mais para ver só eles.', fMiles: 'Milhas máx.', fMin: 'Valor mínimo', fMax: 'Valor máximo',
+      allRegions: 'Todas as regiões', allCities: 'Todas as cidades', allMakes: 'Todos os carros', reset: 'Limpar filtros',
+      kMatches: 'Carros encontrados', kPref: 'Modelos de preferência', kLow: 'Menor valor', kAvg: 'Valor médio', kMiles: 'Milhas médias', kMpy: 'Média de milhas/ano', kChg: 'Variação média em 12 meses',
+      picks: 'Recomendações', picksNote: 'Escolhidos entre os carros que atendem aos seus filtros.',
+      pBest: 'Melhor custo-benefício', pPref: 'Melhor entre os de preferência', pBudget: 'Menor preço', pMpg: 'Mais econômico', pRet: 'Menor desvalorização',
+      wBest: (s) => `Nota custo-benefício ${s}/100`, wBudget: (m) => `${m} rodadas`, wMpg: (g) => `${g} mpg de média`, wRet: (c) => `${c} em 12 meses`,
+      details: 'Ver detalhes', others: 'Outros modelos', prefBadge: '★ Preferência',
+      scatter: 'Valor x milhas', scatterNote: 'Cada ponto é um carro. Modelos de preferência em cor, outros em cinza. Mais abaixo e à esquerda = mais barato e menos rodado.',
+      city: 'Valor médio por cidade', cityNote: 'Carros que atendem aos seus filtros.',
+      index: 'Valor nos últimos 12 meses', indexNote: 'Valor médio por modelo, novembro de 2025 = 100. As outras marcas e modelos aparecem juntos numa média.',
+      table: 'Anúncios', tableNote: 'Clique numa coluna para ordenar. Clique numa linha para ir à análise do carro.',
+      cDealer: 'Loja', cVehicle: 'Veículo', cTrim: 'Versão', cPrice: 'Valor', cYear: 'Ano (fab./modelo)', cMiles: 'Milhas', cMpy: 'Milhas/ano', cOpts: 'Opcionais', cLink: 'Link do anúncio',
+      linkText: 'Ver anúncios ↗',
+      cards: 'Análise de cada carro', cardsNote: 'Descrição, vantagens, desvantagens e valor nos últimos 12 meses de cada carro.',
+      pros: 'Vantagens', cons: 'Desvantagens', dep: 'Valor nos últimos 12 meses', score: 'Nota custo-benefício', perYr: 'mi/ano',
+      dealers: 'Concessionárias confiáveis', dealersNote: 'Somente lojas com ótimas avaliações públicas ou nota máxima em transparência de preço.',
+      dDealer: 'Loja', dCity: 'Cidade', dRating: 'Avaliação', dBasis: 'Base', dSource: 'Fonte',
+      empty: 'Nenhum carro atende a esses filtros. Tente aumentar as milhas máximas ou a faixa de valor.',
+      method: 'Como os números são calculados',
+      m1: 'Milhas por ano = milhas rodadas ÷ anos de uso. Um ano-modelo começa a ser vendido no outono anterior, então cada carro é contado a partir do meio do período de venda.',
+      m2: 'O histórico de valor é modelado a partir da desvalorização típica de seminovos na Califórnia em 2025–26 para cada modelo e versão (carros mais novos perdem valor mais rápido; a época de restituição de impostos, na primavera, eleva um pouco os preços). Cada linha termina no preço pedido hoje.',
+      m3: 'A nota custo-benefício (0–100) pondera valor 35%, milhas por ano 25%, retenção de valor em 12 meses 20% e consumo 20%, em escala entre todos os carros listados.',
+      regions: {'Central Valley': 'Vale Central', 'Northern California': 'Norte da Califórnia', 'Southern California': 'Sul da Califórnia'},
+      loc: 'pt-BR', mi: 'mi'
+    }
+  };
+
+  dash.calc('scores', {
+    title: 'Value score and 12-month change',
+    description: 'Each car\'s value 12 months ago, its % change to today, and a 0–100 value score (35% price, 25% miles per year, 20% value retention, 20% mpg) scaled across all listed cars.',
+    inputs: ['vehicles', 'depreciation'],
+    fn: (vehicles, depreciation) => {
+      const first = {}, last = {};
+      for (const d of depreciation) {
+        const v = Number(d.value);
+        if (!first[d.id] || d.month < first[d.id].m) first[d.id] = {m: d.month, v};
+        if (!last[d.id] || d.month > last[d.id].m) last[d.id] = {m: d.month, v};
+      }
+      const rows = vehicles.map((v) => {
+        const a = first[v.id] ? first[v.id].v : null, b = last[v.id] ? last[v.id].v : null;
+        return {id: v.id, price: Number(v.price), mpy: Number(v.miles_per_year), mpg: Number(v.mpg), value_12m_ago: a, change_pct: a ? (b - a) / a : 0};
+      });
+      const span = (k) => [Math.min(...rows.map((r) => r[k])), Math.max(...rows.map((r) => r[k]))];
+      const norm = (x, [lo, hi], lowerIsBetter) => hi === lo ? 1 : lowerIsBetter ? (hi - x) / (hi - lo) : (x - lo) / (hi - lo);
+      const P = span('price'), M = span('mpy'), G = span('mpg'), C = span('change_pct');
+      return rows.map((r) => ({
+        id: r.id, value_12m_ago: r.value_12m_ago, change_pct: r.change_pct,
+        score: Math.round(100 * (0.35 * norm(r.price, P, true) + 0.25 * norm(r.mpy, M, true) + 0.2 * norm(r.change_pct, C, false) + 0.2 * norm(r.mpg, G, false)))
+      }));
+    }
+  });
+
+  const root = document.querySelector('.cf');
+  const MODELS = ['Civic', 'Prius', 'Camry'];
+  const REGION_CITIES = {'Central Valley': ['Fresno'], 'Northern California': ['Sacramento', 'San Francisco'], 'Southern California': ['Los Angeles']};
+  const DEFAULTS = () => ({region: '', city: '', car: '', models: new Set(), maxMiles: 60000, minPrice: 15000, maxPrice: 30000});
+  let state = DEFAULTS();
+  let lang = 'en';
+  let sort = {key: 'price', dir: 1};
+  const t = (k) => T[lang][k];
+  const isPref = (model) => MODELS.includes(model);
+  const colorOf = (model) => isPref(model) ? dash.colors[MODELS.indexOf(model)] : 'var(--cds-chart-muted)';
+
+  const $ = (s) => root.querySelector(s);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const money = (x) => new Intl.NumberFormat(t('loc'), {style: 'currency', currency: 'USD', maximumFractionDigits: 0}).format(x);
+  const num = (x) => new Intl.NumberFormat(t('loc'), {maximumFractionDigits: 0}).format(x);
+  const pct = (x) => (x > 0 ? '+' : '') + new Intl.NumberFormat(t('loc'), {style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1}).format(x);
+  const monthLab = (m) => new Date(m + 'T00:00:00Z').toLocaleDateString(t('loc'), {month: 'short', year: '2-digit', timeZone: 'UTC'});
+  const measure = (svg, text, cls) => { const n = svg.append('text').attr('class', cls).attr('opacity', 0).text(text); const w = n.node().getComputedTextLength(); n.remove(); return w; };
+
+  /* ---------- controls ---------- */
+  const fRegion = $('#f-region'), fCity = $('#f-city'), fMake = $('#f-make'), fModels = $('#f-models');
+  const fMiles = $('#f-miles'), fMin = $('#f-min'), fMax = $('#f-max');
+
+  function drawControls(cars) {
+    root.querySelectorAll('[data-i18n]').forEach((n) => { n.textContent = t(n.dataset.i18n); });
+    root.querySelectorAll('.cf-flag').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+    fRegion.replaceChildren(new Option(t('allRegions'), ''), ...Object.keys(REGION_CITIES).map((r) => new Option(t('regions')[r], r)));
+    fRegion.value = state.region;
+    const cities = state.region ? REGION_CITIES[state.region] : Object.values(REGION_CITIES).flat();
+    if (state.city && !cities.includes(state.city)) state.city = '';
+    fCity.replaceChildren(new Option(t('allCities'), ''), ...cities.map((c) => new Option(c, c)));
+    fCity.value = state.city;
+    fMake.replaceChildren(new Option(t('allMakes'), ''), ...cars.map((c) => new Option(c, c)));
+    fMake.value = state.car;
+    fModels.replaceChildren(...MODELS.map((m) => {
+      const b = el('button', 'cf-chip'); b.type = 'button'; b.dataset.model = m;
+      b.setAttribute('aria-pressed', String(state.models.has(m)));
+      const dot = el('i'); dot.style.background = colorOf(m);
+      b.append(dot, document.createTextNode(m === 'Camry' ? 'Toyota Camry' : m === 'Prius' ? 'Toyota Prius' : 'Honda Civic'));
+      return b;
+    }));
+    fMiles.value = state.maxMiles; fMin.value = state.minPrice; fMax.value = state.maxPrice;
+    $('#v-miles').textContent = num(state.maxMiles) + ' ' + t('mi');
+    $('#v-min').textContent = money(state.minPrice);
+    $('#v-max').textContent = money(state.maxPrice);
+  }
+
+  fRegion.addEventListener('change', () => { state.region = fRegion.value; render(); });
+  fCity.addEventListener('change', () => { state.city = fCity.value; render(); });
+  fMake.addEventListener('change', () => { state.car = fMake.value; render(); });
+  // Preferred-car chips are their own filter: none picked shows every car, picking narrows to those models.
+  fModels.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-model]'); if (!b) return;
+    const m = b.dataset.model;
+    if (state.models.has(m)) state.models.delete(m); else state.models.add(m);
+    render();
+  });
+  fMiles.addEventListener('input', () => { state.maxMiles = Number(fMiles.value); render(); });
+  fMin.addEventListener('input', () => { state.minPrice = Math.min(Number(fMin.value), state.maxPrice); render(); });
+  fMax.addEventListener('input', () => { state.maxPrice = Math.max(Number(fMax.value), state.minPrice); render(); });
+  $('#f-reset').addEventListener('click', () => { state = DEFAULTS(); render(); });
+  root.querySelectorAll('.cf-flag').forEach((b) => b.addEventListener('click', () => { lang = b.dataset.lang; render(); }));
+
+  const goTo = (id) => {
+    const card = document.getElementById('car-' + id); if (!card) return;
+    card.scrollIntoView({behavior: 'smooth', block: 'start'});
+    card.classList.remove('cf-flash'); void card.offsetWidth; card.classList.add('cf-flash');
+  };
+  root.addEventListener('click', (e) => {
+    const g = e.target.closest('[data-goto]');
+    if (g) { goTo(g.dataset.goto); return; }
+    if (e.target.closest('a')) return;
+    const tr = e.target.closest('#tbody-cars tr[data-key]');
+    if (tr) goTo(tr.dataset.key);
+  });
+
+  /* ---------- tooltip helper ---------- */
+  function tipFor(box) {
+    let tip = box.querySelector('.cf-tip');
+    if (!tip) { tip = el('div', 'cf-tip'); tip.hidden = true; box.append(tip); }
+    return {
+      show(x, y, lines) {
+        tip.replaceChildren(...lines.map((l, i) => { const d = el('div', i === 0 ? 'cf-tipk' : '', l.text); if (l.color) { const s = el('span', 'cf-dot'); s.style.background = l.color; d.prepend(s); } return d; }));
+        tip.hidden = false;
+        const bw = box.clientWidth, tw = tip.offsetWidth, th = tip.offsetHeight;
+        tip.style.left = Math.max(0, Math.min(bw - tw, x + 12)) + 'px';
+        tip.style.top = Math.max(0, y - th - 10) + 'px';
+      },
+      hide() { tip.hidden = true; }
+    };
+  }
+
+  /* ---------- charts ---------- */
+  function drawScatter(rows) {
+    const box = $('#chart-scatter'); box.querySelector('svg')?.remove();
+    const W = Math.max(280, box.clientWidth), H = 260;
+    const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const yFmt = (v) => '$' + (v / 1000) + 'k';
+    const ml = measure(svg, '$30k', 'cf-tick') + 10, m = {t: 10, r: 14, b: 26, l: ml};
+    const x = d3.scaleLinear([0, 60000], [m.l, W - m.r]);
+    const y = d3.scaleLinear([15000, 30000], [H - m.b, m.t]);
+    const g = svg.append('g');
+    g.selectAll('line.gy').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).attr('stroke', 'var(--cds-chart-grid)');
+    g.selectAll('text.ty').data(y.ticks(4)).join('text').attr('class', 'cf-tick').attr('x', m.l - 8).attr('y', (d) => y(d) + 4).attr('text-anchor', 'end').text(yFmt);
+    const xt = W < 380 ? [0, 30000, 60000] : [0, 20000, 40000, 60000];
+    g.selectAll('text.tx').data(xt).join('text').attr('class', 'cf-tick').attr('x', x).attr('y', H - 6).attr('text-anchor', (d, i) => i === 0 ? 'start' : i === xt.length - 1 ? 'end' : 'middle').text((d) => num(d / 1000) + 'k ' + t('mi'));
+    g.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', H - m.b).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-axis)');
+    const tip = tipFor(box);
+    const layered = [...rows].sort((a, b) => isPref(a.model) - isPref(b.model));
+    svg.append('g').selectAll('circle').data(layered).join('circle')
+      .attr('cx', (d) => x(d.miles)).attr('cy', (d) => y(d.price)).attr('r', 6)
+      .attr('fill', (d) => colorOf(d.model)).attr('fill-opacity', .85).attr('stroke', 'var(--color-panel)').attr('stroke-width', 1.5)
+      .style('cursor', 'pointer')
+      .on('mouseenter', function (e, d) { d3.select(this).attr('r', 8); tip.show(x(d.miles), y(d.price), [{text: d.dealer}, {text: `${d.vehicle} ${d.trim} ${d.model_year}`, color: colorOf(d.model)}, {text: `${money(d.price)} · ${num(d.miles)} ${t('mi')}`}]); })
+      .on('mouseleave', function () { d3.select(this).attr('r', 6); tip.hide(); })
+      .on('click', (e, d) => goTo(d.id));
+    const lg = $('#legend-models');
+    const keys = MODELS.filter((mm) => rows.some((r) => r.model === mm)).map((mm) => [mm, colorOf(mm)]);
+    if (rows.some((r) => !isPref(r.model))) keys.push([t('others'), 'var(--cds-chart-muted)']);
+    lg.replaceChildren(...keys.map(([label, color]) => { const s = el('span'); const i = el('i'); i.style.background = color; s.append(i, document.createTextNode(label)); return s; }));
+  }
+
+  function drawCity(rows) {
+    const box = $('#chart-city'); box.querySelector('svg')?.remove();
+    const cities = ['Fresno', 'Sacramento', 'San Francisco', 'Los Angeles'];
+    const data = cities.map((c) => { const r = rows.filter((v) => v.city === c); return {city: c, n: r.length, avg: r.length ? d3.mean(r, (v) => v.price) : null}; }).filter((d) => d.n);
+    const W = Math.max(280, box.clientWidth), H = 240;
+    const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const ml = Math.max(...cities.map((c) => measure(svg, c, 'cf-tick'))) + 12;
+    const mr = measure(svg, money(30000), 'cf-endlab') + 10;
+    const y = d3.scaleBand(data.map((d) => d.city), [8, H - 8]).padding(.38);
+    const x = d3.scaleLinear([0, 30000], [ml, W - mr]);
+    svg.selectAll('rect').data(data).join('rect').attr('x', ml).attr('y', (d) => y(d.city)).attr('height', Math.min(32, y.bandwidth())).attr('width', (d) => x(d.avg) - ml).attr('rx', 4).attr('fill', dash.colors[0]);
+    svg.selectAll('text.c').data(data).join('text').attr('class', 'cf-tick').attr('x', ml - 8).attr('y', (d) => y(d.city) + Math.min(32, y.bandwidth()) / 2 + 4).attr('text-anchor', 'end').text((d) => d.city);
+    svg.selectAll('text.v').data(data).join('text').attr('class', 'cf-endlab').attr('fill', 'var(--color-fg)').attr('x', (d) => x(d.avg) + 6).attr('y', (d) => y(d.city) + Math.min(32, y.bandwidth()) / 2 + 4).text((d) => money(d.avg));
+  }
+
+  function drawIndex(rows, depBy) {
+    const box = $('#chart-index'); box.querySelector('svg')?.remove();
+    const months = (depBy.get(rows[0].id) || []).map((d) => d.month);
+    const groups = MODELS.filter((mm) => rows.some((r) => r.model === mm)).map((mm) => ({label: mm, color: colorOf(mm), cars: rows.filter((r) => r.model === mm)}));
+    const other = rows.filter((r) => !isPref(r.model));
+    if (other.length) groups.push({label: t('others'), color: 'var(--cds-chart-muted)', cars: other});
+    const series = groups.map((gp) => {
+      const cars = gp.cars.map((r) => depBy.get(r.id)).filter(Boolean);
+      return {label: gp.label, color: gp.color, pts: months.map((mo, i) => ({month: mo, v: d3.mean(cars, (c) => 100 * c[i].value / c[0].value)}))};
+    });
+    const W = Math.max(280, box.clientWidth), H = 240;
+    const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const lo = Math.floor(d3.min(series, (s) => d3.min(s.pts, (p) => p.v)) - 1), hi = 101;
+    const ml = measure(svg, '100', 'cf-tick') + 10;
+    const mr = Math.max(...series.map((s) => measure(svg, `${s.label} ${s.pts[11].v.toFixed(1)}`, 'cf-endlab'))) + 12;
+    const x = d3.scalePoint(months, [ml, W - mr]);
+    const y = d3.scaleLinear([lo, hi], [H - 26, 10]);
+    const ticks = y.ticks(4);
+    svg.selectAll('line.g').data(ticks).join('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y).attr('y2', y).attr('stroke', (d) => d === 100 ? 'var(--cds-chart-reference)' : 'var(--cds-chart-grid)');
+    svg.selectAll('text.ty').data(ticks).join('text').attr('class', 'cf-tick').attr('x', ml - 8).attr('y', (d) => y(d) + 4).attr('text-anchor', 'end').text((d) => d);
+    const xt = [months[0], months[6], months[11]];
+    svg.selectAll('text.tx').data(xt).join('text').attr('class', 'cf-tick').attr('x', x).attr('y', H - 6).attr('text-anchor', (d, i) => ['start', 'middle', 'end'][i]).text(monthLab);
+    const line = d3.line().x((p) => x(p.month)).y((p) => y(p.v));
+    svg.selectAll('path.s').data(series).join('path').attr('d', (s) => line(s.pts)).attr('fill', 'none').attr('stroke', (s) => s.color).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    const ends = series.map((s) => ({s, y: y(s.pts[11].v)})).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+    svg.selectAll('circle.e').data(series).join('circle').attr('cx', x(months[11])).attr('cy', (s) => y(s.pts[11].v)).attr('r', 3.5).attr('fill', (s) => s.color);
+    svg.selectAll('text.e').data(ends).join('text').attr('class', 'cf-endlab').attr('x', x(months[11]) + 8).attr('y', (e) => e.y + 4).attr('fill', 'var(--color-fg)').text((e) => `${e.s.label} ${e.s.pts[11].v.toFixed(1)}`);
+    const tip = tipFor(box);
+    const rule = svg.append('line').attr('y1', 10).attr('y2', H - 26).attr('stroke', 'var(--cds-chart-axis)').attr('opacity', 0);
+    svg.append('rect').attr('x', ml).attr('y', 0).attr('width', W - mr - ml).attr('height', H).attr('fill', 'transparent')
+      .on('mousemove', (e) => {
+        const [px] = d3.pointer(e); const step = x.step(); const i = Math.max(0, Math.min(11, Math.round((px - ml) / step)));
+        rule.attr('x1', x(months[i])).attr('x2', x(months[i])).attr('opacity', 1);
+        tip.show(x(months[i]), 40, [{text: monthLab(months[i])}, ...series.map((s) => ({text: `${s.label} ${s.pts[i].v.toFixed(1)}`, color: s.color}))]);
+      })
+      .on('mouseleave', () => { rule.attr('opacity', 0); tip.hide(); });
+  }
+
+  function drawMini(box, v, pts) {
+    box.querySelector('svg')?.remove();
+    const W = Math.max(260, box.clientWidth), H = 150;
+    const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const lo = d3.min(pts, (p) => p.value), hi = d3.max(pts, (p) => p.value);
+    const pad = Math.max(300, (hi - lo) * .15);
+    const y = d3.scaleLinear([lo - pad, hi + pad], [H - 24, 8]).nice(3);
+    const ticks = y.ticks(3);
+    const yf = (d) => '$' + num(d / 1000) + 'k';
+    const ml = Math.max(...ticks.map((d) => measure(svg, yf(d), 'cf-tick'))) + 8;
+    const x = d3.scalePoint(pts.map((p) => p.month), [ml, W - 10]);
+    const id = 'g-' + v.id;
+    const grad = svg.append('defs').append('linearGradient').attr('id', id).attr('x1', 0).attr('x2', 0).attr('y1', 0).attr('y2', 1);
+    [[0, .26], [.25, .16], [.5, .08], [.75, .03], [1, 0]].forEach(([o, a]) => grad.append('stop').attr('offset', o).attr('style', `stop-color:${colorOf(v.model)};stop-opacity:${a}`));
+    svg.selectAll('line.g').data(ticks).join('line').attr('x1', ml).attr('x2', W - 10).attr('y1', y).attr('y2', y).attr('stroke', 'var(--cds-chart-grid)');
+    svg.selectAll('text.ty').data(ticks).join('text').attr('class', 'cf-tick').attr('x', ml - 6).attr('y', (d) => y(d) + 4).attr('text-anchor', 'end').text(yf);
+    const xt = [pts[0].month, pts[11].month];
+    svg.selectAll('text.tx').data(xt).join('text').attr('class', 'cf-tick').attr('x', x).attr('y', H - 6).attr('text-anchor', (d, i) => i ? 'end' : 'start').text(monthLab);
+    svg.append('path').attr('d', d3.area().x((p) => x(p.month)).y0(H - 24).y1((p) => y(p.value))(pts)).attr('fill', `url(#${id})`);
+    svg.append('path').attr('d', d3.line().x((p) => x(p.month)).y((p) => y(p.value))(pts)).attr('fill', 'none').attr('stroke', colorOf(v.model)).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    svg.append('circle').attr('cx', x(pts[11].month)).attr('cy', y(pts[11].value)).attr('r', 3.5).attr('fill', colorOf(v.model));
+    const dot = svg.append('circle').attr('r', 4).attr('fill', colorOf(v.model)).attr('stroke', 'var(--color-panel)').attr('stroke-width', 1.5).attr('opacity', 0);
+    const tip = tipFor(box);
+    svg.append('rect').attr('x', ml).attr('y', 0).attr('width', W - 10 - ml).attr('height', H).attr('fill', 'transparent')
+      .on('mousemove', (e) => {
+        const [px] = d3.pointer(e); const i = Math.max(0, Math.min(11, Math.round((px - ml) / x.step())));
+        const p = pts[i]; dot.attr('cx', x(p.month)).attr('cy', y(p.value)).attr('opacity', 1);
+        tip.show(x(p.month), y(p.value), [{text: monthLab(p.month)}, {text: money(p.value)}]);
+      })
+      .on('mouseleave', () => { dot.attr('opacity', 0); tip.hide(); });
+  }
+
+  /* ---------- table ---------- */
+  const COLS = () => [
+    {key: 'dealer', label: t('cDealer')}, {key: 'vehicle', label: t('cVehicle')}, {key: 'trim', label: t('cTrim')},
+    {key: 'price', label: t('cPrice'), num: true, fmt: money}, {key: 'year', label: t('cYear')},
+    {key: 'miles', label: t('cMiles'), num: true, fmt: num}, {key: 'miles_per_year', label: t('cMpy'), num: true, fmt: num},
+    {key: 'options_' + lang, label: t('cOpts'), cls: 'cf-opts'}, {key: 'link', label: t('cLink'), link: true}
+  ];
+  function drawTable(rows) {
+    const cols = COLS();
+    $('#thead-cars').replaceChildren(...cols.map((c) => {
+      const th = el('th', c.num ? 'cf-num' : ''); th.dataset.field = c.key;
+      if (c.link) { th.append(el('span', 'cf-plain', c.label)); return th; }
+      const b = el('button', '', c.label + (sort.key === c.key ? (sort.dir > 0 ? ' ↑' : ' ↓') : '')); b.type = 'button';
+      th.setAttribute('aria-sort', sort.key === c.key ? (sort.dir > 0 ? 'ascending' : 'descending') : 'none');
+      b.addEventListener('click', () => { sort = {key: c.key, dir: sort.key === c.key ? -sort.dir : (c.num ? 1 : 1)}; render(); });
+      th.append(b); return th;
+    }));
+    const sorted = [...rows].sort((a, b) => {
+      const k = sort.key, av = a[k], bv = b[k];
+      return (typeof av === 'number' ? av - bv : String(av).localeCompare(String(bv))) * sort.dir;
+    });
+    $('#tbody-cars').replaceChildren(...sorted.map((v) => {
+      const tr = el('tr'); tr.dataset.key = v.id;
+      cols.forEach((c, i) => {
+        const td = el('td', [c.num ? 'cf-num' : '', c.cls || ''].join(' ').trim());
+        if (c.link) { const a = el('a', '', t('linkText')); a.href = v.link; a.target = '_blank'; a.rel = 'noopener'; td.append(a); }
+        else if (i === 1) {
+          const s = el('span', 'cf-dot'); s.style.background = colorOf(v.model); td.append(s, document.createTextNode(v.vehicle));
+          if (isPref(v.model)) { const star = el('span', 'cf-star'); star.title = t('prefBadge'); td.append(star); }
+        }
+        else td.textContent = c.fmt ? c.fmt(v[c.key]) : v[c.key];
+        tr.append(td);
+      });
+      return tr;
+    }));
+  }
+
+  function drawDealers(dealers) {
+    const cols = [['dealer', t('dDealer')], ['city', t('dCity')], ['rating', t('dRating')], ['basis_' + lang, t('dBasis')], ['source', t('dSource')]];
+    $('#thead-dealers').replaceChildren(...cols.map(([k, l]) => { const th = el('th'); th.dataset.field = k; th.append(el('span', 'cf-plain', l)); return th; }));
+    $('#tbody-dealers').replaceChildren(...dealers.map((d) => {
+      const tr = el('tr'); tr.dataset.key = d.dealer;
+      cols.forEach(([k]) => {
+        const td = el('td');
+        if (k === 'source') { const a = el('a', '', d.source); a.href = d.source_url; a.target = '_blank'; a.rel = 'noopener'; td.append(a); }
+        else td.textContent = d[k];
+        tr.append(td);
+      });
+      return tr;
+    }));
+  }
+
+  /* ---------- main render ---------- */
+  const failBox = (sel) => { const b = $(sel); b.replaceChildren(el('div', 'cf-fail', 'Failed to load')); };
+
+  function render() {
+    const V = dash.data('vehicles'), D = dash.data('depreciation'), S = dash.data('scores'), DL = dash.data('dealers');
+    drawControls(V.status === 'ok' ? [...new Set(V.data.map((v) => v.vehicle))].sort() : []);
+    if (DL.status === 'ok') drawDealers(DL.data); else if (DL.status === 'error') failBox('#tbody-dealers');
+    const parts = ['#kpis', '#picks', '#chart-scatter', '#chart-city', '#chart-index', '#cars'];
+    if ([V, D, S].some((x) => x.status === 'error')) { parts.forEach(failBox); $('#takeaway').textContent = '—'; return; }
+    if (![V, D, S].every((x) => x.status === 'ok')) { parts.forEach((p) => $(p).classList.add('dash-skeleton')); return; }
+    parts.forEach((p) => $(p).classList.remove('dash-skeleton'));
+
+    const all = V.data.map((v) => ({...v, price: Number(v.price), miles: Number(v.miles), miles_per_year: Number(v.miles_per_year), mpg: Number(v.mpg), model_year: Number(v.model_year)}));
+    const scoreBy = new Map(S.data.map((s) => [s.id, s]));
+    const depBy = d3.group(D.data.map((d) => ({id: d.id, month: String(d.month).slice(0, 10), value: Number(d.value)})).sort((a, b) => a.month < b.month ? -1 : 1), (d) => d.id);
+    const rows = all.filter((v) =>
+      (!state.region || v.region === state.region) && (!state.city || v.city === state.city) &&
+      (!state.car || v.vehicle === state.car) && (!state.models.size || state.models.has(v.model)) &&
+      v.miles <= state.maxMiles && v.price >= state.minPrice && v.price <= state.maxPrice
+    ).map((v) => ({...v, ...scoreBy.get(v.id)}));
+
+    if (!rows.length) {
+      $('#takeaway').textContent = t('take0');
+      $('#kpis').replaceChildren(el('div', 'cf-empty', t('empty')));
+      ['#picks', '#cars'].forEach((s) => $(s).replaceChildren());
+      ['#chart-scatter', '#chart-city', '#chart-index'].forEach((s) => { $(s).replaceChildren(el('div', 'cf-empty', t('empty'))); });
+      $('#legend-models').replaceChildren();
+      $('#tbody-cars').replaceChildren();
+      return;
+    }
+    ['#chart-scatter', '#chart-city', '#chart-index'].forEach((s) => $(s).querySelector('.cf-empty')?.remove());
+
+    const best = [...rows].sort((a, b) => b.score - a.score)[0];
+    const prefRows = rows.filter((r) => isPref(r.model));
+    $('#takeaway').textContent = t('take')(rows.length, prefRows.length, `${best.vehicle} ${best.trim} ${best.model_year}`, best.dealer, money(best.price));
+
+    const kp = [
+      [t('kMatches'), num(rows.length)], [t('kPref'), num(prefRows.length)], [t('kLow'), money(d3.min(rows, (r) => r.price))], [t('kAvg'), money(d3.mean(rows, (r) => r.price))],
+      [t('kMiles'), num(d3.mean(rows, (r) => r.miles))], [t('kMpy'), num(d3.mean(rows, (r) => r.miles_per_year))], [t('kChg'), pct(d3.mean(rows, (r) => r.change_pct))]
+    ];
+    $('#kpis').replaceChildren(...kp.map(([l, v]) => { const d = el('div', 'cf-kpi'); d.append(el('span', 'cf-sub', l), el('b', '', v)); return d; }));
+
+    const by = (f, dir) => [...rows].sort((a, b) => dir * (f(a) - f(b)) || a.price - b.price)[0];
+    const budget = by((r) => r.price, 1), eco = by((r) => r.mpg, -1), keeper = by((r) => r.change_pct, -1);
+    const picks = [[t('pBest'), best, t('wBest')(best.score)]];
+    // Only worth its own card when the list also holds other makes; otherwise it repeats "Best overall".
+    if (prefRows.length && prefRows.length < rows.length) {
+      const bp = [...prefRows].sort((a, b) => b.score - a.score)[0];
+      picks.push([t('pPref'), bp, t('wBest')(bp.score)]);
+    }
+    picks.push(
+      [t('pBudget'), budget, t('wBudget')(num(budget.miles) + ' ' + t('mi'))],
+      [t('pMpg'), eco, t('wMpg')(eco.mpg)],
+      [t('pRet'), keeper, t('wRet')(pct(keeper.change_pct))]
+    );
+    $('#picks').replaceChildren(...picks.map(([label, v, why]) => {
+      const c = el('article', 'cf-card cf-pick');
+      const b = el('button', 'cf-btn', t('details')); b.type = 'button'; b.dataset.goto = v.id;
+      c.append(el('span', 'cf-eyebrow', label), el('span', 'cf-name', `${v.vehicle} ${v.trim} ${v.model_year}`), el('span', 'cf-sub', `${v.dealer} · ${v.city}`), el('span', 'cf-price', money(v.price)), el('span', 'cf-why', why), b);
+      return c;
+    }));
+
+    drawScatter(rows);
+    drawCity(rows);
+    drawIndex(rows, depBy);
+    drawTable(rows);
+
+    const ordered = [...rows].sort((a, b) => b.score - a.score);
+    $('#cars').replaceChildren(...ordered.map((v) => {
+      const c = el('article', 'cf-card cf-car'); c.id = 'car-' + v.id;
+      const top = el('div', 'cf-cartop');
+      const left = el('div');
+      left.append(el('div', 'cf-carname', `${v.vehicle} ${v.trim}`), el('div', 'cf-sub', `${v.year} · ${v.dealer} · ${v.city}`));
+      top.append(left, el('div', 'cf-price', money(v.price)));
+      const stats = el('div', 'cf-stats');
+      if (isPref(v.model)) stats.append(el('span', 'cf-stat cf-prefb', t('prefBadge')));
+      [`${num(v.miles)} ${t('mi')}`, `${num(v.miles_per_year)} ${t('perYr')}`, `${v.mpg} mpg`, `${t('score')} ${v.score}`].forEach((s) => stats.append(el('span', 'cf-stat', s)));
+      const pc = el('div', 'cf-pc');
+      const mk = (cls, title, txt) => { const d = el('div', cls); const ul = el('ul'); String(txt).split('|').forEach((x) => ul.append(el('li', '', x))); d.append(el('h3', '', title), ul); return d; };
+      pc.append(mk('cf-pros', t('pros'), v['pros_' + lang]), mk('cf-cons', t('cons'), v['cons_' + lang]));
+      const deprow = el('div', 'cf-deprow');
+      const chg = el('span', 'cf-chg', `${money(v.value_12m_ago)} → ${money(v.price)} (${pct(v.change_pct)})`);
+      chg.style.color = 'var(--color-bad)';
+      deprow.append(el('h3', '', t('dep')), chg);
+      const mini = el('div', 'cf-mini');
+      const foot = el('div', 'cf-cardfoot');
+      const a = el('a', '', t('linkText')); a.href = v.link; a.target = '_blank'; a.rel = 'noopener';
+      foot.append(el('span', '', v.dealer_rating), a);
+      c.append(top, stats, el('p', 'cf-desc', v['desc_' + lang]), pc, deprow, mini, foot);
+      return c;
+    }));
+    ordered.forEach((v) => { const box = document.getElementById('car-' + v.id).querySelector('.cf-mini'); const pts = depBy.get(v.id); if (pts) drawMini(box, v, pts); });
+  }
+
+  dash.onData(render);
+})();
+</script>
+
+</body>
 </html>
