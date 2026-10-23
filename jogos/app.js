@@ -10,8 +10,36 @@ const games = [
   { id: "domino", name: "Dominó", description: "Você contra a máquina", icon: "⚄", tint: "#19473e", accent: "#72e3c8" },
   { id: "checkers", name: "Damas", description: "Pense alguns lances à frente", icon: "♟️", tint: "#523829", accent: "#ffb779" },
   { id: "wordsearch", name: "Caça-Palavras", description: "Ache todas as palavras", icon: "🔎", tint: "#1f3e59", accent: "#79c1ff" },
-  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4c461c", accent: "#e3ed68" }
+  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4c461c", accent: "#e3ed68" },
+  { id: "racing", name: "Corrida Interlagos", description: "Acelere, desvie e vença", icon: "🏎️", tint: "#522d35", accent: "#ff7a72" }
 ];
+const gameVariants = {
+  sudoku: ["Desafio dos números", "Tabuleiro surpresa", "Sequência relâmpago", "Números em festa"],
+  solitaire: ["Mesa embaralhada", "Novo desafio de cartas", "Sorte no monte", "Paciência surpresa"],
+  tetris: ["Chuva de blocos", "Peças surpresa", "Ritmo arcade", "Desafio neon"],
+  memory: ["Cartas surpresa", "Coleção colorida", "Memória em jogo", "Pares embaralhados"],
+  crossword: ["Enigma do dia", "Palavras surpresa", "Desafio de vocabulário", "Pistas embaralhadas", "Tabuleiro girado"],
+  bingo: ["Bingo da sorte", "Cartela surpresa", "Rodada premiada", "Sorteio relâmpago"],
+  domino: ["Mesa surpresa", "Desafio das peças", "Duelo de estratégia", "Pedras embaralhadas"],
+  checkers: ["Duelo no tabuleiro", "Desafio estratégico", "Peças em ação", "Partida surpresa"],
+  wordsearch: ["Caça temática", "Grade surpresa", "Letras embaralhadas", "Desafio de palavras"],
+  stack: ["Torre colorida", "Blocos surpresa", "Desafio de equilíbrio", "Construção arcade"],
+  racing: ["Grande Prêmio de Interlagos", "Desafio da Curva do Sol", "Sprint no S do Senna", "Corrida paulista"]
+};
+const gameAccents = {
+  sudoku: ["#39a995", "#4b8fc4", "#7884cb"],
+  solitaire: ["#329969", "#4a9e87", "#718c55"],
+  tetris: ["#8759c6", "#496ed0", "#d26eab"],
+  memory: ["#d58155", "#ca6d8b", "#a875c4"],
+  crossword: ["#b68a37", "#bb7144", "#7c9d4b"],
+  bingo: ["#d35c8f", "#8668c6", "#e57b70"],
+  domino: ["#368c83", "#4c9c6a", "#4980b7"],
+  checkers: ["#b46e48", "#b65362", "#8d6fba"],
+  wordsearch: ["#3986b8", "#4b9a9a", "#8b74bb"],
+  stack: ["#9c9e3c", "#d28b48", "#5e9f76"],
+  racing: ["#e76860", "#4a86ce", "#db9a43"]
+};
+const levelIcons = ["🌱", "⚡", "🔥", "💎"];
 const levels = [
   { name: "Fácil", given: 42, draw: 1, redeals: 5, tetris: 850, memory: 12, bingoCards: 1, bingoSpeed: 2600, ai: 1, wordSize: 8, stackSpeed: 1.7, stackTolerance: 14 },
   { name: "Médio", given: 36, draw: 1, redeals: 3, tetris: 620, memory: 16, bingoCards: 2, bingoSpeed: 1900, ai: 2, wordSize: 9, stackSpeed: 2.5, stackTolerance: 9 },
@@ -26,6 +54,41 @@ let currentLevel = null;
 let selectedLevel = -1;
 let cleanupGame = () => {};
 let closeTimer = null;
+let roundVariant = "";
+const previousVariants = new Map();
+const previousAccents = new Map();
+
+function randomChoice(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function nextRandomValue(values, previous, key) {
+  const options = values.length > 1 ? values.filter((value) => value !== previous.get(key)) : values;
+  const value = randomChoice(options);
+  previous.set(key, value);
+  return value;
+}
+
+function machineTaunt(kind, result = "play") {
+  const lines = {
+    domino: {
+      play: ["Boa peça! Minha máquina de calcular ficou ofendida.", "Jogada interessante... quase estratégica.", "A mesa está esquentando. Não era só força de expressão."],
+      win: ["Você ganhou! Vou fingir que deixei.", "Vitória sua. Já revisei meu algoritmo e culpei o azar.", "Mandou bem! Hoje as pedras caíram do seu lado."],
+      lose: ["Ponto para mim! Pode reclamar com o embaralhador.", "Ganhei essa. Minha modéstia segue intacta.", "Essa mesa foi minha. A revanche está logo ali."]
+    },
+    checkers: {
+      play: ["Boa! Até minhas peças ficaram impressionadas.", "Você pensa rápido. Minha CPU pediu café.", "Movimento ousado. Vamos ver se o tabuleiro concorda."],
+      win: ["Você venceu! Vou treinar no modo humildade.", "Dama para você! Minha estratégia pediu demissão.", "Boa partida! Hoje você mandou no tabuleiro."],
+      lose: ["Ponto para a máquina. Acontece até com gente boa.", "Ganhei essa, mas não se acostume!", "Xeque... ops, jogo errado. Mesmo assim, ganhei!"]
+    },
+    racing: {
+      play: ["A curva do Sol não perdoa distração!", "Seu rival está no retrovisor. Por enquanto.", "Interlagos sentiu essa ultrapassagem!"],
+      win: ["Pódio seu! A bandeirada não mente.", "Você voou no S do Senna. Que corrida!", "Vitória em Interlagos! O troféu já está brilhando."],
+      lose: ["A máquina chegou na frente. Culpa do vento, claro.", "Quase no pódio! A revanche está a uma curva.", "Essa corrida foi do rival. Seu capacete continua estiloso."]
+    }
+  };
+  return randomChoice(lines[kind][result]);
+}
 
 games.forEach((game) => {
   const card = document.createElement("button");
@@ -43,10 +106,12 @@ function openGame(game) {
   stopCurrentGame();
   activeGame = game;
   currentLevel = null;
-  selectedLevel = -1;
+  selectedLevel = 0;
+  roundVariant = nextRandomValue(gameVariants[game.id] || ["Partida clássica"], previousVariants, game.id);
+  const accent = nextRandomValue(gameAccents[game.id] || [game.accent], previousAccents, game.id);
   document.querySelector("#modal-icon").textContent = game.icon;
   document.querySelector("#modal-title").textContent = game.name;
-  modal.style.setProperty("--game-accent", game.accent);
+  modal.style.setProperty("--game-accent", accent);
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
@@ -79,7 +144,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 function showSetup() {
-  content.innerHTML = `<div class="setup-panel"><p class="eyebrow">ANTES DE COMEÇAR</p><h3>Como quer jogar?</h3><p class="setup-copy">Escolha a dificuldade. Ela ajusta o ritmo e o desafio desta partida.</p><div class="difficulty-grid" role="group" aria-label="Nível de dificuldade">${levels.map((level, i) => `<button type="button" class="difficulty-button" data-level="${i}" aria-pressed="false">${level.name}</button>`).join("")}</div><button type="button" class="primary-button" id="start-game" disabled>Escolha um nível para continuar</button></div>`;
+  content.innerHTML = `<div class="setup-panel"><p class="eyebrow">UMA NOVA PARTIDA · ${roundVariant}</p><h3>Como quer jogar?</h3><p class="setup-copy">A aventura muda a cada entrada. Escolha a dificuldade para começar.</p><div class="difficulty-grid" role="group" aria-label="Nível de dificuldade">${levels.map((level, i) => `<button type="button" class="difficulty-button${i === 0 ? " selected" : ""}" data-level="${i}" aria-pressed="${i === 0}"><span class="level-icon" aria-hidden="true">${levelIcons[i]}</span><span>${level.name}</span></button>`).join("")}</div><button type="button" class="primary-button" id="start-game">Começar · ${levels[0].name}</button></div>`;
   content.querySelectorAll(".difficulty-button").forEach((button) => {
     button.addEventListener("click", () => {
       selectedLevel = Number(button.dataset.level);
@@ -94,17 +159,22 @@ function showSetup() {
     });
   });
   content.querySelector("#start-game").addEventListener("click", () => {
-    if (selectedLevel < 0) return;
     currentLevel = levels[selectedLevel];
     launchGame(activeGame.id);
   });
 }
 
 function gameFrame(label, setup) {
-  content.innerHTML = `<div class="game-panel"><div class="game-intro"><span><strong>${label}</strong> · ${currentLevel.name}</span><span class="status-pill" id="game-status">Boa partida!</span></div><div class="game-action-row"><button type="button" class="restart-button" id="restart-game">⟳ <span>Reiniciar partida</span></button></div><div class="game-board" id="game-board"></div><div class="control-row" id="game-controls"></div><p class="instructions" id="game-instructions"></p></div>`;
+  content.innerHTML = `<div class="game-panel"><div class="game-intro"><span><strong>${label}</strong> · ${currentLevel.name}<small class="round-variant">${roundVariant}</small></span><span class="status-pill" id="game-status">Boa partida!</span></div><div class="game-action-row"><button type="button" class="restart-button" id="restart-game">⟳ <span>Nova partida</span></button></div><div class="game-board" id="game-board"></div><div class="control-row" id="game-controls"></div><p class="instructions" id="game-instructions"></p></div>`;
   content.scrollTop = 0;
-  content.querySelector("#restart-game").addEventListener("click", () => launchGame(activeGame.id));
+  content.querySelector("#restart-game").addEventListener("click", () => startNewRound(activeGame.id));
   setup(content.querySelector("#game-board"), content.querySelector("#game-controls"), content.querySelector("#game-status"), content.querySelector("#game-instructions"));
+}
+
+function startNewRound(id) {
+  roundVariant = nextRandomValue(gameVariants[id] || ["Partida clássica"], previousVariants, id);
+  modal.style.setProperty("--game-accent", nextRandomValue(gameAccents[id] || [activeGame.accent], previousAccents, id));
+  launchGame(id);
 }
 
 function launchGame(id) {
@@ -119,7 +189,8 @@ function launchGame(id) {
     domino: dominoGame,
     checkers: checkersGame,
     wordsearch: wordSearchGame,
-    stack: stackGame
+    stack: stackGame,
+    racing: racingGame
   };
   runners[id]();
 }
@@ -147,10 +218,17 @@ function sudokuGame() {
       "534678912", "672195348", "198342567", "859761423", "426853791",
       "713924856", "961537284", "287419635", "345286179"
     ].map((row) => row.split("").map(Number));
+    const digits = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    const digitMap = new Map(digits.map((digit, index) => [index + 1, digit]));
+    const rowBands = shuffle([0, 1, 2]);
+    const colBands = shuffle([0, 1, 2]);
+    const rowOrder = rowBands.flatMap((band) => shuffle([0, 1, 2]).map((row) => band * 3 + row));
+    const colOrder = colBands.flatMap((band) => shuffle([0, 1, 2]).map((col) => band * 3 + col));
+    const puzzle = rowOrder.map((row) => colOrder.map((col) => digitMap.get(solution[row][col])));
     const cells = Array.from({ length: 81 }, (_, i) => i);
     shuffle(cells);
     const given = new Set(cells.slice(0, currentLevel.given));
-    const values = solution.map((row) => [...row]);
+    const values = puzzle.map((row) => [...row]);
     let selected = null;
     board.innerHTML = `<div class="sudoku-grid" role="grid" aria-label="Tabuleiro de Sudoku"></div>`;
     const sudokuGrid = board.firstElementChild;
@@ -161,8 +239,8 @@ function sudokuGame() {
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = `sudoku-cell${given.has(index) ? " fixed" : ""}`;
-      cell.textContent = given.has(index) ? String(solution[row][col]) : "";
-      cell.setAttribute("aria-label", `Linha ${row + 1}, coluna ${col + 1}${given.has(index) ? `, ${solution[row][col]}` : ", vazia"}`);
+      cell.textContent = given.has(index) ? String(puzzle[row][col]) : "";
+      cell.setAttribute("aria-label", `Linha ${row + 1}, coluna ${col + 1}${given.has(index) ? `, ${puzzle[row][col]}` : ", vazia"}`);
       cell.addEventListener("click", () => {
         if (given.has(index)) return;
         selected = index;
@@ -186,10 +264,10 @@ function sudokuGame() {
         const col = selected % 9;
         values[row][col] = n;
         cellNodes[selected].textContent = String(n);
-        const errors = values.flatMap((line, r) => line.map((value, c) => value && value !== solution[r][c] ? r * 9 + c : -1)).filter((value) => value >= 0);
+        const errors = values.flatMap((line, r) => line.map((value, c) => value && value !== puzzle[r][c] ? r * 9 + c : -1)).filter((value) => value >= 0);
         cellNodes.forEach((cell, i) => cell.classList.toggle("error", errors.includes(i)));
         status.textContent = values.every((line) => line.every((value) => value !== 0))
-          ? (values.every((line, r) => line.every((value, c) => value === solution[r][c])) ? "Sudoku completo! 🎉" : "Confira as casas em vermelho")
+          ? (values.every((line, r) => line.every((value, c) => value === puzzle[r][c])) ? "Sudoku completo! 🎉" : "Confira as casas em vermelho")
           : `${81 - values.flat().filter(Boolean).length} casas vazias`;
       }));
     }
@@ -234,13 +312,17 @@ function solitaireGame() {
         const columnIndex = Number(columnNode.dataset.column);
         columnNode.querySelectorAll(".solitaire-card.face-up").forEach((node) => node.addEventListener("click", () => {
           const cardIndex = Number(node.dataset.card);
-          if (selected && selected.type !== "waste" && selected.column === columnIndex && selected.index === cardIndex) {
-            selectSource(null);
-            return;
-          }
           if (selected) {
-            if (!moveToColumn(columnIndex)) selectSource({ type: "column", column: columnIndex, index: cardIndex });
-          } else selectSource({ type: "column", column: columnIndex, index: cardIndex });
+            if (selected.type !== "column" || selected.column !== columnIndex) {
+              if (moveToColumn(columnIndex)) return;
+            } else if (selected.index !== cardIndex && cardIndex > selected.index) {
+              if (moveToColumn(columnIndex)) return;
+            } else if (selected.index === cardIndex) {
+              selectSource(null);
+              return;
+            }
+          }
+          selectSource({ type: "column", column: columnIndex, index: cardIndex });
         }));
         columnNode.addEventListener("click", (event) => {
           if (event.target === columnNode && selected) moveToColumn(columnIndex);
@@ -319,7 +401,28 @@ function solitaireGame() {
       } else status.textContent = "Limite de re-compras atingido";
       render();
     }
-    instructions.textContent = `Compre ${drawCount === 1 ? "uma" : "três"} carta${drawCount === 1 ? "" : "s"}. Toque em uma carta e depois na pilha de destino.`;
+    function autoMove() {
+      if (!selected) {
+        status.textContent = "Toque primeiro em uma carta para selecioná-la";
+        return;
+      }
+      const card = sourceCards()?.[0];
+      if (!card) return;
+      const foundationIndex = suits.indexOf(card.suit);
+      if (card.rank === foundations[foundationIndex].length + 1) {
+        moveToFoundation(foundationIndex);
+        return;
+      }
+      const targetIndex = columns.findIndex((column, index) => {
+        if (selected.type === "column" && selected.column === index) return false;
+        const top = column.at(-1);
+        return top ? top.faceUp && top.red !== card.red && top.rank === card.rank + 1 : card.rank === 13;
+      });
+      if (targetIndex >= 0 && moveToColumn(targetIndex)) return;
+      status.textContent = "Essa carta ainda não tem destino. Tente outra ou compre do monte.";
+    }
+    controls.append(button("✨ Mover por mim", autoMove));
+    instructions.textContent = `Compre ${drawCount === 1 ? "uma" : "três"} carta${drawCount === 1 ? "" : "s"}. Toque numa carta e depois em outra pilha. Use “Mover por mim” para uma sugestão rápida.`;
     render();
   });
 }
@@ -453,7 +556,7 @@ function tetrisGame() {
 
 function memoryGame() {
   gameFrame("Encontre os pares", (board, controls, status, instructions) => {
-    const emojis = ["🍓", "🌙", "🐳", "🌵", "🍄", "🦋", "🍋", "🐸", "🌈", "🦊", "🍉", "⭐", "🐙", "🌻", "🎈", "🍇", "🐢", "☀️"];
+    const emojis = shuffle(["🍓", "🌙", "🐳", "🌵", "🍄", "🦋", "🍋", "🐸", "🌈", "🦊", "🍉", "⭐", "🐙", "🌻", "🎈", "🍇", "🐢", "☀️"]);
     const pairCount = currentLevel.memory / 2;
     const cards = shuffle(emojis.slice(0, pairCount).flatMap((emoji, id) => [{ emoji, id }, { emoji, id }]));
     let open = [];
@@ -518,8 +621,12 @@ function crosswordGame() {
     ];
     const entryCount = [3, 4, 5, 6][selectedLevel];
     const entries = allEntries.slice(0, entryCount);
+    const transpose = Math.random() < .5;
+    const puzzleEntries = entries.map((entry) => transpose
+      ? { ...entry, row: entry.col, col: entry.row, direction: entry.direction === "across" ? "down" : "across" }
+      : entry);
     const solution = Array.from({ length: size }, () => Array(size).fill(null));
-    entries.forEach((entry) => [...entry.answer].forEach((letter, i) => {
+    puzzleEntries.forEach((entry) => [...entry.answer].forEach((letter, i) => {
       solution[entry.row + (entry.direction === "down" ? i : 0)][entry.col + (entry.direction === "across" ? i : 0)] = letter;
     }));
     const keys = new Map();
@@ -543,7 +650,7 @@ function crosswordGame() {
           input.value = input.value.toLocaleUpperCase("pt-BR").replace(/[^A-ZÁÉÍÓÚÂÊÔÃÕÇ]/g, "").slice(-1);
           const next = inputs.findIndex((item) => item === input) + 1;
           if (input.value && inputs[next]) inputs[next].focus();
-          const complete = entries.every((entry) => [...entry.answer].every((char, i) => {
+          const complete = puzzleEntries.every((entry) => [...entry.answer].every((char, i) => {
             const rr = entry.row + (entry.direction === "down" ? i : 0);
             const cc = entry.col + (entry.direction === "across" ? i : 0);
             return keys.get(`${rr},${cc}`)?.value.toUpperCase() === char;
@@ -564,7 +671,8 @@ function crosswordGame() {
     }
     const clues = document.createElement("div");
     clues.className = "cross-clues";
-    entries.forEach((entry) => {
+    const displayedClues = shuffle([...puzzleEntries]);
+    displayedClues.forEach((entry) => {
       const clue = button(`${entry.number} ${entry.direction === "across" ? "→" : "↓"} · ${entry.clue}`, () => {
         clues.querySelectorAll(".clue").forEach((node) => node.classList.remove("active"));
         clue.classList.add("active");
@@ -581,7 +689,7 @@ function crosswordGame() {
     layout.append(crosswordGrid, clues);
     board.append(layout);
     instructions.textContent = "Toque em uma dica para começar. As letras avançam automaticamente.";
-    status.textContent = `${entries.length} dicas · ${new Set(entries.flatMap((entry) => [...entry.answer])).size} letras diferentes`;
+    status.textContent = `${puzzleEntries.length} dicas · ${new Set(puzzleEntries.flatMap((entry) => [...entry.answer])).size} letras diferentes`;
   });
 }
 
@@ -638,7 +746,11 @@ function bingoGame() {
       lastNumbers.length = Math.min(lastNumbers.length, 5);
       board.querySelector("#drawn-number").textContent = String(number);
       board.querySelector("#last-numbers").textContent = lastNumbers.join(" · ");
-      status.textContent = `${called.size} / 75 sorteados`;
+      status.textContent = randomChoice([
+        `${called.size} / 75 sorteados · Boa sorte, cartelas!`,
+        `${called.size} / 75 sorteados · Esse número veio com estilo.`,
+        `${called.size} / 75 sorteados · Olho vivo, já pode marcar!`
+      ]);
       renderCards();
     }
     function stopAuto() {
@@ -712,12 +824,12 @@ function dominoGame() {
       passes = 0;
       if (!player.length) {
         finished = true;
-        status.textContent = "Você venceu! 🎉";
+        status.textContent = machineTaunt("domino", "win");
         render();
         return;
       }
       turn = "computer";
-      status.textContent = "Vez do oponente…";
+      status.textContent = machineTaunt("domino", "play");
       render();
       closeTimer = setTimeout(computerTurn, 650);
     }
@@ -754,7 +866,7 @@ function dominoGame() {
           }
         }
         turn = "player";
-        status.textContent = "Oponente passou. Sua vez!";
+        status.textContent = `Oponente passou. ${machineTaunt("domino", "play")}`;
         render();
         return;
       }
@@ -789,10 +901,10 @@ function dominoGame() {
       passes = 0;
       if (!computer.length) {
         finished = true;
-        status.textContent = "O oponente venceu. Tente outra vez!";
+        status.textContent = machineTaunt("domino", "lose");
       } else {
         turn = "player";
-        status.textContent = "Sua vez!";
+        status.textContent = machineTaunt("domino", "play");
       }
       render();
     }
@@ -800,7 +912,7 @@ function dominoGame() {
       finished = true;
       const myPips = player.reduce((sum, tile) => sum + tile.a + tile.b, 0);
       const theirPips = computer.reduce((sum, tile) => sum + tile.a + tile.b, 0);
-      status.textContent = myPips <= theirPips ? "Jogo bloqueado: você venceu! 🎉" : "Jogo bloqueado: oponente venceu.";
+      status.textContent = myPips <= theirPips ? `Jogo bloqueado: ${machineTaunt("domino", "win")}` : `Jogo bloqueado: ${machineTaunt("domino", "lose")}`;
       render();
     }
     instructions.textContent = "Toque em uma peça para jogar. Escolha esquerda ou direita quando precisar.";
@@ -812,6 +924,12 @@ function dominoGame() {
 function checkersGame() {
   gameFrame("Capture as peças", (board, controls, status, instructions) => {
     const state = Array.from({ length: 8 }, (_, r) => Array.from({ length: 8 }, (_, c) => (r + c) % 2 ? (r < 3 ? "b" : r > 4 ? "w" : null) : null));
+    const flipped = Math.random() < .5;
+    const boardPalette = randomChoice([
+      ["#f5e8d2", "#75533c"],
+      ["#e5eff4", "#466d7d"],
+      ["#ece4f4", "#67577d"]
+    ]);
     let selected = null;
     let legalMoves = [];
     let turn = "w";
@@ -839,15 +957,20 @@ function checkersGame() {
     function render() {
       board.innerHTML = `<div class="checkers-grid" role="grid"></div>`;
       const checkerGrid = board.firstElementChild;
-      state.forEach((row, r) => row.forEach((piece, c) => {
+      checkerGrid.style.setProperty("--check-light", boardPalette[0]);
+      checkerGrid.style.setProperty("--check-dark", boardPalette[1]);
+      for (let viewRow = 0; viewRow < 8; viewRow++) for (let viewCol = 0; viewCol < 8; viewCol++) {
+        const r = flipped ? 7 - viewRow : viewRow;
+        const c = flipped ? 7 - viewCol : viewCol;
+        const piece = state[r][c];
         const square = document.createElement("button");
         square.type = "button";
-        square.className = `check-square ${(r + c) % 2 ? "dark" : "light"}${selected?.[0] === r && selected?.[1] === c ? " selected" : ""}${legalMoves.some((move) => move.to[0] === r && move.to[1] === c) ? " valid" : ""}`;
+        square.className = `check-square ${(viewRow + viewCol) % 2 ? "dark" : "light"}${selected?.[0] === r && selected?.[1] === c ? " selected" : ""}${legalMoves.some((move) => move.to[0] === r && move.to[1] === c) ? " valid" : ""}`;
         square.textContent = piece ? (piece === "w" ? "⚪" : piece === "W" ? "👑" : piece === "b" ? "⚫" : "👑") : "";
-        square.setAttribute("aria-label", `Linha ${r + 1}, coluna ${c + 1}${piece ? `, ${piece === "w" || piece === "W" ? "sua peça" : "oponente"}` : ""}`);
+        square.setAttribute("aria-label", `Linha ${viewRow + 1}, coluna ${viewCol + 1}${piece ? `, ${piece === "w" || piece === "W" ? "sua peça" : "oponente"}` : ""}`);
         square.addEventListener("click", () => clickSquare(r, c));
         checkerGrid.append(square);
-      }));
+      }
     }
     function clickSquare(r, c) {
       if (turn !== "w" || gameOver) return;
@@ -883,7 +1006,7 @@ function checkersGame() {
       const all = movesFor("b");
       if (!all.length) {
         gameOver = true;
-        status.textContent = "Você venceu! O oponente não pode mover.";
+        status.textContent = `Você venceu! ${machineTaunt("checkers", "win")}`;
         return;
       }
       const captures = all.filter((move) => move.capture);
@@ -910,12 +1033,12 @@ function checkersGame() {
       const blacks = state.flat().filter((piece) => piece?.toLowerCase() === "b").length;
       if (!whites || !movesFor("w").length) {
         gameOver = true;
-        status.textContent = "O oponente venceu. Tente novamente!";
-      } else status.textContent = `${whites} suas · ${blacks} do oponente`;
+        status.textContent = machineTaunt("checkers", "lose");
+      } else status.textContent = `${machineTaunt("checkers", "play")} · ${whites} suas / ${blacks} do oponente`;
       render();
     }
     instructions.textContent = "Toque em uma peça e depois em uma casa destacada. Capturas são obrigatórias.";
-    status.textContent = "Sua vez · peças brancas";
+    status.textContent = `Sua vez · ${machineTaunt("checkers", "play")}`;
     render();
   });
 }
@@ -965,22 +1088,30 @@ function wordSearchGame() {
       const item = event.target.closest("[data-pos]");
       return item ? Number(item.dataset.pos) : null;
     }
-    function selectRange(start, end) {
+    function rangeIndices(start, end) {
       const sr = Math.floor(start / size);
       const sc = start % size;
       const er = Math.floor(end / size);
       const ec = end % size;
       const dr = Math.sign(er - sr);
       const dc = Math.sign(ec - sc);
-      if (sr !== er && sc !== ec && Math.abs(er - sr) !== Math.abs(ec - sc)) return;
-      const selected = [];
+      if (sr !== er && sc !== ec && Math.abs(er - sr) !== Math.abs(ec - sc)) return [];
+      const indices = [];
       let r = sr;
       let c = sc;
       while ((dr === 0 || (dr > 0 ? r <= er : r >= er)) && (dc === 0 || (dc > 0 ? c <= ec : c >= ec))) {
-        selected.push(r * size + c);
+        indices.push(r * size + c);
         if (r === er && c === ec) break;
         r += dr;
         c += dc;
+      }
+      return indices;
+    }
+    function selectRange(start, end) {
+      const selected = rangeIndices(start, end);
+      if (!selected.length) {
+        status.textContent = "Escolha letras na mesma linha, coluna ou diagonal";
+        return;
       }
       const word = selected.map((i) => cells[Math.floor(i / size)][i % size]).join("");
       const reversed = [...word].reverse().join("");
@@ -988,13 +1119,22 @@ function wordSearchGame() {
       if (foundWord) {
         found.add(foundWord);
         selected.forEach((i) => letters[i].classList.add("found"));
+        board.querySelector(`[data-word="${foundWord}"]`)?.classList.add("found");
         status.textContent = found.size === placed.length ? "Você encontrou todas! 🎉" : `${found.size} / ${placed.length} encontradas`;
       } else {
         letters.forEach((item) => item.classList.remove("selected"));
         selected.forEach((i) => letters[i].classList.add("selected"));
-        status.textContent = "Continue procurando";
+        status.textContent = "Quase! A palavra não bateu — tente outra direção.";
       }
       first = null;
+    }
+    function tapCell(index) {
+      if (first === null) {
+        first = index;
+        letters.forEach((letter) => letter.classList.remove("selected", "preview"));
+        letters[index].classList.add("selected");
+        status.textContent = "Agora toque na última letra da palavra";
+      } else selectRange(first, index);
     }
     cells.forEach((row, r) => row.forEach((char, c) => {
       const item = document.createElement("button");
@@ -1003,36 +1143,56 @@ function wordSearchGame() {
       item.textContent = char;
       item.dataset.pos = String(r * size + c);
       item.addEventListener("click", () => {
-        if (suppressClick) return;
-        const index = Number(item.dataset.pos);
-        if (first === null) {
-          first = index;
-          letters.forEach((letter) => letter.classList.remove("selected"));
-          item.classList.add("selected");
-        } else selectRange(first, index);
+        if (Date.now() < suppressClickUntil) return;
+        tapCell(Number(item.dataset.pos));
       });
       letters.push(item);
       wordGrid.append(item);
     }));
     let pointerStart = null;
-    let suppressClick = false;
-    wordGrid.addEventListener("pointerdown", (event) => {
-      pointerStart = cellAt(event);
-      if (pointerStart !== null) {
-        first = pointerStart;
-        event.preventDefault();
-      }
-    });
-    wordGrid.addEventListener("pointerup", (event) => {
-      const end = cellAt(event);
-      if (pointerStart !== null && end !== null && end !== pointerStart) {
-        selectRange(pointerStart, end);
-        suppressClick = true;
-        setTimeout(() => { suppressClick = false; }, 0);
-      }
+    let pointerEnd = null;
+    let suppressClickUntil = 0;
+    function clearPreview() {
+      letters.forEach((letter) => letter.classList.remove("preview"));
+    }
+    function handlePointerMove(event) {
+      if (pointerStart === null) return;
+      const cell = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-pos]");
+      if (!cell) return;
+      const end = Number(cell.dataset.pos);
+      if (end === pointerEnd) return;
+      pointerEnd = end;
+      clearPreview();
+      rangeIndices(pointerStart, end).forEach((index) => letters[index].classList.add("preview"));
+    }
+    function handlePointerUp(event) {
+      if (pointerStart === null) return;
+      const cell = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-pos]");
+      const end = cell ? Number(cell.dataset.pos) : pointerStart;
+      if (end === pointerStart) tapCell(pointerStart);
+      else selectRange(pointerStart, end);
+      suppressClickUntil = Date.now() + 350;
+      clearPreview();
       pointerStart = null;
+      pointerEnd = null;
+    }
+    wordGrid.addEventListener("pointerdown", (event) => {
+      const index = cellAt(event);
+      if (index === null) return;
+      pointerStart = index;
+      pointerEnd = index;
+      event.preventDefault();
     });
-    instructions.textContent = `Toque no início e no fim ou deslize sobre cada palavra.${diagonal ? " Há diagonais." : " Só horizontal e vertical."}${reverse ? " Algumas estão invertidas." : ""}`;
+    document.addEventListener("pointermove", handlePointerMove, { passive: true });
+    document.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointercancel", handlePointerUp);
+    cleanupGame = () => {
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerup", handlePointerUp);
+      document.removeEventListener("pointercancel", handlePointerUp);
+    };
+    board.querySelector("strong").innerHTML = placed.map((word) => `<span class="word-chip" data-word="${word}">${word}</span>`).join("");
+    instructions.textContent = `Toque na primeira e na última letra ou deslize entre elas.${diagonal ? " Há diagonais." : " Só horizontal e vertical."}${reverse ? " Algumas estão invertidas." : ""}`;
     status.textContent = `0 / ${placed.length} encontradas`;
   });
 }
@@ -1048,7 +1208,7 @@ function stackGame() {
     const ctx = canvas.getContext("2d");
     const blockHeight = 22;
     const initialWidth = 210;
-    const colors = ["#d5fa68", "#9dc6ff", "#f6a8cf", "#ffbd75", "#a99bff", "#76ded0"];
+    const colors = shuffle(["#78cf9a", "#79bdf2", "#f6a8cf", "#ffbd75", "#a99bff", "#76ded0"]);
     let stack = [{ x: 75, y: 385, width: initialWidth, color: colors[0] }];
     let moving = { x: 0, y: 363, width: initialWidth, direction: 1, color: colors[1] };
     let score = 0;
@@ -1141,5 +1301,343 @@ function stackGame() {
     instructions.textContent = "Toque na tela para soltar. Alinhe os blocos para manter a torre de pé.";
     status.textContent = "0 blocos na torre";
     paint();
+  });
+}
+
+function racingGame() {
+  gameFrame("Grande Prêmio de Interlagos", (board, controls, status, instructions) => {
+    content.querySelector(".game-panel").classList.add("race-game");
+    const canvas = document.createElement("canvas");
+    canvas.width = 360;
+    canvas.height = 600;
+    canvas.className = "game-canvas race-canvas";
+    canvas.setAttribute("aria-label", "Corrida arcade na pista de Interlagos");
+    board.append(canvas);
+    const ctx = canvas.getContext("2d");
+    const laneOffsets = [-1, 0, 1];
+    const obstacleColors = { cone: "#ff944d", gate: "#b171e8", rival: "#48b7d1" };
+    const hazards = [];
+    const items = [];
+    const keys = new Set();
+    let lane = 1;
+    let distance = 0;
+    let rivalDistance = 0;
+    let score = 0;
+    let lastFrame = 0;
+    let lastSpawn = 0;
+    let jumpUntil = 0;
+    let duckUntil = 0;
+    let speedPenalty = 0;
+    let tiltCooldown = 0;
+    let ended = false;
+    let frameId = 0;
+    const lapLength = 1200;
+    const totalDistance = lapLength * 3;
+    const worldSpeed = 205 + selectedLevel * 22;
+    const playerY = 458;
+
+    function roadCenter(y, world = distance) {
+      return 180 + Math.sin((world + y * 1.9) * .0022) * 44 + Math.sin((world + y * 1.25) * .0011) * 24;
+    }
+
+    function drawCar(x, y, color, isPlayer = false, jumping = false) {
+      ctx.save();
+      if (jumping) {
+        ctx.shadowColor = "#ffffff";
+        ctx.shadowBlur = 20;
+        y -= 14;
+      }
+      const gradient = ctx.createLinearGradient(x - 17, y - 28, x + 17, y + 28);
+      gradient.addColorStop(0, "#ffffff");
+      gradient.addColorStop(.18, color);
+      gradient.addColorStop(1, color);
+      ctx.fillStyle = "#26303a";
+      ctx.fillRect(x - 18, y - 23, 6, 15);
+      ctx.fillRect(x + 12, y - 23, 6, 15);
+      ctx.fillRect(x - 18, y + 9, 6, 15);
+      ctx.fillRect(x + 12, y + 9, 6, 15);
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.moveTo(x - 12, y - 28);
+      ctx.quadraticCurveTo(x, y - 34, x + 12, y - 28);
+      ctx.lineTo(x + 16, y + 21);
+      ctx.quadraticCurveTo(x, y + 29, x - 16, y + 21);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = isPlayer ? "#d7f6ff" : "#d8e6ed";
+      ctx.beginPath();
+      ctx.moveTo(x - 9, y - 12);
+      ctx.lineTo(x + 9, y - 12);
+      ctx.lineTo(x + 11, y + 2);
+      ctx.lineTo(x - 11, y + 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = isPlayer ? "#fff1a8" : "#ffcf86";
+      ctx.fillRect(x - 12, y + 18, 6, 3);
+      ctx.fillRect(x + 6, y + 18, 6, 3);
+      if (isPlayer) {
+        ctx.fillStyle = "#203444";
+        ctx.font = "bold 9px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("VOCÊ", x, y + 12);
+      }
+      ctx.restore();
+    }
+
+    function drawTrack() {
+      const sky = ctx.createLinearGradient(0, 0, 0, 600);
+      sky.addColorStop(0, "#a9d2dc");
+      sky.addColorStop(.4, "#dcebe5");
+      sky.addColorStop(1, "#7dbb91");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, 360, 600);
+      ctx.fillStyle = "#8ac68d";
+      ctx.fillRect(0, 115, 360, 485);
+      for (let y = 115; y < 600; y += 45) {
+        const center = roadCenter(y);
+        const width = 235 + (y / 600) * 15;
+        const left = center - width / 2;
+        const right = center + width / 2;
+        const stripe = Math.floor((y + distance * .55) / 22) % 2 === 0;
+        ctx.fillStyle = stripe ? "#f7f2df" : "#dd6565";
+        ctx.fillRect(left - 8, y, 8, 24);
+        ctx.fillRect(right, y, 8, 24);
+      }
+      ctx.beginPath();
+      for (let y = 115; y <= 600; y += 8) {
+        const x = roadCenter(y) - 118 - (y / 600) * 8;
+        if (y === 115) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      for (let y = 600; y >= 115; y -= 8) ctx.lineTo(roadCenter(y) + 118 + (y / 600) * 8, y);
+      ctx.closePath();
+      ctx.fillStyle = "#515c65";
+      ctx.fill();
+      ctx.beginPath();
+      for (let y = 115; y <= 600; y += 8) {
+        const x = roadCenter(y) - 103 - (y / 600) * 8;
+        if (y === 115) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      for (let y = 600; y >= 115; y -= 8) ctx.lineTo(roadCenter(y) + 103 + (y / 600) * 8, y);
+      ctx.closePath();
+      const asphalt = ctx.createLinearGradient(0, 115, 360, 600);
+      asphalt.addColorStop(0, "#606b73");
+      asphalt.addColorStop(1, "#3c4851");
+      ctx.fillStyle = asphalt;
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff75";
+      ctx.lineWidth = 3;
+      ctx.setLineDash([18, 16]);
+      ctx.lineDashOffset = -distance * .35;
+      for (const offset of [-34, 34]) {
+        ctx.beginPath();
+        for (let y = 115; y <= 600; y += 8) {
+          const x = roadCenter(y) + offset;
+          if (y === 115) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 104, 360, 11);
+      ctx.fillStyle = "#e45757";
+      for (let x = 0; x < 360; x += 22) ctx.fillRect(x, 104, 11, 11);
+      ctx.fillStyle = "#234238";
+      ctx.font = "bold 12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("INTERLAGOS · SÃO PAULO", 180, 28);
+      const lap = Math.min(3, Math.floor(distance / lapLength) + 1);
+      const curveNames = ["RETA PRINCIPAL", "CURVA DO SOL", "S DO SENNA", "RETA OPOSTA"];
+      ctx.font = "bold 9px sans-serif";
+      ctx.fillStyle = "#183e32";
+      ctx.fillText(curveNames[Math.floor(distance / 235) % curveNames.length], 180, 45);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#ffffffd9";
+      ctx.fillRect(10, 10, 79, 43);
+      ctx.fillStyle = "#243d34";
+      ctx.font = "bold 10px sans-serif";
+      ctx.fillText(`VOLTA ${lap}/3`, 18, 27);
+      ctx.fillText(`${score} PTS`, 18, 43);
+    }
+
+    function drawObjects() {
+      hazards.forEach((hazard) => {
+        const x = roadCenter(hazard.y) + laneOffsets[hazard.lane] * 51;
+        if (hazard.type === "cone") {
+          ctx.fillStyle = obstacleColors.cone;
+          ctx.beginPath();
+          ctx.moveTo(x, hazard.y - 17);
+          ctx.lineTo(x - 15, hazard.y + 14);
+          ctx.lineTo(x + 15, hazard.y + 14);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#fff1da";
+          ctx.fillRect(x - 9, hazard.y + 3, 18, 4);
+        } else {
+          ctx.fillStyle = obstacleColors.gate;
+          ctx.fillRect(x - 18, hazard.y - 5, 36, 18);
+          ctx.fillStyle = "#f5e7ff";
+          ctx.fillRect(x - 14, hazard.y - 2, 28, 4);
+        }
+      });
+      items.forEach((item) => {
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(roadCenter(item.y) + laneOffsets[item.lane] * 51, item.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#f5b94c";
+        ctx.beginPath();
+        ctx.arc(roadCenter(item.y) + laneOffsets[item.lane] * 51, item.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function render(now) {
+      if (ended) return;
+      const elapsed = Math.min(.04, Math.max(0, (now - lastFrame) / 1000));
+      lastFrame = now || performance.now();
+      const progressSpeed = worldSpeed * (1 - speedPenalty);
+      distance += progressSpeed * elapsed;
+      rivalDistance += (worldSpeed * (.91 + selectedLevel * .025)) * elapsed;
+      speedPenalty = Math.max(0, speedPenalty - elapsed * .22);
+      if (now - lastSpawn > Math.max(650, 1250 - selectedLevel * 120)) {
+        hazards.push({ lane: Math.floor(Math.random() * 3), y: 105, type: Math.random() < .65 ? "cone" : "gate" });
+        lastSpawn = now;
+      }
+      hazards.forEach((hazard) => { hazard.y += progressSpeed * elapsed * .72; });
+      for (let i = items.length - 1; i >= 0; i--) {
+        const item = items[i];
+        item.y -= 420 * elapsed;
+        const hitIndex = hazards.findIndex((hazard) => hazard.lane === item.lane && Math.abs(hazard.y - item.y) < 24);
+        if (hitIndex >= 0) {
+          hazards.splice(hitIndex, 1);
+          items.splice(i, 1);
+          score += 50;
+          status.textContent = "Alvo atingido! O rival vai precisar de outro plano 😎";
+        } else if (item.y < 90) items.splice(i, 1);
+      }
+      for (let i = hazards.length - 1; i >= 0; i--) {
+        const hazard = hazards[i];
+        if (hazard.y > 620) {
+          score += 5;
+          hazards.splice(i, 1);
+          continue;
+        }
+        if (hazard.lane === lane && hazard.y > playerY - 24 && hazard.y < playerY + 25) {
+          const avoided = hazard.type === "cone" ? now < jumpUntil : now < duckUntil;
+          hazards.splice(i, 1);
+          if (!avoided) {
+            speedPenalty = .52;
+            status.textContent = "Ops! Cone na curva. A pista não aceita desculpas 😄";
+          } else {
+            score += 25;
+            status.textContent = "Desvio perfeito! Até o rival anotou a manobra.";
+          }
+        }
+      }
+      if (distance >= totalDistance || rivalDistance >= totalDistance) {
+        ended = true;
+        status.textContent = distance >= rivalDistance ? machineTaunt("racing", "win") : machineTaunt("racing", "lose");
+        status.classList.add(distance >= rivalDistance ? "race-win" : "game-over");
+      }
+      drawTrack();
+      drawObjects();
+      drawCar(roadCenter(284) + laneOffsets[(lane + 1) % 3] * 51, 282, "#f3a04e");
+      drawCar(roadCenter(playerY) + laneOffsets[lane] * 51, playerY, "#e65d5d", true, now < jumpUntil);
+      const ratio = Math.min(1, distance / totalDistance);
+      ctx.fillStyle = "#ffffffc9";
+      ctx.fillRect(10, 566, 340, 8);
+      ctx.fillStyle = "#f0b65e";
+      ctx.fillRect(10, 566, 340 * ratio, 8);
+      if (!ended) frameId = requestAnimationFrame(render);
+    }
+
+    function steer(direction) {
+      lane = Math.max(0, Math.min(2, lane + direction));
+    }
+    function jump() {
+      jumpUntil = performance.now() + 850;
+      status.textContent = "Salto ativado! Agora é que são elas.";
+    }
+    function duck() {
+      duckUntil = performance.now() + 850;
+      status.textContent = "Abaixou na hora! Que reflexo de piloto.";
+    }
+    function throwItem() {
+      items.push({ lane, y: playerY - 40 });
+      status.textContent = randomChoice(["Item lançado! O rival que se cuide.", "Vai com tudo! Item na pista.", "Presente enviado para o adversário 🎁"]);
+    }
+    function handleKeyDown(event) {
+      if (activeGame?.id !== "racing" || !modal.classList.contains("is-open")) return;
+      const key = event.key.toLowerCase();
+      if (["arrowleft", "arrowright", "arrowup", "arrowdown", " ", "x", "a", "d", "w", "s"].includes(key)) event.preventDefault();
+      if (event.repeat) return;
+      keys.add(key);
+      if (key === "arrowleft" || key === "a") steer(-1);
+      if (key === "arrowright" || key === "d") steer(1);
+      if (key === "arrowup" || key === "w") jump();
+      if (key === "arrowdown" || key === "s") duck();
+      if (key === " " || key === "x") throwItem();
+    }
+    function handleKeyUp(event) {
+      keys.delete(event.key.toLowerCase());
+    }
+    function handleOrientation(event) {
+      if (!Number.isFinite(event.gamma) || Math.abs(event.gamma) < 12) return;
+      const now = performance.now();
+      if (now < tiltCooldown) return;
+      steer(event.gamma > 0 ? 1 : -1);
+      tiltCooldown = now + 420;
+      status.textContent = event.gamma > 0 ? "Inclinação detectada: direita!" : "Inclinação detectada: esquerda!";
+    }
+    async function enableTilt() {
+      const orientation = window.DeviceOrientationEvent;
+      if (!orientation) {
+        status.textContent = "Este aparelho não oferece sensor de inclinação. Use ◀ e ▶.";
+        return;
+      }
+      if (typeof orientation.requestPermission === "function") {
+        const permission = await orientation.requestPermission();
+        if (permission !== "granted") {
+          status.textContent = "Sensor não autorizado. Os botões continuam funcionando.";
+          return;
+        }
+      }
+      window.addEventListener("deviceorientation", handleOrientation);
+      status.textContent = "Inclinação ativada! Vire o celular para pilotar.";
+    }
+
+    const leftButton = button("◀", () => steer(-1));
+    leftButton.setAttribute("aria-label", "Virar à esquerda");
+    leftButton.title = "Esquerda";
+    const rightButton = button("▶", () => steer(1));
+    rightButton.setAttribute("aria-label", "Virar à direita");
+    rightButton.title = "Direita";
+    controls.append(leftButton, rightButton, button("⬆ Pular", jump), button("⬇ Abaixar", duck));
+    const itemButton = button("🎯", throwItem);
+    itemButton.setAttribute("aria-label", "Lançar item");
+    itemButton.title = "Lançar item";
+    controls.append(itemButton);
+    const tiltButton = button("📱 Inclinar", () => {
+      enableTilt().catch((error) => {
+        status.textContent = `Não foi possível ativar o sensor: ${error.message}`;
+      });
+    });
+    controls.append(tiltButton);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+    cleanupGame = () => {
+      cancelAnimationFrame(frameId);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("deviceorientation", handleOrientation);
+      keys.clear();
+    };
+    tiltButton.setAttribute("aria-label", "Ativar controle por inclinação do celular");
+    instructions.textContent = "PC: ←/→ vira · ↑ pula · ↓ abaixa · Espaço lança item. Celular: inclinação + botões.";
+    status.textContent = randomChoice(["Luzes acesas! Mostre seu talento no S do Senna.", "Acelera, piloto! O rival já está de olho.", "Interlagos está pronta. Só falta você!"]);
+    frameId = requestAnimationFrame(render);
   });
 }
