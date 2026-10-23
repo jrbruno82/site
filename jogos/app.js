@@ -1,16 +1,16 @@
 "use strict";
 
 const games = [
-  { id: "sudoku", name: "Sudoku", description: "Um desafio para a mente", icon: "🔢", tint: "#313b59" },
-  { id: "solitaire", name: "Paciência", description: "O clássico de cartas", icon: "🃏", tint: "#49354a" },
-  { id: "tetris", name: "Tetris", description: "Encaixe, limpe, repita", icon: "🧱", tint: "#254a53" },
-  { id: "memory", name: "Jogo da Memória", description: "Encontre todos os pares", icon: "🧠", tint: "#4a3931" },
-  { id: "crossword", name: "Palavras Cruzadas", description: "Descubra pelas dicas", icon: "✏️", tint: "#3e4935" },
-  { id: "bingo", name: "Bingo", description: "Sua sorte está lançada", icon: "🔵", tint: "#343f5a" },
-  { id: "domino", name: "Dominó", description: "Você contra a máquina", icon: "⚄", tint: "#4a4032" },
-  { id: "checkers", name: "Damas", description: "Pense alguns lances à frente", icon: "♟️", tint: "#48343b" },
-  { id: "wordsearch", name: "Caça-Palavras", description: "Ache todas as palavras", icon: "🔎", tint: "#374b3c" },
-  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4a3c30" }
+  { id: "sudoku", name: "Sudoku", description: "Um desafio para a mente", icon: "🔢", tint: "#173f45", accent: "#59e1d0" },
+  { id: "solitaire", name: "Paciência", description: "O clássico de cartas", icon: "🃏", tint: "#194733", accent: "#64e69b" },
+  { id: "tetris", name: "Tetris", description: "Encaixe, limpe, repita", icon: "🧱", tint: "#392751", accent: "#c69aff" },
+  { id: "memory", name: "Jogo da Memória", description: "Encontre todos os pares", icon: "🧠", tint: "#503025", accent: "#ffad78" },
+  { id: "crossword", name: "Palavras Cruzadas", description: "Descubra pelas dicas", icon: "✏️", tint: "#51421e", accent: "#ffd66e" },
+  { id: "bingo", name: "Bingo", description: "Sua sorte está lançada", icon: "🔵", tint: "#512b42", accent: "#ff83b3" },
+  { id: "domino", name: "Dominó", description: "Você contra a máquina", icon: "⚄", tint: "#19473e", accent: "#72e3c8" },
+  { id: "checkers", name: "Damas", description: "Pense alguns lances à frente", icon: "♟️", tint: "#523829", accent: "#ffb779" },
+  { id: "wordsearch", name: "Caça-Palavras", description: "Ache todas as palavras", icon: "🔎", tint: "#1f3e59", accent: "#79c1ff" },
+  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4c461c", accent: "#e3ed68" }
 ];
 const levels = [
   { name: "Fácil", given: 42, draw: 1, redeals: 5, tetris: 850, memory: 12, bingoCards: 1, bingoSpeed: 2600, ai: 1, wordSize: 8, stackSpeed: 1.7, stackTolerance: 14 },
@@ -32,6 +32,7 @@ games.forEach((game) => {
   card.type = "button";
   card.className = "game-card";
   card.style.setProperty("--card-tint", game.tint);
+  card.style.setProperty("--card-accent", game.accent);
   card.setAttribute("aria-label", `${game.name}: ${game.description}`);
   card.innerHTML = `<span class="card-top"><span class="game-emoji" aria-hidden="true">${game.icon}</span><span class="card-arrow" aria-hidden="true">↗</span></span><span><span class="card-title">${game.name}</span><span class="card-description">${game.description}</span></span>`;
   card.addEventListener("click", () => openGame(game));
@@ -45,6 +46,7 @@ function openGame(game) {
   selectedLevel = -1;
   document.querySelector("#modal-icon").textContent = game.icon;
   document.querySelector("#modal-title").textContent = game.name;
+  modal.style.setProperty("--game-accent", game.accent);
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
@@ -99,8 +101,9 @@ function showSetup() {
 }
 
 function gameFrame(label, setup) {
-  content.innerHTML = `<div class="game-panel"><div class="game-intro"><span><strong>${label}</strong> · ${currentLevel.name}</span><span class="status-pill" id="game-status">Boa partida!</span></div><div class="game-board" id="game-board"></div><div class="control-row" id="game-controls"></div><p class="instructions" id="game-instructions"></p></div>`;
+  content.innerHTML = `<div class="game-panel"><div class="game-intro"><span><strong>${label}</strong> · ${currentLevel.name}</span><span class="status-pill" id="game-status">Boa partida!</span></div><div class="game-action-row"><button type="button" class="restart-button" id="restart-game">⟳ <span>Reiniciar partida</span></button></div><div class="game-board" id="game-board"></div><div class="control-row" id="game-controls"></div><p class="instructions" id="game-instructions"></p></div>`;
   content.scrollTop = 0;
+  content.querySelector("#restart-game").addEventListener("click", () => launchGame(activeGame.id));
   setup(content.querySelector("#game-board"), content.querySelector("#game-controls"), content.querySelector("#game-status"), content.querySelector("#game-instructions"));
 }
 
@@ -357,18 +360,41 @@ function tetrisGame() {
       return shape[0].map((_, col) => shape.map((row) => row[col]).reverse());
     }
     function draw() {
-      ctx.fillStyle = "#0c1118";
+      const background = ctx.createLinearGradient(0, 0, 300, 600);
+      background.addColorStop(0, "#151c2a");
+      background.addColorStop(1, "#090e16");
+      ctx.fillStyle = background;
       ctx.fillRect(0, 0, 300, 600);
+      ctx.strokeStyle = "#ffffff0c";
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= 10; x++) {
+        ctx.beginPath();
+        ctx.moveTo(x * 30, 0);
+        ctx.lineTo(x * 30, 600);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= 20; y++) {
+        ctx.beginPath();
+        ctx.moveTo(0, y * 30);
+        ctx.lineTo(300, y * 30);
+        ctx.stroke();
+      }
+      function drawBlock(x, y, color) {
+        const gradient = ctx.createLinearGradient(x * 30, y * 30, x * 30 + 30, y * 30 + 30);
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(.12, color);
+        gradient.addColorStop(1, color);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x * 30 + 2, y * 30 + 2, 26, 26);
+        ctx.strokeStyle = "#ffffff55";
+        ctx.strokeRect(x * 30 + 2.5, y * 30 + 2.5, 25, 25);
+      }
       for (let y = 0; y < 20; y++) for (let x = 0; x < 10; x++) {
         const color = cells[y][x];
-        ctx.fillStyle = color || "#161e28";
-        ctx.fillRect(x * 30 + 1, y * 30 + 1, 28, 28);
+        if (color) drawBlock(x, y, color);
       }
       if (piece) piece.shape.forEach((row, r) => row.forEach((value, c) => {
-        if (value) {
-          ctx.fillStyle = piece.color;
-          ctx.fillRect((piece.x + c) * 30 + 1, (piece.y + r) * 30 + 1, 28, 28);
-        }
+        if (value) drawBlock(piece.x + c, piece.y + r, piece.color);
       }));
     }
     function lock() {
@@ -444,7 +470,8 @@ function memoryGame() {
         buttonNode.type = "button";
         buttonNode.className = `memory-card${revealed ? "" : " hidden"}${matched.has(card.id) ? " matched" : ""}`;
         buttonNode.setAttribute("aria-label", revealed ? `Carta ${card.emoji}` : "Carta fechada");
-        buttonNode.innerHTML = `<span>${card.emoji}</span>`;
+        buttonNode.style.setProperty("--memory-color", ["#ff9d76", "#ffcf68", "#72d8ec", "#82df9c", "#bd9aff", "#ff8fbc"][card.id % 6]);
+        buttonNode.innerHTML = `<span>${card.emoji}</span><span class="memory-card-back" aria-hidden="true">✳</span>`;
         buttonNode.addEventListener("click", () => {
           if (locked || revealed || matched.has(card.id)) return;
           open.push(i);
@@ -821,8 +848,6 @@ function checkersGame() {
         square.addEventListener("click", () => clickSquare(r, c));
         checkerGrid.append(square);
       }));
-      controls.innerHTML = "";
-      controls.append(button("↻ Reiniciar", () => launchGame("checkers")));
     }
     function clickSquare(r, c) {
       if (turn !== "w" || gameOver) return;
@@ -1007,7 +1032,6 @@ function wordSearchGame() {
       }
       pointerStart = null;
     });
-    controls.append(button("↻ Novo tabuleiro", () => launchGame("wordsearch")));
     instructions.textContent = `Toque no início e no fim ou deslize sobre cada palavra.${diagonal ? " Há diagonais." : " Só horizontal e vertical."}${reverse ? " Algumas estão invertidas." : ""}`;
     status.textContent = `0 / ${placed.length} encontradas`;
   });
@@ -1031,17 +1055,32 @@ function stackGame() {
     let gameOver = false;
     let frame = 0;
     function paint() {
-      ctx.fillStyle = "#0c1118";
+      const background = ctx.createLinearGradient(0, 0, 360, 420);
+      background.addColorStop(0, "#172332");
+      background.addColorStop(1, "#0b1118");
+      ctx.fillStyle = background;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#18212c";
       ctx.fillRect(0, 385, canvas.width, 35);
       stack.forEach((block) => {
-        ctx.fillStyle = block.color;
+        const gradient = ctx.createLinearGradient(block.x, block.y, block.x, block.y + blockHeight);
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(.16, block.color);
+        gradient.addColorStop(1, block.color);
+        ctx.fillStyle = gradient;
         ctx.fillRect(block.x, block.y, block.width, blockHeight - 2);
+        ctx.fillStyle = "#ffffff55";
+        ctx.fillRect(block.x, block.y, block.width, 2);
       });
       if (!gameOver) {
-        ctx.fillStyle = moving.color;
+        const gradient = ctx.createLinearGradient(moving.x, moving.y, moving.x, moving.y + blockHeight);
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(.16, moving.color);
+        gradient.addColorStop(1, moving.color);
+        ctx.fillStyle = gradient;
         ctx.fillRect(moving.x, moving.y, moving.width, blockHeight - 2);
+        ctx.fillStyle = "#ffffff66";
+        ctx.fillRect(moving.x, moving.y, moving.width, 2);
       } else {
         ctx.fillStyle = "#f5f7fa";
         ctx.textAlign = "center";
@@ -1098,7 +1137,6 @@ function stackGame() {
     }
     canvas.addEventListener("pointerdown", drop);
     controls.append(button("Soltar bloco", drop));
-    controls.append(button("↻ Recomeçar", () => launchGame("stack")));
     cleanupGame = () => cancelAnimationFrame(frameId);
     instructions.textContent = "Toque na tela para soltar. Alinhe os blocos para manter a torre de pé.";
     status.textContent = "0 blocos na torre";
