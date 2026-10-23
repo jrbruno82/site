@@ -1,1 +1,42 @@
-sdf
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10151d">
+  <meta name="description" content="Um hub mobile de jogos clássicos acessíveis para jogar onde quiser.">
+  <title>Clássicos — Jogos para todo momento</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div class="brand-mark" aria-hidden="true">✳</div>
+      <p class="eyebrow">SEU INTERVALO, DO SEU JEITO</p>
+      <h1>Clássicos<span>.</span></h1>
+      <p class="hero-copy">Jogos de sempre. Feitos para jogar agora.</p>
+    </header>
+
+    <section class="game-section" aria-labelledby="games-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">ESCOLHA SEU PRÓXIMO JOGO</p>
+          <h2 id="games-heading">Qual vai ser?</h2>
+        </div>
+        <span class="game-count">10 jogos</span>
+      </div>
+      <div class="game-grid" id="game-grid"></div>
+    </section>
+    <footer class="site-footer">Feito para telas pequenas <span aria-hidden="true">♥</span></footer>
+  </main>
+
+  <section class="game-modal" id="game-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <header class="modal-header">
+      <div class="modal-brand"><span class="modal-icon" id="modal-icon"></span><div><p class="eyebrow">CLÁSSICOS</p><h2 id="modal-title"></h2></div></div>
+      <button class="close-button" id="close-game" type="button" aria-label="Fechar jogo e voltar ao menu">×</button>
+    </header>
+    <div class="modal-content" id="modal-content"></div>
+  </section>
+  <script src="app.js"></script>
+</body>
+</html>
