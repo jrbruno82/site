@@ -48,6 +48,16 @@ h1, h2, h3, p { margin-top: 0; }
 .card-description { display: block; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
 .site-footer { padding: 32px 0 8px; color: #85909e; text-align: center; font-size: 12px; }
 .site-footer span { color: var(--accent); }
+.privacy-link { min-height: 40px; padding: 4px 8px; border: 0; background: transparent; color: #507962; font-size: 12px; text-decoration: underline; cursor: pointer; }
+.consent-banner { position: fixed; z-index: 50; right: 14px; bottom: max(14px,env(safe-area-inset-bottom)); left: 14px; display: flex; width: min(620px,calc(100% - 28px)); flex-direction: column; gap: 12px; margin: 0 auto; padding: 18px; border: 1px solid #cbdcd2; border-radius: 20px; background: #fffffff2; box-shadow: 0 14px 50px #223c2c30; backdrop-filter: blur(14px); }
+.consent-banner[hidden] { display: none; }
+.consent-copy h2 { margin: 0 0 5px; color: #294538; font: 800 17px "Manrope","Segoe UI",sans-serif; }
+.consent-copy p { margin: 0; color: #536761; font-size: 13px; line-height: 1.45; }
+.consent-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.consent-actions button { min-height: 48px; padding: 10px 14px; border-radius: 13px; font-weight: 800; cursor: pointer; }
+.consent-accept { border: 0; background: linear-gradient(135deg,#75b783,#438b66); color: #fff; }
+.consent-accept:disabled { opacity: .45; cursor: not-allowed; }
+.consent-decline { border: 1px solid #cbd8d2; background: #f3f7f4; color: #40564b; }
 
 .game-modal { position: fixed; z-index: 20; inset: 0; display: none; flex-direction: column; overflow: hidden; background: radial-gradient(ellipse at 50% 0,#ffffff,#edf3f1 75%); padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
 .game-modal.is-open { display: flex; }
@@ -172,6 +182,9 @@ h1, h2, h3, p { margin-top: 0; }
 .race-game { gap: 9px; }
 .race-win { color: #3a8957; font-weight: 900; }
 .control-row .control-button { min-height: 50px; }
+@media (min-width: 600px) {
+  .consent-banner { right: 24px; bottom: 24px; left: auto; margin: 0; }
+}
 .instructions { color: var(--muted); font-size: 13px; text-align: center; }
 .game-over { color: #ff9ca8; font-weight: 800; }
 

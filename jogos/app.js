@@ -115,6 +115,7 @@ function openGame(game) {
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
+  window.jogosAnalytics?.startGame(game, levels[selectedLevel].name, roundVariant);
   showSetup();
   content.scrollTop = 0;
   document.querySelector("#close-game").focus();
@@ -122,6 +123,7 @@ function openGame(game) {
 
 function closeGame() {
   stopCurrentGame();
+  window.jogosAnalytics?.finishGame();
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
@@ -160,6 +162,7 @@ function showSetup() {
   });
   content.querySelector("#start-game").addEventListener("click", () => {
     currentLevel = levels[selectedLevel];
+    window.jogosAnalytics?.updateGame(activeGame, currentLevel.name, roundVariant);
     launchGame(activeGame.id);
   });
 }
@@ -174,6 +177,7 @@ function gameFrame(label, setup) {
 function startNewRound(id) {
   roundVariant = nextRandomValue(gameVariants[id] || ["Partida clássica"], previousVariants, id);
   modal.style.setProperty("--game-accent", nextRandomValue(gameAccents[id] || [activeGame.accent], previousAccents, id));
+  window.jogosAnalytics?.startGame(activeGame, currentLevel.name, roundVariant);
   launchGame(id);
 }
 

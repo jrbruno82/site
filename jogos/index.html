@@ -27,8 +27,19 @@
       </div>
       <div class="game-grid" id="game-grid"></div>
     </section>
-    <footer class="site-footer">Feito para telas pequenas <span aria-hidden="true">♥</span></footer>
+    <footer class="site-footer">Feito para telas pequenas <span aria-hidden="true">♥</span> · <button type="button" class="privacy-link" id="privacy-settings">Privacidade</button></footer>
   </main>
+
+  <aside class="consent-banner" id="analytics-consent" aria-labelledby="consent-title" hidden>
+    <div class="consent-copy">
+      <h2 id="consent-title">Ajude a melhorar os jogos</h2>
+      <p id="consent-message">Com sua autorização, registramos visitas, jogos selecionados, tipo de dispositivo e duração. Não coletamos localização geográfica. Os dados são enviados à planilha usoJogosOnline.</p>
+    </div>
+    <div class="consent-actions">
+      <button type="button" class="consent-accept" id="consent-accept">Permitir registro</button>
+      <button type="button" class="consent-decline" id="consent-decline">Continuar sem registro</button>
+    </div>
+  </aside>
 
   <section class="game-modal" id="game-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <header class="modal-header">
@@ -37,6 +48,8 @@
     </header>
     <div class="modal-content" id="modal-content"></div>
   </section>
+  <script src="analytics-config.js"></script>
+  <script src="analytics.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
