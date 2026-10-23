@@ -10,8 +10,7 @@ const games = [
   { id: "domino", name: "Dominó", description: "Você contra a máquina", icon: "⚄", tint: "#19473e", accent: "#72e3c8" },
   { id: "checkers", name: "Damas", description: "Pense alguns lances à frente", icon: "♟️", tint: "#523829", accent: "#ffb779" },
   { id: "wordsearch", name: "Caça-Palavras", description: "Ache todas as palavras", icon: "🔎", tint: "#1f3e59", accent: "#79c1ff" },
-  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4c461c", accent: "#e3ed68" },
-  { id: "racing", name: "Corrida Interlagos", description: "Acelere, desvie e vença", icon: "🏎️", tint: "#522d35", accent: "#ff7a72" }
+  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4c461c", accent: "#e3ed68" }
 ];
 const gameVariants = {
   sudoku: ["Desafio dos números", "Tabuleiro surpresa", "Sequência relâmpago", "Números em festa"],
@@ -23,8 +22,7 @@ const gameVariants = {
   domino: ["Mesa surpresa", "Desafio das peças", "Duelo de estratégia", "Pedras embaralhadas"],
   checkers: ["Duelo no tabuleiro", "Desafio estratégico", "Peças em ação", "Partida surpresa"],
   wordsearch: ["Caça temática", "Grade surpresa", "Letras embaralhadas", "Desafio de palavras"],
-  stack: ["Torre colorida", "Blocos surpresa", "Desafio de equilíbrio", "Construção arcade"],
-  racing: ["Grande Prêmio de Interlagos", "Desafio da Curva do Sol", "Sprint no S do Senna", "Corrida paulista"]
+  stack: ["Torre colorida", "Blocos surpresa", "Desafio de equilíbrio", "Construção arcade"]
 };
 const gameAccents = {
   sudoku: ["#39a995", "#4b8fc4", "#7884cb"],
@@ -36,8 +34,7 @@ const gameAccents = {
   domino: ["#368c83", "#4c9c6a", "#4980b7"],
   checkers: ["#b46e48", "#b65362", "#8d6fba"],
   wordsearch: ["#3986b8", "#4b9a9a", "#8b74bb"],
-  stack: ["#9c9e3c", "#d28b48", "#5e9f76"],
-  racing: ["#e76860", "#4a86ce", "#db9a43"]
+  stack: ["#9c9e3c", "#d28b48", "#5e9f76"]
 };
 const levelIcons = ["🌱", "⚡", "🔥", "💎"];
 const levels = [
@@ -80,11 +77,6 @@ function machineTaunt(kind, result = "play") {
       play: ["Boa! Até minhas peças ficaram impressionadas.", "Você pensa rápido. Minha CPU pediu café.", "Movimento ousado. Vamos ver se o tabuleiro concorda."],
       win: ["Você venceu! Vou treinar no modo humildade.", "Dama para você! Minha estratégia pediu demissão.", "Boa partida! Hoje você mandou no tabuleiro."],
       lose: ["Ponto para a máquina. Acontece até com gente boa.", "Ganhei essa, mas não se acostume!", "Xeque... ops, jogo errado. Mesmo assim, ganhei!"]
-    },
-    racing: {
-      play: ["A curva do Sol não perdoa distração!", "Seu rival está no retrovisor. Por enquanto.", "Interlagos sentiu essa ultrapassagem!"],
-      win: ["Pódio seu! A bandeirada não mente.", "Você voou no S do Senna. Que corrida!", "Vitória em Interlagos! O troféu já está brilhando."],
-      lose: ["A máquina chegou na frente. Culpa do vento, claro.", "Quase no pódio! A revanche está a uma curva.", "Essa corrida foi do rival. Seu capacete continua estiloso."]
     }
   };
   return randomChoice(lines[kind][result]);
@@ -115,7 +107,6 @@ function openGame(game) {
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
-  window.jogosAnalytics?.startGame(game, levels[selectedLevel].name, roundVariant);
   showSetup();
   content.scrollTop = 0;
   document.querySelector("#close-game").focus();
@@ -123,7 +114,6 @@ function openGame(game) {
 
 function closeGame() {
   stopCurrentGame();
-  window.jogosAnalytics?.finishGame();
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
@@ -162,7 +152,6 @@ function showSetup() {
   });
   content.querySelector("#start-game").addEventListener("click", () => {
     currentLevel = levels[selectedLevel];
-    window.jogosAnalytics?.updateGame(activeGame, currentLevel.name, roundVariant);
     launchGame(activeGame.id);
   });
 }
@@ -177,7 +166,6 @@ function gameFrame(label, setup) {
 function startNewRound(id) {
   roundVariant = nextRandomValue(gameVariants[id] || ["Partida clássica"], previousVariants, id);
   modal.style.setProperty("--game-accent", nextRandomValue(gameAccents[id] || [activeGame.accent], previousAccents, id));
-  window.jogosAnalytics?.startGame(activeGame, currentLevel.name, roundVariant);
   launchGame(id);
 }
 
@@ -193,8 +181,7 @@ function launchGame(id) {
     domino: dominoGame,
     checkers: checkersGame,
     wordsearch: wordSearchGame,
-    stack: stackGame,
-    racing: racingGame
+    stack: stackGame
   };
   runners[id]();
 }
@@ -1305,343 +1292,5 @@ function stackGame() {
     instructions.textContent = "Toque na tela para soltar. Alinhe os blocos para manter a torre de pé.";
     status.textContent = "0 blocos na torre";
     paint();
-  });
-}
-
-function racingGame() {
-  gameFrame("Grande Prêmio de Interlagos", (board, controls, status, instructions) => {
-    content.querySelector(".game-panel").classList.add("race-game");
-    const canvas = document.createElement("canvas");
-    canvas.width = 360;
-    canvas.height = 600;
-    canvas.className = "game-canvas race-canvas";
-    canvas.setAttribute("aria-label", "Corrida arcade na pista de Interlagos");
-    board.append(canvas);
-    const ctx = canvas.getContext("2d");
-    const laneOffsets = [-1, 0, 1];
-    const obstacleColors = { cone: "#ff944d", gate: "#b171e8", rival: "#48b7d1" };
-    const hazards = [];
-    const items = [];
-    const keys = new Set();
-    let lane = 1;
-    let distance = 0;
-    let rivalDistance = 0;
-    let score = 0;
-    let lastFrame = 0;
-    let lastSpawn = 0;
-    let jumpUntil = 0;
-    let duckUntil = 0;
-    let speedPenalty = 0;
-    let tiltCooldown = 0;
-    let ended = false;
-    let frameId = 0;
-    const lapLength = 1200;
-    const totalDistance = lapLength * 3;
-    const worldSpeed = 205 + selectedLevel * 22;
-    const playerY = 458;
-
-    function roadCenter(y, world = distance) {
-      return 180 + Math.sin((world + y * 1.9) * .0022) * 44 + Math.sin((world + y * 1.25) * .0011) * 24;
-    }
-
-    function drawCar(x, y, color, isPlayer = false, jumping = false) {
-      ctx.save();
-      if (jumping) {
-        ctx.shadowColor = "#ffffff";
-        ctx.shadowBlur = 20;
-        y -= 14;
-      }
-      const gradient = ctx.createLinearGradient(x - 17, y - 28, x + 17, y + 28);
-      gradient.addColorStop(0, "#ffffff");
-      gradient.addColorStop(.18, color);
-      gradient.addColorStop(1, color);
-      ctx.fillStyle = "#26303a";
-      ctx.fillRect(x - 18, y - 23, 6, 15);
-      ctx.fillRect(x + 12, y - 23, 6, 15);
-      ctx.fillRect(x - 18, y + 9, 6, 15);
-      ctx.fillRect(x + 12, y + 9, 6, 15);
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.moveTo(x - 12, y - 28);
-      ctx.quadraticCurveTo(x, y - 34, x + 12, y - 28);
-      ctx.lineTo(x + 16, y + 21);
-      ctx.quadraticCurveTo(x, y + 29, x - 16, y + 21);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = isPlayer ? "#d7f6ff" : "#d8e6ed";
-      ctx.beginPath();
-      ctx.moveTo(x - 9, y - 12);
-      ctx.lineTo(x + 9, y - 12);
-      ctx.lineTo(x + 11, y + 2);
-      ctx.lineTo(x - 11, y + 2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = isPlayer ? "#fff1a8" : "#ffcf86";
-      ctx.fillRect(x - 12, y + 18, 6, 3);
-      ctx.fillRect(x + 6, y + 18, 6, 3);
-      if (isPlayer) {
-        ctx.fillStyle = "#203444";
-        ctx.font = "bold 9px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("VOCÊ", x, y + 12);
-      }
-      ctx.restore();
-    }
-
-    function drawTrack() {
-      const sky = ctx.createLinearGradient(0, 0, 0, 600);
-      sky.addColorStop(0, "#a9d2dc");
-      sky.addColorStop(.4, "#dcebe5");
-      sky.addColorStop(1, "#7dbb91");
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, 360, 600);
-      ctx.fillStyle = "#8ac68d";
-      ctx.fillRect(0, 115, 360, 485);
-      for (let y = 115; y < 600; y += 45) {
-        const center = roadCenter(y);
-        const width = 235 + (y / 600) * 15;
-        const left = center - width / 2;
-        const right = center + width / 2;
-        const stripe = Math.floor((y + distance * .55) / 22) % 2 === 0;
-        ctx.fillStyle = stripe ? "#f7f2df" : "#dd6565";
-        ctx.fillRect(left - 8, y, 8, 24);
-        ctx.fillRect(right, y, 8, 24);
-      }
-      ctx.beginPath();
-      for (let y = 115; y <= 600; y += 8) {
-        const x = roadCenter(y) - 118 - (y / 600) * 8;
-        if (y === 115) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      for (let y = 600; y >= 115; y -= 8) ctx.lineTo(roadCenter(y) + 118 + (y / 600) * 8, y);
-      ctx.closePath();
-      ctx.fillStyle = "#515c65";
-      ctx.fill();
-      ctx.beginPath();
-      for (let y = 115; y <= 600; y += 8) {
-        const x = roadCenter(y) - 103 - (y / 600) * 8;
-        if (y === 115) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      for (let y = 600; y >= 115; y -= 8) ctx.lineTo(roadCenter(y) + 103 + (y / 600) * 8, y);
-      ctx.closePath();
-      const asphalt = ctx.createLinearGradient(0, 115, 360, 600);
-      asphalt.addColorStop(0, "#606b73");
-      asphalt.addColorStop(1, "#3c4851");
-      ctx.fillStyle = asphalt;
-      ctx.fill();
-      ctx.strokeStyle = "#ffffff75";
-      ctx.lineWidth = 3;
-      ctx.setLineDash([18, 16]);
-      ctx.lineDashOffset = -distance * .35;
-      for (const offset of [-34, 34]) {
-        ctx.beginPath();
-        for (let y = 115; y <= 600; y += 8) {
-          const x = roadCenter(y) + offset;
-          if (y === 115) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      }
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 104, 360, 11);
-      ctx.fillStyle = "#e45757";
-      for (let x = 0; x < 360; x += 22) ctx.fillRect(x, 104, 11, 11);
-      ctx.fillStyle = "#234238";
-      ctx.font = "bold 12px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("INTERLAGOS · SÃO PAULO", 180, 28);
-      const lap = Math.min(3, Math.floor(distance / lapLength) + 1);
-      const curveNames = ["RETA PRINCIPAL", "CURVA DO SOL", "S DO SENNA", "RETA OPOSTA"];
-      ctx.font = "bold 9px sans-serif";
-      ctx.fillStyle = "#183e32";
-      ctx.fillText(curveNames[Math.floor(distance / 235) % curveNames.length], 180, 45);
-      ctx.textAlign = "left";
-      ctx.fillStyle = "#ffffffd9";
-      ctx.fillRect(10, 10, 79, 43);
-      ctx.fillStyle = "#243d34";
-      ctx.font = "bold 10px sans-serif";
-      ctx.fillText(`VOLTA ${lap}/3`, 18, 27);
-      ctx.fillText(`${score} PTS`, 18, 43);
-    }
-
-    function drawObjects() {
-      hazards.forEach((hazard) => {
-        const x = roadCenter(hazard.y) + laneOffsets[hazard.lane] * 51;
-        if (hazard.type === "cone") {
-          ctx.fillStyle = obstacleColors.cone;
-          ctx.beginPath();
-          ctx.moveTo(x, hazard.y - 17);
-          ctx.lineTo(x - 15, hazard.y + 14);
-          ctx.lineTo(x + 15, hazard.y + 14);
-          ctx.closePath();
-          ctx.fill();
-          ctx.fillStyle = "#fff1da";
-          ctx.fillRect(x - 9, hazard.y + 3, 18, 4);
-        } else {
-          ctx.fillStyle = obstacleColors.gate;
-          ctx.fillRect(x - 18, hazard.y - 5, 36, 18);
-          ctx.fillStyle = "#f5e7ff";
-          ctx.fillRect(x - 14, hazard.y - 2, 28, 4);
-        }
-      });
-      items.forEach((item) => {
-        ctx.fillStyle = "#fff";
-        ctx.beginPath();
-        ctx.arc(roadCenter(item.y) + laneOffsets[item.lane] * 51, item.y, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = "#f5b94c";
-        ctx.beginPath();
-        ctx.arc(roadCenter(item.y) + laneOffsets[item.lane] * 51, item.y, 3, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    }
-
-    function render(now) {
-      if (ended) return;
-      const elapsed = Math.min(.04, Math.max(0, (now - lastFrame) / 1000));
-      lastFrame = now || performance.now();
-      const progressSpeed = worldSpeed * (1 - speedPenalty);
-      distance += progressSpeed * elapsed;
-      rivalDistance += (worldSpeed * (.91 + selectedLevel * .025)) * elapsed;
-      speedPenalty = Math.max(0, speedPenalty - elapsed * .22);
-      if (now - lastSpawn > Math.max(650, 1250 - selectedLevel * 120)) {
-        hazards.push({ lane: Math.floor(Math.random() * 3), y: 105, type: Math.random() < .65 ? "cone" : "gate" });
-        lastSpawn = now;
-      }
-      hazards.forEach((hazard) => { hazard.y += progressSpeed * elapsed * .72; });
-      for (let i = items.length - 1; i >= 0; i--) {
-        const item = items[i];
-        item.y -= 420 * elapsed;
-        const hitIndex = hazards.findIndex((hazard) => hazard.lane === item.lane && Math.abs(hazard.y - item.y) < 24);
-        if (hitIndex >= 0) {
-          hazards.splice(hitIndex, 1);
-          items.splice(i, 1);
-          score += 50;
-          status.textContent = "Alvo atingido! O rival vai precisar de outro plano 😎";
-        } else if (item.y < 90) items.splice(i, 1);
-      }
-      for (let i = hazards.length - 1; i >= 0; i--) {
-        const hazard = hazards[i];
-        if (hazard.y > 620) {
-          score += 5;
-          hazards.splice(i, 1);
-          continue;
-        }
-        if (hazard.lane === lane && hazard.y > playerY - 24 && hazard.y < playerY + 25) {
-          const avoided = hazard.type === "cone" ? now < jumpUntil : now < duckUntil;
-          hazards.splice(i, 1);
-          if (!avoided) {
-            speedPenalty = .52;
-            status.textContent = "Ops! Cone na curva. A pista não aceita desculpas 😄";
-          } else {
-            score += 25;
-            status.textContent = "Desvio perfeito! Até o rival anotou a manobra.";
-          }
-        }
-      }
-      if (distance >= totalDistance || rivalDistance >= totalDistance) {
-        ended = true;
-        status.textContent = distance >= rivalDistance ? machineTaunt("racing", "win") : machineTaunt("racing", "lose");
-        status.classList.add(distance >= rivalDistance ? "race-win" : "game-over");
-      }
-      drawTrack();
-      drawObjects();
-      drawCar(roadCenter(284) + laneOffsets[(lane + 1) % 3] * 51, 282, "#f3a04e");
-      drawCar(roadCenter(playerY) + laneOffsets[lane] * 51, playerY, "#e65d5d", true, now < jumpUntil);
-      const ratio = Math.min(1, distance / totalDistance);
-      ctx.fillStyle = "#ffffffc9";
-      ctx.fillRect(10, 566, 340, 8);
-      ctx.fillStyle = "#f0b65e";
-      ctx.fillRect(10, 566, 340 * ratio, 8);
-      if (!ended) frameId = requestAnimationFrame(render);
-    }
-
-    function steer(direction) {
-      lane = Math.max(0, Math.min(2, lane + direction));
-    }
-    function jump() {
-      jumpUntil = performance.now() + 850;
-      status.textContent = "Salto ativado! Agora é que são elas.";
-    }
-    function duck() {
-      duckUntil = performance.now() + 850;
-      status.textContent = "Abaixou na hora! Que reflexo de piloto.";
-    }
-    function throwItem() {
-      items.push({ lane, y: playerY - 40 });
-      status.textContent = randomChoice(["Item lançado! O rival que se cuide.", "Vai com tudo! Item na pista.", "Presente enviado para o adversário 🎁"]);
-    }
-    function handleKeyDown(event) {
-      if (activeGame?.id !== "racing" || !modal.classList.contains("is-open")) return;
-      const key = event.key.toLowerCase();
-      if (["arrowleft", "arrowright", "arrowup", "arrowdown", " ", "x", "a", "d", "w", "s"].includes(key)) event.preventDefault();
-      if (event.repeat) return;
-      keys.add(key);
-      if (key === "arrowleft" || key === "a") steer(-1);
-      if (key === "arrowright" || key === "d") steer(1);
-      if (key === "arrowup" || key === "w") jump();
-      if (key === "arrowdown" || key === "s") duck();
-      if (key === " " || key === "x") throwItem();
-    }
-    function handleKeyUp(event) {
-      keys.delete(event.key.toLowerCase());
-    }
-    function handleOrientation(event) {
-      if (!Number.isFinite(event.gamma) || Math.abs(event.gamma) < 12) return;
-      const now = performance.now();
-      if (now < tiltCooldown) return;
-      steer(event.gamma > 0 ? 1 : -1);
-      tiltCooldown = now + 420;
-      status.textContent = event.gamma > 0 ? "Inclinação detectada: direita!" : "Inclinação detectada: esquerda!";
-    }
-    async function enableTilt() {
-      const orientation = window.DeviceOrientationEvent;
-      if (!orientation) {
-        status.textContent = "Este aparelho não oferece sensor de inclinação. Use ◀ e ▶.";
-        return;
-      }
-      if (typeof orientation.requestPermission === "function") {
-        const permission = await orientation.requestPermission();
-        if (permission !== "granted") {
-          status.textContent = "Sensor não autorizado. Os botões continuam funcionando.";
-          return;
-        }
-      }
-      window.addEventListener("deviceorientation", handleOrientation);
-      status.textContent = "Inclinação ativada! Vire o celular para pilotar.";
-    }
-
-    const leftButton = button("◀", () => steer(-1));
-    leftButton.setAttribute("aria-label", "Virar à esquerda");
-    leftButton.title = "Esquerda";
-    const rightButton = button("▶", () => steer(1));
-    rightButton.setAttribute("aria-label", "Virar à direita");
-    rightButton.title = "Direita";
-    controls.append(leftButton, rightButton, button("⬆ Pular", jump), button("⬇ Abaixar", duck));
-    const itemButton = button("🎯", throwItem);
-    itemButton.setAttribute("aria-label", "Lançar item");
-    itemButton.title = "Lançar item";
-    controls.append(itemButton);
-    const tiltButton = button("📱 Inclinar", () => {
-      enableTilt().catch((error) => {
-        status.textContent = `Não foi possível ativar o sensor: ${error.message}`;
-      });
-    });
-    controls.append(tiltButton);
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
-    cleanupGame = () => {
-      cancelAnimationFrame(frameId);
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
-      window.removeEventListener("deviceorientation", handleOrientation);
-      keys.clear();
-    };
-    tiltButton.setAttribute("aria-label", "Ativar controle por inclinação do celular");
-    instructions.textContent = "PC: ←/→ vira · ↑ pula · ↓ abaixa · Espaço lança item. Celular: inclinação + botões.";
-    status.textContent = randomChoice(["Luzes acesas! Mostre seu talento no S do Senna.", "Acelera, piloto! O rival já está de olho.", "Interlagos está pronta. Só falta você!"]);
-    frameId = requestAnimationFrame(render);
   });
 }
