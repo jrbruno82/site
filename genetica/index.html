@@ -46,11 +46,18 @@
           <p class="auth-error" id="login-error" role="alert" hidden></p>
           <button class="button button-primary auth-submit" type="submit" data-i18n="signIn">Entrar</button>
         </form>
-        <p class="auth-footnote" data-i18n="loginFootnote">Credenciais protegidas. Se precisar de acesso, fale com o administrador da sua organização.</p>
+        <div class="auth-demo-accounts" aria-label="Contas para demonstração">
+          <strong data-i18n="demoCredentialsTitle">Acessos fictícios para demonstração</strong>
+          <span><b data-i18n="master">Master</b>: master@genetica.demo / Genetica@2026</span>
+          <span><b data-i18n="admin">Admin</b>: admin@genetica.demo / Genetica@2026</span>
+          <span><b data-i18n="viewer">Visualizador</b>: visitante@genetica.demo / Genetica@2026</span>
+        </div>
+        <p class="auth-footnote" data-i18n="demoSecurityNotice">Modo demonstração: o acesso é simulado neste navegador e não protege dados.</p>
       </div>
     </section>
 
     <div class="app-shell" hidden>
+      <div class="demo-banner" role="status" data-i18n="demoBanner">DEMONSTRAÇÃO: login e permissões são fictícios e podem ser contornados. Não use dados reais.</div>
       <aside class="sidebar" aria-label="Navegação principal" data-i18n-aria="mainNavigation">
         <a class="brand" href="#" aria-label="Genética Elite, página inicial" data-i18n-aria="brandHome">
           <span class="brand-mark" aria-hidden="true">
@@ -328,6 +335,8 @@
     </dialog>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="config.js"></script>
+    <script src="data/bulls.js"></script>
+    <script src="data/bull-translations.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

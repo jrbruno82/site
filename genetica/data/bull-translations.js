@@ -1,4 +1,5 @@
-module.exports = {
+(function () {
+const bullTranslations = {
   "GE-24018": {
     "en-US": "From a renowned lineage for lactation persistence and excellent udder conformation.",
     es: "Procede de un linaje reconocido por la persistencia de lactancia y una excelente conformación de ubre.",
@@ -96,3 +97,7 @@ module.exports = {
     es: "Genética accesible con un perfil equilibrado de producción.",
   },
 };
+
+if (typeof module !== "undefined") module.exports = bullTranslations;
+if (typeof window !== "undefined") window.GENETICA_BULL_TRANSLATIONS = bullTranslations;
+})();

@@ -1,3 +1,4 @@
+(function () {
 const bulls = [
   { id: "GE-24018", name: "Aurora Lácteo", breed: "Holandês", milk: 1842, protein: 0.14, fat: 0.22, index: 982, confidence: 98, elite: true, status: "Disponível", initials: "AL", color: "#e7ede3", details: "Filho de linhagem reconhecida pela persistência de lactação e excelente conformação de úbere." },
   { id: "GE-23107", name: "Trovão FIV", breed: "Nelore", milk: 0, protein: 0.08, fat: 0.11, index: 956, confidence: 96, elite: true, status: "Disponível", initials: "TF", color: "#eee8dc", details: "Destaque em ganho de peso e habilidade materna, com avaliação consistente em diferentes condições." },
@@ -25,4 +26,6 @@ const bulls = [
   { id: "GE-24198", name: "Ouro Branco", breed: "Holandês", milk: 1379, protein: 0.1, fat: 0.16, index: 664, confidence: 69, elite: false, status: "Disponível", initials: "OB", color: "#e4ebe2", details: "Genética acessível com perfil equilibrado para produção." },
 ];
 
-module.exports = bulls;
+if (typeof module !== "undefined") module.exports = bulls;
+if (typeof window !== "undefined") window.GENETICA_BULLS = bulls;
+})();

@@ -1,1 +1,1 @@
-window.GENETICA_API_URL = "";
+window.GENETICA_DEMO_MODE = true;

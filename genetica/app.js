@@ -1,12 +1,12 @@
 const translations = {
   "pt-BR": {
     pageTitle: "Genética Elite — Touros em destaque", metaDescription: "Compare touros de genética superior e encontre o reprodutor ideal para o seu rebanho.",
-    brandTagline: "SELEÇÃO QUE TRANSFORMA", secureAccess: "ACESSO SEGURO", loginTitle: "Entre na sua conta",
+    brandTagline: "SELEÇÃO QUE TRANSFORMA", secureAccess: "MODO DEMONSTRAÇÃO", loginTitle: "Entre na sua conta",
     loginCopy: "Acesse o catálogo de genética e as ferramentas do seu rebanho.", email: "E-mail", password: "Senha",
-    signIn: "Entrar", signOut: "Sair", loginFootnote: "Credenciais protegidas. Se precisar de acesso, fale com o administrador da sua organização.",
+    signIn: "Entrar", signOut: "Sair", loginFootnote: "Acesso de demonstração fictício.", demoCredentialsTitle: "Acessos fictícios para demonstração", demoSecurityNotice: "Modo demonstração: o acesso é simulado neste navegador e não protege dados.", demoBanner: "DEMONSTRAÇÃO: login e permissões são fictícios e podem ser contornados. Não use dados reais.",
     loginFailed: "E-mail ou senha inválidos, ou conta inativa.", tooManyAttempts: "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
-    serverUnavailable: "Não foi possível conectar ao serviço seguro. Tente novamente mais tarde.",
-    apiNotConfigured: "A API não está configurada. Defina a URL do backend Render em config.js.",
+    serverUnavailable: "Não foi possível conectar ao serviço.",
+    apiNotConfigured: "A API não está configurada.",
     usersRequestFailed: "Não foi possível atualizar os usuários. Verifique a conexão e tente novamente.",
     growth: "+12,8%", home: "Início", overview: "Visão geral", updated: "Dados atualizados hoje",
     mainNavigation: "Navegação principal", brandHome: "Genética Elite, página inicial",
@@ -65,12 +65,12 @@ const translations = {
   },
   "en-US": {
     pageTitle: "Genética Elite — Featured Bulls", metaDescription: "Compare superior-genetics bulls and find the ideal sire for your herd.",
-    brandTagline: "SELECTION THAT TRANSFORMS", secureAccess: "SECURE ACCESS", loginTitle: "Sign in to your account",
+    brandTagline: "SELECTION THAT TRANSFORMS", secureAccess: "DEMO MODE", loginTitle: "Sign in to your account",
     loginCopy: "Access the genetics catalog and your herd management tools.", email: "Email", password: "Password",
-    signIn: "Sign in", signOut: "Sign out", loginFootnote: "Your credentials are protected. Contact your organization's administrator if you need access.",
+    signIn: "Sign in", signOut: "Sign out", loginFootnote: "Fictional demo access.", demoCredentialsTitle: "Fictional demo accounts", demoSecurityNotice: "Demo mode: access is simulated in this browser and does not protect data.", demoBanner: "DEMO: login and permissions are fictional and can be bypassed. Do not use real data.",
     loginFailed: "Invalid email or password, or inactive account.", tooManyAttempts: "Too many attempts. Wait a few minutes and try again.",
-    serverUnavailable: "Unable to connect to the secure service. Please try again later.",
-    apiNotConfigured: "The API is not configured. Set the Render backend URL in config.js.",
+    serverUnavailable: "Unable to connect to the service.",
+    apiNotConfigured: "The API is not configured.",
     usersRequestFailed: "Unable to update users. Check your connection and try again.",
     growth: "+12.8%", home: "Home", overview: "Overview", updated: "Data updated today",
     mainNavigation: "Main navigation", brandHome: "Genetica Elite, home",
@@ -129,12 +129,12 @@ const translations = {
   },
   es: {
     pageTitle: "Genética Elite — Toros destacados", metaDescription: "Compare toros de genética superior y encuentre el reproductor ideal para su ganado.",
-    brandTagline: "SELECCIÓN QUE TRANSFORMA", secureAccess: "ACCESO SEGURO", loginTitle: "Inicie sesión",
+    brandTagline: "SELECCIÓN QUE TRANSFORMA", secureAccess: "MODO DEMOSTRACIÓN", loginTitle: "Inicie sesión",
     loginCopy: "Acceda al catálogo genético y a las herramientas de su ganado.", email: "Correo electrónico", password: "Contraseña",
-    signIn: "Entrar", signOut: "Salir", loginFootnote: "Sus credenciales están protegidas. Para solicitar acceso, contacte al administrador de su organización.",
+    signIn: "Entrar", signOut: "Salir", loginFootnote: "Acceso ficticio de demostración.", demoCredentialsTitle: "Cuentas ficticias de demostración", demoSecurityNotice: "Modo demostración: el acceso se simula en este navegador y no protege los datos.", demoBanner: "DEMO: el acceso y los permisos son ficticios y pueden omitirse. No use datos reales.",
     loginFailed: "Correo o contraseña incorrectos, o cuenta inactiva.", tooManyAttempts: "Demasiados intentos. Espere unos minutos e inténtelo de nuevo.",
-    serverUnavailable: "No se pudo conectar con el servicio seguro. Inténtelo de nuevo más tarde.",
-    apiNotConfigured: "La API no está configurada. Defina la URL del backend Render en config.js.",
+    serverUnavailable: "No se pudo conectar con el servicio.",
+    apiNotConfigured: "La API no está configurada.",
     usersRequestFailed: "No se pudieron actualizar los usuarios. Compruebe la conexión e inténtelo de nuevo.",
     growth: "+12,8%", home: "Inicio", overview: "Vista general", updated: "Datos actualizados hoy",
     mainNavigation: "Navegación principal", brandHome: "Genética Elite, página de inicio",
@@ -193,8 +193,30 @@ const translations = {
   }
 };
 
+if (window.GENETICA_DEMO_MODE !== true) {
+  throw new Error("Ative explicitamente o modo de demonstração em config.js.");
+}
+
 const pageSize = 6;
-let bulls = [];
+const bulls = (window.GENETICA_BULLS || []).map((bull) => ({ ...bull, detailsPt: bull.details }));
+const demoAccounts = [
+  { email: "master@genetica.demo", name: "Master Demonstração", password: "Genetica@2026", role: "master", active: true },
+  { email: "admin@genetica.demo", name: "Admin Demonstração", password: "Genetica@2026", role: "admin", active: true },
+  { email: "visitante@genetica.demo", name: "Visitante Demonstração", password: "Genetica@2026", role: "visualizador", active: true },
+];
+let demoUsers = [...demoAccounts];
+try {
+  const savedDemoUsers = localStorage.getItem("genetica-elite-demo-users");
+  if (savedDemoUsers) {
+    const parsedUsers = JSON.parse(savedDemoUsers);
+    if (!Array.isArray(parsedUsers) || parsedUsers.some((user) => !user.email || !user.password || !user.role)) {
+      throw new Error("Lista de usuários de demonstração inválida.");
+    }
+    demoUsers = parsedUsers;
+  }
+} catch (error) {
+  console.error("Não foi possível carregar as contas de demonstração salvas.", error);
+}
 let favorites = new Set();
 let currentUser;
 let selectedForComparison = new Set();
@@ -275,9 +297,9 @@ function applyLanguage(language) {
   render();
   const dialog = document.querySelector("#bull-dialog");
   if (dialog.open && dialog.dataset.bullId) openBull(dialog.dataset.bullId);
-  if (currentUser) loadBullCatalog().catch(() => showToast(t("serverUnavailable")));
+  if (currentUser) loadBullCatalog();
   if (currentUser && (currentUser.role === "master" || currentUser.role === "admin")) {
-    loadUsers().catch(() => showUsersMessage(t("usersRequestFailed"), true));
+    loadUsers();
   }
 }
 
@@ -408,39 +430,6 @@ function escapeHtml(value) {
   })[character]);
 }
 
-async function apiRequest(url, options = {}) {
-  const configuredApiUrl = String(window.GENETICA_API_URL || "").trim().replace(/\/+$/, "");
-  if (!configuredApiUrl && window.location.hostname.endsWith("github.io")) {
-    throw new Error(t("apiNotConfigured"));
-  }
-  let endpoint = url;
-  if (configuredApiUrl) {
-    let apiOrigin;
-    try {
-      apiOrigin = new URL(configuredApiUrl);
-    } catch {
-      throw new Error(t("apiNotConfigured"));
-    }
-    if (apiOrigin.protocol !== "https:" && apiOrigin.hostname !== "localhost") {
-      throw new Error(t("apiNotConfigured"));
-    }
-    endpoint = new URL(url, `${configuredApiUrl}/`).toString();
-  }
-  const response = await fetch(endpoint, {
-    ...options,
-    credentials: "include",
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-  });
-  if (response.status === 204) return null;
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(body.error || t("serverUnavailable"));
-    error.status = response.status;
-    throw error;
-  }
-  return body;
-}
-
 function showLoginError(message) {
   const error = document.querySelector("#login-error");
   error.textContent = message;
@@ -468,37 +457,38 @@ function setAuthenticatedUser(user) {
   render();
 }
 
-async function loadBullCatalog() {
-  const result = await apiRequest(`/api/bulls?lang=${encodeURIComponent(state.language)}`);
-  bulls = result;
+function loadBullCatalog() {
+  const translatedDetails = window.GENETICA_BULL_TRANSLATIONS || {};
+  bulls.forEach((bull) => {
+    bull.details = state.language === "pt-BR" ? bull.detailsPt
+      : translatedDetails[bull.id]?.[state.language] || bull.detailsPt;
+  });
   render();
   const dialog = document.querySelector("#bull-dialog");
   if (dialog.open && dialog.dataset.bullId) openBull(dialog.dataset.bullId);
 }
 
-async function restoreSession() {
-  try {
-    const result = await apiRequest("/api/session");
-    setAuthenticatedUser(result.user);
-    await loadBullCatalog();
-    if (result.user.role === "master" || result.user.role === "admin") {
-      try {
-        await loadUsers();
-      } catch {
-        showUsersMessage(t("usersRequestFailed"), true);
-      }
-    }
-  } catch (error) {
+function saveDemoUsers() {
+  localStorage.setItem("genetica-elite-demo-users", JSON.stringify(demoUsers));
+}
+
+function restoreSession() {
+  const email = localStorage.getItem("genetica-elite-demo-session");
+  const user = demoUsers.find((candidate) => candidate.email === email && candidate.active);
+  if (user) {
+    setAuthenticatedUser(user);
+    loadBullCatalog();
+    if (user.role === "master" || user.role === "admin") loadUsers();
+  } else {
+    localStorage.removeItem("genetica-elite-demo-session");
     document.querySelector(".app-shell").hidden = true;
     document.querySelector("#auth-screen").hidden = false;
-    if (error.status !== 401) showLoginError(error.message || t("serverUnavailable"));
   }
 }
 
-async function loadUsers() {
-  const users = await apiRequest("/api/users");
+function loadUsers() {
   const roleLabels = { master: t("master"), admin: t("admin"), visualizador: t("viewer") };
-  document.querySelector("#users-table-body").innerHTML = users.map((user) => {
+  document.querySelector("#users-table-body").innerHTML = demoUsers.map((user) => {
     const isCurrentUser = user.email === currentUser.email;
     const stateLabel = user.active ? t("active") : t("inactive");
     return `<tr>
@@ -685,44 +675,32 @@ document.querySelectorAll(".page-button").forEach((button) => button.addEventLis
 }));
 document.querySelector("#comparison-metric").addEventListener("change", renderComparison);
 document.querySelector("#login-language").addEventListener("change", (event) => applyLanguage(event.target.value));
-document.querySelector("#login-form").addEventListener("submit", async (event) => {
+document.querySelector("#login-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const form = event.currentTarget;
   const error = document.querySelector("#login-error");
   error.hidden = true;
   const submitButton = form.querySelector("button[type='submit']");
   submitButton.disabled = true;
-  try {
-    const result = await apiRequest("/api/login", {
-      method: "POST",
-      body: JSON.stringify({
-        email: form.elements.email.value,
-        password: form.elements.password.value,
-      }),
-    });
-    bulls = await apiRequest(`/api/bulls?lang=${encodeURIComponent(state.language)}`);
-    form.reset();
-    setAuthenticatedUser(result.user);
-    if (result.user.role === "master" || result.user.role === "admin") {
-      loadUsers().catch(() => showUsersMessage(t("usersRequestFailed"), true));
-    }
-  } catch (requestError) {
-    const message = requestError.status === 401 ? t("loginFailed")
-      : requestError.status === 429 ? t("tooManyAttempts") : requestError.message || t("serverUnavailable");
-    showLoginError(message);
-  } finally {
+  const email = form.elements.email.value.trim().toLowerCase();
+  const password = form.elements.password.value;
+  const user = demoUsers.find((account) => account.email.toLowerCase() === email
+    && account.password === password && account.active);
+  if (!user) {
+    showLoginError(t("loginFailed"));
     submitButton.disabled = false;
-  }
-});
-document.querySelector("#logout-button").addEventListener("click", async () => {
-  try {
-    await apiRequest("/api/logout", { method: "POST" });
-  } catch {
-    showToast(t("serverUnavailable"));
     return;
   }
+  localStorage.setItem("genetica-elite-demo-session", user.email);
+  form.reset();
+  setAuthenticatedUser(user);
+  loadBullCatalog();
+  if (user.role === "master" || user.role === "admin") loadUsers();
+  submitButton.disabled = false;
+});
+document.querySelector("#logout-button").addEventListener("click", async () => {
+  localStorage.removeItem("genetica-elite-demo-session");
   currentUser = undefined;
-  bulls = [];
   selectedForComparison.clear();
   document.querySelector("#users-table-body").replaceChildren();
   document.querySelector("#users-message").hidden = true;
@@ -741,50 +719,65 @@ document.querySelector("#logout-button").addEventListener("click", async () => {
   document.querySelector("#login-error").hidden = true;
   render();
 });
-document.querySelector("#user-create-form").addEventListener("submit", async (event) => {
+document.querySelector("#user-create-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const form = event.currentTarget;
   const values = Object.fromEntries(new FormData(form));
   const message = document.querySelector("#users-message");
   message.hidden = true;
-  try {
-    await apiRequest("/api/users", { method: "POST", body: JSON.stringify(values) });
-    form.reset();
-    showUsersMessage(t("userCreated"));
-    await loadUsers();
-  } catch {
+  const email = String(values.email || "").trim().toLowerCase();
+  const name = String(values.name || "").trim();
+  const password = String(values.password || "");
+  const role = String(values.role || "");
+  if (!email || !name || password.length < 12 || !["master", "admin", "visualizador"].includes(role)
+      || demoUsers.some((user) => user.email.toLowerCase() === email)) {
     showUsersMessage(t("usersRequestFailed"), true);
+    return;
   }
+  demoUsers.push({ email, name, password, role, active: true });
+  saveDemoUsers();
+  form.reset();
+  showUsersMessage(t("userCreated"));
+  loadUsers();
 });
-document.querySelector("#users-table-body").addEventListener("change", async (event) => {
+document.querySelector("#users-table-body").addEventListener("change", (event) => {
   const select = event.target.closest("[data-user-role]");
   if (!select) return;
-  try {
-    await apiRequest(`/api/users/${encodeURIComponent(select.dataset.userRole)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ role: select.value }),
-    });
-    showUsersMessage(t("userUpdated"));
-    await loadUsers();
-  } catch {
+  const user = demoUsers.find((candidate) => candidate.email === select.dataset.userRole);
+  const wouldRemainPrivileged = demoUsers.some((candidate) => candidate.email !== user?.email
+    && candidate.active && ["master", "admin"].includes(candidate.role))
+    || ["master", "admin"].includes(select.value);
+  if (!user || user.email === currentUser.email || !["master", "admin", "visualizador"].includes(select.value)) {
     showUsersMessage(t("usersRequestFailed"), true);
-    await loadUsers();
+    loadUsers();
+    return;
   }
+  if (["master", "admin"].includes(user.role) && !wouldRemainPrivileged) {
+    showUsersMessage(t("usersRequestFailed"), true);
+    loadUsers();
+    return;
+  }
+  user.role = select.value;
+  saveDemoUsers();
+  showUsersMessage(t("userUpdated"));
+  loadUsers();
 });
-document.querySelector("#users-table-body").addEventListener("click", async (event) => {
+document.querySelector("#users-table-body").addEventListener("click", (event) => {
   const button = event.target.closest("[data-user-active]");
   if (!button) return;
-  try {
-    await apiRequest(`/api/users/${encodeURIComponent(button.dataset.userActive)}`, {
-      method: "PATCH",
-      body: JSON.stringify({ active: button.dataset.active === "true" }),
-    });
-    showUsersMessage(t("userUpdated"));
-    await loadUsers();
-  } catch {
+  const user = demoUsers.find((candidate) => candidate.email === button.dataset.userActive);
+  const nextActive = button.dataset.active === "true";
+  const remainingPrivileged = demoUsers.some((candidate) => candidate.email !== user?.email
+    && candidate.active && ["master", "admin"].includes(candidate.role));
+  if (!user || user.email === currentUser.email || (!nextActive && ["master", "admin"].includes(user.role) && !remainingPrivileged)) {
     showUsersMessage(t("usersRequestFailed"), true);
-    await loadUsers();
+    loadUsers();
+    return;
   }
+  user.active = nextActive;
+  saveDemoUsers();
+  showUsersMessage(t("userUpdated"));
+  loadUsers();
 });
 languageToggle.addEventListener("click", () => {
   const expanded = languageToggle.getAttribute("aria-expanded") === "true";
