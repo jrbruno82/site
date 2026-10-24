@@ -6,6 +6,7 @@ const translations = {
     signIn: "Entrar", signOut: "Sair", loginFootnote: "Credenciais protegidas. Se precisar de acesso, fale com o administrador da sua organização.",
     loginFailed: "E-mail ou senha inválidos, ou conta inativa.", tooManyAttempts: "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
     serverUnavailable: "Não foi possível conectar ao serviço seguro. Tente novamente mais tarde.",
+    apiNotConfigured: "A API não está configurada. Defina a URL do backend Render em config.js.",
     usersRequestFailed: "Não foi possível atualizar os usuários. Verifique a conexão e tente novamente.",
     growth: "+12,8%", home: "Início", overview: "Visão geral", updated: "Dados atualizados hoje",
     mainNavigation: "Navegação principal", brandHome: "Genética Elite, página inicial",
@@ -69,6 +70,7 @@ const translations = {
     signIn: "Sign in", signOut: "Sign out", loginFootnote: "Your credentials are protected. Contact your organization's administrator if you need access.",
     loginFailed: "Invalid email or password, or inactive account.", tooManyAttempts: "Too many attempts. Wait a few minutes and try again.",
     serverUnavailable: "Unable to connect to the secure service. Please try again later.",
+    apiNotConfigured: "The API is not configured. Set the Render backend URL in config.js.",
     usersRequestFailed: "Unable to update users. Check your connection and try again.",
     growth: "+12.8%", home: "Home", overview: "Overview", updated: "Data updated today",
     mainNavigation: "Main navigation", brandHome: "Genetica Elite, home",
@@ -132,6 +134,7 @@ const translations = {
     signIn: "Entrar", signOut: "Salir", loginFootnote: "Sus credenciales están protegidas. Para solicitar acceso, contacte al administrador de su organización.",
     loginFailed: "Correo o contraseña incorrectos, o cuenta inactiva.", tooManyAttempts: "Demasiados intentos. Espere unos minutos e inténtelo de nuevo.",
     serverUnavailable: "No se pudo conectar con el servicio seguro. Inténtelo de nuevo más tarde.",
+    apiNotConfigured: "La API no está configurada. Defina la URL del backend Render en config.js.",
     usersRequestFailed: "No se pudieron actualizar los usuarios. Compruebe la conexión e inténtelo de nuevo.",
     growth: "+12,8%", home: "Inicio", overview: "Vista general", updated: "Datos actualizados hoy",
     mainNavigation: "Navegación principal", brandHome: "Genética Elite, página de inicio",
@@ -406,8 +409,26 @@ function escapeHtml(value) {
 }
 
 async function apiRequest(url, options = {}) {
-  const response = await fetch(url, {
+  const configuredApiUrl = String(window.GENETICA_API_URL || "").trim().replace(/\/+$/, "");
+  if (!configuredApiUrl && window.location.hostname.endsWith("github.io")) {
+    throw new Error(t("apiNotConfigured"));
+  }
+  let endpoint = url;
+  if (configuredApiUrl) {
+    let apiOrigin;
+    try {
+      apiOrigin = new URL(configuredApiUrl);
+    } catch {
+      throw new Error(t("apiNotConfigured"));
+    }
+    if (apiOrigin.protocol !== "https:" && apiOrigin.hostname !== "localhost") {
+      throw new Error(t("apiNotConfigured"));
+    }
+    endpoint = new URL(url, `${configuredApiUrl}/`).toString();
+  }
+  const response = await fetch(endpoint, {
     ...options,
+    credentials: "include",
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
   });
   if (response.status === 204) return null;
@@ -470,7 +491,7 @@ async function restoreSession() {
   } catch (error) {
     document.querySelector(".app-shell").hidden = true;
     document.querySelector("#auth-screen").hidden = false;
-    if (error.status !== 401) showLoginError(t("serverUnavailable"));
+    if (error.status !== 401) showLoginError(error.message || t("serverUnavailable"));
   }
 }
 
@@ -687,7 +708,7 @@ document.querySelector("#login-form").addEventListener("submit", async (event) =
     }
   } catch (requestError) {
     const message = requestError.status === 401 ? t("loginFailed")
-      : requestError.status === 429 ? t("tooManyAttempts") : t("serverUnavailable");
+      : requestError.status === 429 ? t("tooManyAttempts") : requestError.message || t("serverUnavailable");
     showLoginError(message);
   } finally {
     submitButton.disabled = false;

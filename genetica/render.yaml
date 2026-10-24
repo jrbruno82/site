@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: genetica-elite-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_SHEET_ID
+        value: 1K2imhW1ca8P2QCbw776g7hWQajsH1tKyxoE_Svx8bd8
+      - key: GOOGLE_SHEET_TAB
+        value: Usuarios
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: FRONTEND_ORIGINS
+        sync: false
+      - key: INITIAL_ADMIN_EMAIL
+        sync: false
+      - key: INITIAL_ADMIN_NAME
+        value: Administrador
+      - key: INITIAL_ADMIN_PASSWORD
+        sync: false

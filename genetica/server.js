@@ -14,6 +14,13 @@ const app = express();
 const port = Number(process.env.PORT || 3000);
 const sheetId = process.env.GOOGLE_SHEET_ID;
 const sheetTab = process.env.GOOGLE_SHEET_TAB || "Usuarios";
+const frontendOrigins = new Set((process.env.FRONTEND_ORIGINS || "").split(",").map((origin) => origin.trim()).filter(Boolean).map((origin) => {
+  const parsedOrigin = new URL(origin);
+  if (!["http:", "https:"].includes(parsedOrigin.protocol) || parsedOrigin.origin !== origin.replace(/\/+$/, "")) {
+    throw new Error("FRONTEND_ORIGINS deve conter apenas origens HTTP/HTTPS, sem caminhos.");
+  }
+  return parsedOrigin.origin;
+}));
 const cookieName = "genetica_session";
 const sessionLifetimeMs = 8 * 60 * 60 * 1000;
 const headers = ["email", "name", "password_hash", "role", "active", "created_at"];
@@ -25,12 +32,31 @@ let mutationQueue = Promise.resolve();
 
 if (!sheetId) throw new Error("Configure GOOGLE_SHEET_ID antes de iniciar o servidor.");
 
+const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
 const auth = new google.auth.GoogleAuth({
+  ...(serviceAccountJson
+    ? { credentials: JSON.parse(serviceAccountJson) }
+    : process.env.GOOGLE_APPLICATION_CREDENTIALS
+      ? { keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS }
+      : {}),
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 const sheets = google.sheets({ version: "v4", auth });
 
 app.disable("x-powered-by");
+app.set("trust proxy", 1);
+app.use((request, response, next) => {
+  const origin = request.get("origin");
+  if (origin && frontendOrigins.has(origin)) {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader("Access-Control-Allow-Credentials", "true");
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    response.setHeader("Vary", "Origin");
+    if (request.method === "OPTIONS") return response.status(204).end();
+  }
+  next();
+});
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -174,19 +200,23 @@ function cookieValue(request) {
 
 function setSessionCookie(response, token) {
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  response.setHeader("Set-Cookie", `${cookieName}=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${sessionLifetimeMs / 1000}${secure}`);
+  const sameSite = frontendOrigins.size ? "None" : "Strict";
+  response.setHeader("Set-Cookie", `${cookieName}=${encodeURIComponent(token)}; HttpOnly; SameSite=${sameSite}; Path=/; Max-Age=${sessionLifetimeMs / 1000}${secure}`);
 }
 
 function clearSessionCookie(response) {
   const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
-  response.setHeader("Set-Cookie", `${cookieName}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${secure}`);
+  const sameSite = frontendOrigins.size ? "None" : "Strict";
+  response.setHeader("Set-Cookie", `${cookieName}=; HttpOnly; SameSite=${sameSite}; Path=/; Max-Age=0${secure}`);
 }
 
 function verifyOrigin(request, response, next) {
   const origin = request.get("origin");
   if (!origin) return response.status(403).json({ error: "Origem da solicitação não autorizada." });
   try {
-    if (new URL(origin).host !== request.get("host")) {
+    const originUrl = new URL(origin);
+    const sameOrigin = originUrl.host === request.get("host");
+    if (!sameOrigin && !frontendOrigins.has(originUrl.origin)) {
       return response.status(403).json({ error: "Origem da solicitação não autorizada." });
     }
   } catch {
@@ -297,6 +327,10 @@ app.post("/api/logout", verifyOrigin, (request, response) => {
 
 app.get("/api/session", requireSession, (request, response) => {
   response.json({ user: publicUser(request.user) });
+});
+
+app.get("/api/health", (request, response) => {
+  response.json({ status: "ok" });
 });
 
 app.get("/api/bulls", requireSession, (request, response) => {
