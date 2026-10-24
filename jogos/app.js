@@ -2,46 +2,46 @@
 
 const games = [
   { id: "sudoku", name: "Sudoku", description: "Um desafio para a mente", icon: "🔢", tint: "#173f45", accent: "#59e1d0" },
-  { id: "solitaire", name: "Paciência", description: "O clássico de cartas", icon: "🃏", tint: "#194733", accent: "#64e69b" },
   { id: "tetris", name: "Tetris", description: "Encaixe, limpe, repita", icon: "🧱", tint: "#392751", accent: "#c69aff" },
   { id: "memory", name: "Jogo da Memória", description: "Encontre todos os pares", icon: "🧠", tint: "#503025", accent: "#ffad78" },
   { id: "crossword", name: "Palavras Cruzadas", description: "Descubra pelas dicas", icon: "✏️", tint: "#51421e", accent: "#ffd66e" },
   { id: "bingo", name: "Bingo", description: "Sua sorte está lançada", icon: "🔵", tint: "#512b42", accent: "#ff83b3" },
-  { id: "domino", name: "Dominó", description: "Você contra a máquina", icon: "⚄", tint: "#19473e", accent: "#72e3c8" },
   { id: "checkers", name: "Damas", description: "Pense alguns lances à frente", icon: "♟️", tint: "#523829", accent: "#ffb779" },
   { id: "wordsearch", name: "Caça-Palavras", description: "Ache todas as palavras", icon: "🔎", tint: "#1f3e59", accent: "#79c1ff" },
-  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4c461c", accent: "#e3ed68" }
+  { id: "stack", name: "Torre de Blocos", description: "Alinhe e construa", icon: "🏗️", tint: "#4c461c", accent: "#e3ed68" },
+  { id: "mahjong", name: "Mahjong", description: "Combine as peças iguais", icon: "🀄", tint: "#174a40", accent: "#6dd5a7" },
+  { id: "ludo", name: "Ludo", description: "Jogue os dados e avance", icon: "🎲", tint: "#49345b", accent: "#c69aff" }
 ];
 const gameVariants = {
   sudoku: ["Desafio dos números", "Tabuleiro surpresa", "Sequência relâmpago", "Números em festa"],
-  solitaire: ["Mesa embaralhada", "Novo desafio de cartas", "Sorte no monte", "Paciência surpresa"],
   tetris: ["Chuva de blocos", "Peças surpresa", "Ritmo arcade", "Desafio neon"],
   memory: ["Cartas surpresa", "Coleção colorida", "Memória em jogo", "Pares embaralhados"],
   crossword: ["Enigma do dia", "Palavras surpresa", "Desafio de vocabulário", "Pistas embaralhadas", "Tabuleiro girado"],
   bingo: ["Bingo da sorte", "Cartela surpresa", "Rodada premiada", "Sorteio relâmpago"],
-  domino: ["Mesa surpresa", "Desafio das peças", "Duelo de estratégia", "Pedras embaralhadas"],
   checkers: ["Duelo no tabuleiro", "Desafio estratégico", "Peças em ação", "Partida surpresa"],
   wordsearch: ["Caça temática", "Grade surpresa", "Letras embaralhadas", "Desafio de palavras"],
-  stack: ["Torre colorida", "Blocos surpresa", "Desafio de equilíbrio", "Construção arcade"]
+  stack: ["Torre colorida", "Blocos surpresa", "Desafio de equilíbrio", "Construção arcade"],
+  mahjong: ["Jardim de bambu", "Peças da sorte", "Mesa tranquila", "Desafio oriental"],
+  ludo: ["Corrida dos peões", "Partida da sorte", "Desafio colorido", "Rota da vitória"]
 };
 const gameAccents = {
   sudoku: ["#39a995", "#4b8fc4", "#7884cb"],
-  solitaire: ["#329969", "#4a9e87", "#718c55"],
   tetris: ["#8759c6", "#496ed0", "#d26eab"],
   memory: ["#d58155", "#ca6d8b", "#a875c4"],
   crossword: ["#b68a37", "#bb7144", "#7c9d4b"],
   bingo: ["#d35c8f", "#8668c6", "#e57b70"],
-  domino: ["#368c83", "#4c9c6a", "#4980b7"],
   checkers: ["#b46e48", "#b65362", "#8d6fba"],
   wordsearch: ["#3986b8", "#4b9a9a", "#8b74bb"],
-  stack: ["#9c9e3c", "#d28b48", "#5e9f76"]
+  stack: ["#9c9e3c", "#d28b48", "#5e9f76"],
+  mahjong: ["#398866", "#b58c48", "#5b9b8e"],
+  ludo: ["#8658b4", "#4b89bd", "#c2626e"]
 };
 const levelIcons = ["🌱", "⚡", "🔥", "💎"];
 const levels = [
-  { name: "Fácil", given: 42, draw: 1, redeals: 5, tetris: 850, memory: 12, bingoCards: 1, bingoSpeed: 2600, ai: 1, wordSize: 8, stackSpeed: 1.7, stackTolerance: 14 },
-  { name: "Médio", given: 36, draw: 1, redeals: 3, tetris: 620, memory: 16, bingoCards: 2, bingoSpeed: 1900, ai: 2, wordSize: 9, stackSpeed: 2.5, stackTolerance: 9 },
-  { name: "Difícil", given: 30, draw: 3, redeals: 2, tetris: 440, memory: 24, bingoCards: 3, bingoSpeed: 1300, ai: 3, wordSize: 10, stackSpeed: 3.4, stackTolerance: 4 },
-  { name: "Muito Difícil", given: 25, draw: 3, redeals: 1, tetris: 300, memory: 36, bingoCards: 4, bingoSpeed: 850, ai: 4, wordSize: 12, stackSpeed: 4.5, stackTolerance: 0 }
+  { name: "Fácil", given: 42, tetris: 850, memory: 12, bingoCards: 1, bingoSpeed: 2600, ai: 1, wordSize: 8, stackSpeed: 1.7, stackTolerance: 14 },
+  { name: "Médio", given: 36, tetris: 620, memory: 16, bingoCards: 2, bingoSpeed: 1900, ai: 2, wordSize: 9, stackSpeed: 2.5, stackTolerance: 9 },
+  { name: "Difícil", given: 30, tetris: 440, memory: 24, bingoCards: 3, bingoSpeed: 1300, ai: 3, wordSize: 10, stackSpeed: 3.4, stackTolerance: 4 },
+  { name: "Muito Difícil", given: 25, tetris: 300, memory: 36, bingoCards: 4, bingoSpeed: 850, ai: 4, wordSize: 12, stackSpeed: 4.5, stackTolerance: 0 }
 ];
 const grid = document.querySelector("#game-grid");
 const modal = document.querySelector("#game-modal");
@@ -54,6 +54,45 @@ let closeTimer = null;
 let roundVariant = "";
 const previousVariants = new Map();
 const previousAccents = new Map();
+const FONT_SCALE_KEY = "classicos.textScale.v1";
+
+function setupTextSizeControls() {
+  const buttons = [...document.querySelectorAll("[data-text-scale]")];
+  const currentLabels = [...document.querySelectorAll(".text-size-current")];
+  const labels = new Map([["1", "Normal"], ["1.25", "Grande"], ["1.5", "Muito grande"]]);
+  const savedScale = localStorage.getItem(FONT_SCALE_KEY);
+  const initialScale = labels.has(savedScale) ? savedScale : "1";
+  const menu = document.querySelector("#modal-text-size-menu");
+  const menuToggle = document.querySelector("#modal-text-size-toggle");
+  const menuPanel = document.querySelector("#modal-text-size-panel");
+
+  function selectScale(scale) {
+    document.documentElement.style.setProperty("--text-scale", scale);
+    currentLabels.forEach((label) => { label.textContent = labels.get(scale); });
+    buttons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.textScale === scale));
+    });
+    localStorage.setItem(FONT_SCALE_KEY, scale);
+  }
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => selectScale(button.dataset.textScale));
+  });
+  menuToggle.addEventListener("click", () => {
+    const expanded = menuToggle.getAttribute("aria-expanded") === "true";
+    menuToggle.setAttribute("aria-expanded", String(!expanded));
+    menuPanel.hidden = expanded;
+  });
+  document.addEventListener("click", (event) => {
+    if (!menu.contains(event.target)) {
+      menuToggle.setAttribute("aria-expanded", "false");
+      menuPanel.hidden = true;
+    }
+  });
+  selectScale(initialScale);
+}
+
+setupTextSizeControls();
 
 function randomChoice(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -68,11 +107,6 @@ function nextRandomValue(values, previous, key) {
 
 function machineTaunt(kind, result = "play") {
   const lines = {
-    domino: {
-      play: ["Boa peça! Minha máquina de calcular ficou ofendida.", "Jogada interessante... quase estratégica.", "A mesa está esquentando. Não era só força de expressão."],
-      win: ["Você ganhou! Vou fingir que deixei.", "Vitória sua. Já revisei meu algoritmo e culpei o azar.", "Mandou bem! Hoje as pedras caíram do seu lado."],
-      lose: ["Ponto para mim! Pode reclamar com o embaralhador.", "Ganhei essa. Minha modéstia segue intacta.", "Essa mesa foi minha. A revanche está logo ali."]
-    },
     checkers: {
       play: ["Boa! Até minhas peças ficaram impressionadas.", "Você pensa rápido. Minha CPU pediu café.", "Movimento ousado. Vamos ver se o tabuleiro concorda."],
       win: ["Você venceu! Vou treinar no modo humildade.", "Dama para você! Minha estratégia pediu demissão.", "Boa partida! Hoje você mandou no tabuleiro."],
@@ -173,15 +207,15 @@ function launchGame(id) {
   stopCurrentGame();
   const runners = {
     sudoku: sudokuGame,
-    solitaire: solitaireGame,
     tetris: tetrisGame,
     memory: memoryGame,
     crossword: crosswordGame,
     bingo: bingoGame,
-    domino: dominoGame,
     checkers: checkersGame,
     wordsearch: wordSearchGame,
-    stack: stackGame
+    stack: stackGame,
+    mahjong: mahjongGame,
+    ludo: ludoGame
   };
   runners[id]();
 }
@@ -273,148 +307,6 @@ function sudokuGame() {
     board.append(pad);
     instructions.textContent = "Toque em uma casa vazia e escolha um número. As respostas são conferidas em tempo real.";
     status.textContent = `${currentLevel.given} números iniciais`;
-  });
-}
-
-function solitaireGame() {
-  gameFrame("Organize as cartas", (board, controls, status, instructions) => {
-    const suits = ["♠", "♥", "♦", "♣"];
-    const deck = shuffle(suits.flatMap((suit) => Array.from({ length: 13 }, (_, i) => ({ rank: i + 1, suit, red: suit === "♥" || suit === "♦", faceUp: false }))));
-    const columns = Array.from({ length: 7 }, (_, i) => deck.splice(0, i + 1));
-    columns.forEach((column) => column[column.length - 1].faceUp = true);
-    const stock = deck;
-    const waste = [];
-    const foundations = suits.map(() => []);
-    let selected = null;
-    let redeals = 0;
-    let moves = 0;
-    const drawCount = currentLevel.draw;
-    function cardName(card) {
-      return `${card.rank === 1 ? "A" : card.rank === 11 ? "J" : card.rank === 12 ? "Q" : card.rank === 13 ? "K" : card.rank}${card.suit}`;
-    }
-    function render() {
-      board.innerHTML = `<div class="solitaire-status" style="display:flex;justify-content:space-between;color:var(--muted);margin-bottom:10px"><span>↺ ${redeals} / ${currentLevel.redeals} re-compras</span><span>${moves} jogadas</span></div><div class="solitaire-top" style="display:flex;gap:7px;justify-content:space-between;margin-bottom:16px"><button class="domino-tile stock-pile" aria-label="Comprar do monte">${stock.length ? `🂠 ${stock.length}` : "↺"}</button><div class="domino-tile waste-pile">${waste.length ? cardName(waste[waste.length - 1]) : "—"}</div><div class="solitaire-foundations" style="display:flex;gap:4px">${foundations.map((pile, i) => `<button class="domino-tile foundation" data-foundation="${i}" aria-label="Base ${suits[i]}">${pile.length ? cardName(pile[pile.length - 1]) : suits[i]}</button>`).join("")}</div></div><div class="solitaire-columns" style="display:grid;grid-template-columns:repeat(7,minmax(52px,1fr));gap:4px;overflow-x:auto;min-width:100%">${columns.map((column, i) => `<div data-column="${i}" style="display:flex;min-width:52px;flex-direction:column;align-items:center">${column.map((card, j) => `<button class="solitaire-card ${card.faceUp ? "face-up" : "face-down"}" data-card="${j}" style="width:48px;min-width:48px;height:70px;margin-bottom:-22px;position:relative;z-index:${j};border:1px solid ${card.faceUp ? "#aeb8c5" : "#6581a2"};border-radius:7px;background:${card.faceUp ? "#f0f2f5" : "#40536b"};color:${card.red ? "#c23845" : "#1b2531"};font-weight:900;font-size:14px">${card.faceUp ? cardName(card) : "◆"}</button>`).join("")}</div>`).join("")}</div>`;
-      board.querySelector(".stock-pile").addEventListener("click", draw);
-      board.querySelector(".waste-pile").addEventListener("click", () => {
-        if (waste.length) selectSource({ type: "waste" });
-      });
-      board.querySelectorAll(".foundation").forEach((node) => node.addEventListener("click", () => moveToFoundation(Number(node.dataset.foundation))));
-      board.querySelectorAll("[data-column]").forEach((columnNode) => {
-        const columnIndex = Number(columnNode.dataset.column);
-        columnNode.querySelectorAll(".solitaire-card.face-up").forEach((node) => node.addEventListener("click", () => {
-          const cardIndex = Number(node.dataset.card);
-          if (selected) {
-            if (selected.type !== "column" || selected.column !== columnIndex) {
-              if (moveToColumn(columnIndex)) return;
-            } else if (selected.index !== cardIndex && cardIndex > selected.index) {
-              if (moveToColumn(columnIndex)) return;
-            } else if (selected.index === cardIndex) {
-              selectSource(null);
-              return;
-            }
-          }
-          selectSource({ type: "column", column: columnIndex, index: cardIndex });
-        }));
-        columnNode.addEventListener("click", (event) => {
-          if (event.target === columnNode && selected) moveToColumn(columnIndex);
-        });
-      });
-      markSelection();
-    }
-    function markSelection() {
-      if (!selected) return;
-      if (selected.type === "waste") board.querySelector(".waste-pile")?.classList.add("selected");
-      if (selected.type === "column") board.querySelector(`[data-column="${selected.column}"] [data-card="${selected.index}"]`)?.classList.add("selected");
-    }
-    function selectSource(source) {
-      selected = source;
-      render();
-    }
-    function sourceCards() {
-      if (!selected) return null;
-      if (selected.type === "waste") return [waste[waste.length - 1]];
-      return columns[selected.column].slice(selected.index);
-    }
-    function moveToColumn(targetIndex) {
-      const moving = sourceCards();
-      if (!moving?.length) return false;
-      const target = columns[targetIndex];
-      const card = moving[0];
-      const top = target[target.length - 1];
-      if (target === (selected.type === "column" ? columns[selected.column] : null)) return false;
-      if (top && (!top.faceUp || top.red === card.red || top.rank !== card.rank + 1)) return false;
-      if (!top && card.rank !== 13) return false;
-      if (selected.type === "waste") waste.pop();
-      else {
-        columns[selected.column].splice(selected.index);
-        const oldTop = columns[selected.column].at(-1);
-        if (oldTop && !oldTop.faceUp) oldTop.faceUp = true;
-      }
-      target.push(...moving);
-      selected = null;
-      moves++;
-      render();
-      return true;
-    }
-    function moveToFoundation(index) {
-      const moving = sourceCards();
-      if (!moving || moving.length !== 1) return;
-      const card = moving[0];
-      const pile = foundations[index];
-      if (card.suit !== suits[index] || card.rank !== pile.length + 1) return;
-      if (selected.type === "waste") waste.pop();
-      else {
-        columns[selected.column].pop();
-        const oldTop = columns[selected.column].at(-1);
-        if (oldTop && !oldTop.faceUp) oldTop.faceUp = true;
-      }
-      pile.push(card);
-      selected = null;
-      moves++;
-      if (foundations.every((foundation) => foundation.length === 13)) status.textContent = "Você venceu! 🎉";
-      render();
-    }
-    function draw() {
-      selected = null;
-      if (stock.length) {
-        for (let i = 0; i < drawCount && stock.length; i++) {
-          const card = stock.pop();
-          card.faceUp = true;
-          waste.push(card);
-        }
-      } else if (waste.length && redeals < currentLevel.redeals) {
-        while (waste.length) {
-          const card = waste.pop();
-          card.faceUp = false;
-          stock.push(card);
-        }
-        redeals++;
-      } else status.textContent = "Limite de re-compras atingido";
-      render();
-    }
-    function autoMove() {
-      if (!selected) {
-        status.textContent = "Toque primeiro em uma carta para selecioná-la";
-        return;
-      }
-      const card = sourceCards()?.[0];
-      if (!card) return;
-      const foundationIndex = suits.indexOf(card.suit);
-      if (card.rank === foundations[foundationIndex].length + 1) {
-        moveToFoundation(foundationIndex);
-        return;
-      }
-      const targetIndex = columns.findIndex((column, index) => {
-        if (selected.type === "column" && selected.column === index) return false;
-        const top = column.at(-1);
-        return top ? top.faceUp && top.red !== card.red && top.rank === card.rank + 1 : card.rank === 13;
-      });
-      if (targetIndex >= 0 && moveToColumn(targetIndex)) return;
-      status.textContent = "Essa carta ainda não tem destino. Tente outra ou compre do monte.";
-    }
-    controls.append(button("✨ Mover por mim", autoMove));
-    instructions.textContent = `Compre ${drawCount === 1 ? "uma" : "três"} carta${drawCount === 1 ? "" : "s"}. Toque numa carta e depois em outra pilha. Use “Mover por mim” para uma sugestão rápida.`;
-    render();
   });
 }
 
@@ -767,147 +659,303 @@ function bingoGame() {
   });
 }
 
-function dominoGame() {
-  gameFrame("Sua vez de jogar", (board, controls, status, instructions) => {
-    const allTiles = shuffle(Array.from({ length: 7 }, (_, a) => Array.from({ length: 7 - a }, (_, i) => ({ a, b: a + i }))).flat());
-    const player = allTiles.splice(0, 7);
-    const computer = allTiles.splice(0, 7);
-    const boneyard = allTiles;
-    const chain = [];
-    let turn = "player";
-    let selectedSide = "right";
-    let passes = 0;
-    let finished = false;
+function mahjongGame() {
+  gameFrame("Encontre peças iguais", (board, controls, status, instructions) => {
+    const pairTotal = [12, 16, 20, 24][selectedLevel];
+    const upperCount = selectedLevel >= 3 ? 8 : selectedLevel >= 2 ? 4 : 0;
+    const baseCount = pairTotal * 2 - upperCount;
+    const symbols = shuffle(["●", "▲", "■", "★", "♥", "♦", "♣", "☀", "☾", "♠", "✿", "✚", "◆", "♧", "◉", "☘"]);
+    const tiles = [];
+    let nextSymbolIndex = 0;
+
+    function nextPairSymbol() {
+      if (nextSymbolIndex >= symbols.length) {
+        shuffle(symbols);
+        nextSymbolIndex = 0;
+      }
+      return symbols[nextSymbolIndex++];
+    }
+
+    const baseRows = Math.ceil(baseCount / 8);
+    for (let row = 0; row < baseRows; row++) {
+      const count = Math.min(8, baseCount - row * 8);
+      const rowTiles = Array.from({ length: count }, (_, col) => ({ row, col, layer: 0 }));
+      for (let pair = 0; pair < Math.floor(count / 2); pair++) {
+        const symbol = nextPairSymbol();
+        rowTiles[pair].symbol = symbol;
+        rowTiles[count - pair - 1].symbol = symbol;
+      }
+      tiles.push(...rowTiles);
+    }
+
+    if (upperCount) {
+      const upperPositions = upperCount === 8
+        ? Array.from({ length: 8 }, (_, index) => ({ row: 1 + Math.floor(index / 4), col: 2 + index % 4 }))
+        : Array.from({ length: 4 }, (_, index) => ({ row: 1, col: 2 + index }));
+      for (let pair = 0; pair < upperPositions.length / 2; pair++) {
+        const symbol = nextPairSymbol();
+        const left = upperPositions[pair];
+        const right = upperPositions[upperPositions.length - pair - 1];
+        tiles.push({ ...left, layer: 1, symbol }, { ...right, layer: 1, symbol });
+      }
+    }
+    tiles.forEach((tile, id) => { tile.id = id; tile.removed = false; });
+
+    let selected = null;
+    board.innerHTML = `<div class="mahjong-board" role="group" aria-label="Tabuleiro de Mahjong"></div>`;
+    const mahjongBoard = board.firstElementChild;
+
+    function isCovered(tile) {
+      return tiles.some((other) => !other.removed && other.layer > tile.layer && other.row === tile.row && other.col === tile.col);
+    }
+
+    function isFree(tile) {
+      if (tile.removed || isCovered(tile)) return false;
+      const sameLayer = (col) => tiles.some((other) => !other.removed && other.layer === tile.layer && other.row === tile.row && other.col === col);
+      return !sameLayer(tile.col - 1) || !sameLayer(tile.col + 1);
+    }
+
     function render() {
-      board.innerHTML = `<p style="text-align:center;color:var(--muted)">🤖 Oponente: ${computer.length} peças · Monte: ${boneyard.length}</p><div class="domino-table" id="domino-table">${chain.map((tile) => `<span class="domino-tile">${tile.a} : ${tile.b}</span>`).join("") || "As peças jogadas aparecem aqui"}</div><div style="text-align:center;color:var(--muted);margin:14px 0 6px">Sua mão</div><div class="domino-hand">${player.map((tile, i) => `<button class="domino-tile" data-index="${i}" ${turn !== "player" || finished ? "disabled" : ""}>${tile.a} : ${tile.b}</button>`).join("")}</div>`;
-      board.querySelectorAll("[data-index]").forEach((node) => node.addEventListener("click", () => playPlayer(Number(node.dataset.index))));
-      controls.innerHTML = "";
-      controls.append(button("← Esquerda", () => { selectedSide = "left"; status.textContent = "Lado esquerdo selecionado"; }));
-      controls.append(button("Direita →", () => { selectedSide = "right"; status.textContent = "Lado direito selecionado"; }));
-      controls.append(button("Comprar", drawTile));
-    }
-    function canPlay(tile) {
-      if (!chain.length) return true;
-      return tile.a === chain[0].a || tile.b === chain[0].a || tile.a === chain.at(-1).b || tile.b === chain.at(-1).b;
-    }
-    function place(tile, side) {
-      if (!chain.length) chain.push({ ...tile });
-      else if (side === "left") {
-        if (tile.b === chain[0].a) chain.unshift({ ...tile });
-        else if (tile.a === chain[0].a) chain.unshift({ a: tile.b, b: tile.a });
-        else return false;
-      } else {
-        if (tile.a === chain.at(-1).b) chain.push({ ...tile });
-        else if (tile.b === chain.at(-1).b) chain.push({ a: tile.b, b: tile.a });
-        else return false;
-      }
-      return true;
-    }
-    function playPlayer(index) {
-      if (turn !== "player" || finished) return;
-      const tile = player[index];
-      const side = !chain.length ? "right" : selectedSide;
-      if (!canPlay(tile) || !place(tile, side)) {
-        status.textContent = "Essa peça não combina. Tente outro lado.";
-        return;
-      }
-      player.splice(index, 1);
-      passes = 0;
-      if (!player.length) {
-        finished = true;
-        status.textContent = machineTaunt("domino", "win");
-        render();
-        return;
-      }
-      turn = "computer";
-      status.textContent = machineTaunt("domino", "play");
-      render();
-      closeTimer = setTimeout(computerTurn, 650);
-    }
-    function drawTile() {
-      if (turn !== "player" || finished) return;
-      while (boneyard.length) {
-        const tile = boneyard.pop();
-        player.push(tile);
-        if (canPlay(tile)) {
-          status.textContent = "Peça comprada. Sua vez!";
+      mahjongBoard.innerHTML = "";
+      tiles.forEach((tile) => {
+        if (tile.removed) return;
+        const covered = isCovered(tile);
+        const free = isFree(tile);
+        const tileButton = document.createElement("button");
+        tileButton.type = "button";
+        tileButton.className = `mahjong-tile${selected === tile.id ? " selected" : ""}${covered ? " covered" : ""}`;
+        tileButton.style.gridRow = String(tile.row + 1);
+        tileButton.style.gridColumn = String(tile.col + 1);
+        tileButton.style.zIndex = String(tile.layer + 1);
+        tileButton.textContent = tile.symbol;
+        tileButton.disabled = covered || !free;
+        tileButton.setAttribute("aria-label", `${tile.symbol}${covered ? ", coberta" : free ? ", livre" : ", bloqueada"}`);
+        tileButton.addEventListener("click", () => {
+          if (!isFree(tile)) return;
+          if (selected === null) {
+            selected = tile.id;
+          } else if (selected === tile.id) {
+            selected = null;
+          } else {
+            const first = tiles.find((item) => item.id === selected);
+            if (first && first.symbol === tile.symbol && isFree(first)) {
+              first.removed = true;
+              tile.removed = true;
+              selected = null;
+              const remainingPairs = tiles.filter((item) => !item.removed).length / 2;
+              status.textContent = remainingPairs
+                ? `${remainingPairs} pares restantes. Boa combinação!`
+                : "Tabuleiro limpo! Você dominou o Mahjong! 🎉";
+              render();
+              return;
+            }
+            selected = tile.id;
+            status.textContent = "As peças precisam ser iguais e estar livres. Tente outra dupla.";
+          }
           render();
-          return;
-        }
-      }
-      status.textContent = "Sem jogada possível. Passou a vez.";
-      passes++;
-      if (passes >= 2) endBlocked();
-      else {
-        turn = "computer";
+        });
+        mahjongBoard.append(tileButton);
+      });
+    }
+
+    status.textContent = `${pairTotal} pares no tabuleiro`;
+    instructions.textContent = "Toque em duas peças iguais que estejam livres nas laterais e sem peça por cima.";
+    render();
+  });
+}
+
+function ludoGame() {
+  gameFrame("Jogue os dados e avance", (board, controls, status, instructions) => {
+    const players = [
+      { id: "you", name: "Você", color: "#d84f58", start: 0, tokens: Array.from({ length: 4 }, (_, id) => ({ id, progress: -1 })) },
+      { id: "machine", name: "Máquina", color: "#4f85c6", start: 20, tokens: Array.from({ length: 4 }, (_, id) => ({ id, progress: -1 })) }
+    ];
+    const path = [];
+    for (let col = 1; col <= 11; col++) path.push({ row: 1, col });
+    for (let row = 2; row <= 11; row++) path.push({ row, col: 11 });
+    for (let col = 10; col >= 1; col--) path.push({ row: 11, col });
+    for (let row = 10; row >= 2; row--) path.push({ row, col: 1 });
+    const safeSquares = new Set([0, 10, 20, 30]);
+    let turn = "you";
+    let diceValue = null;
+    let legalTokenIds = [];
+    let gameOver = false;
+    const rollButton = button("🎲 Lançar o dado", rollDice);
+    controls.append(rollButton);
+    board.innerHTML = `<div class="ludo-board" role="group" aria-label="Tabuleiro de Ludo"></div><div class="ludo-homes"></div>`;
+    const ludoBoard = board.querySelector(".ludo-board");
+    const homes = board.querySelector(".ludo-homes");
+
+    function tokenPosition(player, token) {
+      return (player.start + token.progress) % path.length;
+    }
+
+    function canMove(token, roll) {
+      if (token.progress < 0) return roll === 6;
+      return token.progress + roll <= 40;
+    }
+
+    function render() {
+      ludoBoard.innerHTML = "";
+      path.forEach((position, index) => {
+        const square = document.createElement("div");
+        square.className = `ludo-square${index === 0 ? " start-red" : index === 20 ? " start-blue" : safeSquares.has(index) ? " safe" : ""}`;
+        square.style.gridRow = String(position.row);
+        square.style.gridColumn = String(position.col);
+        if (safeSquares.has(index)) square.textContent = "★";
+        players.forEach((player) => player.tokens.forEach((token) => {
+          if (token.progress < 0 || token.progress >= 40 || tokenPosition(player, token) !== index) return;
+          const tokenButton = document.createElement("button");
+          tokenButton.type = "button";
+          tokenButton.className = "ludo-token";
+          tokenButton.style.setProperty("--token-color", player.color);
+          tokenButton.textContent = String(token.id + 1);
+          tokenButton.setAttribute("aria-label", `${player.name}, peão ${token.id + 1}`);
+          tokenButton.disabled = player.id !== "you" || !legalTokenIds.includes(token.id);
+          if (player.id === "you" && !tokenButton.disabled) {
+            tokenButton.addEventListener("click", () => moveToken(token));
+          }
+          square.append(tokenButton);
+        }));
+        ludoBoard.append(square);
+      });
+
+      homes.innerHTML = "";
+      players.forEach((player) => {
+        const home = document.createElement("section");
+        home.className = "ludo-home";
+        home.style.setProperty("--home-color", player.color);
+        const title = document.createElement("strong");
+        title.textContent = `${player.name} · ${player.tokens.filter((token) => token.progress >= 40).length}/4 na chegada`;
+        const tokenList = document.createElement("div");
+        tokenList.className = "ludo-home-tokens";
+        player.tokens.filter((token) => token.progress < 0).forEach((token) => {
+          const tokenButton = document.createElement("button");
+          tokenButton.type = "button";
+          tokenButton.className = "ludo-token";
+          tokenButton.style.setProperty("--token-color", player.color);
+          tokenButton.textContent = String(token.id + 1);
+          tokenButton.setAttribute("aria-label", `${player.name}, peão ${token.id + 1} ainda na base`);
+          tokenButton.disabled = player.id !== "you" || !legalTokenIds.includes(token.id);
+          if (player.id === "you" && !tokenButton.disabled) {
+            tokenButton.addEventListener("click", () => moveToken(token));
+          }
+          tokenList.append(tokenButton);
+        });
+        home.append(title, tokenList);
+        homes.append(home);
+      });
+      rollButton.disabled = gameOver || turn !== "you" || legalTokenIds.length > 0;
+      rollButton.textContent = diceValue === null ? "🎲 Lançar o dado" : `🎲 Dado: ${diceValue}`;
+    }
+
+    function finishTurn(extraTurn) {
+      legalTokenIds = [];
+      if (!extraTurn) turn = turn === "you" ? "machine" : "you";
+      if (turn === "machine" && !gameOver) {
+        status.textContent = "A máquina está pensando... não vale soprar o dado!";
         render();
-        closeTimer = setTimeout(computerTurn, 650);
+        closeTimer = setTimeout(machineTurn, 600);
+      } else {
+        diceValue = null;
+        status.textContent = turn === "you"
+          ? "Sua vez! Vamos ver se o dado está de bom humor."
+          : status.textContent;
+        render();
       }
     }
-    function computerTurn() {
-      if (finished) return;
-      const choices = computer.map((tile, index) => ({ tile, index })).filter(({ tile }) => canPlay(tile));
-      if (!choices.length) {
-        if (boneyard.length) computer.push(boneyard.pop());
-        else {
-          passes++;
-          if (passes >= 2) {
-            endBlocked();
-            return;
-          }
-        }
-        turn = "player";
-        status.textContent = `Oponente passou. ${machineTaunt("domino", "play")}`;
+
+    function moveToken(token) {
+      if (gameOver || turn !== "you" || diceValue === null || !legalTokenIds.includes(token.id)) return;
+      token.progress = token.progress < 0 ? 0 : token.progress + diceValue;
+      const landing = tokenPosition(players[0], token);
+      if (!safeSquares.has(landing)) {
+        players[1].tokens.forEach((rival) => {
+          if (rival.progress >= 0 && rival.progress < 40 && tokenPosition(players[1], rival) === landing) rival.progress = -1;
+        });
+      }
+      const extraTurn = diceValue === 6;
+      diceValue = null;
+      if (players[0].tokens.every((piece) => piece.progress >= 40)) {
+        gameOver = true;
+        status.textContent = "Você venceu o Ludo! A máquina vai treinar os dados. 🎉";
         render();
         return;
       }
-      const candidates = choices.flatMap((choice) => {
-        const sides = !chain.length ? ["right"] : ["left", "right"];
-        return sides.filter((side) => {
-          if (!chain.length) return true;
-          const end = side === "left" ? chain[0].a : chain.at(-1).b;
-          return choice.tile.a === end || choice.tile.b === end;
-        }).map((side) => {
-          let leftEnd = choice.tile.a;
-          let rightEnd = choice.tile.b;
-          if (chain.length && side === "left") {
-            leftEnd = choice.tile.a === chain[0].a ? choice.tile.b : choice.tile.a;
-            rightEnd = chain.at(-1).b;
-          } else if (chain.length) {
-            leftEnd = chain[0].a;
-            rightEnd = choice.tile.a === chain.at(-1).b ? choice.tile.b : choice.tile.a;
-          }
-          const available = player.filter((tile) =>
-            tile.a === leftEnd || tile.b === leftEnd || tile.a === rightEnd || tile.b === rightEnd
-          ).length;
-          const pips = choice.tile.a + choice.tile.b;
-          return { ...choice, side, score: selectedLevel === 1 ? pips : selectedLevel === 2 ? pips - available : pips - available * 6 };
-        });
-      });
-      const choice = selectedLevel === 0
-        ? candidates[Math.floor(Math.random() * candidates.length)]
-        : candidates.sort((x, y) => y.score - x.score)[0];
-      place(choice.tile, choice.side);
-      computer.splice(choice.index, 1);
-      passes = 0;
-      if (!computer.length) {
-        finished = true;
-        status.textContent = machineTaunt("domino", "lose");
-      } else {
-        turn = "player";
-        status.textContent = machineTaunt("domino", "play");
+      status.textContent = extraTurn ? "Seis! Mais uma jogada para você." : "Peão avançou. Boa jogada!";
+      finishTurn(extraTurn);
+    }
+
+    function takeMachineMove(roll) {
+      const computer = players[1];
+      const choices = computer.tokens.filter((token) => canMove(token, roll));
+      if (!choices.length) {
+        status.textContent = roll === 6 ? "A máquina tirou seis, mas não tem peões na base." : "A máquina não conseguiu mover. Sua vez!";
+        diceValue = null;
+        finishTurn(false);
+        return;
       }
+      let token = choices[Math.floor(Math.random() * choices.length)];
+      if (currentLevel.ai > 1) {
+        token = choices.map((piece) => {
+          const nextProgress = piece.progress < 0 ? 0 : piece.progress + roll;
+          const destination = (computer.start + nextProgress) % path.length;
+          const captures = players[0].tokens.filter((rival) =>
+            rival.progress >= 0 && rival.progress < 40 && tokenPosition(players[0], rival) === destination
+          ).length;
+          const score = (piece.progress < 0 ? 8 : piece.progress)
+            + (nextProgress === 40 ? 100 : 0)
+            + captures * (currentLevel.ai === 4 ? 40 : currentLevel.ai === 3 ? 25 : 10)
+            + (safeSquares.has(destination) ? 3 : 0);
+          return { piece, score };
+        }).sort((a, b) => b.score - a.score)[0].piece;
+      }
+      token.progress = token.progress < 0 ? 0 : token.progress + roll;
+      const landing = tokenPosition(computer, token);
+      if (!safeSquares.has(landing)) {
+        players[0].tokens.forEach((rival) => {
+          if (rival.progress >= 0 && rival.progress < 40 && tokenPosition(players[0], rival) === landing) rival.progress = -1;
+        });
+      }
+      if (computer.tokens.every((piece) => piece.progress >= 40)) {
+        gameOver = true;
+        status.textContent = "A máquina ganhou esta! Os dados já estão pedindo revanche.";
+        render();
+        return;
+      }
+      const extraTurn = roll === 6;
+      diceValue = null;
+      status.textContent = extraTurn ? "A máquina tirou seis e joga de novo. Que sorte!" : "Sua vez! O dado está com você.";
+      finishTurn(extraTurn);
+    }
+
+    function machineTurn() {
+      closeTimer = null;
+      if (gameOver || turn !== "machine") return;
+      const roll = Math.floor(Math.random() * 6) + 1;
+      status.textContent = `A máquina tirou ${roll}. Agora vamos ver...`;
+      takeMachineMove(roll);
+    }
+
+    function rollDice() {
+      if (gameOver || turn !== "you" || legalTokenIds.length) return;
+      diceValue = Math.floor(Math.random() * 6) + 1;
+      legalTokenIds = players[0].tokens.filter((token) => canMove(token, diceValue)).map((token) => token.id);
+      if (!legalTokenIds.length) {
+        status.textContent = `Saiu ${diceValue}. Nenhum peão pode avançar; a máquina joga agora.`;
+        finishTurn(false);
+        return;
+      }
+      status.textContent = `Saiu ${diceValue}! Toque em um dos seus peões para jogar.`;
       render();
     }
-    function endBlocked() {
-      finished = true;
-      const myPips = player.reduce((sum, tile) => sum + tile.a + tile.b, 0);
-      const theirPips = computer.reduce((sum, tile) => sum + tile.a + tile.b, 0);
-      status.textContent = myPips <= theirPips ? `Jogo bloqueado: ${machineTaunt("domino", "win")}` : `Jogo bloqueado: ${machineTaunt("domino", "lose")}`;
-      render();
-    }
-    instructions.textContent = "Toque em uma peça para jogar. Escolha esquerda ou direita quando precisar.";
-    status.textContent = "Sua vez!";
+
+    instructions.textContent = "Tire 6 para sair da base. Toque em um peão destacado para avançar; quem levar os quatro peões à chegada vence.";
+    status.textContent = "Sua vez! Lance o dado para começar.";
+    cleanupGame = () => {
+      if (closeTimer) clearTimeout(closeTimer);
+      closeTimer = null;
+    };
     render();
   });
 }

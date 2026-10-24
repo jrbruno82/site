@@ -15,6 +15,13 @@
       <p class="eyebrow">SEU INTERVALO, DO SEU JEITO</p>
       <h1>Clássicos<span>.</span></h1>
       <p class="hero-copy">Jogos de sempre. Feitos para jogar agora.</p>
+      <div class="text-size-controls" role="group" aria-label="Tamanho das letras">
+        <span class="text-size-label">Tamanho das letras</span>
+        <button type="button" class="text-size-button" data-text-scale="1" aria-label="Letras em tamanho normal" aria-pressed="true">A</button>
+        <button type="button" class="text-size-button" data-text-scale="1.25" aria-label="Letras grandes" aria-pressed="false">A+</button>
+        <button type="button" class="text-size-button" data-text-scale="1.5" aria-label="Letras muito grandes" aria-pressed="false">A++</button>
+        <span class="text-size-current" aria-live="polite">Normal</span>
+      </div>
     </header>
 
     <section class="game-section" aria-labelledby="games-heading">
@@ -33,6 +40,16 @@
   <section class="game-modal" id="game-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <header class="modal-header">
       <div class="modal-brand"><span class="modal-icon" id="modal-icon"></span><div><p class="eyebrow">CLÁSSICOS</p><h2 id="modal-title"></h2></div></div>
+      <div class="modal-tools" id="modal-text-size-menu">
+        <button class="text-size-toggle" id="modal-text-size-toggle" type="button" aria-label="Ajustar tamanho das letras" aria-expanded="false" aria-controls="modal-text-size-panel">Aa</button>
+        <div class="text-size-panel" id="modal-text-size-panel" role="group" aria-label="Tamanho das letras" hidden>
+          <span class="text-size-label">Tamanho das letras</span>
+          <button type="button" class="text-size-button" data-text-scale="1" aria-label="Letras em tamanho normal" aria-pressed="true">A</button>
+          <button type="button" class="text-size-button" data-text-scale="1.25" aria-label="Letras grandes" aria-pressed="false">A+</button>
+          <button type="button" class="text-size-button" data-text-scale="1.5" aria-label="Letras muito grandes" aria-pressed="false">A++</button>
+          <span class="text-size-current" aria-live="polite">Normal</span>
+        </div>
+      </div>
       <button class="close-button" id="close-game" type="button" aria-label="Fechar jogo e voltar ao menu">×</button>
     </header>
     <div class="modal-content" id="modal-content"></div>
