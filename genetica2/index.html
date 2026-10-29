@@ -1,2 +1,845 @@
-<html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Dairy Sires Available – CDCB - AUG 2026 – RB</title>
+  <style>
+    :root {
+      --orange: #e87524;
+      --orange-dark: #c85c17;
+      --orange-soft: #fff1e6;
+      --ink: #61351f;
+      --muted: #876957;
+      --line: #f0d7c6;
+      --surface: #fff;
+      --green: #e3f2d9;
+      --yellow: #fff3c4;
+      --amber: #ffe1c1;
+      --red: #f9d9d4;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body { margin: 0; min-width: 320px; background: #fff; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .hero {
+      position: relative;
+      min-height: 132px;
+      padding: 27px 220px 24px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      text-align: center;
+      background: var(--orange);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: .015em;
+    }
+
+    .brand {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      text-align: right;
+      color: #fff;
+    }
+
+    .brand-name {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    .brand-date { margin-top: 5px; font-size: .85rem; }
+
+    main { max-width: 1800px; margin: 0 auto; padding: 22px 24px 44px; }
+
+    .toolbar {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr)) auto auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-row input {
+      width: 100%;
+      min-height: 40px;
+      padding: 9px 12px;
+      border: 1px solid var(--orange);
+      border-radius: 5px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .search-row input::placeholder { color: #a77c63; }
+
+    .action {
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1px solid var(--orange);
+      border-radius: 5px;
+      color: #fff;
+      background: var(--orange);
+      font-weight: 700;
+    }
+
+    .action:hover { background: var(--orange-dark); }
+    .action.secondary { color: var(--orange-dark); background: #fff; }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .filter-group:first-child { grid-column: 1 / -1; }
+
+    .filter-group {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fffaf6;
+    }
+
+    .filter-group h2 {
+      margin: 0 0 8px;
+      color: var(--orange-dark);
+      font-size: .78rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .filter-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .filter-wrap { position: relative; }
+
+    .filter-button {
+      width: 110px;
+      height: 31px;
+      overflow: hidden;
+      padding: 4px 8px;
+      border: 1px solid var(--orange);
+      border-radius: 4px;
+      color: var(--orange-dark);
+      background: #fff;
+      font-size: .78rem;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .filter-button.active { color: #fff; background: var(--orange); }
+
+    .filter-popup {
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 260px;
+      max-height: 320px;
+      padding: 9px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 8px 24px #53311f2a;
+    }
+
+    .filter-popup[hidden] { display: none; }
+    .filter-popup input[type="search"] {
+      width: 100%;
+      margin-bottom: 7px;
+      padding: 7px 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    .filter-options { display: grid; gap: 2px; }
+    .filter-option {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      min-height: 27px;
+      padding: 3px 4px;
+      border-radius: 3px;
+      font-size: .82rem;
+      overflow-wrap: anywhere;
+    }
+    .filter-option:hover { background: var(--orange-soft); }
+    .filter-option input { accent-color: var(--orange); }
+    .filter-empty { padding: 8px 4px; color: var(--muted); font-size: .82rem; }
+
+    .status {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .status.error { color: #a52c1a; }
+
+    .section { margin-top: 24px; }
+    .section h2 {
+      margin: 0 0 10px;
+      color: var(--orange-dark);
+      font-size: 1.18rem;
+    }
+
+    .table-tools {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .table-tools select {
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    .table-scroll {
+      width: 100%;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--ink);
+      font-size: .82rem;
+      text-align: center;
+    }
+
+    th, td {
+      min-width: 78px;
+      padding: 8px 9px;
+      border-bottom: 1px solid #f3e7df;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      color: var(--orange-dark);
+      background: #fff1e6;
+      font-weight: 700;
+    }
+
+    th.sortable { cursor: pointer; }
+    th.sortable:hover { background: #ffe4d1; }
+    tbody tr:hover { background: #fffaf6; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .empty-cell { padding: 18px; color: var(--muted); text-align: center; }
+
+    .pager {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    .pager-controls { display: flex; gap: 6px; }
+    .pager-controls button {
+      padding: 6px 11px;
+      border: 1px solid var(--orange);
+      border-radius: 4px;
+      color: var(--orange-dark);
+      background: #fff;
+    }
+    .pager-controls button:disabled { opacity: .45; cursor: default; }
+
+    .summary-table { min-width: 700px; }
+    .summary-table th:first-child, .summary-table td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: #fffaf6;
+    }
+    .summary-table th:first-child { background: #fff1e6; }
+
+    .bottom-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
+    .footnote { margin: 8px 0 0; color: var(--muted); font-size: .82rem; }
+
+    @media (max-width: 1050px) {
+      .hero { padding: 25px 20px 82px; }
+      .brand { top: auto; right: 20px; bottom: 14px; }
+      .brand-name { font-size: 1.2rem; }
+      .filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 650px) {
+      main { padding: 16px 12px 30px; }
+      .hero { min-height: 150px; padding-inline: 14px; }
+      .search-row { grid-template-columns: 1fr 1fr; }
+      .filter-row { grid-template-columns: 1fr; }
+      .filter-button { width: 105px; }
+      .pager { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Dairy Sires Available – CDCB - AUG 2026 – RB</h1>
+    <div class="brand" aria-label="Zoetis">
+      <div class="brand-name">ZOETIS</div>
+      <div class="brand-date" id="today"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="toolbar" aria-label="Dashboard filters">
+      <div class="search-row">
+        <input id="searchCodeName" type="search" placeholder="NAAB Code or Sire Name, separate multiple entries with commas" aria-label="Search NAAB code or sire name">
+        <input id="searchPedigree" type="search" placeholder="Sire or MGS, separate multiple entries with commas" aria-label="Search sire or maternal grandsire">
+        <button class="action" id="refresh" type="button">Refresh data</button>
+        <button class="action secondary" id="resetAll" type="button">Reset filters</button>
+      </div>
+      <div class="filter-row" id="filterGroups"></div>
+      <div class="status" id="status" role="status" aria-live="polite">Connecting to the Google Sheet...</div>
+    </section>
+
+    <section class="section" aria-labelledby="availableTitle">
+      <h2 id="availableTitle">Available Sires</h2>
+      <div class="table-tools">
+        <label for="pageSize">Rows per page</label>
+        <select id="pageSize">
+          <option value="15" selected>15</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="table-scroll" id="mainTableWrap"></div>
+      <div class="pager">
+        <span id="pageInfo"></span>
+        <div class="pager-controls">
+          <button type="button" id="prev" aria-label="Previous page">Previous</button>
+          <button type="button" id="next" aria-label="Next page">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="statsTitle">
+      <h2 id="statsTitle">Filtered Numerical Summary</h2>
+      <div class="table-scroll" id="statsTableWrap"></div>
+    </section>
+
+    <div class="bottom-grid">
+      <section class="section" aria-labelledby="studTitle">
+        <h2 id="studTitle">Top 2 by Stud</h2>
+        <div class="table-scroll" id="studTableWrap"></div>
+      </section>
+      <section class="section" aria-labelledby="suggestTitle">
+        <h2 id="suggestTitle">Top 5 Balanced Sire Suggestions</h2>
+        <div class="table-scroll" id="suggestTableWrap"></div>
+        <p class="footnote">Suggestions use the Breed, Plus and Stud filters and balance percentile ranks across DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL and GSCS (lower GSCS is preferred).</p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const SHEET_ID = "1JcCzua0kej7CghV0ebwHhVITCIjWQRoa3A8F6USeyRI";
+    const SHEET_GID = "679415984";
+    const FILTER_GROUPS = [
+      { title: "Master", columns: ["BREED", "PLUS", "STUD", "Beta-Casein", "Sire", "MGS", "MGGS"] },
+      { title: "Index", columns: ["DWP$", "GNM$", "GWT$", "GTPI", "GJPI"] },
+      { title: "Core", columns: ["GPTAM", "GPTAF", "GPTAP", "GSCS", "GCFP", "GPL"] },
+      { title: "Fertility", columns: ["GDPR", "GHCR", "GCCR"] },
+      { title: "Health", columns: ["GZMAS", "GZMET", "GZLAM", "GZRP", "ZCWT$", "GSTAT"] }
+    ];
+    const NUMERIC_COLUMNS = [
+      "DWP$", "GWT$", "GNM$", "GPTAM", "GPTAF", "GPTAP", "GCFP", "GDPR",
+      "GCCR", "GHCR", "GSCS", "GPL", "GSTAT", "GTPI", "GJPI", "GZMAS",
+      "GZMET", "GZLAM", "GZRP", "ZCWT$", "GFI%", "Price$"
+    ];
+    const INTEGER_COLUMNS = new Set([
+      "DWP$", "GWT$", "GNM$", "GPTAM", "GPTAF", "GPTAP", "GCFP", "GZMAS",
+      "GZMET", "GZLAM", "GZRP", "ZCWT$", "GTPI", "GJPI"
+    ]);
+    const DEFAULT_SORT = [
+      ["DWP$", -1], ["GNM$", -1], ["GPTAM", -1], ["GPTAF", -1], ["GPTAP", -1],
+      ["GDPR", -1], ["GSCS", 1], ["GPL", -1], ["GWT$", -1], ["GZMAS", -1], ["GZMET", -1]
+    ];
+    const state = {
+      columns: [],
+      rows: [],
+      filters: new Map(),
+      page: 1,
+      pageSize: 15,
+      sort: null,
+      filterOptions: new Map()
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const text = (value) => value == null ? "" : String(value).trim();
+
+    function setStatus(message, isError = false) {
+      const el = $("status");
+      el.textContent = message;
+      el.classList.toggle("error", isError);
+    }
+
+    function jsonpSheetRequest() {
+      return new Promise((resolve, reject) => {
+        const callbackName = "__sheetResponse";
+        const script = document.createElement("script");
+        let settled = false;
+        const timeout = window.setTimeout(() => finish(new Error("The Google Sheet request timed out.")), 20000);
+
+        function finish(error, result) {
+          if (settled) return;
+          settled = true;
+          window.clearTimeout(timeout);
+          script.remove();
+          delete window.google;
+          if (error) reject(error);
+          else resolve(result);
+        }
+
+        window.google = { visualization: { Query: { setResponse: (response) => finish(null, response) } } };
+        script.onerror = () => finish(new Error("Could not load the Google Sheet. Check that link sharing is enabled."));
+        const url = new URL(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`);
+        url.searchParams.set("tqx", `out:json;responseHandler=google.visualization.Query.setResponse`);
+        url.searchParams.set("gid", SHEET_GID);
+        script.src = url.toString();
+        document.head.appendChild(script);
+      });
+    }
+
+    function normalizeCell(cell) {
+      if (!cell || cell.v == null) return "";
+      if (cell.v instanceof Date) return cell.v;
+      return cell.v;
+    }
+
+    async function loadSheet() {
+      $("refresh").disabled = true;
+      setStatus("Connecting to the Google Sheet...");
+      try {
+        const response = await jsonpSheetRequest();
+        if (response.status !== "ok" || !response.table) {
+          throw new Error(response.errors?.map((e) => e.detailed_message || e.message).join("; ") || "The Sheet returned no data.");
+        }
+        const table = response.table;
+        state.columns = table.cols.map((column) => text(column.label || column.id));
+        if (!state.columns.length) throw new Error("No column headers were found in the selected tab.");
+        state.rows = table.rows.map((row) => {
+          const item = {};
+          state.columns.forEach((column, index) => {
+            item[column] = normalizeCell(row.c?.[index]);
+          });
+          return item;
+        }).filter((row) => Object.values(row).some((value) => text(value) !== ""));
+        state.filterOptions.clear();
+        state.page = 1;
+        buildFilters();
+        renderAll();
+        setStatus(`${state.rows.length.toLocaleString()} sires loaded from the live Google Sheet.`);
+      } catch (error) {
+        console.error("Google Sheet load failed:", error);
+        setStatus(`${error.message} Make the selected sheet tab available to anyone with the link as a viewer, then refresh.`, true);
+      } finally {
+        $("refresh").disabled = false;
+      }
+    }
+
+    function columnExists(column) {
+      return state.columns.includes(column);
+    }
+
+    function buildFilters() {
+      const root = $("filterGroups");
+      root.replaceChildren();
+      FILTER_GROUPS.forEach((group) => {
+        const columns = group.columns.filter(columnExists);
+        if (!columns.length) return;
+        const section = document.createElement("section");
+        section.className = "filter-group";
+        const heading = document.createElement("h2");
+        heading.textContent = group.title;
+        const buttons = document.createElement("div");
+        buttons.className = "filter-buttons";
+        columns.forEach((column) => buttons.appendChild(makeFilter(column)));
+        section.append(heading, buttons);
+        root.appendChild(section);
+      });
+    }
+
+    function makeFilter(column) {
+      const wrap = document.createElement("div");
+      wrap.className = "filter-wrap";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "filter-button";
+      button.dataset.column = column;
+      button.setAttribute("aria-expanded", "false");
+      button.textContent = column;
+      const popup = document.createElement("div");
+      popup.className = "filter-popup";
+      popup.hidden = true;
+      popup.setAttribute("role", "dialog");
+      const search = document.createElement("input");
+      search.type = "search";
+      search.placeholder = `Search ${column}`;
+      search.setAttribute("aria-label", `Search ${column} filter options`);
+      const options = document.createElement("div");
+      options.className = "filter-options";
+      popup.append(search, options);
+      button.addEventListener("click", () => {
+        const wasOpen = !popup.hidden;
+        closePopups();
+        if (!wasOpen) {
+          popup.hidden = false;
+          button.setAttribute("aria-expanded", "true");
+          renderFilterOptions(column, options, search.value);
+          search.focus();
+        }
+      });
+      search.addEventListener("input", () => renderFilterOptions(column, options, search.value));
+      wrap.append(button, popup);
+      return wrap;
+    }
+
+    function closePopups() {
+      document.querySelectorAll(".filter-popup:not([hidden])").forEach((popup) => {
+        popup.hidden = true;
+        popup.parentElement.querySelector(".filter-button").setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function valuesForFilter(column) {
+      if (state.filterOptions.has(column)) return state.filterOptions.get(column);
+      const values = [...new Set(state.rows.map((row) => text(row[column])).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+      state.filterOptions.set(column, values);
+      return values;
+    }
+
+    function renderFilterOptions(column, target, query) {
+      const selected = state.filters.get(column) || new Set();
+      const search = text(query).toLocaleLowerCase();
+      const values = valuesForFilter(column).filter((value) => value.toLocaleLowerCase().includes(search));
+      target.replaceChildren();
+      if (!values.length) {
+        const empty = document.createElement("div");
+        empty.className = "filter-empty";
+        empty.textContent = "No matching values.";
+        target.appendChild(empty);
+        return;
+      }
+      values.slice(0, 300).forEach((value) => {
+        const label = document.createElement("label");
+        label.className = "filter-option";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = value;
+        checkbox.checked = selected.has(value);
+        const caption = document.createElement("span");
+        caption.textContent = value;
+        checkbox.addEventListener("change", () => {
+          const next = new Set(state.filters.get(column) || []);
+          if (checkbox.checked) next.add(value);
+          else next.delete(value);
+          if (next.size) state.filters.set(column, next);
+          else state.filters.delete(column);
+          state.page = 1;
+          updateFilterButtons();
+          closePopups();
+          renderAll();
+        });
+        label.append(checkbox, caption);
+        target.appendChild(label);
+      });
+      if (values.length > 300) {
+        const note = document.createElement("div");
+        note.className = "filter-empty";
+        note.textContent = `Showing first 300 of ${values.length}; refine your search.`;
+        target.appendChild(note);
+      }
+    }
+
+    function updateFilterButtons() {
+      document.querySelectorAll(".filter-button").forEach((button) => {
+        const selected = state.filters.get(button.dataset.column);
+        button.classList.toggle("active", Boolean(selected?.size));
+        button.textContent = selected?.size ? `${button.dataset.column} (${selected.size})` : button.dataset.column;
+      });
+    }
+
+    function commaTokens(value) {
+      return text(value).split(",").map((token) => token.trim().toLocaleLowerCase()).filter(Boolean);
+    }
+
+    function matchesSearch(row, columns, tokens) {
+      if (!tokens.length) return true;
+      const values = columns.map((column) => text(row[column]).toLocaleLowerCase());
+      return tokens.some((token) => values.some((value) => value.includes(token)));
+    }
+
+    function matchesFilters(row) {
+      for (const [column, selected] of state.filters) {
+        if (!selected.has(text(row[column]))) return false;
+      }
+      return matchesSearch(row, ["NAAB Code", "Sire Name"], commaTokens($("searchCodeName").value))
+        && matchesSearch(row, ["Sire", "MGS"], commaTokens($("searchPedigree").value));
+    }
+
+    function getFilteredRows() {
+      const rows = state.rows.filter(matchesFilters);
+      if (state.sort) return [...rows].sort((a, b) => compareRows(a, b, [state.sort]));
+      return [...rows].sort((a, b) => compareRows(a, b, DEFAULT_SORT));
+    }
+
+    function parseNumber(value) {
+      if (typeof value === "number" && Number.isFinite(value)) return value;
+      if (value instanceof Date || value == null) return null;
+      let raw = text(value).replace(/\s/g, "");
+      if (!raw || raw === "-") return null;
+      if (raw.includes(",") && !raw.includes(".")) raw = raw.replace(",", ".");
+      else raw = raw.replace(/,/g, "");
+      const number = Number(raw.replace(/[^0-9.+-]/g, ""));
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function compareRows(a, b, sortList) {
+      for (const [column, direction] of sortList) {
+        let comparison = 0;
+        if (NUMERIC_COLUMNS.includes(column)) {
+          const av = parseNumber(a[column]);
+          const bv = parseNumber(b[column]);
+          if (av === null && bv !== null) comparison = 1;
+          else if (bv === null && av !== null) comparison = -1;
+          else if (av !== null && bv !== null) comparison = av - bv;
+        } else if (column === "BDAT") {
+          const av = a[column] instanceof Date ? a[column].getTime() : Date.parse(a[column]);
+          const bv = b[column] instanceof Date ? b[column].getTime() : Date.parse(b[column]);
+          if (Number.isFinite(av) && Number.isFinite(bv)) comparison = av - bv;
+          else if (Number.isFinite(av)) comparison = -1;
+          else if (Number.isFinite(bv)) comparison = 1;
+        } else {
+          comparison = text(a[column]).localeCompare(text(b[column]), undefined, { numeric: true, sensitivity: "base" });
+        }
+        if (comparison) return comparison * direction;
+      }
+      return text(a["NAAB Code"]).localeCompare(text(b["NAAB Code"]), undefined, { numeric: true });
+    }
+
+    function escapeHTML(value) {
+      return text(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+
+    function formatValue(column, value) {
+      if (value == null || text(value) === "") return "";
+      if (column === "BDAT") {
+        const date = value instanceof Date ? value : new Date(value);
+        return Number.isNaN(date.getTime()) ? text(value) : new Intl.DateTimeFormat("en-US").format(date);
+      }
+      if (!NUMERIC_COLUMNS.includes(column)) return text(value);
+      const number = parseNumber(value);
+      if (number === null) return text(value);
+      if (column === "Price$") {
+        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(number);
+      }
+      const decimals = INTEGER_COLUMNS.has(column) ? 0 : (column === "GSCS" || column === "GSTAT" ? 2 : 1);
+      return new Intl.NumberFormat("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(number);
+    }
+
+    function tableHTML(columns, rows, { sortable = false, summary = false } = {}) {
+      if (!rows.length) return '<table><tbody><tr><td class="empty-cell">No data matches the current filters.</td></tr></tbody></table>';
+      const sortIndicator = (column) => state.sort?.[0] === column ? (state.sort[1] < 0 ? " ↓" : " ↑") : "";
+      const head = `<thead><tr>${columns.map((column) => {
+        const className = sortable ? "sortable" : "";
+        return `<th class="${className}"${sortable ? ` data-sort="${escapeHTML(column)}" title="Sort by ${escapeHTML(column)}"` : ""}>${escapeHTML(column)}${sortable ? sortIndicator(column) : ""}</th>`;
+      }).join("")}</tr></thead>`;
+      const body = rows.map((row) => `<tr>${columns.map((column) => {
+        const value = typeof row === "string" ? row : formatValue(column, row[column]);
+        return `<td>${escapeHTML(value)}</td>`;
+      }).join("")}</tr>`).join("");
+      return `<table${summary ? ' class="summary-table"' : ""}>${head}<tbody>${body}</tbody></table>`;
+    }
+
+    function renderMain(rows) {
+      const pages = Math.max(1, Math.ceil(rows.length / state.pageSize));
+      state.page = Math.min(state.page, pages);
+      const start = (state.page - 1) * state.pageSize;
+      const pageRows = rows.slice(start, start + state.pageSize);
+      $("mainTableWrap").innerHTML = tableHTML(state.columns, pageRows, { sortable: true });
+      $("pageInfo").textContent = rows.length
+        ? `Showing ${start + 1}-${Math.min(start + state.pageSize, rows.length)} of ${rows.length.toLocaleString()}`
+        : "Showing 0 of 0";
+      $("prev").disabled = state.page <= 1;
+      $("next").disabled = state.page >= pages;
+    }
+
+    function renderStats(rows) {
+      const columns = NUMERIC_COLUMNS.filter((column) => columnExists(column) && rows.some((row) => parseNumber(row[column]) !== null));
+      if (!rows.length || !columns.length) {
+        $("statsTableWrap").innerHTML = '<table><tbody><tr><td class="empty-cell">No numerical summary available.</td></tr></tbody></table>';
+        return;
+      }
+      const labels = ["Average", "Median", "Minimum", "Maximum"];
+      const result = labels.map((label) => {
+        const row = { Statistic: label };
+        columns.forEach((column) => {
+          const values = rows.map((item) => parseNumber(item[column])).filter((value) => value !== null).sort((a, b) => a - b);
+          let value = null;
+          if (values.length) {
+            if (label === "Average") value = values.reduce((sum, item) => sum + item, 0) / values.length;
+            if (label === "Median") {
+              const middle = Math.floor(values.length / 2);
+              value = values.length % 2 ? values[middle] : (values[middle - 1] + values[middle]) / 2;
+            }
+            if (label === "Minimum") value = values[0];
+            if (label === "Maximum") value = values[values.length - 1];
+          }
+          row[column] = value;
+        });
+        return row;
+      });
+      const summaryColumns = ["Statistic", ...columns];
+      const html = tableHTML(summaryColumns, result.map((row) => {
+        const formatted = { ...row };
+        columns.forEach((column) => { formatted[column] = row[column] == null ? "" : formatValue(column, row[column]); });
+        return formatted;
+      }), { summary: true });
+      $("statsTableWrap").innerHTML = html;
+    }
+
+    function renderStud(rows) {
+      const groups = new Map();
+      rows.forEach((row) => {
+        const stud = text(row.STUD) || "Not specified";
+        if (!groups.has(stud)) groups.set(stud, []);
+        groups.get(stud).push(row);
+      });
+      const top = [];
+      [...groups.entries()].sort(([a], [b]) => a.localeCompare(b)).forEach(([, group]) => {
+        const metric = group.some((row) => parseNumber(row["DWP$"]) !== null) ? "DWP$" : "GNM$";
+        top.push(...[...group].sort((a, b) => compareRows(a, b, [[metric, -1]])).slice(0, 2));
+      });
+      $("studTableWrap").innerHTML = tableHTML(state.columns, top);
+    }
+
+    function matchesRecommendationFilters(row) {
+      return ["BREED", "PLUS", "STUD"].every((column) => {
+        const selected = state.filters.get(column);
+        return !selected?.size || selected.has(text(row[column]));
+      });
+    }
+
+    function percentileScore(value, values, higherIsBetter) {
+      if (value === null || !values.length) return null;
+      const count = values.filter((other) => higherIsBetter ? other <= value : other >= value).length;
+      return count / values.length;
+    }
+
+    function renderSuggestions() {
+      const metrics = [
+        ["DWP$", true], ["GNM$", true], ["GPTAM", true], ["GPTAF", true], ["GPTAP", true],
+        ["GCFP", true], ["GDPR", true], ["GPL", true], ["GSCS", false]
+      ].filter(([column]) => columnExists(column));
+      const candidates = state.rows.filter(matchesRecommendationFilters).map((row) => ({ row, score: 0, count: 0 }));
+      const values = new Map(metrics.map(([column]) => [
+        column,
+        candidates.map(({ row }) => parseNumber(row[column])).filter((value) => value !== null)
+      ]));
+      candidates.forEach((candidate) => {
+        metrics.forEach(([column, higherIsBetter]) => {
+          const score = percentileScore(parseNumber(candidate.row[column]), values.get(column), higherIsBetter);
+          if (score !== null) {
+            candidate.score += score;
+            candidate.count += 1;
+          }
+        });
+        candidate.score = candidate.count ? candidate.score / metrics.length : -1;
+      });
+      const top = candidates.filter((item) => item.count)
+        .sort((a, b) => b.score - a.score || compareRows(a.row, b.row, DEFAULT_SORT))
+        .slice(0, 5)
+        .map((item) => item.row);
+      $("suggestTableWrap").innerHTML = tableHTML(state.columns, top);
+    }
+
+    function renderAll() {
+      updateFilterButtons();
+      const rows = getFilteredRows();
+      renderMain(rows);
+      renderStats(rows);
+      renderStud(rows);
+      renderSuggestions();
+    }
+
+    function resetFilters() {
+      state.filters.clear();
+      state.sort = null;
+      state.page = 1;
+      $("searchCodeName").value = "";
+      $("searchPedigree").value = "";
+      closePopups();
+      renderAll();
+    }
+
+    $("refresh").addEventListener("click", loadSheet);
+    $("resetAll").addEventListener("click", resetFilters);
+    $("pageSize").addEventListener("change", (event) => {
+      state.pageSize = Number(event.target.value) || 15;
+      state.page = 1;
+      renderAll();
+    });
+    $("prev").addEventListener("click", () => { state.page = Math.max(1, state.page - 1); renderAll(); });
+    $("next").addEventListener("click", () => { state.page += 1; renderAll(); });
+    ["searchCodeName", "searchPedigree"].forEach((id) => {
+      $(id).addEventListener("input", () => { state.page = 1; renderAll(); });
+    });
+    $("mainTableWrap").addEventListener("click", (event) => {
+      const header = event.target.closest("th[data-sort]");
+      if (!header) return;
+      const column = header.dataset.sort;
+      state.sort = [column, state.sort?.[0] === column && state.sort[1] < 0 ? 1 : -1];
+      renderAll();
+    });
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".filter-wrap")) closePopups();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closePopups();
+    });
+
+    $("today").textContent = new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date());
+    loadSheet();
+  </script>
+</body>
 </html>
