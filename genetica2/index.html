@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,6 +45,29 @@
       font-size: clamp(1.35rem, 3vw, 2rem);
       font-weight: 700;
       letter-spacing: .015em;
+    }
+
+    .language-selector {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #fff;
+      font-size: .82rem;
+    }
+
+    .language-selector select {
+      max-width: 190px;
+      min-height: 34px;
+      padding: 5px 8px;
+      border: 1px solid #ffffff99;
+      border-radius: 5px;
+      color: var(--orange-dark);
+      background: #fff;
+      font-size: .82rem;
     }
 
     .brand {
@@ -316,7 +339,7 @@
     .footnote { margin: 8px 0 0; color: var(--muted); font-size: .82rem; }
 
     @media (max-width: 1050px) {
-      .hero { padding: 25px 20px 82px; }
+      .hero { padding: 58px 20px 82px; }
       .brand { top: auto; right: 20px; bottom: 14px; }
       .brand-name { font-size: 1.2rem; }
       .filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -324,7 +347,9 @@
 
     @media (max-width: 650px) {
       main { padding: 16px 12px 30px; }
-      .hero { min-height: 150px; padding-inline: 14px; }
+      .hero { min-height: 178px; padding: 55px 14px 80px; }
+      .language-selector { top: 12px; left: 12px; }
+      .language-selector select { max-width: 165px; }
       .search-row { grid-template-columns: 1fr 1fr; }
       .filter-row { grid-template-columns: 1fr; }
       .filter-button { width: 105px; }
@@ -334,7 +359,15 @@
 </head>
 <body>
   <header class="hero">
-    <h1>Dairy Sires Available – CDCB - AUG 2026 – RB</h1>
+    <div class="language-selector">
+      <label id="languageLabel" for="language">Idioma</label>
+      <select id="language" aria-label="Selecionar idioma">
+        <option value="en">🇺🇸 English (United States)</option>
+        <option value="pt" selected>🇧🇷 Português (Brasil)</option>
+        <option value="es">🇪🇸 Español (España)</option>
+      </select>
+    </div>
+    <h1 id="dashboardTitle">Touros disponíveis – CDCB - AGO 2026 – RB</h1>
     <div class="brand" aria-label="Zoetis">
       <div class="brand-name">ZOETIS</div>
       <div class="brand-date" id="today"></div>
@@ -342,27 +375,27 @@
   </header>
 
   <main>
-    <section class="toolbar" aria-label="Dashboard filters">
+    <section class="toolbar" id="toolbar" aria-label="Filtros do painel">
       <div class="search-row">
-        <input id="searchCodeName" type="search" placeholder="NAAB Code or Sire Name, separate multiple entries with commas" aria-label="Search NAAB code or sire name">
-        <input id="searchPedigree" type="search" placeholder="Sire or MGS, separate multiple entries with commas" aria-label="Search sire or maternal grandsire">
-        <button class="action" id="refresh" type="button">Refresh data</button>
-        <button class="action secondary" id="resetAll" type="button">Reset filters</button>
+        <input id="searchCodeName" type="search" placeholder="Código NAAB ou nome do touro; separe vários por vírgula" aria-label="Buscar código NAAB ou nome do touro">
+        <input id="searchPedigree" type="search" placeholder="Pai ou avô materno; separe vários por vírgula" aria-label="Buscar pai ou avô materno">
+        <button class="action" id="refresh" type="button">Atualizar dados</button>
+        <button class="action secondary" id="resetAll" type="button">Limpar filtros</button>
       </div>
       <div class="filter-row" id="filterGroups"></div>
       <div class="loading-progress" id="loadingProgress" hidden>
         <div class="progress-label" id="progressLabel"></div>
-        <div class="progress-track is-loading" id="progressTrack" role="progressbar" aria-label="Google Sheets data loading" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-track is-loading" id="progressTrack" role="progressbar" aria-label="Carregamento de dados do Google Sheets" aria-valuemin="0" aria-valuemax="100">
           <div class="progress-fill"></div>
         </div>
       </div>
-      <div class="status" id="status" role="status" aria-live="polite">Connecting to the Google Sheet...</div>
+      <div class="status" id="status" role="status" aria-live="polite">Conectando ao Google Sheets...</div>
     </section>
 
     <section class="section" aria-labelledby="availableTitle">
-      <h2 id="availableTitle">Available Sires</h2>
+      <h2 id="availableTitle">Touros disponíveis</h2>
       <div class="table-tools">
-        <label for="pageSize">Rows per page</label>
+        <label id="pageSizeLabel" for="pageSize">Linhas por página</label>
         <select id="pageSize">
           <option value="15" selected>15</option>
           <option value="25">25</option>
@@ -374,26 +407,26 @@
       <div class="pager">
         <span id="pageInfo"></span>
         <div class="pager-controls">
-          <button type="button" id="prev" aria-label="Previous page">Previous</button>
-          <button type="button" id="next" aria-label="Next page">Next</button>
+          <button type="button" id="prev" aria-label="Página anterior">Anterior</button>
+          <button type="button" id="next" aria-label="Próxima página">Próxima</button>
         </div>
       </div>
     </section>
 
     <section class="section" aria-labelledby="statsTitle">
-      <h2 id="statsTitle">Filtered Numerical Summary</h2>
+      <h2 id="statsTitle">Resumo numérico filtrado</h2>
       <div class="table-scroll" id="statsTableWrap"></div>
     </section>
 
     <div class="bottom-grid">
       <section class="section" aria-labelledby="studTitle">
-        <h2 id="studTitle">Top 2 by Stud</h2>
+        <h2 id="studTitle">Top 2 por central</h2>
         <div class="table-scroll" id="studTableWrap"></div>
       </section>
       <section class="section" aria-labelledby="suggestTitle">
-        <h2 id="suggestTitle">Top 5 Balanced Sire Suggestions</h2>
+        <h2 id="suggestTitle">Top 5 sugestões equilibradas de touros</h2>
         <div class="table-scroll" id="suggestTableWrap"></div>
-        <p class="footnote">Suggestions use the Breed, Plus and Stud filters and balance percentile ranks across DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL and GSCS (lower GSCS is preferred).</p>
+        <p class="footnote" id="suggestFootnote">As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).</p>
       </section>
     </div>
   </main>
@@ -405,11 +438,11 @@
     const SHEET_GID = "679415984";
     let requestSequence = 0;
     const FILTER_GROUPS = [
-      { title: "Master", columns: ["BREED", "PLUS", "STUD", "Beta-Casein", "Sire", "MGS", "MGGS"] },
-      { title: "Index", columns: ["DWP$", "GNM$", "GWT$", "GTPI", "GJPI"] },
-      { title: "Core", columns: ["GPTAM", "GPTAF", "GPTAP", "GSCS", "GCFP", "GPL"] },
-      { title: "Fertility", columns: ["GDPR", "GHCR", "GCCR"] },
-      { title: "Health", columns: ["GZMAS", "GZMET", "GZLAM", "GZRP", "ZCWT$", "GSTAT"] }
+      { title: "groupMaster", columns: ["BREED", "PLUS", "STUD", "Beta-Casein", "Sire", "MGS", "MGGS"] },
+      { title: "groupIndex", columns: ["DWP$", "GNM$", "GWT$", "GTPI", "GJPI"] },
+      { title: "groupCore", columns: ["GPTAM", "GPTAF", "GPTAP", "GSCS", "GCFP", "GPL"] },
+      { title: "groupFertility", columns: ["GDPR", "GHCR", "GCCR"] },
+      { title: "groupHealth", columns: ["GZMAS", "GZMET", "GZLAM", "GZRP", "ZCWT$", "GSTAT"] }
     ];
     const NUMERIC_COLUMNS = [
       "DWP$", "GWT$", "GNM$", "GPTAM", "GPTAF", "GPTAP", "GCFP", "GDPR",
@@ -429,6 +462,203 @@
       "order by F desc,H desc,I desc,J desc,K desc,M desc,P asc,Q desc,G desc,U desc,V desc",
       "limit 15"
     ].join(" ");
+    const I18N = {
+      pt: {
+        pageTitle: "Touros disponíveis – CDCB - AGO 2026 – RB",
+        dashboardTitle: "Touros disponíveis – CDCB - AGO 2026 – RB",
+        languageLabel: "Idioma",
+        toolbarLabel: "Filtros do painel",
+        searchCodePlaceholder: "Código NAAB ou nome do touro; separe vários por vírgula",
+        searchCodeAria: "Buscar código NAAB ou nome do touro",
+        searchPedigreePlaceholder: "Pai ou avô materno; separe vários por vírgula",
+        searchPedigreeAria: "Buscar pai ou avô materno",
+        refresh: "Atualizar dados",
+        reset: "Limpar filtros",
+        progressAria: "Carregamento de dados do Google Sheets",
+        available: "Touros disponíveis",
+        rowsPerPage: "Linhas por página",
+        previous: "Anterior",
+        next: "Próxima",
+        stats: "Resumo numérico filtrado",
+        topStud: "Top 2 por central",
+        suggestions: "Top 5 sugestões equilibradas de touros",
+        suggestionNote: "As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).",
+        initialStatus: "Conectando ao Google Sheets...",
+        loadingPriority: "Buscando os reprodutores prioritários...",
+        loadingInitial: "Carregando primeiro os indicadores mais importantes...",
+        loadingRefresh: "Atualizando os dados...",
+        overTenSeconds: "A conexão está levando mais de 10 segundos. Continuamos aguardando a resposta do Google Sheets...",
+        progressOverTenSeconds: "Carregamento em andamento — aguardando o Google Sheets.",
+        previewProgress: "Indicadores prioritários prontos — carregando todas as colunas, filtros e análises...",
+        previewStatus: "Os 15 reprodutores prioritários já estão disponíveis enquanto o restante dos dados é carregado.",
+        priorityAvailable: "Os dados prioritários continuam disponíveis. ",
+        previewFailedProgress: "Tentando carregar a planilha completa...",
+        previewFailedStatus: "A consulta prioritária falhou; tentando carregar os dados completos...",
+        loadingAll: "Carregando todas as colunas e preparando os filtros e análises...",
+        refreshingAll: "Atualizando todos os dados da planilha...",
+        loaded: "{count} reprodutores carregados do Google Sheets.",
+        progressDone: "Carregamento concluído.",
+        networkOffline: "Sem conexão com a internet. Os dados continuam sendo solicitados; verifique a rede e tente novamente.",
+        networkError: "O navegador não conseguiu acessar docs.google.com. {priority}Verifique a rede, VPN/proxy, firewall ou bloqueador de conteúdo.",
+        permissionError: "O Google Sheets recusou o acesso: {error}. Confirme que a planilha está compartilhada como “qualquer pessoa com o link — leitor”.",
+        loadError: "Falha ao carregar os dados: {error}",
+        filterSearch: "Buscar {column}",
+        filterSearchAria: "Buscar opções do filtro {column}",
+        noMatchingValues: "Nenhum valor correspondente.",
+        showingFirst: "Exibindo os primeiros 300 de {count}; refine a busca.",
+        sortBy: "Ordenar por {column}",
+        emptyRows: "Nenhum dado corresponde aos filtros atuais.",
+        emptyStats: "Resumo numérico indisponível.",
+        showing: "Exibindo {start}–{end} de {count}",
+        showingZero: "Exibindo 0 de 0",
+        statistic: "Estatística",
+        average: "Média",
+        median: "Mediana",
+        minimum: "Mínimo",
+        maximum: "Máximo",
+        unspecified: "Não informado",
+        groupMaster: "Principal",
+        groupIndex: "Índices",
+        groupCore: "Características principais",
+        groupFertility: "Fertilidade",
+        groupHealth: "Saúde",
+        columnLabels: {
+          "BREED": "Raça", "PLUS": "Plus", "NAAB Code": "Código NAAB", "Sire Name": "Nome do touro",
+          "STUD": "Central", "DWP$": "DWP$", "GWT$": "GWT$", "GNM$": "GNM$", "GPTAM": "GPTAM",
+          "GPTAF": "GPTAF", "GPTAP": "GPTAP", "GCFP": "GCFP", "GDPR": "GDPR", "GCCR": "GCCR",
+          "GHCR": "GHCR", "GSCS": "GSCS", "GPL": "GPL", "GSTAT": "GSTAT", "GTPI": "GTPI",
+          "GJPI": "GJPI", "GZMAS": "GZMAS", "GZMET": "GZMET", "GZLAM": "GZLAM", "GZRP": "GZRP",
+          "ZCWT$": "ZCWT$", "Beta-Casein": "Beta-caseína", "Sire": "Pai", "MGS": "Avô materno",
+          "MGGS": "Bisavô materno", "GFI%": "GFI%", "BDAT": "Data de nascimento", "Price$": "Preço"
+        }
+      },
+      en: {
+        pageTitle: "Dairy Sires Available – CDCB - AUG 2026 – RB",
+        dashboardTitle: "Dairy Sires Available – CDCB - AUG 2026 – RB",
+        languageLabel: "Language",
+        toolbarLabel: "Dashboard filters",
+        searchCodePlaceholder: "NAAB code or sire name; separate multiple entries with commas",
+        searchCodeAria: "Search NAAB code or sire name",
+        searchPedigreePlaceholder: "Sire or MGS; separate multiple entries with commas",
+        searchPedigreeAria: "Search sire or maternal grandsire",
+        refresh: "Refresh data",
+        reset: "Reset filters",
+        progressAria: "Google Sheets data loading",
+        available: "Available Sires",
+        rowsPerPage: "Rows per page",
+        previous: "Previous",
+        next: "Next",
+        stats: "Filtered Numerical Summary",
+        topStud: "Top 2 by Stud",
+        suggestions: "Top 5 Balanced Sire Suggestions",
+        suggestionNote: "Suggestions use the Breed, Plus, and Stud filters and balance percentile ranks across DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL, and GSCS (lower GSCS is preferred).",
+        initialStatus: "Connecting to Google Sheets...",
+        loadingPriority: "Loading priority sires...",
+        loadingInitial: "Loading the most important metrics first...",
+        loadingRefresh: "Refreshing data...",
+        overTenSeconds: "The connection is taking longer than 10 seconds. Still waiting for Google Sheets...",
+        progressOverTenSeconds: "Loading in progress — waiting for Google Sheets.",
+        previewProgress: "Priority metrics are ready — loading all columns, filters, and analyses...",
+        previewStatus: "The 15 priority sires are available while the remaining data loads.",
+        priorityAvailable: "The priority data is still available. ",
+        previewFailedProgress: "Trying to load the full spreadsheet...",
+        previewFailedStatus: "The priority query failed; trying to load the full dataset...",
+        loadingAll: "Loading all columns and preparing filters and analyses...",
+        refreshingAll: "Refreshing all spreadsheet data...",
+        loaded: "{count} sires loaded from Google Sheets.",
+        progressDone: "Loading complete.",
+        networkOffline: "No internet connection. The request will continue; check your network and try again.",
+        networkError: "The browser could not reach docs.google.com. {priority}Check your network, VPN/proxy, firewall, or content blocker.",
+        permissionError: "Google Sheets denied access: {error}. Confirm the sheet is shared as “anyone with the link — viewer.”",
+        loadError: "Could not load the data: {error}",
+        filterSearch: "Search {column}",
+        filterSearchAria: "Search {column} filter options",
+        noMatchingValues: "No matching values.",
+        showingFirst: "Showing the first 300 of {count}; refine your search.",
+        sortBy: "Sort by {column}",
+        emptyRows: "No data matches the current filters.",
+        emptyStats: "No numerical summary available.",
+        showing: "Showing {start}–{end} of {count}",
+        showingZero: "Showing 0 of 0",
+        statistic: "Statistic",
+        average: "Average",
+        median: "Median",
+        minimum: "Minimum",
+        maximum: "Maximum",
+        unspecified: "Not specified",
+        groupMaster: "Master",
+        groupIndex: "Index",
+        groupCore: "Core",
+        groupFertility: "Fertility",
+        groupHealth: "Health",
+        columnLabels: {}
+      },
+      es: {
+        pageTitle: "Sementales lecheros disponibles – CDCB - AGO 2026 – RB",
+        dashboardTitle: "Sementales lecheros disponibles – CDCB - AGO 2026 – RB",
+        languageLabel: "Idioma",
+        toolbarLabel: "Filtros del panel",
+        searchCodePlaceholder: "Código NAAB o nombre del semental; separe varios con comas",
+        searchCodeAria: "Buscar código NAAB o nombre del semental",
+        searchPedigreePlaceholder: "Padre o abuelo materno; separe varios con comas",
+        searchPedigreeAria: "Buscar padre o abuelo materno",
+        refresh: "Actualizar datos",
+        reset: "Restablecer filtros",
+        progressAria: "Carga de datos de Google Sheets",
+        available: "Sementales disponibles",
+        rowsPerPage: "Filas por página",
+        previous: "Anterior",
+        next: "Siguiente",
+        stats: "Resumen numérico filtrado",
+        topStud: "Los 2 mejores por centro",
+        suggestions: "5 mejores sugerencias equilibradas",
+        suggestionNote: "Las sugerencias usan los filtros de raza, Plus y centro y equilibran percentiles de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL y GSCS (se prefiere un GSCS menor).",
+        initialStatus: "Conectando con Google Sheets...",
+        loadingPriority: "Cargando los sementales prioritarios...",
+        loadingInitial: "Cargando primero los indicadores más importantes...",
+        loadingRefresh: "Actualizando los datos...",
+        overTenSeconds: "La conexión tarda más de 10 segundos. Seguimos esperando la respuesta de Google Sheets...",
+        progressOverTenSeconds: "Carga en curso — esperando a Google Sheets.",
+        previewProgress: "Indicadores prioritarios listos — cargando todas las columnas, filtros y análisis...",
+        previewStatus: "Los 15 sementales prioritarios están disponibles mientras se cargan los demás datos.",
+        priorityAvailable: "Los datos prioritarios siguen disponibles. ",
+        previewFailedProgress: "Intentando cargar la hoja de cálculo completa...",
+        previewFailedStatus: "Falló la consulta prioritaria; intentando cargar todos los datos...",
+        loadingAll: "Cargando todas las columnas y preparando filtros y análisis...",
+        refreshingAll: "Actualizando todos los datos de la hoja...",
+        loaded: "{count} sementales cargados desde Google Sheets.",
+        progressDone: "Carga completada.",
+        networkOffline: "No hay conexión a Internet. La solicitud continuará; compruebe la red e inténtelo de nuevo.",
+        networkError: "El navegador no pudo acceder a docs.google.com. {priority}Compruebe la red, VPN/proxy, firewall o bloqueador de contenido.",
+        permissionError: "Google Sheets denegó el acceso: {error}. Confirme que la hoja esté compartida como “cualquier persona con el enlace — lector”.",
+        loadError: "No se pudieron cargar los datos: {error}",
+        filterSearch: "Buscar {column}",
+        filterSearchAria: "Buscar opciones del filtro {column}",
+        noMatchingValues: "No hay valores coincidentes.",
+        showingFirst: "Se muestran los primeros 300 de {count}; refine la búsqueda.",
+        sortBy: "Ordenar por {column}",
+        emptyRows: "Ningún dato coincide con los filtros actuales.",
+        emptyStats: "No hay resumen numérico disponible.",
+        showing: "Mostrando {start}–{end} de {count}",
+        showingZero: "Mostrando 0 de 0",
+        statistic: "Estadística",
+        average: "Media",
+        median: "Mediana",
+        minimum: "Mínimo",
+        maximum: "Máximo",
+        unspecified: "Sin especificar",
+        groupMaster: "Principal",
+        groupIndex: "Índices",
+        groupCore: "Características principales",
+        groupFertility: "Fertilidad",
+        groupHealth: "Salud",
+        columnLabels: {
+          "BREED": "Raza", "PLUS": "Plus", "NAAB Code": "Código NAAB", "Sire Name": "Nombre del semental",
+          "STUD": "Centro", "Beta-Casein": "Beta-caseína", "Sire": "Padre", "MGS": "Abuelo materno",
+          "MGGS": "Bisabuelo materno", "BDAT": "Fecha de nacimiento", "Price$": "Precio"
+        }
+      }
+    };
     const state = {
       columns: [],
       rows: [],
@@ -439,37 +669,123 @@
       filterOptions: new Map(),
       isComplete: false,
       progressTimer: null,
-      loadingTimer: null
+      loadingTimer: null,
+      language: "pt",
+      status: { key: "initialStatus", vars: {}, isError: false },
+      progress: { stage: "loading", key: "loadingPriority", vars: {} }
     };
 
     const $ = (id) => document.getElementById(id);
     const text = (value) => value == null ? "" : String(value).trim();
+    const languageLocale = () => ({ en: "en-US", pt: "pt-BR", es: "es-ES" })[state.language];
 
-    function setStatus(message, isError = false) {
+    function translate(key, vars = {}) {
+      const translations = I18N[state.language] || I18N.pt;
+      const template = translations[key] ?? I18N.pt[key] ?? key;
+      return template.replace(/\{(\w+)\}/g, (_, name) => {
+        const value = vars[name];
+        if (name === "count" && typeof value === "number") {
+          return new Intl.NumberFormat(languageLocale()).format(value);
+        }
+        return text(value);
+      });
+    }
+
+    function columnLabel(column) {
+      if (column === "Statistic") return translate("statistic");
+      return I18N[state.language].columnLabels[column] || column;
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = languageLocale();
+      document.title = translate("pageTitle");
+      $("dashboardTitle").textContent = translate("dashboardTitle");
+      $("languageLabel").textContent = translate("languageLabel");
+      $("language").setAttribute("aria-label", translate("languageLabel"));
+      $("toolbar").setAttribute("aria-label", translate("toolbarLabel"));
+      $("searchCodeName").placeholder = translate("searchCodePlaceholder");
+      $("searchCodeName").setAttribute("aria-label", translate("searchCodeAria"));
+      $("searchPedigree").placeholder = translate("searchPedigreePlaceholder");
+      $("searchPedigree").setAttribute("aria-label", translate("searchPedigreeAria"));
+      $("refresh").textContent = translate("refresh");
+      $("resetAll").textContent = translate("reset");
+      $("progressTrack").setAttribute("aria-label", translate("progressAria"));
+      $("availableTitle").textContent = translate("available");
+      $("pageSizeLabel").textContent = translate("rowsPerPage");
+      $("prev").textContent = translate("previous");
+      $("prev").setAttribute("aria-label", translate("previous"));
+      $("next").textContent = translate("next");
+      $("next").setAttribute("aria-label", translate("next"));
+      $("statsTitle").textContent = translate("stats");
+      $("studTitle").textContent = translate("topStud");
+      $("suggestTitle").textContent = translate("suggestions");
+      $("suggestFootnote").textContent = translate("suggestionNote");
+      $("today").textContent = new Intl.DateTimeFormat(languageLocale(), { dateStyle: "long" }).format(new Date());
+      if (state.status) {
+        $("status").textContent = translate(state.status.key, state.status.vars);
+        $("status").classList.toggle("error", state.status.isError);
+      }
+      if (state.progress) {
+        $("progressLabel").textContent = translate(state.progress.key, state.progress.vars);
+        $("progressTrack").setAttribute("aria-valuetext", $("progressLabel").textContent);
+      }
+      $("filterGroups").querySelectorAll(".filter-group h2").forEach((heading) => {
+        heading.textContent = translate(heading.dataset.translationKey);
+      });
+      $("filterGroups").querySelectorAll(".filter-button").forEach((button) => {
+        const selected = state.filters.get(button.dataset.column);
+        button.textContent = selected?.size
+          ? `${columnLabel(button.dataset.column)} (${selected.size})`
+          : columnLabel(button.dataset.column);
+      });
+      $("filterGroups").querySelectorAll(".filter-popup input[type='search']").forEach((search) => {
+        const column = search.dataset.column;
+        search.placeholder = translate("filterSearch", { column: columnLabel(column) });
+        search.setAttribute("aria-label", translate("filterSearchAria", { column: columnLabel(column) }));
+        const popup = search.closest(".filter-popup");
+        if (!popup.hidden) renderFilterOptions(column, popup.querySelector(".filter-options"), search.value);
+      });
+      if (state.columns.length) renderAll();
+    }
+
+    function setLanguage(language) {
+      if (!I18N[language]) return;
+      state.language = language;
+      try {
+        localStorage.setItem("dairySiresLanguage", language);
+      } catch (error) {
+        console.warn("Could not save the selected language:", error);
+      }
+      applyLanguage();
+    }
+
+    function setStatus(key, isError = false, vars = {}) {
+      state.status = { key, vars, isError };
       const el = $("status");
-      el.textContent = message;
+      el.textContent = translate(key, vars);
       el.classList.toggle("error", isError);
     }
 
-    function setProgress(stage, message) {
+    function setProgress(stage, key, vars = {}) {
+      state.progress = { stage, key, vars };
       const progress = $("loadingProgress");
       const track = $("progressTrack");
       const label = $("progressLabel");
       progress.hidden = false;
-      label.textContent = message;
+      label.textContent = translate(key, vars);
       track.className = "progress-track";
       if (stage === "half") {
         track.classList.add("is-half");
         track.setAttribute("aria-valuenow", "50");
-        track.setAttribute("aria-valuetext", message);
+        track.setAttribute("aria-valuetext", label.textContent);
       } else if (stage === "done") {
         track.classList.add("is-done");
         track.setAttribute("aria-valuenow", "100");
-        track.setAttribute("aria-valuetext", message);
+        track.setAttribute("aria-valuetext", label.textContent);
       } else {
         track.classList.add("is-loading");
         track.removeAttribute("aria-valuenow");
-        track.setAttribute("aria-valuetext", message);
+        track.setAttribute("aria-valuetext", label.textContent);
       }
     }
 
@@ -531,27 +847,27 @@
     function describeConnectionError(error, hasPriorityRows) {
       if (error.message === "NETWORK_ERROR") {
         if (navigator.onLine === false) {
-          return "Sem conexão com a internet. Os dados continuam sendo solicitados; verifique a rede e tente novamente.";
+          return { key: "networkOffline" };
         }
-        return `O navegador não conseguiu acessar docs.google.com. ${hasPriorityRows ? "Os dados prioritários continuam disponíveis. " : ""}Verifique a rede, VPN/proxy, firewall ou bloqueador de conteúdo.`;
+        return { key: "networkError", vars: { priority: hasPriorityRows ? translate("priorityAvailable") : "" } };
       }
       if (/permission|access|not found|does not exist|not authorized/i.test(error.message)) {
-        return `O Google Sheets recusou o acesso: ${error.message}. Confirme que a planilha está compartilhada como “qualquer pessoa com o link — leitor”.`;
+        return { key: "permissionError", vars: { error: error.message } };
       }
-      return `Falha ao carregar os dados: ${error.message}`;
+      return { key: "loadError", vars: { error: error.message } };
     }
 
     async function loadSheet() {
       $("refresh").disabled = true;
       window.clearTimeout(state.progressTimer);
       window.clearTimeout(state.loadingTimer);
-      setProgress("loading", "Buscando os reprodutores prioritários...");
-      setStatus(state.isComplete ? "Atualizando os dados..." : "Carregando primeiro os indicadores mais importantes...");
+      setProgress("loading", "loadingPriority");
+      setStatus(state.isComplete ? "loadingRefresh" : "loadingInitial");
       const loadPreview = !state.isComplete;
       let completedRows = 0;
       state.loadingTimer = window.setTimeout(() => {
-        setStatus("A conexão está levando mais de 10 segundos. Continuamos aguardando a resposta do Google Sheets...");
-        $("progressLabel").textContent = "Carregamento em andamento — aguardando o Google Sheets.";
+        setStatus("overTenSeconds");
+        setProgress("loading", "progressOverTenSeconds");
       }, 10000);
       try {
         if (loadPreview) {
@@ -562,19 +878,19 @@
             completedRows = preview.rows.length;
             state.page = 1;
             renderMain(getFilteredRows());
-            setProgress("half", "Indicadores prioritários prontos — carregando todas as colunas, filtros e análises...");
-            setStatus("Os 15 reprodutores prioritários já estão disponíveis enquanto o restante dos dados é carregado.");
+            setProgress("half", "previewProgress");
+            setStatus("previewStatus");
           } catch (previewError) {
             console.warn("Prioritized preview unavailable; loading the complete sheet directly:", previewError);
             if (previewError.message === "NETWORK_ERROR") throw previewError;
-            setProgress("loading", "Tentando carregar a planilha completa...");
-            setStatus("A consulta prioritária falhou; tentando carregar os dados completos...");
+            setProgress("loading", "previewFailedProgress");
+            setStatus("previewFailedStatus");
           }
         }
         if (loadPreview) {
-          setProgress("loading", "Carregando todas as colunas e preparando os filtros e análises...");
+          setProgress("loading", "loadingAll");
         } else {
-          setProgress("loading", "Atualizando todos os dados da planilha...");
+          setProgress("loading", "refreshingAll");
         }
         const complete = parseSheetResponse(await jsonpSheetRequest());
         state.columns = complete.columns;
@@ -586,13 +902,14 @@
         buildFilters();
         renderAll();
         window.clearTimeout(state.loadingTimer);
-        setStatus(`${state.rows.length.toLocaleString()} reprodutores carregados da planilha Google Sheets.`);
-        setProgress("done", "Carregamento concluído.");
+        setStatus("loaded", false, { count: state.rows.length });
+        setProgress("done", "progressDone");
         state.progressTimer = window.setTimeout(hideProgress, 1800);
       } catch (error) {
         console.error("Google Sheet load failed:", error);
         window.clearTimeout(state.loadingTimer);
-        setStatus(describeConnectionError(error, completedRows > 0), true);
+        const connectionError = describeConnectionError(error, completedRows > 0);
+        setStatus(connectionError.key, true, connectionError.vars);
         hideProgress();
       } finally {
         $("refresh").disabled = false;
@@ -612,7 +929,8 @@
         const section = document.createElement("section");
         section.className = "filter-group";
         const heading = document.createElement("h2");
-        heading.textContent = group.title;
+          heading.dataset.translationKey = group.title;
+          heading.textContent = translate(group.title);
         const buttons = document.createElement("div");
         buttons.className = "filter-buttons";
         columns.forEach((column) => buttons.appendChild(makeFilter(column)));
@@ -629,15 +947,16 @@
       button.className = "filter-button";
       button.dataset.column = column;
       button.setAttribute("aria-expanded", "false");
-      button.textContent = column;
+      button.textContent = columnLabel(column);
       const popup = document.createElement("div");
       popup.className = "filter-popup";
       popup.hidden = true;
       popup.setAttribute("role", "dialog");
       const search = document.createElement("input");
       search.type = "search";
-      search.placeholder = `Search ${column}`;
-      search.setAttribute("aria-label", `Search ${column} filter options`);
+      search.dataset.column = column;
+      search.placeholder = translate("filterSearch", { column: columnLabel(column) });
+      search.setAttribute("aria-label", translate("filterSearchAria", { column: columnLabel(column) }));
       const options = document.createElement("div");
       options.className = "filter-options";
       popup.append(search, options);
@@ -679,7 +998,7 @@
       if (!values.length) {
         const empty = document.createElement("div");
         empty.className = "filter-empty";
-        empty.textContent = "No matching values.";
+        empty.textContent = translate("noMatchingValues");
         target.appendChild(empty);
         return;
       }
@@ -709,7 +1028,7 @@
       if (values.length > 300) {
         const note = document.createElement("div");
         note.className = "filter-empty";
-        note.textContent = `Showing first 300 of ${values.length}; refine your search.`;
+        note.textContent = translate("showingFirst", { count: values.length.toLocaleString(languageLocale()) });
         target.appendChild(note);
       }
     }
@@ -718,7 +1037,9 @@
       document.querySelectorAll(".filter-button").forEach((button) => {
         const selected = state.filters.get(button.dataset.column);
         button.classList.toggle("active", Boolean(selected?.size));
-        button.textContent = selected?.size ? `${button.dataset.column} (${selected.size})` : button.dataset.column;
+        button.textContent = selected?.size
+          ? `${columnLabel(button.dataset.column)} (${selected.size})`
+          : columnLabel(button.dataset.column);
       });
     }
 
@@ -790,24 +1111,24 @@
       if (value == null || text(value) === "") return "";
       if (column === "BDAT") {
         const date = value instanceof Date ? value : new Date(value);
-        return Number.isNaN(date.getTime()) ? text(value) : new Intl.DateTimeFormat("en-US").format(date);
+        return Number.isNaN(date.getTime()) ? text(value) : new Intl.DateTimeFormat(languageLocale()).format(date);
       }
       if (!NUMERIC_COLUMNS.includes(column)) return text(value);
       const number = parseNumber(value);
       if (number === null) return text(value);
       if (column === "Price$") {
-        return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(number);
+        return new Intl.NumberFormat(languageLocale(), { style: "currency", currency: "USD" }).format(number);
       }
       const decimals = INTEGER_COLUMNS.has(column) ? 0 : (column === "GSCS" || column === "GSTAT" ? 2 : 1);
-      return new Intl.NumberFormat("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(number);
+      return new Intl.NumberFormat(languageLocale(), { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(number);
     }
 
     function tableHTML(columns, rows, { sortable = false, summary = false } = {}) {
-      if (!rows.length) return '<table><tbody><tr><td class="empty-cell">No data matches the current filters.</td></tr></tbody></table>';
+      if (!rows.length) return `<table><tbody><tr><td class="empty-cell">${escapeHTML(translate("emptyRows"))}</td></tr></tbody></table>`;
       const sortIndicator = (column) => state.sort?.[0] === column ? (state.sort[1] < 0 ? " ↓" : " ↑") : "";
       const head = `<thead><tr>${columns.map((column) => {
         const className = sortable ? "sortable" : "";
-        return `<th class="${className}"${sortable ? ` data-sort="${escapeHTML(column)}" title="Sort by ${escapeHTML(column)}"` : ""}>${escapeHTML(column)}${sortable ? sortIndicator(column) : ""}</th>`;
+        return `<th class="${className}"${sortable ? ` data-sort="${escapeHTML(column)}" title="${escapeHTML(translate("sortBy", { column: columnLabel(column) }))}"` : ""}>${escapeHTML(columnLabel(column))}${sortable ? sortIndicator(column) : ""}</th>`;
       }).join("")}</tr></thead>`;
       const body = rows.map((row) => `<tr>${columns.map((column) => {
         const value = typeof row === "string" ? row : formatValue(column, row[column]);
@@ -823,8 +1144,12 @@
       const pageRows = rows.slice(start, start + state.pageSize);
       $("mainTableWrap").innerHTML = tableHTML(state.columns, pageRows, { sortable: true });
       $("pageInfo").textContent = rows.length
-        ? `Showing ${start + 1}-${Math.min(start + state.pageSize, rows.length)} of ${rows.length.toLocaleString()}`
-        : "Showing 0 of 0";
+        ? translate("showing", {
+          start: (start + 1).toLocaleString(languageLocale()),
+          end: Math.min(start + state.pageSize, rows.length).toLocaleString(languageLocale()),
+          count: rows.length.toLocaleString(languageLocale())
+        })
+        : translate("showingZero");
       $("prev").disabled = state.page <= 1;
       $("next").disabled = state.page >= pages;
     }
@@ -832,23 +1157,23 @@
     function renderStats(rows) {
       const columns = NUMERIC_COLUMNS.filter((column) => columnExists(column) && rows.some((row) => parseNumber(row[column]) !== null));
       if (!rows.length || !columns.length) {
-        $("statsTableWrap").innerHTML = '<table><tbody><tr><td class="empty-cell">No numerical summary available.</td></tr></tbody></table>';
+        $("statsTableWrap").innerHTML = `<table><tbody><tr><td class="empty-cell">${escapeHTML(translate("emptyStats"))}</td></tr></tbody></table>`;
         return;
       }
-      const labels = ["Average", "Median", "Minimum", "Maximum"];
+      const labels = ["average", "median", "minimum", "maximum"];
       const result = labels.map((label) => {
-        const row = { Statistic: label };
+        const row = { Statistic: translate(label) };
         columns.forEach((column) => {
           const values = rows.map((item) => parseNumber(item[column])).filter((value) => value !== null).sort((a, b) => a - b);
           let value = null;
           if (values.length) {
-            if (label === "Average") value = values.reduce((sum, item) => sum + item, 0) / values.length;
-            if (label === "Median") {
+            if (label === "average") value = values.reduce((sum, item) => sum + item, 0) / values.length;
+            if (label === "median") {
               const middle = Math.floor(values.length / 2);
               value = values.length % 2 ? values[middle] : (values[middle - 1] + values[middle]) / 2;
             }
-            if (label === "Minimum") value = values[0];
-            if (label === "Maximum") value = values[values.length - 1];
+            if (label === "minimum") value = values[0];
+            if (label === "maximum") value = values[values.length - 1];
           }
           row[column] = value;
         });
@@ -866,7 +1191,7 @@
     function renderStud(rows) {
       const groups = new Map();
       rows.forEach((row) => {
-        const stud = text(row.STUD) || "Not specified";
+        const stud = text(row.STUD) || translate("unspecified");
         if (!groups.has(stud)) groups.set(stud, []);
         groups.get(stud).push(row);
       });
@@ -953,6 +1278,7 @@
       renderAll();
     }
 
+    $("language").addEventListener("change", (event) => setLanguage(event.target.value));
     $("refresh").addEventListener("click", loadSheet);
     $("resetAll").addEventListener("click", resetFilters);
     $("pageSize").addEventListener("change", (event) => {
@@ -979,7 +1305,14 @@
       if (event.key === "Escape") closePopups();
     });
 
-    $("today").textContent = new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date());
+    try {
+      const savedLanguage = localStorage.getItem("dairySiresLanguage");
+      if (I18N[savedLanguage]) state.language = savedLanguage;
+    } catch (error) {
+      console.warn("Could not read the saved language:", error);
+    }
+    $("language").value = state.language;
+    applyLanguage();
     loadSheet();
   </script>
 </body>
