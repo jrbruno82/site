@@ -403,6 +403,9 @@
 
     const SHEET_ID = "1JcCzua0kej7CghV0ebwHhVITCIjWQRoa3A8F6USeyRI";
     const SHEET_GID = "679415984";
+    const LOAD_DEADLINE_MS = 10000;
+    const PRIORITY_REQUEST_MAX_MS = 7500;
+    let requestSequence = 0;
     const FILTER_GROUPS = [
       { title: "Master", columns: ["BREED", "PLUS", "STUD", "Beta-Casein", "Sire", "MGS", "MGGS"] },
       { title: "Index", columns: ["DWP$", "GNM$", "GWT$", "GTPI", "GJPI"] },
@@ -476,26 +479,30 @@
       $("loadingProgress").hidden = true;
     }
 
-    function jsonpSheetRequest(query = "") {
+    function jsonpSheetRequest(query = "", timeoutMs) {
       return new Promise((resolve, reject) => {
         const script = document.createElement("script");
+        const callbackName = `__dairySheetsResponse${Date.now()}_${++requestSequence}`;
         let settled = false;
-        const timeout = window.setTimeout(() => finish(new Error("The Google Sheet request timed out.")), 20000);
+        const timeout = window.setTimeout(
+          () => finish(new Error("The Google Sheet request timed out.")),
+          Math.max(1, timeoutMs)
+        );
 
         function finish(error, result) {
           if (settled) return;
           settled = true;
           window.clearTimeout(timeout);
           script.remove();
-          delete window.google;
+          delete window[callbackName];
           if (error) reject(error);
           else resolve(result);
         }
 
-        window.google = { visualization: { Query: { setResponse: (response) => finish(null, response) } } };
-        script.onerror = () => finish(new Error("Could not load the Google Sheet. Check that link sharing is enabled."));
+        window[callbackName] = (response) => finish(null, response);
+        script.onerror = () => finish(new Error("NETWORK_ERROR"));
         const url = new URL(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`);
-        url.searchParams.set("tqx", `out:json;responseHandler=google.visualization.Query.setResponse`);
+        url.searchParams.set("tqx", `out:json;responseHandler:${callbackName}`);
         url.searchParams.set("gid", SHEET_GID);
         if (query) url.searchParams.set("tq", query);
         script.src = url.toString();
@@ -511,7 +518,8 @@
 
     function parseSheetResponse(response) {
       if (response.status !== "ok" || !response.table) {
-        throw new Error(response.errors?.map((e) => e.detailed_message || e.message).join("; ") || "The Sheet returned no data.");
+        const details = response.errors?.map((e) => e.detailed_message || e.message).filter(Boolean).join("; ");
+        throw new Error(details || "O Google Sheets respondeu, mas não retornou dados nem detalhes do erro.");
       }
       const table = response.table;
       const columns = table.cols.map((column) => text(column.label || column.id));
@@ -526,26 +534,47 @@
       return { columns, rows };
     }
 
+    function describeConnectionError(error, hasPriorityRows) {
+      if (error.message === "NETWORK_ERROR") {
+        if (navigator.onLine === false) {
+          return "Sem conexão com a internet. Verifique a rede e tente novamente.";
+        }
+        return "O navegador não conseguiu acessar docs.google.com. Verifique a rede, VPN/proxy, firewall ou bloqueador de conteúdo.";
+      }
+      if (error.message === "The Google Sheet request timed out.") {
+        return `O Google Sheets não respondeu no prazo de 10 segundos. ${hasPriorityRows ? "Os indicadores prioritários continuam disponíveis." : "Nenhum dado foi recebido."} Tente atualizar novamente.`;
+      }
+      if (/permission|access|not found|does not exist|not authorized/i.test(error.message)) {
+        return `O Google Sheets recusou o acesso: ${error.message}. Confirme que a planilha está compartilhada como “qualquer pessoa com o link — leitor”.`;
+      }
+      return `Falha ao carregar os dados: ${error.message}`;
+    }
+
     async function loadSheet() {
       $("refresh").disabled = true;
+      const deadline = Date.now() + LOAD_DEADLINE_MS;
       window.clearTimeout(state.progressTimer);
       setProgress("loading", "Buscando os reprodutores prioritários...");
       setStatus(state.isComplete ? "Atualizando os dados..." : "Carregando primeiro os indicadores mais importantes...");
       const loadPreview = !state.isComplete;
+      let completedRows = 0;
       try {
         if (loadPreview) {
           try {
-            const preview = parseSheetResponse(await jsonpSheetRequest(PRIORITY_QUERY));
+            const previewTimeout = Math.min(PRIORITY_REQUEST_MAX_MS, deadline - Date.now());
+            const preview = parseSheetResponse(await jsonpSheetRequest(PRIORITY_QUERY, previewTimeout));
             state.columns = preview.columns;
             state.rows = preview.rows;
+            completedRows = preview.rows.length;
             state.page = 1;
             renderMain(getFilteredRows());
             setProgress("half", "Indicadores prioritários prontos — carregando todas as colunas, filtros e análises...");
             setStatus("Os 15 reprodutores prioritários já estão disponíveis enquanto o restante dos dados é carregado.");
           } catch (previewError) {
             console.warn("Prioritized preview unavailable; loading the complete sheet directly:", previewError);
-            setProgress("loading", "Carregando a planilha completa...");
-            setStatus("Preparando a tabela completa...");
+            if (Date.now() >= deadline) throw previewError;
+            setProgress("loading", "Tentando carregar os dados completos dentro do prazo...");
+            setStatus("A consulta prioritária não respondeu; tentando a planilha completa pelo tempo restante.");
           }
         }
         if (loadPreview) {
@@ -553,23 +582,25 @@
         } else {
           setProgress("loading", "Atualizando todos os dados da planilha...");
         }
-        const complete = parseSheetResponse(await jsonpSheetRequest());
+        const remainingMs = deadline - Date.now();
+        if (remainingMs <= 0) {
+          throw new Error("Limite de espera de 10 segundos atingido.");
+        }
+        const complete = parseSheetResponse(await jsonpSheetRequest("", remainingMs));
         state.columns = complete.columns;
         state.rows = complete.rows;
         state.isComplete = true;
+        completedRows = complete.rows.length;
         state.filterOptions.clear();
         state.page = 1;
         buildFilters();
         renderAll();
-        setStatus(`${state.rows.length.toLocaleString()} sires loaded from the live Google Sheet.`);
+        setStatus(`${state.rows.length.toLocaleString()} reprodutores carregados da planilha Google Sheets.`);
         setProgress("done", "Carregamento concluído.");
         state.progressTimer = window.setTimeout(hideProgress, 1800);
       } catch (error) {
         console.error("Google Sheet load failed:", error);
-        setStatus(`${error.message} Make the selected sheet tab available to anyone with the link as a viewer, then refresh.`, true);
-        if (state.rows.length) {
-          setStatus(`Os indicadores prioritários continuam disponíveis, mas não foi possível carregar todos os dados: ${error.message}`, true);
-        }
+        setStatus(describeConnectionError(error, completedRows > 0), true);
         hideProgress();
       } finally {
         $("refresh").disabled = false;
@@ -862,10 +893,26 @@
       });
     }
 
-    function percentileScore(value, values, higherIsBetter) {
-      if (value === null || !values.length) return null;
-      const count = values.filter((other) => higherIsBetter ? other <= value : other >= value).length;
-      return count / values.length;
+    function percentileScore(value, sortedValues, higherIsBetter) {
+      if (value === null || !sortedValues.length) return null;
+      let low = 0;
+      let high = sortedValues.length;
+      while (low < high) {
+        const middle = Math.floor((low + high) / 2);
+        if (sortedValues[middle] < value) low = middle + 1;
+        else high = middle;
+      }
+      const lowerBound = low;
+      if (higherIsBetter) {
+        high = sortedValues.length;
+        while (low < high) {
+          const middle = Math.floor((low + high) / 2);
+          if (sortedValues[middle] <= value) low = middle + 1;
+          else high = middle;
+        }
+        return low / sortedValues.length;
+      }
+      return (sortedValues.length - lowerBound) / sortedValues.length;
     }
 
     function renderSuggestions() {
@@ -876,7 +923,7 @@
       const candidates = state.rows.filter(matchesRecommendationFilters).map((row) => ({ row, score: 0, count: 0 }));
       const values = new Map(metrics.map(([column]) => [
         column,
-        candidates.map(({ row }) => parseNumber(row[column])).filter((value) => value !== null)
+        candidates.map(({ row }) => parseNumber(row[column])).filter((value) => value !== null).sort((a, b) => a - b)
       ]));
       candidates.forEach((candidate) => {
         metrics.forEach(([column, higherIsBetter]) => {
