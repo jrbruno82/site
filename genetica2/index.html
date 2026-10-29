@@ -195,6 +195,32 @@
     }
     .status.error { color: #a52c1a; }
 
+    .loading-progress { display: grid; gap: 5px; }
+    .loading-progress[hidden] { display: none; }
+    .progress-label { color: var(--orange-dark); font-size: .86rem; font-weight: 700; }
+    .progress-track {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #f5e5d9;
+    }
+    .progress-fill {
+      width: 34%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--orange);
+    }
+    .progress-track.is-loading .progress-fill { animation: progress-sweep 1.4s ease-in-out infinite; }
+    .progress-track.is-half .progress-fill { width: 50%; }
+    .progress-track.is-done .progress-fill { width: 100%; transition: width .25s ease; }
+    @keyframes progress-sweep {
+      from { transform: translateX(-110%); }
+      to { transform: translateX(310%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .progress-track.is-loading .progress-fill { animation-duration: 3s; }
+    }
+
     .section { margin-top: 24px; }
     .section h2 {
       margin: 0 0 10px;
@@ -324,6 +350,12 @@
         <button class="action secondary" id="resetAll" type="button">Reset filters</button>
       </div>
       <div class="filter-row" id="filterGroups"></div>
+      <div class="loading-progress" id="loadingProgress" hidden>
+        <div class="progress-label" id="progressLabel"></div>
+        <div class="progress-track is-loading" id="progressTrack" role="progressbar" aria-label="Google Sheets data loading" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
       <div class="status" id="status" role="status" aria-live="polite">Connecting to the Google Sheet...</div>
     </section>
 
@@ -391,6 +423,11 @@
       ["DWP$", -1], ["GNM$", -1], ["GPTAM", -1], ["GPTAF", -1], ["GPTAP", -1],
       ["GDPR", -1], ["GSCS", 1], ["GPL", -1], ["GWT$", -1], ["GZMAS", -1], ["GZMET", -1]
     ];
+    const PRIORITY_QUERY = [
+      "select A,B,C,D,E,F,H,I,J,K,L,M,P,Q,G,U,V,W,X",
+      "order by F desc,H desc,I desc,J desc,K desc,M desc,P asc,Q desc,G desc,U desc,V desc",
+      "limit 15"
+    ].join(" ");
     const state = {
       columns: [],
       rows: [],
@@ -398,7 +435,9 @@
       page: 1,
       pageSize: 15,
       sort: null,
-      filterOptions: new Map()
+      filterOptions: new Map(),
+      isComplete: false,
+      progressTimer: null
     };
 
     const $ = (id) => document.getElementById(id);
@@ -410,9 +449,35 @@
       el.classList.toggle("error", isError);
     }
 
-    function jsonpSheetRequest() {
+    function setProgress(stage, message) {
+      const progress = $("loadingProgress");
+      const track = $("progressTrack");
+      const label = $("progressLabel");
+      progress.hidden = false;
+      label.textContent = message;
+      track.className = "progress-track";
+      if (stage === "half") {
+        track.classList.add("is-half");
+        track.setAttribute("aria-valuenow", "50");
+        track.setAttribute("aria-valuetext", message);
+      } else if (stage === "done") {
+        track.classList.add("is-done");
+        track.setAttribute("aria-valuenow", "100");
+        track.setAttribute("aria-valuetext", message);
+      } else {
+        track.classList.add("is-loading");
+        track.removeAttribute("aria-valuenow");
+        track.setAttribute("aria-valuetext", message);
+      }
+    }
+
+    function hideProgress() {
+      window.clearTimeout(state.progressTimer);
+      $("loadingProgress").hidden = true;
+    }
+
+    function jsonpSheetRequest(query = "") {
       return new Promise((resolve, reject) => {
-        const callbackName = "__sheetResponse";
         const script = document.createElement("script");
         let settled = false;
         const timeout = window.setTimeout(() => finish(new Error("The Google Sheet request timed out.")), 20000);
@@ -432,6 +497,7 @@
         const url = new URL(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq`);
         url.searchParams.set("tqx", `out:json;responseHandler=google.visualization.Query.setResponse`);
         url.searchParams.set("gid", SHEET_GID);
+        if (query) url.searchParams.set("tq", query);
         script.src = url.toString();
         document.head.appendChild(script);
       });
@@ -443,32 +509,68 @@
       return cell.v;
     }
 
+    function parseSheetResponse(response) {
+      if (response.status !== "ok" || !response.table) {
+        throw new Error(response.errors?.map((e) => e.detailed_message || e.message).join("; ") || "The Sheet returned no data.");
+      }
+      const table = response.table;
+      const columns = table.cols.map((column) => text(column.label || column.id));
+      if (!columns.length) throw new Error("No column headers were found in the selected tab.");
+      const rows = table.rows.map((row) => {
+        const item = {};
+        columns.forEach((column, index) => {
+          item[column] = normalizeCell(row.c?.[index]);
+        });
+        return item;
+      }).filter((row) => Object.values(row).some((value) => text(value) !== ""));
+      return { columns, rows };
+    }
+
     async function loadSheet() {
       $("refresh").disabled = true;
-      setStatus("Connecting to the Google Sheet...");
+      window.clearTimeout(state.progressTimer);
+      setProgress("loading", "Buscando os reprodutores prioritários...");
+      setStatus(state.isComplete ? "Atualizando os dados..." : "Carregando primeiro os indicadores mais importantes...");
+      const loadPreview = !state.isComplete;
       try {
-        const response = await jsonpSheetRequest();
-        if (response.status !== "ok" || !response.table) {
-          throw new Error(response.errors?.map((e) => e.detailed_message || e.message).join("; ") || "The Sheet returned no data.");
+        if (loadPreview) {
+          try {
+            const preview = parseSheetResponse(await jsonpSheetRequest(PRIORITY_QUERY));
+            state.columns = preview.columns;
+            state.rows = preview.rows;
+            state.page = 1;
+            renderMain(getFilteredRows());
+            setProgress("half", "Indicadores prioritários prontos — carregando todas as colunas, filtros e análises...");
+            setStatus("Os 15 reprodutores prioritários já estão disponíveis enquanto o restante dos dados é carregado.");
+          } catch (previewError) {
+            console.warn("Prioritized preview unavailable; loading the complete sheet directly:", previewError);
+            setProgress("loading", "Carregando a planilha completa...");
+            setStatus("Preparando a tabela completa...");
+          }
         }
-        const table = response.table;
-        state.columns = table.cols.map((column) => text(column.label || column.id));
-        if (!state.columns.length) throw new Error("No column headers were found in the selected tab.");
-        state.rows = table.rows.map((row) => {
-          const item = {};
-          state.columns.forEach((column, index) => {
-            item[column] = normalizeCell(row.c?.[index]);
-          });
-          return item;
-        }).filter((row) => Object.values(row).some((value) => text(value) !== ""));
+        if (loadPreview) {
+          setProgress("loading", "Carregando todas as colunas e preparando os filtros e análises...");
+        } else {
+          setProgress("loading", "Atualizando todos os dados da planilha...");
+        }
+        const complete = parseSheetResponse(await jsonpSheetRequest());
+        state.columns = complete.columns;
+        state.rows = complete.rows;
+        state.isComplete = true;
         state.filterOptions.clear();
         state.page = 1;
         buildFilters();
         renderAll();
         setStatus(`${state.rows.length.toLocaleString()} sires loaded from the live Google Sheet.`);
+        setProgress("done", "Carregamento concluído.");
+        state.progressTimer = window.setTimeout(hideProgress, 1800);
       } catch (error) {
         console.error("Google Sheet load failed:", error);
         setStatus(`${error.message} Make the selected sheet tab available to anyone with the link as a viewer, then refresh.`, true);
+        if (state.rows.length) {
+          setStatus(`Os indicadores prioritários continuam disponíveis, mas não foi possível carregar todos os dados: ${error.message}`, true);
+        }
+        hideProgress();
       } finally {
         $("refresh").disabled = false;
       }
