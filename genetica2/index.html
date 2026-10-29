@@ -338,34 +338,23 @@
     .bottom-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
     .footnote { margin: 8px 0 0; color: var(--muted); font-size: .82rem; }
 
-    .pedigree-heading {
-      margin: 18px 0 10px;
-      color: var(--orange-dark);
-      font-size: 1rem;
-    }
-
-    .pedigree-note {
-      margin: -4px 0 12px;
-      color: var(--muted);
-      font-size: .82rem;
-    }
-
-    .pedigree-forest {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 390px), 1fr));
-      gap: 14px;
-    }
-
-    .pedigree-card {
-      min-width: 0;
-      overflow: hidden;
+    .pedigree-popover {
+      position: fixed;
+      z-index: 1000;
+      width: min(560px, calc(100vw - 24px));
+      max-height: min(470px, calc(100vh - 24px));
+      overflow: auto;
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: linear-gradient(160deg, #fff 30%, #fffaf6);
-      box-shadow: 0 5px 18px #61351f0d;
+      background: #fff;
+      box-shadow: 0 16px 48px #3e241e38, 0 3px 10px #3e241e18;
     }
 
     .pedigree-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
       padding: 14px 16px 13px;
       color: #fff;
       background: linear-gradient(115deg, var(--orange-dark), var(--orange));
@@ -374,18 +363,19 @@
     .pedigree-card-title {
       margin: 0;
       overflow-wrap: anywhere;
-      font-size: 1.08rem;
+      font-size: 1rem;
       line-height: 1.3;
     }
 
     .pedigree-card-meta {
       display: flex;
+      justify-content: flex-end;
       flex-wrap: wrap;
       gap: 6px;
-      margin-top: 8px;
     }
 
     .pedigree-chip {
+      display: inline-block;
       max-width: 100%;
       padding: 4px 8px;
       overflow: hidden;
@@ -397,8 +387,40 @@
       white-space: nowrap;
     }
 
+    .pedigree-trigger {
+      padding: 0;
+      border: 0;
+      color: var(--orange-dark);
+      background: transparent;
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: #e8752470;
+      text-underline-offset: 3px;
+      cursor: help;
+    }
+
+    .pedigree-trigger:hover, .pedigree-trigger:focus-visible {
+      color: #9e4512;
+      text-decoration-color: currentColor;
+    }
+
+    .pedigree-trigger:focus-visible {
+      border-radius: 2px;
+      outline: 2px solid var(--orange);
+      outline-offset: 3px;
+    }
+
+    .pedigree-code {
+      display: block;
+      margin-top: 5px;
+      color: var(--orange-dark);
+      font-size: .74rem;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
     .pedigree-tree { padding: 18px 15px 16px; }
-    .pedigree-subject-wrap { display: flex; justify-content: center; }
+    .pedigree-subject-wrap { position: relative; display: flex; justify-content: center; }
     .pedigree-node {
       position: relative;
       z-index: 1;
@@ -413,7 +435,7 @@
     }
 
     .pedigree-subject {
-      max-width: 300px;
+      max-width: 320px;
       border-color: #efb789;
       background: var(--orange-soft);
     }
@@ -518,16 +540,6 @@
       content: "";
     }
 
-    .pedigree-empty {
-      grid-column: 1 / -1;
-      padding: 18px;
-      border: 1px dashed var(--line);
-      border-radius: 8px;
-      color: var(--muted);
-      background: #fffaf6;
-      text-align: center;
-    }
-
     @media (max-width: 1050px) {
       .hero { padding: 58px 20px 82px; }
       .brand { top: auto; right: 20px; bottom: 14px; }
@@ -551,6 +563,7 @@
       .pedigree-branches { gap: 8px; }
       .pedigree-node { padding: 9px 7px; }
       .pedigree-node-name { font-size: .82rem; }
+      .pedigree-card-header { flex-direction: column; }
     }
   </style>
 </head>
@@ -619,20 +632,15 @@
       <section class="section" aria-labelledby="studTitle">
         <h2 id="studTitle">Top 2 por central</h2>
         <div class="table-scroll" id="studTableWrap"></div>
-        <h3 class="pedigree-heading" id="studPedigreeTitle">Árvore genealógica dos touros por central</h3>
-        <p class="pedigree-note" id="studPedigreeNote">Conheça a linhagem paterna e materna de cada touro selecionado.</p>
-        <div class="pedigree-forest" id="studPedigree"></div>
       </section>
       <section class="section" aria-labelledby="suggestTitle">
         <h2 id="suggestTitle">Top 5 sugestões equilibradas de touros</h2>
         <div class="table-scroll" id="suggestTableWrap"></div>
         <p class="footnote" id="suggestFootnote">As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).</p>
-        <h3 class="pedigree-heading" id="suggestPedigreeTitle">Árvore genealógica das sugestões</h3>
-        <p class="pedigree-note" id="suggestPedigreeNote">Linhagem dos cinco touros recomendados, separada em ramos paterno e materno.</p>
-        <div class="pedigree-forest" id="suggestPedigree"></div>
       </section>
     </div>
   </main>
+  <div class="pedigree-popover" id="pedigreePopover" role="dialog" aria-label="Árvore genealógica" hidden></div>
 
   <script>
     "use strict";
@@ -686,18 +694,17 @@
         topStud: "Top 2 por central",
         suggestions: "Top 5 sugestões equilibradas de touros",
         suggestionNote: "As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).",
-        studPedigreeTitle: "Árvore genealógica dos touros por central",
-        studPedigreeNote: "Conheça a linhagem paterna e materna de cada touro selecionado.",
-        suggestionPedigreeTitle: "Árvore genealógica das sugestões",
-        suggestionPedigreeNote: "Linhagem dos touros recomendados, separada em ramos paterno e materno.",
+        pedigreePopoverLabel: "Árvore genealógica do touro",
+        pedigreeHover: "Passe o mouse ou foque para consultar a árvore genealógica",
         selectedSire: "Touro selecionado",
         paternalBranch: "Ramo paterno",
         maternalBranch: "Ramo materno",
         sireLabel: "Pai",
         mgsLabel: "Avô materno",
         mggsLabel: "Bisavô materno",
+        naabCodeLabel: "Código NAAB",
+        codeNotFound: "código não encontrado na planilha",
         pedigreeUnavailable: "Informação de pedigree indisponível.",
-        pedigreeEmpty: "Nenhum touro para exibir com os filtros atuais.",
         initialStatus: "Conectando ao Google Sheets...",
         loadingPriority: "Buscando os reprodutores prioritários...",
         loadingInitial: "Carregando primeiro os indicadores mais importantes...",
@@ -767,18 +774,17 @@
         topStud: "Top 2 by Stud",
         suggestions: "Top 5 Balanced Sire Suggestions",
         suggestionNote: "Suggestions use the Breed, Plus, and Stud filters and balance percentile ranks across DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL, and GSCS (lower GSCS is preferred).",
-        studPedigreeTitle: "Pedigree trees by stud",
-        studPedigreeNote: "Explore the paternal and maternal lineage of each selected sire.",
-        suggestionPedigreeTitle: "Suggested sires pedigree trees",
-        suggestionPedigreeNote: "Recommended sires' lineages, shown as separate paternal and maternal branches.",
+        pedigreePopoverLabel: "Sire pedigree",
+        pedigreeHover: "Hover or focus to view the pedigree",
         selectedSire: "Selected sire",
         paternalBranch: "Paternal branch",
         maternalBranch: "Maternal branch",
         sireLabel: "Sire",
         mgsLabel: "Maternal grandsire",
         mggsLabel: "Maternal great-grandsire",
+        naabCodeLabel: "NAAB code",
+        codeNotFound: "code not found in the spreadsheet",
         pedigreeUnavailable: "Pedigree information unavailable.",
-        pedigreeEmpty: "No sires to display for the current filters.",
         initialStatus: "Connecting to Google Sheets...",
         loadingPriority: "Loading priority sires...",
         loadingInitial: "Loading the most important metrics first...",
@@ -840,18 +846,17 @@
         topStud: "Los 2 mejores por centro",
         suggestions: "5 mejores sugerencias equilibradas",
         suggestionNote: "Las sugerencias usan los filtros de raza, Plus y centro y equilibran percentiles de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL y GSCS (se prefiere un GSCS menor).",
-        studPedigreeTitle: "Árbol genealógico por centro",
-        studPedigreeNote: "Explore la línea paterna y materna de cada semental seleccionado.",
-        suggestionPedigreeTitle: "Árbol genealógico de los sementales sugeridos",
-        suggestionPedigreeNote: "Linajes de los sementales recomendados, separados en ramas paterna y materna.",
+        pedigreePopoverLabel: "Árbol genealógico del semental",
+        pedigreeHover: "Pase el cursor o enfoque para consultar el árbol genealógico",
         selectedSire: "Semental seleccionado",
         paternalBranch: "Rama paterna",
         maternalBranch: "Rama materna",
         sireLabel: "Padre",
         mgsLabel: "Abuelo materno",
         mggsLabel: "Bisabuelo materno",
+        naabCodeLabel: "Código NAAB",
+        codeNotFound: "código no encontrado en la hoja",
         pedigreeUnavailable: "Información genealógica no disponible.",
-        pedigreeEmpty: "No hay sementales para mostrar con los filtros actuales.",
         initialStatus: "Conectando con Google Sheets...",
         loadingPriority: "Cargando los sementales prioritarios...",
         loadingInitial: "Cargando primero los indicadores más importantes...",
@@ -910,6 +915,11 @@
       progressTimer: null,
       loadingTimer: null,
       language: "pt",
+      siresByName: new Map(),
+      siresByCode: new Map(),
+      popoverHideTimer: null,
+      pinnedCode: "",
+      activePedigreeCode: "",
       status: { key: "initialStatus", vars: {}, isError: false },
       progress: { stage: "loading", key: "loadingPriority", vars: {} }
     };
@@ -959,10 +969,8 @@
       $("studTitle").textContent = translate("topStud");
       $("suggestTitle").textContent = translate("suggestions");
       $("suggestFootnote").textContent = translate("suggestionNote");
-      $("studPedigreeTitle").textContent = translate("studPedigreeTitle");
-      $("studPedigreeNote").textContent = translate("studPedigreeNote");
-      $("suggestPedigreeTitle").textContent = translate("suggestionPedigreeTitle");
-      $("suggestPedigreeNote").textContent = translate("suggestionPedigreeNote");
+      $("pedigreePopover").setAttribute("aria-label", translate("pedigreePopoverLabel"));
+      if (state.activePedigreeCode) closePedigreePopover();
       $("today").textContent = new Intl.DateTimeFormat(languageLocale(), { dateStyle: "long" }).format(new Date());
       if (state.status) {
         $("status").textContent = translate(state.status.key, state.status.vars);
@@ -1139,6 +1147,7 @@
         state.columns = complete.columns;
         state.rows = complete.rows;
         state.isComplete = true;
+        indexSiresByName(state.rows);
         completedRows = complete.rows.length;
         state.filterOptions.clear();
         state.page = 1;
@@ -1157,6 +1166,33 @@
       } finally {
         $("refresh").disabled = false;
       }
+    }
+
+    function sireNameKey(name) {
+      return text(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase().replace(/\s+/g, " ");
+    }
+
+    function indexSiresByName(rows) {
+      const byName = new Map();
+      const byCode = new Map();
+      rows.forEach((row) => {
+        const key = sireNameKey(row["Sire Name"]);
+        if (key) {
+          if (!byName.has(key)) byName.set(key, []);
+          byName.get(key).push(row);
+        }
+        const code = text(row["NAAB Code"]);
+        if (code && !byCode.has(code)) byCode.set(code, row);
+      });
+      state.siresByName = byName;
+      state.siresByCode = byCode;
+    }
+
+    function findAncestorCode(name, breed) {
+      const matches = state.siresByName.get(sireNameKey(name)) || [];
+      const sameBreed = matches.find((row) => text(row.BREED) === text(breed) && text(row["NAAB Code"]));
+      const anyBreed = matches.find((row) => text(row["NAAB Code"]));
+      return sameBreed || anyBreed || null;
     }
 
     function columnExists(column) {
@@ -1366,6 +1402,11 @@
       return new Intl.NumberFormat(languageLocale(), { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(number);
     }
 
+    function pedigreeTriggerHTML(row, code) {
+      const label = `${code}. ${translate("pedigreeHover")}`;
+      return `<button type="button" class="pedigree-trigger" data-pedigree-code="${escapeHTML(code)}" aria-haspopup="dialog" aria-expanded="false" aria-label="${escapeHTML(label)}" title="${escapeHTML(translate("pedigreeHover"))}">${escapeHTML(code)}</button>`;
+    }
+
     function tableHTML(columns, rows, { sortable = false, summary = false } = {}) {
       if (!rows.length) return `<table><tbody><tr><td class="empty-cell">${escapeHTML(translate("emptyRows"))}</td></tr></tbody></table>`;
       const sortIndicator = (column) => state.sort?.[0] === column ? (state.sort[1] < 0 ? " ↓" : " ↑") : "";
@@ -1374,6 +1415,9 @@
         return `<th class="${className}"${sortable ? ` data-sort="${escapeHTML(column)}" title="${escapeHTML(translate("sortBy", { column: columnLabel(column) }))}"` : ""}>${escapeHTML(columnLabel(column))}${sortable ? sortIndicator(column) : ""}</th>`;
       }).join("")}</tr></thead>`;
       const body = rows.map((row) => `<tr>${columns.map((column) => {
+        if (column === "NAAB Code" && state.isComplete && text(row[column])) {
+          return `<td>${pedigreeTriggerHTML(row, text(row[column]))}</td>`;
+        }
         const value = typeof row === "string" ? row : formatValue(column, row[column]);
         return `<td>${escapeHTML(value)}</td>`;
       }).join("")}</tr>`).join("");
@@ -1444,87 +1488,139 @@
         top.push(...[...group].sort((a, b) => compareRows(a, b, [[metric, -1]])).slice(0, 2));
       });
       $("studTableWrap").innerHTML = tableHTML(state.columns, top);
-      renderPedigree(top, "studPedigree");
     }
 
-    function makePedigreeNode(labelKey, value, extraClass = "") {
+    function makePedigreeNode(labelKey, name, breed, knownCode = "") {
       const node = document.createElement("div");
-      node.className = `pedigree-node ${extraClass}`.trim();
+      node.className = "pedigree-node";
       const label = document.createElement("span");
       label.className = "pedigree-node-label";
       label.textContent = translate(labelKey);
-      const name = document.createElement("span");
-      name.className = "pedigree-node-name";
-      name.textContent = text(value) || translate("pedigreeUnavailable");
-      node.append(label, name);
+      const nameElement = document.createElement("span");
+      nameElement.className = "pedigree-node-name";
+      nameElement.textContent = text(name) || translate("pedigreeUnavailable");
+      node.append(label, nameElement);
+      if (text(name) || knownCode) {
+        const ancestor = knownCode ? null : findAncestorCode(name, breed);
+        const code = knownCode || text(ancestor?.["NAAB Code"]);
+        const codeElement = document.createElement("span");
+        codeElement.className = "pedigree-code";
+        codeElement.textContent = `${translate("naabCodeLabel")}: ${code || translate("codeNotFound")}`;
+        node.appendChild(codeElement);
+      }
       return node;
     }
 
-    function renderPedigree(rows, targetId) {
-      const forest = $(targetId);
-      forest.replaceChildren();
-      if (!rows.length) {
-        const empty = document.createElement("div");
-        empty.className = "pedigree-empty";
-        empty.textContent = translate("pedigreeEmpty");
-        forest.appendChild(empty);
+    function renderPedigreePopover(row) {
+      const popover = $("pedigreePopover");
+      popover.replaceChildren();
+      const sireName = text(row["Sire Name"]) || text(row["NAAB Code"]);
+
+      const header = document.createElement("header");
+      header.className = "pedigree-card-header";
+      const title = document.createElement("h3");
+      title.className = "pedigree-card-title";
+      title.textContent = sireName;
+      const meta = document.createElement("div");
+      meta.className = "pedigree-card-meta";
+      [row["NAAB Code"], row.STUD].filter((value) => text(value)).forEach((value) => {
+        const chip = document.createElement("span");
+        chip.className = "pedigree-chip";
+        chip.textContent = text(value);
+        meta.appendChild(chip);
+      });
+      header.append(title, meta);
+
+      const tree = document.createElement("div");
+      tree.className = "pedigree-tree";
+      const subject = document.createElement("div");
+      subject.className = "pedigree-subject-wrap";
+      const selectedSire = makePedigreeNode("selectedSire", sireName, row.BREED, text(row["NAAB Code"]));
+      selectedSire.classList.add("pedigree-subject");
+      subject.appendChild(selectedSire);
+
+      const branches = document.createElement("div");
+      branches.className = "pedigree-branches";
+      const paternal = document.createElement("section");
+      paternal.className = "pedigree-branch";
+      const paternalTitle = document.createElement("h4");
+      paternalTitle.className = "pedigree-branch-title";
+      paternalTitle.textContent = translate("paternalBranch");
+      paternal.append(paternalTitle, makePedigreeNode("sireLabel", row.Sire, row.BREED));
+
+      const maternal = document.createElement("section");
+      maternal.className = "pedigree-branch";
+      const maternalTitle = document.createElement("h4");
+      maternalTitle.className = "pedigree-branch-title";
+      maternalTitle.textContent = translate("maternalBranch");
+      const maternalPath = document.createElement("div");
+      maternalPath.className = "pedigree-maternal-path";
+      maternalPath.append(
+        makePedigreeNode("mgsLabel", row.MGS, row.BREED),
+        makePedigreeNode("mggsLabel", row.MGGS, row.BREED)
+      );
+      maternal.append(maternalTitle, maternalPath);
+
+      branches.append(paternal, maternal);
+      tree.append(subject, branches);
+      popover.append(header, tree);
+    }
+
+    function positionPedigreePopover(anchor) {
+      const popover = $("pedigreePopover");
+      const anchorRect = anchor.getBoundingClientRect();
+      const popoverRect = popover.getBoundingClientRect();
+      const margin = 12;
+      const left = Math.max(margin, Math.min(anchorRect.left, window.innerWidth - popoverRect.width - margin));
+      const below = anchorRect.bottom + 8;
+      const top = below + popoverRect.height <= window.innerHeight - margin
+        ? below
+        : Math.max(margin, anchorRect.top - popoverRect.height - 8);
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+    }
+
+    function showPedigreePopover(code, anchor) {
+      const row = state.siresByCode.get(text(code));
+      if (!row) return;
+      window.clearTimeout(state.popoverHideTimer);
+      if (state.activePedigreeCode === text(code) && !$("pedigreePopover").hidden) {
+        positionPedigreePopover(anchor);
         return;
       }
-
-      const fragment = document.createDocumentFragment();
-      rows.forEach((row) => {
-        const card = document.createElement("article");
-        card.className = "pedigree-card";
-
-        const header = document.createElement("header");
-        header.className = "pedigree-card-header";
-        const title = document.createElement("h4");
-        title.className = "pedigree-card-title";
-        title.textContent = text(row["Sire Name"]) || text(row["NAAB Code"]) || translate("pedigreeUnavailable");
-        const meta = document.createElement("div");
-        meta.className = "pedigree-card-meta";
-        [row["NAAB Code"], row.STUD].filter((value) => text(value)).forEach((value) => {
-          const chip = document.createElement("span");
-          chip.className = "pedigree-chip";
-          chip.textContent = text(value);
-          meta.appendChild(chip);
-        });
-        header.append(title, meta);
-
-        const tree = document.createElement("div");
-        tree.className = "pedigree-tree";
-        const subject = document.createElement("div");
-        subject.className = "pedigree-subject-wrap";
-        subject.appendChild(makePedigreeNode("selectedSire", title.textContent, "pedigree-subject"));
-
-        const branches = document.createElement("div");
-        branches.className = "pedigree-branches";
-
-        const paternal = document.createElement("section");
-        paternal.className = "pedigree-branch";
-        const paternalTitle = document.createElement("h5");
-        paternalTitle.className = "pedigree-branch-title";
-        paternalTitle.textContent = translate("paternalBranch");
-        paternal.append(paternalTitle, makePedigreeNode("sireLabel", row.Sire));
-
-        const maternal = document.createElement("section");
-        maternal.className = "pedigree-branch";
-        const maternalTitle = document.createElement("h5");
-        maternalTitle.className = "pedigree-branch-title";
-        maternalTitle.textContent = translate("maternalBranch");
-        const maternalPath = document.createElement("div");
-        maternalPath.className = "pedigree-maternal-path";
-        const mgs = makePedigreeNode("mgsLabel", row.MGS, "pedigree-maternal-node");
-        const mggs = makePedigreeNode("mggsLabel", row.MGGS, "pedigree-maternal-node");
-        maternalPath.append(mgs, mggs);
-        maternal.append(maternalTitle, maternalPath);
-
-        branches.append(paternal, maternal);
-        tree.append(subject, branches);
-        card.append(header, tree);
-        fragment.appendChild(card);
+      state.activePedigreeCode = text(code);
+      renderPedigreePopover(row);
+      const popover = $("pedigreePopover");
+      popover.hidden = false;
+      document.querySelectorAll(".pedigree-trigger[aria-expanded='true']").forEach((button) => {
+        button.setAttribute("aria-expanded", "false");
       });
-      forest.appendChild(fragment);
+      anchor.setAttribute("aria-expanded", "true");
+      positionPedigreePopover(anchor);
+    }
+
+    function hidePedigreePopover() {
+      if (state.pinnedCode) return;
+      $("pedigreePopover").hidden = true;
+      state.activePedigreeCode = "";
+      document.querySelectorAll(".pedigree-trigger[aria-expanded='true']").forEach((button) => {
+        button.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function closePedigreePopover() {
+      state.pinnedCode = "";
+      window.clearTimeout(state.popoverHideTimer);
+      $("pedigreePopover").hidden = true;
+      state.activePedigreeCode = "";
+      document.querySelectorAll(".pedigree-trigger[aria-expanded='true']").forEach((button) => {
+        button.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function schedulePedigreePopoverHide() {
+      window.clearTimeout(state.popoverHideTimer);
+      state.popoverHideTimer = window.setTimeout(hidePedigreePopover, 180);
     }
 
     function matchesRecommendationFilters(row) {
@@ -1581,10 +1677,10 @@
         .slice(0, 5)
         .map((item) => item.row);
       $("suggestTableWrap").innerHTML = tableHTML(state.columns, top);
-      renderPedigree(top, "suggestPedigree");
     }
 
     function renderAll() {
+      closePedigreePopover();
       updateFilterButtons();
       const rows = getFilteredRows();
       renderMain(rows);
@@ -1629,6 +1725,49 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") closePopups();
     });
+    document.addEventListener("pointerover", (event) => {
+      if (event.target.closest("#pedigreePopover")) {
+        window.clearTimeout(state.popoverHideTimer);
+        return;
+      }
+      const trigger = event.target.closest(".pedigree-trigger");
+      if (!trigger) return;
+      state.pinnedCode = "";
+      showPedigreePopover(trigger.dataset.pedigreeCode, trigger);
+    });
+    document.addEventListener("pointerout", (event) => {
+      if (event.target.closest(".pedigree-trigger") || event.target.closest("#pedigreePopover")) {
+        if (event.relatedTarget?.closest?.(".pedigree-trigger, #pedigreePopover")) return;
+        schedulePedigreePopoverHide();
+      }
+    });
+    document.addEventListener("focusin", (event) => {
+      const trigger = event.target.closest(".pedigree-trigger");
+      if (trigger) showPedigreePopover(trigger.dataset.pedigreeCode, trigger);
+    });
+    document.addEventListener("focusout", (event) => {
+      if (event.target.closest(".pedigree-trigger") && !event.relatedTarget?.closest?.("#pedigreePopover")) {
+        schedulePedigreePopoverHide();
+      }
+    });
+    document.addEventListener("click", (event) => {
+      const trigger = event.target.closest(".pedigree-trigger");
+      if (trigger) {
+        const code = trigger.dataset.pedigreeCode;
+        if (state.pinnedCode === code) closePedigreePopover();
+        else {
+          state.pinnedCode = code;
+          showPedigreePopover(code, trigger);
+        }
+        return;
+      }
+      if (!event.target.closest("#pedigreePopover")) closePedigreePopover();
+    });
+    $("pedigreePopover").addEventListener("pointerenter", () => window.clearTimeout(state.popoverHideTimer));
+    $("pedigreePopover").addEventListener("pointerleave", (event) => {
+      if (!event.relatedTarget?.closest?.(".pedigree-trigger")) schedulePedigreePopoverHide();
+    });
+    window.addEventListener("scroll", closePedigreePopover, true);
 
     try {
       const savedLanguage = localStorage.getItem("dairySiresLanguage");
