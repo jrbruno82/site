@@ -403,8 +403,6 @@
 
     const SHEET_ID = "1JcCzua0kej7CghV0ebwHhVITCIjWQRoa3A8F6USeyRI";
     const SHEET_GID = "679415984";
-    const LOAD_DEADLINE_MS = 10000;
-    const PRIORITY_REQUEST_MAX_MS = 7500;
     let requestSequence = 0;
     const FILTER_GROUPS = [
       { title: "Master", columns: ["BREED", "PLUS", "STUD", "Beta-Casein", "Sire", "MGS", "MGGS"] },
@@ -440,7 +438,8 @@
       sort: null,
       filterOptions: new Map(),
       isComplete: false,
-      progressTimer: null
+      progressTimer: null,
+      loadingTimer: null
     };
 
     const $ = (id) => document.getElementById(id);
@@ -479,20 +478,15 @@
       $("loadingProgress").hidden = true;
     }
 
-    function jsonpSheetRequest(query = "", timeoutMs) {
+    function jsonpSheetRequest(query = "") {
       return new Promise((resolve, reject) => {
         const script = document.createElement("script");
         const callbackName = `__dairySheetsResponse${Date.now()}_${++requestSequence}`;
         let settled = false;
-        const timeout = window.setTimeout(
-          () => finish(new Error("The Google Sheet request timed out.")),
-          Math.max(1, timeoutMs)
-        );
 
         function finish(error, result) {
           if (settled) return;
           settled = true;
-          window.clearTimeout(timeout);
           script.remove();
           delete window[callbackName];
           if (error) reject(error);
@@ -537,12 +531,9 @@
     function describeConnectionError(error, hasPriorityRows) {
       if (error.message === "NETWORK_ERROR") {
         if (navigator.onLine === false) {
-          return "Sem conexão com a internet. Verifique a rede e tente novamente.";
+          return "Sem conexão com a internet. Os dados continuam sendo solicitados; verifique a rede e tente novamente.";
         }
-        return "O navegador não conseguiu acessar docs.google.com. Verifique a rede, VPN/proxy, firewall ou bloqueador de conteúdo.";
-      }
-      if (error.message === "The Google Sheet request timed out.") {
-        return `O Google Sheets não respondeu no prazo de 10 segundos. ${hasPriorityRows ? "Os indicadores prioritários continuam disponíveis." : "Nenhum dado foi recebido."} Tente atualizar novamente.`;
+        return `O navegador não conseguiu acessar docs.google.com. ${hasPriorityRows ? "Os dados prioritários continuam disponíveis. " : ""}Verifique a rede, VPN/proxy, firewall ou bloqueador de conteúdo.`;
       }
       if (/permission|access|not found|does not exist|not authorized/i.test(error.message)) {
         return `O Google Sheets recusou o acesso: ${error.message}. Confirme que a planilha está compartilhada como “qualquer pessoa com o link — leitor”.`;
@@ -552,17 +543,20 @@
 
     async function loadSheet() {
       $("refresh").disabled = true;
-      const deadline = Date.now() + LOAD_DEADLINE_MS;
       window.clearTimeout(state.progressTimer);
+      window.clearTimeout(state.loadingTimer);
       setProgress("loading", "Buscando os reprodutores prioritários...");
       setStatus(state.isComplete ? "Atualizando os dados..." : "Carregando primeiro os indicadores mais importantes...");
       const loadPreview = !state.isComplete;
       let completedRows = 0;
+      state.loadingTimer = window.setTimeout(() => {
+        setStatus("A conexão está levando mais de 10 segundos. Continuamos aguardando a resposta do Google Sheets...");
+        $("progressLabel").textContent = "Carregamento em andamento — aguardando o Google Sheets.";
+      }, 10000);
       try {
         if (loadPreview) {
           try {
-            const previewTimeout = Math.min(PRIORITY_REQUEST_MAX_MS, deadline - Date.now());
-            const preview = parseSheetResponse(await jsonpSheetRequest(PRIORITY_QUERY, previewTimeout));
+            const preview = parseSheetResponse(await jsonpSheetRequest(PRIORITY_QUERY));
             state.columns = preview.columns;
             state.rows = preview.rows;
             completedRows = preview.rows.length;
@@ -572,9 +566,9 @@
             setStatus("Os 15 reprodutores prioritários já estão disponíveis enquanto o restante dos dados é carregado.");
           } catch (previewError) {
             console.warn("Prioritized preview unavailable; loading the complete sheet directly:", previewError);
-            if (Date.now() >= deadline) throw previewError;
-            setProgress("loading", "Tentando carregar os dados completos dentro do prazo...");
-            setStatus("A consulta prioritária não respondeu; tentando a planilha completa pelo tempo restante.");
+            if (previewError.message === "NETWORK_ERROR") throw previewError;
+            setProgress("loading", "Tentando carregar a planilha completa...");
+            setStatus("A consulta prioritária falhou; tentando carregar os dados completos...");
           }
         }
         if (loadPreview) {
@@ -582,11 +576,7 @@
         } else {
           setProgress("loading", "Atualizando todos os dados da planilha...");
         }
-        const remainingMs = deadline - Date.now();
-        if (remainingMs <= 0) {
-          throw new Error("Limite de espera de 10 segundos atingido.");
-        }
-        const complete = parseSheetResponse(await jsonpSheetRequest("", remainingMs));
+        const complete = parseSheetResponse(await jsonpSheetRequest());
         state.columns = complete.columns;
         state.rows = complete.rows;
         state.isComplete = true;
@@ -595,11 +585,13 @@
         state.page = 1;
         buildFilters();
         renderAll();
+        window.clearTimeout(state.loadingTimer);
         setStatus(`${state.rows.length.toLocaleString()} reprodutores carregados da planilha Google Sheets.`);
         setProgress("done", "Carregamento concluído.");
         state.progressTimer = window.setTimeout(hideProgress, 1800);
       } catch (error) {
         console.error("Google Sheet load failed:", error);
+        window.clearTimeout(state.loadingTimer);
         setStatus(describeConnectionError(error, completedRows > 0), true);
         hideProgress();
       } finally {
