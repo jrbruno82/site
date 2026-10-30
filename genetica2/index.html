@@ -78,6 +78,7 @@
       color: #fff;
       font-size: .85rem;
     }
+    .page-version { display: block; margin-top: 5px; font-size: .75rem; opacity: .9; }
 
     main { max-width: 1800px; margin: 0 auto; padding: 22px 24px 44px; }
 
@@ -741,7 +742,7 @@
       </select>
     </div>
     <h1 id="dashboardTitle">Touros disponíveis – CDCB - AGO 2026 – RB</h1>
-    <div class="brand-date" id="today"></div>
+    <div class="brand-date"><span id="today"></span><span class="page-version" id="pageVersion">Versão V1.001.001</span></div>
   </header>
 
   <main>
@@ -825,6 +826,17 @@
       </div>
       <div class="cross-pedigree-grid" id="crossPedigreeWrap"></div>
       <p class="footnote" id="crossPedigreeNote">Árvores dos 15 touros mais bem classificados nas sugestões equilibradas.</p>
+      <section class="section" aria-labelledby="relatedPedigreeTitle">
+        <h2 id="relatedPedigreeTitle">Irmãos e parentes entre os 15 sugeridos</h2>
+        <div class="suggestion-tools">
+          <label id="relatedMgsLabel" for="relatedMgsSelect">Filtrar pelo avô materno</label>
+          <select id="relatedMgsSelect" aria-label="Filtrar pelo avô materno">
+            <option value="all" selected>Todos os avôs maternos</option>
+          </select>
+        </div>
+        <div class="cross-pedigree-grid" id="relatedPedigreeWrap"></div>
+        <p class="footnote" id="relatedPedigreeNote">Irmãos compartilham o mesmo pai; parentes compartilham qualquer avô identificado na árvore, entre os 15 sugeridos.</p>
+      </section>
     </section>
     </section>
   </main>
@@ -835,6 +847,7 @@
 
     const SHEET_ID = "1JcCzua0kej7CghV0ebwHhVITCIjWQRoa3A8F6USeyRI";
     const SHEET_GID = "679415984";
+    const PAGE_VERSION = "V1.001.001";
     let requestSequence = 0;
     const FILTER_GROUPS = [
       { title: "groupMaster", columns: ["BREED", "PLUS", "STUD", "Beta-Casein", "Sire", "MGS", "MGGS"] },
@@ -869,6 +882,7 @@
         refresh: "Atualizar dados",
         reset: "Limpar filtros",
         progressAria: "Carregamento de dados do Google Sheets",
+        versionLabel: "Versão",
         available: "Touros disponíveis",
         rowsPerPage: "Linhas por página",
         suggestionCount: "Quantidade de sugestões",
@@ -880,6 +894,15 @@
         crossPedigreeAll: "Todos os 15 touros",
         crossPedigreeNote: "Árvores dos 15 touros mais bem classificados nas sugestões equilibradas.",
         noCrossPedigree: "Nenhum touro sugerido corresponde aos filtros atuais.",
+        relatedPedigreeTitle: "Irmãos e parentes entre os 15 sugeridos",
+        relatedMgsFilter: "Filtrar pelo avô materno",
+        relatedMgsAll: "Todos os avôs maternos",
+        relatedPedigreeNote: "Irmãos compartilham o mesmo pai; parentes compartilham qualquer avô identificado na árvore, entre os 15 sugeridos.",
+        noRelatedPedigree: "Não foram encontrados irmãos ou parentes entre os 15 sugeridos para este avô materno.",
+        siblingRelation: "Irmão",
+        relatedRelation: "Parente",
+        relationSharedSire: "Pai em comum",
+        relationSharedGrandparents: "Avôs em comum: {names}",
         pageNumbers: "Páginas",
         pageEllipsis: "Mais páginas",
         loadingPage: "Carregando página {page}...",
@@ -887,6 +910,13 @@
         countFailed: "Não foi possível contar os registros da planilha.",
         noPageData: "Não há touros nesta página.",
         analysesLoading: "Carregando resumo, rankings, sugestões e pedigree...",
+        analysisDataLoading: "Carregando os dados necessários para as análises...",
+        summaryLoading: "Etapa 1/6: preparando o resumo numérico filtrado...",
+        studRankingLoading: "Etapa 2/6: calculando o Top 2 por central...",
+        suggestionsLoading: "Etapa 3/6: calculando as sugestões equilibradas...",
+        pedigreeLoading: "Etapa 4/6: preparando as árvores genealógicas...",
+        relativesLoading: "Etapa 5/6: identificando irmãos e parentes...",
+        paginationCacheLoading: "Etapa 6/6: preparando as páginas para navegação rápida...",
         analysesReady: "Análises completas carregadas.",
         analysisLoading: "Buscando todos os registros para preparar as listas...",
         analysisFailed: "Não foi possível carregar as análises. Verifique a mensagem acima e tente Atualizar dados.",
@@ -977,6 +1007,7 @@
         refresh: "Refresh data",
         reset: "Reset filters",
         progressAria: "Google Sheets data loading",
+        versionLabel: "Version",
         available: "Available Sires",
         rowsPerPage: "Rows per page",
         suggestionCount: "Number of suggestions",
@@ -988,6 +1019,15 @@
         crossPedigreeAll: "All 15 sires",
         crossPedigreeNote: "Pedigrees of the 15 highest-ranked balanced suggestions.",
         noCrossPedigree: "No suggested sires match the current filters.",
+        relatedPedigreeTitle: "Siblings and relatives among the 15 suggestions",
+        relatedMgsFilter: "Filter by maternal grandsire",
+        relatedMgsAll: "All maternal grandsires",
+        relatedPedigreeNote: "Siblings share the same sire; relatives share any identified grandparent, among the 15 suggestions.",
+        noRelatedPedigree: "No siblings or relatives were found among the 15 suggestions for this maternal grandsire.",
+        siblingRelation: "Sibling",
+        relatedRelation: "Relative",
+        relationSharedSire: "Shared sire",
+        relationSharedGrandparents: "Shared grandparents: {names}",
         pageNumbers: "Pages",
         pageEllipsis: "More pages",
         loadingPage: "Loading page {page}...",
@@ -995,6 +1035,13 @@
         countFailed: "Could not count the spreadsheet records.",
         noPageData: "There are no sires on this page.",
         analysesLoading: "Loading summary, rankings, suggestions, and pedigree...",
+        analysisDataLoading: "Loading the data needed for analysis...",
+        summaryLoading: "Step 1/6: preparing the filtered numerical summary...",
+        studRankingLoading: "Step 2/6: calculating the Top 2 by stud...",
+        suggestionsLoading: "Step 3/6: calculating balanced suggestions...",
+        pedigreeLoading: "Step 4/6: preparing pedigrees...",
+        relativesLoading: "Step 5/6: finding siblings and relatives...",
+        paginationCacheLoading: "Step 6/6: preparing pages for faster navigation...",
         analysesReady: "Full analyses loaded.",
         analysisLoading: "Fetching all records to prepare the lists...",
         analysisFailed: "Could not load the analyses. Check the message above and click Refresh data to try again.",
@@ -1077,6 +1124,7 @@
         refresh: "Actualizar datos",
         reset: "Restablecer filtros",
         progressAria: "Carga de datos de Google Sheets",
+        versionLabel: "Versión",
         available: "Sementales disponibles",
         rowsPerPage: "Filas por página",
         suggestionCount: "Número de sugerencias",
@@ -1088,6 +1136,15 @@
         crossPedigreeAll: "Los 15 sementales",
         crossPedigreeNote: "Árboles de los 15 sementales mejor clasificados en las sugerencias equilibradas.",
         noCrossPedigree: "Ningún semental sugerido coincide con los filtros actuales.",
+        relatedPedigreeTitle: "Hermanos y parientes entre los 15 sugeridos",
+        relatedMgsFilter: "Filtrar por abuelo materno",
+        relatedMgsAll: "Todos los abuelos maternos",
+        relatedPedigreeNote: "Los hermanos comparten el mismo padre; los parientes comparten cualquier abuelo identificado, entre los 15 sugeridos.",
+        noRelatedPedigree: "No se encontraron hermanos ni parientes entre los 15 sugeridos para este abuelo materno.",
+        siblingRelation: "Hermano",
+        relatedRelation: "Pariente",
+        relationSharedSire: "Padre en común",
+        relationSharedGrandparents: "Abuelos en común: {names}",
         pageNumbers: "Páginas",
         pageEllipsis: "Más páginas",
         loadingPage: "Cargando la página {page}...",
@@ -1095,6 +1152,13 @@
         countFailed: "No se pudieron contar los registros de la hoja.",
         noPageData: "No hay sementales en esta página.",
         analysesLoading: "Cargando el resumen, los rankings, las sugerencias y el pedigree...",
+        analysisDataLoading: "Cargando los datos necesarios para los análisis...",
+        summaryLoading: "Etapa 1/6: preparando el resumen numérico filtrado...",
+        studRankingLoading: "Etapa 2/6: calculando los 2 mejores por centro...",
+        suggestionsLoading: "Etapa 3/6: calculando sugerencias equilibradas...",
+        pedigreeLoading: "Etapa 4/6: preparando los árboles genealógicos...",
+        relativesLoading: "Etapa 5/6: identificando hermanos y parientes...",
+        paginationCacheLoading: "Etapa 6/6: preparando las páginas para navegar más rápido...",
         analysesReady: "Análisis completos cargados.",
         analysisLoading: "Consultando todos los registros para preparar las listas...",
         analysisFailed: "No se pudieron cargar los análisis. Revise el mensaje anterior y pulse Actualizar datos para intentarlo de nuevo.",
@@ -1180,6 +1244,7 @@
       totalRows: null,
       pageRows: [],
       pageCache: new Map(),
+      pageTotals: new Map(),
       pageRequest: 0,
       countKey: "",
       filterOptionRequests: new Map(),
@@ -1189,8 +1254,13 @@
       analysisPromise: null,
       analysisFailed: false,
       analysisRequest: 0,
+      analysisStage: 0,
+      analysisFilterKey: "",
+      suggestionRows: [],
+      suggestionFilterKey: "",
       suggestionLimit: 5,
       crossPedigreeCode: "all",
+      relatedMgs: "all",
       sort: null,
       filterOptions: new Map(),
       isComplete: false,
@@ -1236,6 +1306,7 @@
     function applyLanguage() {
       document.documentElement.lang = languageLocale();
       document.title = translate("pageTitle");
+      $("pageVersion").textContent = `${translate("versionLabel")} ${PAGE_VERSION}`;
       $("dashboardTabs").setAttribute("aria-label", translate("dashboardTabs"));
       $("generalTab").textContent = translate("generalTab");
       $("crossPedigreeTab").textContent = translate("crossPedigreeTab");
@@ -1266,6 +1337,10 @@
       $("crossPedigreeLabel").textContent = translate("crossPedigreeFilter");
       $("crossPedigreeSelect").setAttribute("aria-label", translate("crossPedigreeFilter"));
       $("crossPedigreeNote").textContent = translate("crossPedigreeNote");
+      $("relatedPedigreeTitle").textContent = translate("relatedPedigreeTitle");
+      $("relatedMgsLabel").textContent = translate("relatedMgsFilter");
+      $("relatedMgsSelect").setAttribute("aria-label", translate("relatedMgsFilter"));
+      $("relatedPedigreeNote").textContent = translate("relatedPedigreeNote");
       $("pedigreePopover").setAttribute("aria-label", translate("pedigreePopoverLabel"));
       if (state.activePedigreeCode) closePedigreePopover();
       $("today").textContent = new Intl.DateTimeFormat(languageLocale(), { dateStyle: "long" }).format(new Date());
@@ -1502,9 +1577,59 @@
       });
     }
 
+    function cacheFilteredPages(rows) {
+      const key = currentQueryKey();
+      const pageCount = Math.max(1, Math.ceil(rows.length / state.pageSize));
+      state.pageTotals.set(key, rows.length);
+      for (let page = 1; page <= pageCount; page += 1) {
+        const start = (page - 1) * state.pageSize;
+        state.pageCache.set(`${key}:${page}`, rows.slice(start, start + state.pageSize));
+      }
+      state.totalRows = rows.length;
+      state.countKey = currentFilterKey();
+      state.page = Math.min(state.page, pageCount);
+      const start = (state.page - 1) * state.pageSize;
+      state.pageRows = rows.slice(start, start + state.pageSize);
+    }
+
     async function loadPage(page = 1, { initialize = false } = {}) {
       if (!state.columnIds || !Object.keys(state.columnIds).length) initialize = true;
       const requestId = ++state.pageRequest;
+      if (state.analysisRows) {
+        const key = currentQueryKey();
+        const requestedPage = Math.max(1, page);
+        let cachedRows = state.pageCache.get(`${key}:${requestedPage}`);
+        if (!cachedRows) {
+          cacheFilteredPages(getFilteredRows());
+          const pageCount = Math.max(1, Math.ceil(state.totalRows / state.pageSize));
+          state.page = Math.min(requestedPage, pageCount);
+          cachedRows = state.pageCache.get(`${key}:${state.page}`) || [];
+        } else {
+          state.page = requestedPage;
+          state.totalRows = state.pageTotals.get(key) ?? state.totalRows ?? cachedRows.length;
+          state.countKey = currentFilterKey();
+        }
+        state.pageRows = cachedRows;
+        const filterKey = currentFilterKey();
+        if (state.analysisFilterKey !== filterKey) {
+          renderAll();
+          state.analysisFilterKey = filterKey;
+        } else {
+          renderMain();
+        }
+        $("refresh").disabled = false;
+        if (!state.analysisLoading) {
+          window.clearTimeout(state.progressTimer);
+          window.clearTimeout(state.loadingTimer);
+          setStatus("pageLoaded", false, {
+            page: state.page,
+            count: state.totalRows.toLocaleString(languageLocale())
+          });
+          setProgress("done", "progressDone");
+          state.progressTimer = window.setTimeout(hideProgress, 1200);
+        }
+        return true;
+      }
       const key = currentQueryKey();
       const filterKey = currentFilterKey();
       const cacheKey = `${key}:${page}`;
@@ -1544,16 +1669,19 @@
           state.totalRows = null;
         }
         renderAll();
+        if (initialize && !state.analysisRows) loadAnalysisRows();
         if (needsCount) {
           const count = responseCount(await jsonpSheetRequest(buildSheetQuery({ count: true })));
           if (requestId !== state.pageRequest) return;
           state.totalRows = count;
         }
         renderAll();
-        window.clearTimeout(state.loadingTimer);
-        setStatus("pageLoaded", false, { page, count: state.totalRows.toLocaleString(languageLocale()) });
-        setProgress("done", "progressDone");
-        state.progressTimer = window.setTimeout(hideProgress, 1200);
+        if (!state.analysisLoading && !(initialize && (state.analysisStage >= 6 || state.analysisFailed))) {
+          window.clearTimeout(state.loadingTimer);
+          setStatus("pageLoaded", false, { page, count: state.totalRows.toLocaleString(languageLocale()) });
+          setProgress("done", "progressDone");
+          state.progressTimer = window.setTimeout(hideProgress, 1200);
+        }
         return true;
       } catch (error) {
         console.error("Google Sheet page load failed:", error);
@@ -1571,11 +1699,16 @@
       $("refresh").disabled = true;
       window.clearTimeout(state.progressTimer);
       state.pageCache.clear();
+      state.pageTotals.clear();
       state.totalRows = null;
       state.countKey = "";
       state.pageRows = [];
       state.page = 1;
       state.analysisRows = null;
+      state.analysisStage = 0;
+      state.analysisFilterKey = "";
+      state.suggestionRows = [];
+      state.suggestionFilterKey = "";
       state.analysisFailed = false;
       state.analysisRequest += 1;
       state.analysisLoading = false;
@@ -1604,8 +1737,7 @@
           state.columnIds = schema.columnIds;
           buildFilters();
         }
-        const pageLoaded = await loadPage(1, { initialize: true });
-        if (pageLoaded) loadAnalysisRows();
+        await loadPage(1, { initialize: true });
       } catch (error) {
         console.error("Google Sheet initialization failed:", error);
         window.clearTimeout(state.loadingTimer);
@@ -1632,11 +1764,15 @@
       if (state.analysisRows || !state.columns.length) return;
       state.analysisLoading = true;
       state.analysisFailed = false;
+      state.analysisStage = 0;
+      state.analysisFilterKey = "";
+      state.suggestionRows = [];
+      state.suggestionFilterKey = "";
       const requestId = ++state.analysisRequest;
       window.clearTimeout(state.progressTimer);
       window.clearTimeout(state.loadingTimer);
-      setStatus("analysesLoading");
-      setProgress("loading", "analysesLoading");
+      setStatus("analysisDataLoading");
+      setProgress("loading", "analysisDataLoading");
       renderAll();
       state.loadingTimer = window.setTimeout(() => {
         if (requestId !== state.analysisRequest) return;
@@ -1654,7 +1790,65 @@
         buildCousinIndex(complete.rows);
         state.filterOptions.clear();
         buildFilters();
-        renderAll();
+        let stageFilterKey = currentFilterKey();
+        let stageFilteredRows = getMatchingRows();
+        const getStageFilteredRows = () => {
+          const currentKey = currentFilterKey();
+          if (currentKey !== stageFilterKey) {
+            stageFilterKey = currentKey;
+            stageFilteredRows = getMatchingRows();
+          }
+          return stageFilteredRows;
+        };
+        const stages = [
+          {
+            stage: 1,
+            key: "summaryLoading",
+            render: () => renderStats(getStageFilteredRows())
+          },
+          {
+            stage: 2,
+            key: "studRankingLoading",
+            render: () => renderStud(getStageFilteredRows())
+          },
+          {
+            stage: 3,
+            key: "suggestionsLoading",
+            render: () => {
+              state.suggestionRows = getBalancedSuggestionRows(Math.max(state.suggestionLimit, 15));
+              state.suggestionFilterKey = recommendationFilterKey();
+              renderSuggestions(state.suggestionRows.slice(0, state.suggestionLimit));
+            }
+          },
+          {
+            stage: 4,
+            key: "pedigreeLoading",
+            render: () => renderCrossPedigree(state.suggestionRows.slice(0, 15))
+          },
+          {
+            stage: 5,
+            key: "relativesLoading",
+            render: () => renderRelatedPedigrees(state.suggestionRows.slice(0, 15))
+          },
+          {
+            stage: 6,
+            key: "paginationCacheLoading",
+            render: () => {
+              cacheFilteredPages(getFilteredRows());
+              renderMain();
+            }
+          }
+        ];
+        for (const { stage, key, render } of stages) {
+          if (requestId !== state.analysisRequest) return;
+          setStatus(key);
+          setProgress("loading", key);
+          await new Promise((resolve) => window.setTimeout(resolve, 0));
+          if (requestId !== state.analysisRequest) return;
+          render();
+          state.analysisStage = stage;
+        }
+        state.analysisFilterKey = currentFilterKey();
         setStatus("analysesReady");
         setProgress("done", "progressDone");
         state.progressTimer = window.setTimeout(hideProgress, 1200);
@@ -1936,8 +2130,12 @@
         && matchesSearch(row, ["Sire", "MGS"], commaTokens($("searchPedigree").value));
     }
 
+    function getMatchingRows() {
+      return state.rows.filter(matchesFilters);
+    }
+
     function getFilteredRows() {
-      const rows = state.rows.filter(matchesFilters);
+      const rows = getMatchingRows();
       if (state.sort) return [...rows].sort((a, b) => compareRows(a, b, [state.sort]));
       return [...rows].sort((a, b) => compareRows(a, b, DEFAULT_SORT));
     }
@@ -2053,6 +2251,29 @@
       });
     }
 
+    function selectKth(values, target) {
+      let left = 0;
+      let right = values.length - 1;
+      while (left < right) {
+        const pivot = values[Math.floor((left + right) / 2)];
+        let low = left;
+        let high = right;
+        while (low <= high) {
+          while (values[low] < pivot) low += 1;
+          while (values[high] > pivot) high -= 1;
+          if (low <= high) {
+            [values[low], values[high]] = [values[high], values[low]];
+            low += 1;
+            high -= 1;
+          }
+        }
+        if (target <= high) right = high;
+        else if (target >= low) left = low;
+        else return values[target];
+      }
+      return values[target];
+    }
+
     function renderMain() {
       const pages = Math.max(1, Math.ceil((state.totalRows || 0) / state.pageSize));
       const start = state.totalRows ? (state.page - 1) * state.pageSize : 0;
@@ -2080,16 +2301,31 @@
       const result = labels.map((label) => {
         const row = { Statistic: translate(label) };
         columns.forEach((column) => {
-          const values = rows.map((item) => parseNumber(item[column])).filter((value) => value !== null).sort((a, b) => a - b);
+          const values = [];
+          let sum = 0;
+          let minimum = Infinity;
+          let maximum = -Infinity;
+          rows.forEach((item) => {
+            const value = parseNumber(item[column]);
+            if (value === null) return;
+            values.push(value);
+            sum += value;
+            minimum = Math.min(minimum, value);
+            maximum = Math.max(maximum, value);
+          });
           let value = null;
           if (values.length) {
-            if (label === "average") value = values.reduce((sum, item) => sum + item, 0) / values.length;
+            if (label === "average") value = sum / values.length;
             if (label === "median") {
-              const middle = Math.floor(values.length / 2);
-              value = values.length % 2 ? values[middle] : (values[middle - 1] + values[middle]) / 2;
+              const orderedValues = [...values];
+              const upperMiddle = Math.floor(values.length / 2);
+              const upper = selectKth(orderedValues, upperMiddle);
+              value = values.length % 2
+                ? upper
+                : (selectKth(orderedValues, upperMiddle - 1) + upper) / 2;
             }
-            if (label === "minimum") value = values[0];
-            if (label === "maximum") value = values[values.length - 1];
+            if (label === "minimum") value = minimum;
+            if (label === "maximum") value = maximum;
           }
           row[column] = value;
         });
@@ -2540,6 +2776,13 @@
       });
     }
 
+    function recommendationFilterKey() {
+      return JSON.stringify(["BREED", "PLUS", "STUD"].map((column) => [
+        column,
+        [...(state.filters.get(column) || [])].sort()
+      ]));
+    }
+
     function percentileScore(value, sortedValues, higherIsBetter) {
       if (value === null || !sortedValues.length) return null;
       let low = 0;
@@ -2635,26 +2878,127 @@
       });
     }
 
+    function sharedGrandparents(first, second) {
+      const firstNames = knownPedigreeGrandparents(first);
+      const secondKeys = new Set([...knownPedigreeGrandparents(second)].map(sireNameKey).filter(Boolean));
+      return [...firstNames].filter((name) => secondKeys.has(sireNameKey(name)));
+    }
+
+    function relatedSireInfo(row, rows) {
+      const sireKey = sireNameKey(row.Sire);
+      const sharedSires = sireKey
+        ? rows.filter((other) => other !== row && sireNameKey(other.Sire) === sireKey)
+        : [];
+      const sharedGrandparentNames = new Set();
+      rows.forEach((other) => {
+        if (other === row) return;
+        sharedGrandparents(row, other).forEach((name) => sharedGrandparentNames.add(name));
+      });
+      return {
+        sibling: sharedSires.length > 0,
+        sharedSire: sharedSires.length ? text(row.Sire) : "",
+        sharedGrandparents: [...sharedGrandparentNames]
+      };
+    }
+
+    function renderRelatedPedigrees(rows) {
+      const select = $("relatedMgsSelect");
+      const mgsOptions = [...new Map(rows
+        .map((row) => text(row.MGS))
+        .filter(Boolean)
+        .map((name) => [sireNameKey(name), name])).values()];
+      const options = [new Option(translate("relatedMgsAll"), "all")];
+      mgsOptions.forEach((name) => options.push(new Option(name, name)));
+      select.replaceChildren(...options);
+      if (state.relatedMgs !== "all" && !mgsOptions.some((name) => sireNameKey(name) === sireNameKey(state.relatedMgs))) {
+        state.relatedMgs = "all";
+      }
+      select.value = state.relatedMgs === "all"
+        ? "all"
+        : (mgsOptions.find((name) => sireNameKey(name) === sireNameKey(state.relatedMgs)) || "all");
+
+      const seedRows = state.relatedMgs === "all"
+        ? rows
+        : rows.filter((row) => sireNameKey(row.MGS) === sireNameKey(state.relatedMgs));
+      const relatedRows = rows.filter((row) => seedRows.some((seed) => {
+        if (seed === row) return true;
+        return sireNameKey(row.Sire) && sireNameKey(row.Sire) === sireNameKey(seed.Sire)
+          || sharedGrandparents(row, seed).length > 0;
+      }));
+      const cards = relatedRows.filter((row) => {
+        const info = relatedSireInfo(row, relatedRows);
+        return info.sibling || info.sharedGrandparents.length > 0;
+      });
+      const grid = $("relatedPedigreeWrap");
+      grid.replaceChildren();
+      if (!cards.length) {
+        const empty = document.createElement("div");
+        empty.className = "analysis-prompt";
+        empty.textContent = translate("noRelatedPedigree");
+        grid.appendChild(empty);
+        return;
+      }
+      cards.forEach((row) => {
+        const info = relatedSireInfo(row, cards);
+        const card = document.createElement("article");
+        card.className = "cross-pedigree-card";
+        const title = document.createElement("h3");
+        title.textContent = text(row["Sire Name"]) || text(row["NAAB Code"]);
+        const meta = document.createElement("div");
+        meta.className = "cross-pedigree-card-meta";
+        [row["NAAB Code"], row.STUD].filter((value) => text(value)).forEach((value) => {
+          const item = document.createElement("span");
+          item.textContent = text(value);
+          meta.appendChild(item);
+        });
+        if (info.sibling) {
+          const relation = document.createElement("span");
+          relation.textContent = `${translate("siblingRelation")} · ${translate("relationSharedSire")}: ${info.sharedSire}`;
+          meta.appendChild(relation);
+        }
+        if (info.sharedGrandparents.length) {
+          const relation = document.createElement("span");
+          relation.textContent = `${translate("relatedRelation")} · ${translate("relationSharedGrandparents", { names: info.sharedGrandparents.join(", ") })}`;
+          meta.appendChild(relation);
+        }
+        card.append(title, meta, buildPedigreeTree(row, false));
+        grid.appendChild(card);
+      });
+    }
+
     function renderAll() {
       closePedigreePopover();
       updateFilterButtons();
-      const rows = getFilteredRows();
       renderMain();
+      const renderAnalysisLoading = (element, key) => {
+        element.innerHTML = `<div class="analysis-loading" role="status"><span class="analysis-spinner" aria-hidden="true"></span><span>${escapeHTML(translate(key))}</span></div>`;
+      };
       if (!state.analysisRows) {
-        const prompt = state.analysisLoading
-          ? `<div class="analysis-loading" role="status"><span class="analysis-spinner" aria-hidden="true"></span><span>${escapeHTML(translate("analysisLoading"))}</span></div>`
-          : `<div class="analysis-prompt">${escapeHTML(translate(state.analysisFailed ? "analysisFailed" : "analysisLoading"))}</div>`;
-        $("statsTableWrap").innerHTML = prompt;
-        $("studTableWrap").innerHTML = prompt;
-        $("suggestTableWrap").innerHTML = prompt;
-        $("crossPedigreeWrap").innerHTML = prompt;
+        const key = state.analysisFailed ? "analysisFailed" : "analysisDataLoading";
+        const markup = state.analysisFailed
+          ? `<div class="analysis-prompt">${escapeHTML(translate(key))}</div>`
+          : `<div class="analysis-loading" role="status"><span class="analysis-spinner" aria-hidden="true"></span><span>${escapeHTML(translate(key))}</span></div>`;
+        ["statsTableWrap", "studTableWrap", "suggestTableWrap", "crossPedigreeWrap", "relatedPedigreeWrap"]
+          .forEach((id) => { $(id).innerHTML = markup; });
         return;
       }
-      renderStats(rows);
-      renderStud(rows);
-      const suggestions = getBalancedSuggestionRows(Math.max(state.suggestionLimit, 15));
-      renderSuggestions(suggestions.slice(0, state.suggestionLimit));
-      renderCrossPedigree(suggestions.slice(0, 15));
+      const rows = getFilteredRows();
+      if (state.analysisStage >= 1) renderStats(rows);
+      else renderAnalysisLoading($("statsTableWrap"), "summaryLoading");
+      if (state.analysisStage >= 2) renderStud(rows);
+      else renderAnalysisLoading($("studTableWrap"), "studRankingLoading");
+      if (state.analysisStage >= 3) {
+        const filterKey = recommendationFilterKey();
+        if (state.suggestionFilterKey !== filterKey) {
+          state.suggestionRows = getBalancedSuggestionRows(Math.max(state.suggestionLimit, 15));
+          state.suggestionFilterKey = filterKey;
+        }
+        renderSuggestions(state.suggestionRows.slice(0, state.suggestionLimit));
+      } else renderAnalysisLoading($("suggestTableWrap"), "suggestionsLoading");
+      if (state.analysisStage >= 4) renderCrossPedigree(state.suggestionRows.slice(0, 15));
+      else renderAnalysisLoading($("crossPedigreeWrap"), "pedigreeLoading");
+      if (state.analysisStage >= 5) renderRelatedPedigrees(state.suggestionRows.slice(0, 15));
+      else renderAnalysisLoading($("relatedPedigreeWrap"), "relativesLoading");
     }
 
     function resetFilters() {
@@ -2713,6 +3057,10 @@
     $("crossPedigreeSelect").addEventListener("change", (event) => {
       state.crossPedigreeCode = event.target.value || "all";
       if (state.analysisRows) renderCrossPedigree(getBalancedSuggestionRows(15));
+    });
+    $("relatedMgsSelect").addEventListener("change", (event) => {
+      state.relatedMgs = event.target.value || "all";
+      if (state.analysisRows) renderRelatedPedigrees(getBalancedSuggestionRows(15));
     });
     ["searchCodeName", "searchPedigree"].forEach((id) => {
       $(id).addEventListener("input", () => {
