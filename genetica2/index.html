@@ -1019,6 +1019,7 @@
       analysisRows: null,
       analysisLoading: false,
       analysisRequest: 0,
+      analysisObserver: null,
       suggestionLimit: 5,
       sort: null,
       filterOptions: new Map(),
@@ -1387,6 +1388,8 @@
       state.analysisRows = null;
       state.analysisRequest += 1;
       state.analysisLoading = false;
+      state.analysisObserver?.disconnect();
+      state.analysisObserver = null;
       $("loadAnalysis").disabled = false;
       state.rows = [];
       state.isComplete = false;
@@ -1413,6 +1416,7 @@
           buildFilters();
         }
         await loadPage(1, { initialize: true });
+        observeAnalysisWhenVisible();
       } catch (error) {
         console.error("Google Sheet initialization failed:", error);
         window.clearTimeout(state.loadingTimer);
@@ -1423,17 +1427,44 @@
       }
     }
 
+    function observeAnalysisWhenVisible() {
+      if (state.analysisRows || state.analysisObserver) return;
+      const sections = ["statsTitle", "studTitle", "suggestTitle"]
+        .map((id) => $(id).closest(".section"))
+        .filter(Boolean);
+      if (!sections.length) return;
+      if (!("IntersectionObserver" in window)) {
+        loadAnalysisRows();
+        return;
+      }
+      state.analysisObserver = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          state.analysisObserver.disconnect();
+          state.analysisObserver = null;
+          loadAnalysisRows();
+        }
+      }, { rootMargin: "160px" });
+      sections.forEach((section) => state.analysisObserver.observe(section));
+    }
+
     async function loadAnalysisRows() {
       if (state.analysisRows || state.analysisLoading || !state.columns.length) return;
       state.analysisLoading = true;
       const requestId = ++state.analysisRequest;
       window.clearTimeout(state.progressTimer);
+      window.clearTimeout(state.loadingTimer);
       $("loadAnalysis").disabled = true;
       setStatus("analysesLoading");
       setProgress("loading", "analysesLoading");
+      state.loadingTimer = window.setTimeout(() => {
+        if (requestId !== state.analysisRequest) return;
+        setStatus("overTenSeconds");
+        setProgress("loading", "progressOverTenSeconds");
+      }, 10000);
       try {
         const complete = parseSheetResponse(await jsonpSheetRequest());
         if (requestId !== state.analysisRequest) return;
+        window.clearTimeout(state.loadingTimer);
         state.analysisRows = complete.rows;
         state.rows = complete.rows;
         state.isComplete = true;
@@ -1447,12 +1478,14 @@
         state.progressTimer = window.setTimeout(hideProgress, 1200);
       } catch (error) {
         if (requestId !== state.analysisRequest) return;
+        window.clearTimeout(state.loadingTimer);
         console.error("Google Sheet analysis load failed:", error);
         const connectionError = describeConnectionError(error, state.pageRows.length > 0);
         setStatus(connectionError.key, true, connectionError.vars);
         hideProgress();
       } finally {
         if (requestId === state.analysisRequest) {
+          window.clearTimeout(state.loadingTimer);
           state.analysisLoading = false;
           $("loadAnalysis").disabled = Boolean(state.analysisRows);
         }
