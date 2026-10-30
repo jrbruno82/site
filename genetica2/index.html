@@ -324,7 +324,62 @@
       color: var(--orange-dark);
       background: #fff;
     }
+    .page-numbers { display: flex; flex-wrap: wrap; gap: 5px; }
+    .page-numbers button {
+      min-width: 34px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--orange-dark);
+      background: #fff;
+    }
+    .page-numbers button[aria-current="page"] {
+      border-color: var(--orange);
+      color: #fff;
+      background: var(--orange);
+      font-weight: 700;
+    }
+    .page-numbers button:disabled { border-color: transparent; background: transparent; cursor: default; }
     .pager-controls button:disabled { opacity: .45; cursor: default; }
+    .suggestion-tools {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 7px;
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .analysis-tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fffaf6;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .analysis-tools p { margin: 0; }
+    .analysis-prompt {
+      padding: 18px;
+      border: 1px dashed var(--line);
+      border-radius: 6px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .suggestion-tools select {
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--ink);
+      background: #fff;
+    }
 
     .summary-table { min-width: 700px; }
     .summary-table th:first-child, .summary-table td:first-child {
@@ -618,6 +673,7 @@
         <span id="pageInfo"></span>
         <div class="pager-controls">
           <button type="button" id="prev" aria-label="Página anterior">Anterior</button>
+          <div class="page-numbers" id="pageNumbers" aria-label="Páginas"></div>
           <button type="button" id="next" aria-label="Próxima página">Próxima</button>
         </div>
       </div>
@@ -625,6 +681,10 @@
 
     <section class="section" aria-labelledby="statsTitle">
       <h2 id="statsTitle">Resumo numérico filtrado</h2>
+      <div class="analysis-tools">
+        <p id="analysisPrompt"></p>
+        <button class="action secondary" id="loadAnalysis" type="button">Carregar análises completas</button>
+      </div>
       <div class="table-scroll" id="statsTableWrap"></div>
     </section>
 
@@ -635,6 +695,14 @@
       </section>
       <section class="section" aria-labelledby="suggestTitle">
         <h2 id="suggestTitle">Top 5 sugestões equilibradas de touros</h2>
+        <div class="suggestion-tools">
+          <label id="suggestionCountLabel" for="suggestionCount">Quantidade de sugestões</label>
+          <select id="suggestionCount">
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+          </select>
+        </div>
         <div class="table-scroll" id="suggestTableWrap"></div>
         <p class="footnote" id="suggestFootnote">As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).</p>
       </section>
@@ -668,11 +736,6 @@
       ["DWP$", -1], ["GNM$", -1], ["GPTAM", -1], ["GPTAF", -1], ["GPTAP", -1],
       ["GDPR", -1], ["GSCS", 1], ["GPL", -1], ["GWT$", -1], ["GZMAS", -1], ["GZMET", -1]
     ];
-    const PRIORITY_QUERY = [
-      "select A,B,C,D,E,F,H,I,J,K,L,M,P,Q,G,U,V,W,X",
-      "order by F desc,H desc,I desc,J desc,K desc,M desc,P asc,Q desc,G desc,U desc,V desc",
-      "limit 15"
-    ].join(" ");
     const I18N = {
       pt: {
         pageTitle: "Touros disponíveis – CDCB - AGO 2026 – RB",
@@ -688,11 +751,23 @@
         progressAria: "Carregamento de dados do Google Sheets",
         available: "Touros disponíveis",
         rowsPerPage: "Linhas por página",
+        suggestionCount: "Quantidade de sugestões",
+        pageNumbers: "Páginas",
+        pageEllipsis: "Mais páginas",
+        loadingPage: "Carregando página {page}...",
+        pageLoaded: "Página {page} carregada.",
+        countFailed: "Não foi possível contar os registros da planilha.",
+        noPageData: "Não há touros nesta página.",
+        analysesLoading: "Carregando as análises completas solicitadas...",
+        analysesReady: "Análises completas carregadas.",
+        loadAnalysis: "Carregar análises completas",
+        analysisPrompt: "Resumo, rankings e sugestões consideram todos os registros. Carregue as análises quando precisar; a listagem principal continua paginada.",
+        filterOptionsError: "Falha ao carregar as opções do filtro: {error}",
         previous: "Anterior",
         next: "Próxima",
         stats: "Resumo numérico filtrado",
         topStud: "Top 2 por central",
-        suggestions: "Top 5 sugestões equilibradas de touros",
+        suggestions: "Top {count} sugestões equilibradas de touros",
         suggestionNote: "As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).",
         pedigreePopoverLabel: "Árvore genealógica do touro",
         pedigreeHover: "Passe o mouse ou foque para consultar a árvore genealógica",
@@ -768,11 +843,23 @@
         progressAria: "Google Sheets data loading",
         available: "Available Sires",
         rowsPerPage: "Rows per page",
+        suggestionCount: "Number of suggestions",
+        pageNumbers: "Pages",
+        pageEllipsis: "More pages",
+        loadingPage: "Loading page {page}...",
+        pageLoaded: "Page {page} loaded.",
+        countFailed: "Could not count the spreadsheet records.",
+        noPageData: "There are no sires on this page.",
+        analysesLoading: "Loading the requested full analyses...",
+        analysesReady: "Full analyses loaded.",
+        loadAnalysis: "Load full analyses",
+        analysisPrompt: "Summary, rankings, and suggestions use all records. Load the analysis when needed; the main list remains paginated.",
+        filterOptionsError: "Could not load filter options: {error}",
         previous: "Previous",
         next: "Next",
         stats: "Filtered Numerical Summary",
         topStud: "Top 2 by Stud",
-        suggestions: "Top 5 Balanced Sire Suggestions",
+        suggestions: "Top {count} Balanced Sire Suggestions",
         suggestionNote: "Suggestions use the Breed, Plus, and Stud filters and balance percentile ranks across DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL, and GSCS (lower GSCS is preferred).",
         pedigreePopoverLabel: "Sire pedigree",
         pedigreeHover: "Hover or focus to view the pedigree",
@@ -840,11 +927,23 @@
         progressAria: "Carga de datos de Google Sheets",
         available: "Sementales disponibles",
         rowsPerPage: "Filas por página",
+        suggestionCount: "Número de sugerencias",
+        pageNumbers: "Páginas",
+        pageEllipsis: "Más páginas",
+        loadingPage: "Cargando la página {page}...",
+        pageLoaded: "Página {page} cargada.",
+        countFailed: "No se pudieron contar los registros de la hoja.",
+        noPageData: "No hay sementales en esta página.",
+        analysesLoading: "Cargando los análisis completos solicitados...",
+        analysesReady: "Análisis completos cargados.",
+        loadAnalysis: "Cargar análisis completos",
+        analysisPrompt: "El resumen, los rankings y las sugerencias usan todos los registros. Cargue el análisis cuando lo necesite; la lista principal seguirá paginada.",
+        filterOptionsError: "No se pudieron cargar las opciones del filtro: {error}",
         previous: "Anterior",
         next: "Siguiente",
         stats: "Resumen numérico filtrado",
         topStud: "Los 2 mejores por centro",
-        suggestions: "5 mejores sugerencias equilibradas",
+        suggestions: "Top {count} mejores sugerencias equilibradas",
         suggestionNote: "Las sugerencias usan los filtros de raza, Plus y centro y equilibran percentiles de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL y GSCS (se prefiere un GSCS menor).",
         pedigreePopoverLabel: "Árbol genealógico del semental",
         pedigreeHover: "Pase el cursor o enfoque para consultar el árbol genealógico",
@@ -905,10 +1004,22 @@
     };
     const state = {
       columns: [],
+      columnIds: {},
       rows: [],
       filters: new Map(),
       page: 1,
       pageSize: 15,
+      totalRows: null,
+      pageRows: [],
+      pageCache: new Map(),
+      pageRequest: 0,
+      countKey: "",
+      filterOptionRequests: new Map(),
+      searchTimer: null,
+      analysisRows: null,
+      analysisLoading: false,
+      analysisRequest: 0,
+      suggestionLimit: 5,
       sort: null,
       filterOptions: new Map(),
       isComplete: false,
@@ -917,6 +1028,9 @@
       language: "pt",
       siresByName: new Map(),
       siresByCode: new Map(),
+      ancestorLookupRequests: new Map(),
+      ancestorLookupFailures: new Set(),
+      ancestorLookupRequestId: 0,
       popoverHideTimer: null,
       pinnedCode: "",
       activePedigreeCode: "",
@@ -961,14 +1075,18 @@
       $("progressTrack").setAttribute("aria-label", translate("progressAria"));
       $("availableTitle").textContent = translate("available");
       $("pageSizeLabel").textContent = translate("rowsPerPage");
+      $("suggestionCountLabel").textContent = translate("suggestionCount");
+      $("pageNumbers").setAttribute("aria-label", translate("pageNumbers"));
       $("prev").textContent = translate("previous");
       $("prev").setAttribute("aria-label", translate("previous"));
       $("next").textContent = translate("next");
       $("next").setAttribute("aria-label", translate("next"));
       $("statsTitle").textContent = translate("stats");
       $("studTitle").textContent = translate("topStud");
-      $("suggestTitle").textContent = translate("suggestions");
+      $("suggestTitle").textContent = translate("suggestions", { count: state.suggestionLimit });
       $("suggestFootnote").textContent = translate("suggestionNote");
+      $("analysisPrompt").textContent = translate("analysisPrompt");
+      $("loadAnalysis").textContent = translate("loadAnalysis");
       $("pedigreePopover").setAttribute("aria-label", translate("pedigreePopoverLabel"));
       if (state.activePedigreeCode) closePedigreePopover();
       $("today").textContent = new Intl.DateTimeFormat(languageLocale(), { dateStyle: "long" }).format(new Date());
@@ -1085,6 +1203,10 @@
       const table = response.table;
       const columns = table.cols.map((column) => text(column.label || column.id));
       if (!columns.length) throw new Error("No column headers were found in the selected tab.");
+      const columnIds = Object.fromEntries(table.cols.map((column, index) => [
+        text(column.label || column.id),
+        text(column.id || String.fromCharCode(65 + index))
+      ]));
       const rows = table.rows.map((row) => {
         const item = {};
         columns.forEach((column, index) => {
@@ -1092,7 +1214,74 @@
         });
         return item;
       }).filter((row) => Object.values(row).some((value) => text(value) !== ""));
-      return { columns, rows };
+      return { columns, columnIds, rows };
+    }
+
+    function queryWhereClause() {
+      const conditions = [];
+      for (const [column, selected] of state.filters) {
+        const id = state.columnIds[column];
+        if (!id) continue;
+        const clauses = [...selected].map((value) => {
+          if (NUMERIC_COLUMNS.includes(column) && parseNumber(value) !== null) return `${id} = ${parseNumber(value)}`;
+          return `${id} = '${text(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`;
+        });
+        if (clauses.length) conditions.push(`(${clauses.join(" or ")})`);
+      }
+
+      const codeNameTokens = commaTokens($("searchCodeName").value);
+      if (codeNameTokens.length) {
+        const columns = ["NAAB Code", "Sire Name"].map((column) => state.columnIds[column]).filter(Boolean);
+        const clauses = codeNameTokens.flatMap((token) => columns.map((id) =>
+          `${id} contains '${token.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
+        ));
+        if (clauses.length) conditions.push(`(${clauses.join(" or ")})`);
+      }
+
+      const pedigreeTokens = commaTokens($("searchPedigree").value);
+      if (pedigreeTokens.length) {
+        const columns = ["Sire", "MGS"].map((column) => state.columnIds[column]).filter(Boolean);
+        const clauses = pedigreeTokens.flatMap((token) => columns.map((id) =>
+          `${id} contains '${token.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
+        ));
+        if (clauses.length) conditions.push(`(${clauses.join(" or ")})`);
+      }
+      return conditions.join(" and ");
+    }
+
+    function queryOrderBy() {
+      const sortList = state.sort ? [state.sort] : DEFAULT_SORT;
+      return sortList
+        .map(([column, direction]) => state.columnIds[column] ? `${state.columnIds[column]} ${direction < 0 ? "desc" : "asc"}` : "")
+        .filter(Boolean)
+        .join(",");
+    }
+
+    function buildSheetQuery({ count = false, page = 1, pageSize = state.pageSize } = {}) {
+      const conditions = queryWhereClause();
+      const queryParts = [];
+      if (count) {
+        const id = state.columnIds.BREED || state.columnIds["NAAB Code"] || "A";
+        queryParts.push(`select count(${id})`);
+      }
+      if (conditions) queryParts.push(`where ${conditions}`);
+      if (!count) {
+        const order = queryOrderBy();
+        if (order) queryParts.push(`order by ${order}`);
+        const offset = (page - 1) * pageSize;
+        queryParts.push(`limit ${pageSize} offset ${offset}`);
+      } else {
+        const id = state.columnIds.BREED || state.columnIds["NAAB Code"] || "A";
+        queryParts.push(`label count(${id}) 'total'`);
+      }
+      return queryParts.join(" ");
+    }
+
+    function responseCount(response) {
+      const parsed = parseSheetResponse(response);
+      const count = parseNumber(parsed.rows[0]?.total);
+      if (count === null) throw new Error(translate("countFailed"));
+      return count;
     }
 
     function describeConnectionError(error, hasPriorityRows) {
@@ -1108,63 +1297,165 @@
       return { key: "loadError", vars: { error: error.message } };
     }
 
-    async function loadSheet() {
+    function currentFilterKey() {
+      return JSON.stringify({
+        filters: [...state.filters].map(([column, values]) => [column, [...values].sort()]).sort(),
+        codeName: $("searchCodeName").value.trim(),
+        pedigree: $("searchPedigree").value.trim()
+      });
+    }
+
+    function currentQueryKey() {
+      return JSON.stringify({
+        filters: currentFilterKey(),
+        sort: state.sort,
+        pageSize: state.pageSize
+      });
+    }
+
+    async function loadPage(page = 1, { initialize = false } = {}) {
+      if (!state.columnIds || !Object.keys(state.columnIds).length) initialize = true;
+      const requestId = ++state.pageRequest;
+      const key = currentQueryKey();
+      const filterKey = currentFilterKey();
+      const cacheKey = `${key}:${page}`;
+      const pageSize = state.pageSize;
+      state.page = page;
       $("refresh").disabled = true;
       window.clearTimeout(state.progressTimer);
       window.clearTimeout(state.loadingTimer);
-      setProgress("loading", "loadingPriority");
-      setStatus(state.isComplete ? "loadingRefresh" : "loadingInitial");
-      const loadPreview = !state.isComplete;
-      let completedRows = 0;
+      setProgress("loading", "loadingPage", { page });
+      setStatus(initialize ? "loadingInitial" : "loadingPage", false, { page });
       state.loadingTimer = window.setTimeout(() => {
+        if (requestId !== state.pageRequest) return;
         setStatus("overTenSeconds");
         setProgress("loading", "progressOverTenSeconds");
       }, 10000);
+
       try {
-        if (loadPreview) {
-          try {
-            const preview = parseSheetResponse(await jsonpSheetRequest(PRIORITY_QUERY));
-            state.columns = preview.columns;
-            state.rows = preview.rows;
-            completedRows = preview.rows.length;
-            state.page = 1;
-            renderMain(getFilteredRows());
-            setProgress("half", "previewProgress");
-            setStatus("previewStatus");
-          } catch (previewError) {
-            console.warn("Prioritized preview unavailable; loading the complete sheet directly:", previewError);
-            if (previewError.message === "NETWORK_ERROR") throw previewError;
-            setProgress("loading", "previewFailedProgress");
-            setStatus("previewFailedStatus");
+        let result = state.pageCache.get(cacheKey);
+        if (!result) {
+          const response = await jsonpSheetRequest(buildSheetQuery({ page, pageSize }));
+          result = parseSheetResponse(response);
+          if (requestId !== state.pageRequest) return;
+          if (!state.columns.length) {
+            state.columns = result.columns;
+            state.columnIds = result.columnIds;
+            buildFilters();
           }
+          state.pageCache.set(cacheKey, result.rows);
         }
-        if (loadPreview) {
-          setProgress("loading", "loadingAll");
-        } else {
-          setProgress("loading", "refreshingAll");
+        if (requestId !== state.pageRequest) return;
+        state.pageRows = result.rows || state.pageCache.get(cacheKey);
+        state.rows = state.analysisRows || state.pageRows;
+        if (!state.analysisRows) indexSiresByName(state.pageRows);
+        const needsCount = state.totalRows === null || state.countKey !== filterKey;
+        if (needsCount) {
+          state.countKey = filterKey;
+          state.totalRows = null;
         }
-        const complete = parseSheetResponse(await jsonpSheetRequest());
-        state.columns = complete.columns;
-        state.rows = complete.rows;
-        state.isComplete = true;
-        indexSiresByName(state.rows);
-        completedRows = complete.rows.length;
-        state.filterOptions.clear();
-        state.page = 1;
-        buildFilters();
+        renderAll();
+        if (needsCount) {
+          const count = responseCount(await jsonpSheetRequest(buildSheetQuery({ count: true })));
+          if (requestId !== state.pageRequest) return;
+          state.totalRows = count;
+        }
         renderAll();
         window.clearTimeout(state.loadingTimer);
-        setStatus("loaded", false, { count: state.rows.length });
+        setStatus("pageLoaded", false, { page, count: state.totalRows.toLocaleString(languageLocale()) });
         setProgress("done", "progressDone");
-        state.progressTimer = window.setTimeout(hideProgress, 1800);
+        state.progressTimer = window.setTimeout(hideProgress, 1200);
       } catch (error) {
-        console.error("Google Sheet load failed:", error);
+        console.error("Google Sheet page load failed:", error);
         window.clearTimeout(state.loadingTimer);
-        const connectionError = describeConnectionError(error, completedRows > 0);
+        const connectionError = describeConnectionError(error, state.pageRows.length > 0);
         setStatus(connectionError.key, true, connectionError.vars);
         hideProgress();
       } finally {
+        if (requestId === state.pageRequest) $("refresh").disabled = false;
+      }
+    }
+
+    async function loadSheet() {
+      $("refresh").disabled = true;
+      window.clearTimeout(state.progressTimer);
+      state.pageCache.clear();
+      state.totalRows = null;
+      state.countKey = "";
+      state.pageRows = [];
+      state.page = 1;
+      state.analysisRows = null;
+      state.analysisRequest += 1;
+      state.analysisLoading = false;
+      $("loadAnalysis").disabled = false;
+      state.rows = [];
+      state.isComplete = false;
+      state.filterOptions.clear();
+      state.filterOptionRequests.clear();
+      state.siresByName.clear();
+      state.siresByCode.clear();
+      state.ancestorLookupRequests.clear();
+      state.ancestorLookupFailures.clear();
+      state.ancestorLookupRequestId += 1;
+      $("loadAnalysis").hidden = false;
+      try {
+        if (!Object.keys(state.columnIds).length) {
+          setProgress("loading", "loadingInitial");
+          setStatus("loadingInitial");
+          state.loadingTimer = window.setTimeout(() => {
+            setStatus("overTenSeconds");
+            setProgress("loading", "progressOverTenSeconds");
+          }, 10000);
+          const schema = parseSheetResponse(await jsonpSheetRequest("limit 1"));
+          window.clearTimeout(state.loadingTimer);
+          state.columns = schema.columns;
+          state.columnIds = schema.columnIds;
+          buildFilters();
+        }
+        await loadPage(1, { initialize: true });
+      } catch (error) {
+        console.error("Google Sheet initialization failed:", error);
+        window.clearTimeout(state.loadingTimer);
+        const connectionError = describeConnectionError(error, false);
+        setStatus(connectionError.key, true, connectionError.vars);
+        hideProgress();
         $("refresh").disabled = false;
+      }
+    }
+
+    async function loadAnalysisRows() {
+      if (state.analysisRows || state.analysisLoading || !state.columns.length) return;
+      state.analysisLoading = true;
+      const requestId = ++state.analysisRequest;
+      window.clearTimeout(state.progressTimer);
+      $("loadAnalysis").disabled = true;
+      setStatus("analysesLoading");
+      setProgress("loading", "analysesLoading");
+      try {
+        const complete = parseSheetResponse(await jsonpSheetRequest());
+        if (requestId !== state.analysisRequest) return;
+        state.analysisRows = complete.rows;
+        state.rows = complete.rows;
+        state.isComplete = true;
+        indexSiresByName(complete.rows);
+        state.filterOptions.clear();
+        buildFilters();
+        renderAll();
+        $("loadAnalysis").hidden = true;
+        setStatus("analysesReady");
+        setProgress("done", "progressDone");
+        state.progressTimer = window.setTimeout(hideProgress, 1200);
+      } catch (error) {
+        if (requestId !== state.analysisRequest) return;
+        console.error("Google Sheet analysis load failed:", error);
+        const connectionError = describeConnectionError(error, state.pageRows.length > 0);
+        setStatus(connectionError.key, true, connectionError.vars);
+        hideProgress();
+      } finally {
+        if (requestId === state.analysisRequest) {
+          state.analysisLoading = false;
+          $("loadAnalysis").disabled = Boolean(state.analysisRows);
+        }
       }
     }
 
@@ -1172,9 +1463,9 @@
       return text(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase().replace(/\s+/g, " ");
     }
 
-    function indexSiresByName(rows) {
-      const byName = new Map();
-      const byCode = new Map();
+    function indexSiresByName(rows, replace = false) {
+      const byName = replace ? new Map() : new Map(state.siresByName);
+      const byCode = replace ? new Map() : new Map(state.siresByCode);
       rows.forEach((row) => {
         const key = sireNameKey(row["Sire Name"]);
         if (key) {
@@ -1193,6 +1484,36 @@
       const sameBreed = matches.find((row) => text(row.BREED) === text(breed) && text(row["NAAB Code"]));
       const anyBreed = matches.find((row) => text(row["NAAB Code"]));
       return sameBreed || anyBreed || null;
+    }
+
+    function lookupPedigreeAncestor(name, breed, subjectCode) {
+      const key = `${sireNameKey(name)}|${text(breed)}`;
+      if (!name || state.ancestorLookupFailures.has(key) || state.ancestorLookupRequests.has(key)) return;
+      const columnId = state.columnIds["Sire Name"];
+      if (!columnId) return;
+      const escapedName = text(name).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+      const requestId = state.ancestorLookupRequestId;
+      const request = (async () => {
+        const response = await jsonpSheetRequest(`where ${columnId} = '${escapedName}' limit 10`);
+        if (requestId !== state.ancestorLookupRequestId) return;
+        const matches = parseSheetResponse(response).rows;
+        if (matches.length) indexSiresByName(matches);
+        else state.ancestorLookupFailures.add(key);
+        if (state.activePedigreeCode === subjectCode && !$("pedigreePopover").hidden) {
+          const subject = state.siresByCode.get(subjectCode);
+          if (subject) renderPedigreePopover(subject);
+        }
+      })();
+      state.ancestorLookupRequests.set(key, request);
+      request.catch((error) => {
+        if (requestId !== state.ancestorLookupRequestId) return;
+        console.error(`Could not resolve pedigree ancestor ${name}:`, error);
+        state.ancestorLookupFailures.add(key);
+        const connectionError = describeConnectionError(error, true);
+        setStatus(connectionError.key, true, connectionError.vars);
+      }).finally(() => {
+        if (state.ancestorLookupRequests.get(key) === request) state.ancestorLookupRequests.delete(key);
+      });
     }
 
     function columnExists(column) {
@@ -1246,6 +1567,7 @@
           popup.hidden = false;
           button.setAttribute("aria-expanded", "true");
           renderFilterOptions(column, options, search.value);
+          loadFilterOptions(column, options, search.value);
           search.focus();
         }
       });
@@ -1263,10 +1585,39 @@
 
     function valuesForFilter(column) {
       if (state.filterOptions.has(column)) return state.filterOptions.get(column);
-      const values = [...new Set(state.rows.map((row) => text(row[column])).filter(Boolean))]
+      const sourceRows = state.analysisRows || state.pageRows;
+      const values = [...new Set(sourceRows.map((row) => text(row[column])).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
-      state.filterOptions.set(column, values);
+      if (state.analysisRows) state.filterOptions.set(column, values);
       return values;
+    }
+
+    async function loadFilterOptions(column, target, query) {
+      if (state.filterOptions.has(column) || state.filterOptionRequests.has(column)) {
+        await state.filterOptionRequests.get(column);
+        if (!target.closest(".filter-popup")?.hidden) renderFilterOptions(column, target, query);
+        return;
+      }
+      const id = state.columnIds[column];
+      if (!id) return;
+      const request = (async () => {
+        const response = await jsonpSheetRequest(`select ${id}, count(${id}) group by ${id} order by ${id} limit 1000 label count(${id}) 'value'`);
+        const values = parseSheetResponse(response).rows
+          .map((row) => text(row[column]))
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+        state.filterOptions.set(column, values);
+      })();
+      state.filterOptionRequests.set(column, request);
+      try {
+        await request;
+        if (!target.closest(".filter-popup")?.hidden) renderFilterOptions(column, target, query);
+      } catch (error) {
+        console.error(`Could not load filter options for ${column}:`, error);
+        setStatus("filterOptionsError", true, { error: error.message });
+      } finally {
+        state.filterOptionRequests.delete(column);
+      }
     }
 
     function renderFilterOptions(column, target, query) {
@@ -1299,7 +1650,10 @@
           state.page = 1;
           updateFilterButtons();
           closePopups();
-          renderAll();
+          state.pageCache.clear();
+          state.totalRows = null;
+          state.countKey = "";
+          loadPage(1);
         });
         label.append(checkbox, caption);
         target.appendChild(label);
@@ -1415,7 +1769,7 @@
         return `<th class="${className}"${sortable ? ` data-sort="${escapeHTML(column)}" title="${escapeHTML(translate("sortBy", { column: columnLabel(column) }))}"` : ""}>${escapeHTML(columnLabel(column))}${sortable ? sortIndicator(column) : ""}</th>`;
       }).join("")}</tr></thead>`;
       const body = rows.map((row) => `<tr>${columns.map((column) => {
-        if (column === "NAAB Code" && state.isComplete && text(row[column])) {
+        if (column === "NAAB Code" && state.columns.length && text(row[column])) {
           return `<td>${pedigreeTriggerHTML(row, text(row[column]))}</td>`;
         }
         const value = typeof row === "string" ? row : formatValue(column, row[column]);
@@ -1424,21 +1778,54 @@
       return `<table${summary ? ' class="summary-table"' : ""}>${head}<tbody>${body}</tbody></table>`;
     }
 
-    function renderMain(rows) {
-      const pages = Math.max(1, Math.ceil(rows.length / state.pageSize));
-      state.page = Math.min(state.page, pages);
-      const start = (state.page - 1) * state.pageSize;
-      const pageRows = rows.slice(start, start + state.pageSize);
+    function renderPageNumbers(pages) {
+      const root = $("pageNumbers");
+      root.replaceChildren();
+      const addPage = (page) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = page.toLocaleString(languageLocale());
+        button.dataset.page = String(page);
+        if (page === state.page) button.setAttribute("aria-current", "page");
+        root.appendChild(button);
+      };
+      const addEllipsis = () => {
+        const marker = document.createElement("span");
+        marker.className = "page-ellipsis";
+        marker.setAttribute("aria-label", translate("pageEllipsis"));
+        marker.textContent = "...";
+        root.appendChild(marker);
+      };
+      if (pages <= 9) {
+        for (let page = 1; page <= pages; page += 1) addPage(page);
+        return;
+      }
+      const visible = new Set([1, 2, 3, 4, 5, 6, 7, pages, state.page - 1, state.page, state.page + 1]);
+      if (state.page <= 4) [2, 3, 4, 5].forEach((page) => visible.add(page));
+      if (state.page >= pages - 3) [pages - 4, pages - 3, pages - 2, pages - 1].forEach((page) => visible.add(page));
+      let previous = 0;
+      [...visible].filter((page) => page >= 1 && page <= pages).sort((a, b) => a - b).forEach((page) => {
+        if (previous && page - previous > 1) addEllipsis();
+        addPage(page);
+        previous = page;
+      });
+    }
+
+    function renderMain() {
+      const pages = Math.max(1, Math.ceil((state.totalRows || 0) / state.pageSize));
+      const start = state.totalRows ? (state.page - 1) * state.pageSize : 0;
+      const pageRows = state.pageRows || [];
       $("mainTableWrap").innerHTML = tableHTML(state.columns, pageRows, { sortable: true });
-      $("pageInfo").textContent = rows.length
+      $("pageInfo").textContent = state.totalRows
         ? translate("showing", {
           start: (start + 1).toLocaleString(languageLocale()),
-          end: Math.min(start + state.pageSize, rows.length).toLocaleString(languageLocale()),
-          count: rows.length.toLocaleString(languageLocale())
+          end: Math.min(start + pageRows.length, state.totalRows).toLocaleString(languageLocale()),
+          count: state.totalRows.toLocaleString(languageLocale())
         })
         : translate("showingZero");
       $("prev").disabled = state.page <= 1;
       $("next").disabled = state.page >= pages;
+      renderPageNumbers(pages);
     }
 
     function renderStats(rows) {
@@ -1506,6 +1893,10 @@
         const codeElement = document.createElement("span");
         codeElement.className = "pedigree-code";
         codeElement.textContent = `${translate("naabCodeLabel")}: ${code || translate("codeNotFound")}`;
+        if (!knownCode && !code && text(name)) {
+          codeElement.dataset.ancestorName = text(name);
+          codeElement.dataset.ancestorBreed = text(breed);
+        }
         node.appendChild(codeElement);
       }
       return node;
@@ -1564,6 +1955,9 @@
       branches.append(paternal, maternal);
       tree.append(subject, branches);
       popover.append(header, tree);
+      popover.querySelectorAll(".pedigree-code[data-ancestor-name]").forEach((element) => {
+        lookupPedigreeAncestor(element.dataset.ancestorName, element.dataset.ancestorBreed, text(row["NAAB Code"]));
+      });
     }
 
     function positionPedigreePopover(anchor) {
@@ -1674,7 +2068,7 @@
       });
       const top = candidates.filter((item) => item.count)
         .sort((a, b) => b.score - a.score || compareRows(a.row, b.row, DEFAULT_SORT))
-        .slice(0, 5)
+        .slice(0, state.suggestionLimit)
         .map((item) => item.row);
       $("suggestTableWrap").innerHTML = tableHTML(state.columns, top);
     }
@@ -1683,7 +2077,14 @@
       closePedigreePopover();
       updateFilterButtons();
       const rows = getFilteredRows();
-      renderMain(rows);
+      renderMain();
+      if (!state.analysisRows) {
+        const prompt = `<div class="analysis-prompt">${escapeHTML(translate("analysisPrompt"))}</div>`;
+        $("statsTableWrap").innerHTML = prompt;
+        $("studTableWrap").innerHTML = prompt;
+        $("suggestTableWrap").innerHTML = prompt;
+        return;
+      }
       renderStats(rows);
       renderStud(rows);
       renderSuggestions();
@@ -1696,28 +2097,55 @@
       $("searchCodeName").value = "";
       $("searchPedigree").value = "";
       closePopups();
-      renderAll();
+      state.pageCache.clear();
+      state.totalRows = null;
+      state.countKey = "";
+      loadPage(1);
     }
 
     $("language").addEventListener("change", (event) => setLanguage(event.target.value));
     $("refresh").addEventListener("click", loadSheet);
+    $("loadAnalysis").addEventListener("click", loadAnalysisRows);
     $("resetAll").addEventListener("click", resetFilters);
     $("pageSize").addEventListener("change", (event) => {
       state.pageSize = Number(event.target.value) || 15;
       state.page = 1;
+      state.pageCache.clear();
+      loadPage(1);
+    });
+    $("prev").addEventListener("click", () => loadPage(Math.max(1, state.page - 1)));
+    $("next").addEventListener("click", () => {
+      const pages = Math.ceil((state.totalRows || 0) / state.pageSize);
+      if (state.page < pages) loadPage(state.page + 1);
+    });
+    $("pageNumbers").addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-page]");
+      if (button) loadPage(Number(button.dataset.page));
+    });
+    $("suggestionCount").addEventListener("change", (event) => {
+      state.suggestionLimit = Number(event.target.value) || 5;
+      $("suggestTitle").textContent = translate("suggestions", { count: state.suggestionLimit });
       renderAll();
     });
-    $("prev").addEventListener("click", () => { state.page = Math.max(1, state.page - 1); renderAll(); });
-    $("next").addEventListener("click", () => { state.page += 1; renderAll(); });
     ["searchCodeName", "searchPedigree"].forEach((id) => {
-      $(id).addEventListener("input", () => { state.page = 1; renderAll(); });
+      $(id).addEventListener("input", () => {
+        window.clearTimeout(state.searchTimer);
+        state.searchTimer = window.setTimeout(() => {
+          state.page = 1;
+          state.pageCache.clear();
+          state.totalRows = null;
+          state.countKey = "";
+          loadPage(1);
+        }, 300);
+      });
     });
     $("mainTableWrap").addEventListener("click", (event) => {
       const header = event.target.closest("th[data-sort]");
       if (!header) return;
       const column = header.dataset.sort;
       state.sort = [column, state.sort?.[0] === column && state.sort[1] < 0 ? 1 : -1];
-      renderAll();
+      state.pageCache.clear();
+      loadPage(1);
     });
     document.addEventListener("click", (event) => {
       if (!event.target.closest(".filter-wrap")) closePopups();
@@ -1768,7 +2196,6 @@
       if (!event.relatedTarget?.closest?.(".pedigree-trigger")) schedulePedigreePopoverHide();
     });
     window.addEventListener("scroll", closePedigreePopover, true);
-
     try {
       const savedLanguage = localStorage.getItem("dairySiresLanguage");
       if (I18N[savedLanguage]) state.language = savedLanguage;
