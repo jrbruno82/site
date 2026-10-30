@@ -70,21 +70,14 @@
       font-size: .82rem;
     }
 
-    .brand {
+    .brand-date {
       position: absolute;
       top: 20px;
       right: 30px;
       text-align: right;
       color: #fff;
+      font-size: .85rem;
     }
-
-    .brand-name {
-      font-size: 1.65rem;
-      font-weight: 800;
-      letter-spacing: .12em;
-    }
-
-    .brand-date { margin-top: 5px; font-size: .85rem; }
 
     main { max-width: 1800px; margin: 0 auto; padding: 22px 24px 44px; }
 
@@ -245,6 +238,32 @@
     }
 
     .section { margin-top: 24px; }
+    .dashboard-tabs {
+      display: flex;
+      gap: 6px;
+      margin: 0 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .dashboard-tab {
+      min-height: 42px;
+      padding: 9px 16px;
+      border: 1px solid transparent;
+      border-bottom: 3px solid transparent;
+      border-radius: 6px 6px 0 0;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 700;
+    }
+    .dashboard-tab:hover { color: var(--orange-dark); background: #fffaf6; }
+    .dashboard-tab[aria-selected="true"] {
+      border-color: var(--line);
+      border-bottom-color: var(--orange);
+      color: var(--orange-dark);
+      background: #fffaf6;
+    }
+    .dashboard-tab:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+    [role="tabpanel"][hidden] { display: none; }
+
     .section h2 {
       margin: 0 0 10px;
       color: var(--orange-dark);
@@ -343,7 +362,7 @@
     .pager-controls button:disabled { opacity: .45; cursor: default; }
     .suggestion-tools {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-start;
       align-items: center;
       gap: 7px;
       margin: 0 0 8px;
@@ -351,20 +370,6 @@
       font-size: .88rem;
     }
 
-    .analysis-tools {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: #fffaf6;
-      color: var(--muted);
-      font-size: .88rem;
-    }
-
-    .analysis-tools p { margin: 0; }
     .analysis-prompt {
       padding: 18px;
       border: 1px dashed var(--line);
@@ -372,6 +377,30 @@
       color: var(--muted);
       text-align: center;
     }
+
+    .analysis-loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      min-height: 76px;
+      padding: 18px;
+      color: var(--orange-dark);
+      text-align: center;
+    }
+
+    .analysis-spinner {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      border: 2px solid var(--line);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: analysis-spin .8s linear infinite;
+    }
+
+    @keyframes analysis-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .analysis-spinner { animation-duration: 2.4s; } }
 
     .suggestion-tools select {
       padding: 5px 8px;
@@ -393,16 +422,34 @@
     .bottom-grid { display: grid; grid-template-columns: 1fr; gap: 22px; }
     .footnote { margin: 8px 0 0; color: var(--muted); font-size: .82rem; }
 
+    .cross-pedigree-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr)); gap: 14px; }
+    .cross-pedigree-card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: #fffaf6; }
+    .cross-pedigree-card h3 { margin: 0; padding: 12px 14px 0; color: var(--orange-dark); font-size: 1rem; }
+    .cross-pedigree-card-meta { display: flex; flex-wrap: wrap; gap: 6px; padding: 7px 14px 0; color: var(--muted); font-size: .78rem; }
+    .cross-pedigree-card .pedigree-tree { padding: 12px; }
+    .cross-pedigree-card .pedigree-branches { gap: 8px; }
+    .cross-pedigree-card .pedigree-node { padding: 8px 7px; }
+    .cross-pedigree-card .pedigree-node-name { font-size: .82rem; }
+    .cross-pedigree-card .pedigree-code { font-size: .68rem; }
+    .cross-pedigree-card .pedigree-cousin-list { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+
     .pedigree-popover {
       position: fixed;
       z-index: 1000;
       width: min(560px, calc(100vw - 24px));
       max-height: min(470px, calc(100vh - 24px));
       overflow: auto;
+      overscroll-behavior: contain;
+      scroll-behavior: smooth;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: #fff;
       box-shadow: 0 16px 48px #3e241e38, 0 3px 10px #3e241e18;
+    }
+
+    .pedigree-popover:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 2px;
     }
 
     .pedigree-card-header {
@@ -414,6 +461,26 @@
       color: #fff;
       background: linear-gradient(115deg, var(--orange-dark), var(--orange));
     }
+
+    .pedigree-header-actions {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .pedigree-download {
+      flex: 0 0 auto;
+      padding: 6px 9px;
+      border: 1px solid #ffffff99;
+      border-radius: 6px;
+      color: #fff;
+      background: #ffffff1a;
+      font-size: .75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .pedigree-download:hover, .pedigree-download:focus-visible { background: #ffffff35; }
 
     .pedigree-card-title {
       margin: 0;
@@ -495,6 +562,21 @@
       background: var(--orange-soft);
     }
 
+    .pedigree-generation-parent {
+      border-color: #e8bc91;
+      background: #fff8f1;
+    }
+
+    .pedigree-generation-grandparent {
+      border-color: #d7d9c1;
+      background: #fbfcf5;
+    }
+
+    .pedigree-generation-great-grandparent {
+      border-color: #cbd9dc;
+      background: #f5fafb;
+    }
+
     .pedigree-node-label {
       display: block;
       margin-bottom: 4px;
@@ -570,6 +652,33 @@
       text-transform: uppercase;
     }
 
+    .pedigree-cousins {
+      display: grid;
+      gap: 9px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #e7c7b1;
+    }
+
+    .pedigree-cousin-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+
+    .pedigree-cousin-card {
+      padding: 9px;
+      border: 1px solid #ead3c3;
+      border-radius: 7px;
+      background: #fffaf6;
+      text-align: center;
+    }
+
+    .pedigree-cousin-card strong,
+    .pedigree-cousin-card span { display: block; overflow-wrap: anywhere; }
+    .pedigree-cousin-card strong { color: var(--ink); font-size: .82rem; }
+    .pedigree-cousin-card span { margin-top: 4px; color: var(--muted); font-size: .7rem; }
+
     .pedigree-maternal-path {
       position: relative;
       display: grid;
@@ -597,8 +706,7 @@
 
     @media (max-width: 1050px) {
       .hero { padding: 58px 20px 82px; }
-      .brand { top: auto; right: 20px; bottom: 14px; }
-      .brand-name { font-size: 1.2rem; }
+      .brand-date { top: auto; right: 20px; bottom: 14px; }
       .filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
@@ -633,13 +741,15 @@
       </select>
     </div>
     <h1 id="dashboardTitle">Touros disponíveis – CDCB - AGO 2026 – RB</h1>
-    <div class="brand" aria-label="Zoetis">
-      <div class="brand-name">ZOETIS</div>
-      <div class="brand-date" id="today"></div>
-    </div>
+    <div class="brand-date" id="today"></div>
   </header>
 
   <main>
+    <div class="dashboard-tabs" id="dashboardTabs" role="tablist" aria-label="Seções do painel">
+      <button class="dashboard-tab" id="generalTab" type="button" role="tab" aria-selected="true" aria-controls="generalPanel" tabindex="0">Geral</button>
+      <button class="dashboard-tab" id="crossPedigreeTab" type="button" role="tab" aria-selected="false" aria-controls="crossPedigreePanel" tabindex="-1">Cruzamento genealógico</button>
+    </div>
+    <section id="generalPanel" role="tabpanel" aria-labelledby="generalTab">
     <section class="toolbar" id="toolbar" aria-label="Filtros do painel">
       <div class="search-row">
         <input id="searchCodeName" type="search" placeholder="Código NAAB ou nome do touro; separe vários por vírgula" aria-label="Buscar código NAAB ou nome do touro">
@@ -681,10 +791,6 @@
 
     <section class="section" aria-labelledby="statsTitle">
       <h2 id="statsTitle">Resumo numérico filtrado</h2>
-      <div class="analysis-tools">
-        <p id="analysisPrompt"></p>
-        <button class="action secondary" id="loadAnalysis" type="button">Carregar análises completas</button>
-      </div>
       <div class="table-scroll" id="statsTableWrap"></div>
     </section>
 
@@ -707,8 +813,22 @@
         <p class="footnote" id="suggestFootnote">As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).</p>
       </section>
     </div>
+    </section>
+    <section id="crossPedigreePanel" role="tabpanel" aria-labelledby="crossPedigreeTab" hidden>
+    <section class="section" aria-labelledby="crossPedigreeTitle">
+      <h2 id="crossPedigreeTitle">Cruzamento de árvore genealógica</h2>
+      <div class="suggestion-tools">
+        <label id="crossPedigreeLabel" for="crossPedigreeSelect">Filtrar touros sugeridos</label>
+        <select id="crossPedigreeSelect" aria-label="Filtrar touros sugeridos">
+          <option value="all" selected>Todos os 15 touros</option>
+        </select>
+      </div>
+      <div class="cross-pedigree-grid" id="crossPedigreeWrap"></div>
+      <p class="footnote" id="crossPedigreeNote">Árvores dos 15 touros mais bem classificados nas sugestões equilibradas.</p>
+    </section>
+    </section>
   </main>
-  <div class="pedigree-popover" id="pedigreePopover" role="dialog" aria-label="Árvore genealógica" hidden></div>
+  <div class="pedigree-popover" id="pedigreePopover" role="dialog" tabindex="0" aria-label="Árvore genealógica" hidden></div>
 
   <script>
     "use strict";
@@ -752,16 +872,32 @@
         available: "Touros disponíveis",
         rowsPerPage: "Linhas por página",
         suggestionCount: "Quantidade de sugestões",
+        crossPedigree: "Cruzamento de árvore genealógica",
+        generalTab: "Geral",
+        crossPedigreeTab: "Cruzamento genealógico",
+        dashboardTabs: "Seções do painel",
+        crossPedigreeFilter: "Filtrar touros sugeridos",
+        crossPedigreeAll: "Todos os 15 touros",
+        crossPedigreeNote: "Árvores dos 15 touros mais bem classificados nas sugestões equilibradas.",
+        noCrossPedigree: "Nenhum touro sugerido corresponde aos filtros atuais.",
         pageNumbers: "Páginas",
         pageEllipsis: "Mais páginas",
         loadingPage: "Carregando página {page}...",
         pageLoaded: "Página {page} carregada.",
         countFailed: "Não foi possível contar os registros da planilha.",
         noPageData: "Não há touros nesta página.",
-        analysesLoading: "Carregando as análises completas solicitadas...",
+        analysesLoading: "Carregando resumo, rankings, sugestões e pedigree...",
         analysesReady: "Análises completas carregadas.",
-        loadAnalysis: "Carregar análises completas",
-        analysisPrompt: "Resumo, rankings e sugestões consideram todos os registros. Carregue as análises quando precisar; a listagem principal continua paginada.",
+        analysisLoading: "Buscando todos os registros para preparar as listas...",
+        analysisFailed: "Não foi possível carregar as análises. Verifique a mensagem acima e tente Atualizar dados.",
+        cousins: "Touros relacionados (primos)",
+        sharedAncestor: "Ancestral em comum",
+        downloadPedigree: "Baixar imagem da árvore",
+        pedigreeDownloadError: "Não foi possível gerar a imagem da árvore genealógica.",
+        paternalGrandfather: "Avô paterno",
+        paternalMGS: "Avô materno do pai",
+        maternalGrandfatherSire: "Pai do avô materno",
+        maternalGrandfatherMGS: "Avô materno do avô materno",
         filterOptionsError: "Falha ao carregar as opções do filtro: {error}",
         previous: "Anterior",
         next: "Próxima",
@@ -844,16 +980,32 @@
         available: "Available Sires",
         rowsPerPage: "Rows per page",
         suggestionCount: "Number of suggestions",
+        crossPedigree: "Pedigree comparison",
+        generalTab: "General",
+        crossPedigreeTab: "Pedigree comparison",
+        dashboardTabs: "Dashboard sections",
+        crossPedigreeFilter: "Filter suggested sires",
+        crossPedigreeAll: "All 15 sires",
+        crossPedigreeNote: "Pedigrees of the 15 highest-ranked balanced suggestions.",
+        noCrossPedigree: "No suggested sires match the current filters.",
         pageNumbers: "Pages",
         pageEllipsis: "More pages",
         loadingPage: "Loading page {page}...",
         pageLoaded: "Page {page} loaded.",
         countFailed: "Could not count the spreadsheet records.",
         noPageData: "There are no sires on this page.",
-        analysesLoading: "Loading the requested full analyses...",
+        analysesLoading: "Loading summary, rankings, suggestions, and pedigree...",
         analysesReady: "Full analyses loaded.",
-        loadAnalysis: "Load full analyses",
-        analysisPrompt: "Summary, rankings, and suggestions use all records. Load the analysis when needed; the main list remains paginated.",
+        analysisLoading: "Fetching all records to prepare the lists...",
+        analysisFailed: "Could not load the analyses. Check the message above and click Refresh data to try again.",
+        cousins: "Related sires (cousins)",
+        sharedAncestor: "Shared ancestor",
+        downloadPedigree: "Download pedigree image",
+        pedigreeDownloadError: "Could not generate the pedigree image.",
+        paternalGrandfather: "Paternal grandsire",
+        paternalMGS: "Paternal granddam's sire",
+        maternalGrandfatherSire: "Maternal grandsire's sire",
+        maternalGrandfatherMGS: "Maternal grandsire's maternal grandsire",
         filterOptionsError: "Could not load filter options: {error}",
         previous: "Previous",
         next: "Next",
@@ -928,16 +1080,32 @@
         available: "Sementales disponibles",
         rowsPerPage: "Filas por página",
         suggestionCount: "Número de sugerencias",
+        crossPedigree: "Cruce de árboles genealógicos",
+        generalTab: "General",
+        crossPedigreeTab: "Cruce genealógico",
+        dashboardTabs: "Secciones del panel",
+        crossPedigreeFilter: "Filtrar sementales sugeridos",
+        crossPedigreeAll: "Los 15 sementales",
+        crossPedigreeNote: "Árboles de los 15 sementales mejor clasificados en las sugerencias equilibradas.",
+        noCrossPedigree: "Ningún semental sugerido coincide con los filtros actuales.",
         pageNumbers: "Páginas",
         pageEllipsis: "Más páginas",
         loadingPage: "Cargando la página {page}...",
         pageLoaded: "Página {page} cargada.",
         countFailed: "No se pudieron contar los registros de la hoja.",
         noPageData: "No hay sementales en esta página.",
-        analysesLoading: "Cargando los análisis completos solicitados...",
+        analysesLoading: "Cargando el resumen, los rankings, las sugerencias y el pedigree...",
         analysesReady: "Análisis completos cargados.",
-        loadAnalysis: "Cargar análisis completos",
-        analysisPrompt: "El resumen, los rankings y las sugerencias usan todos los registros. Cargue el análisis cuando lo necesite; la lista principal seguirá paginada.",
+        analysisLoading: "Consultando todos los registros para preparar las listas...",
+        analysisFailed: "No se pudieron cargar los análisis. Revise el mensaje anterior y pulse Actualizar datos para intentarlo de nuevo.",
+        cousins: "Sementales relacionados (primos)",
+        sharedAncestor: "Ancestro en común",
+        downloadPedigree: "Descargar imagen del árbol",
+        pedigreeDownloadError: "No se pudo generar la imagen del árbol genealógico.",
+        paternalGrandfather: "Abuelo paterno",
+        paternalMGS: "Abuelo materno del padre",
+        maternalGrandfatherSire: "Padre del abuelo materno",
+        maternalGrandfatherMGS: "Abuelo materno del abuelo materno",
         filterOptionsError: "No se pudieron cargar las opciones del filtro: {error}",
         previous: "Anterior",
         next: "Siguiente",
@@ -1018,9 +1186,11 @@
       searchTimer: null,
       analysisRows: null,
       analysisLoading: false,
+      analysisPromise: null,
+      analysisFailed: false,
       analysisRequest: 0,
-      analysisObserver: null,
       suggestionLimit: 5,
+      crossPedigreeCode: "all",
       sort: null,
       filterOptions: new Map(),
       isComplete: false,
@@ -1029,12 +1199,15 @@
       language: "pt",
       siresByName: new Map(),
       siresByCode: new Map(),
+      cousinIndex: new Map(),
       ancestorLookupRequests: new Map(),
       ancestorLookupFailures: new Set(),
       ancestorLookupRequestId: 0,
       popoverHideTimer: null,
       pinnedCode: "",
       activePedigreeCode: "",
+      pedigreeAnchor: null,
+      pedigreeFocusRestore: false,
       status: { key: "initialStatus", vars: {}, isError: false },
       progress: { stage: "loading", key: "loadingPriority", vars: {} }
     };
@@ -1063,6 +1236,9 @@
     function applyLanguage() {
       document.documentElement.lang = languageLocale();
       document.title = translate("pageTitle");
+      $("dashboardTabs").setAttribute("aria-label", translate("dashboardTabs"));
+      $("generalTab").textContent = translate("generalTab");
+      $("crossPedigreeTab").textContent = translate("crossPedigreeTab");
       $("dashboardTitle").textContent = translate("dashboardTitle");
       $("languageLabel").textContent = translate("languageLabel");
       $("language").setAttribute("aria-label", translate("languageLabel"));
@@ -1086,8 +1262,10 @@
       $("studTitle").textContent = translate("topStud");
       $("suggestTitle").textContent = translate("suggestions", { count: state.suggestionLimit });
       $("suggestFootnote").textContent = translate("suggestionNote");
-      $("analysisPrompt").textContent = translate("analysisPrompt");
-      $("loadAnalysis").textContent = translate("loadAnalysis");
+      $("crossPedigreeTitle").textContent = translate("crossPedigree");
+      $("crossPedigreeLabel").textContent = translate("crossPedigreeFilter");
+      $("crossPedigreeSelect").setAttribute("aria-label", translate("crossPedigreeFilter"));
+      $("crossPedigreeNote").textContent = translate("crossPedigreeNote");
       $("pedigreePopover").setAttribute("aria-label", translate("pedigreePopoverLabel"));
       if (state.activePedigreeCode) closePedigreePopover();
       $("today").textContent = new Intl.DateTimeFormat(languageLocale(), { dateStyle: "long" }).format(new Date());
@@ -1127,6 +1305,20 @@
         console.warn("Could not save the selected language:", error);
       }
       applyLanguage();
+    }
+
+    function selectDashboardTab(tabId, { focus = false } = {}) {
+      const tabs = [...document.querySelectorAll(".dashboard-tab")];
+      const selectedTab = $(tabId);
+      if (!selectedTab) return;
+      tabs.forEach((tab) => {
+        const selected = tab === selectedTab;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        const panel = $(tab.getAttribute("aria-controls"));
+        if (panel) panel.hidden = !selected;
+      });
+      if (focus) selectedTab.focus();
     }
 
     function setStatus(key, isError = false, vars = {}) {
@@ -1230,21 +1422,17 @@
         if (clauses.length) conditions.push(`(${clauses.join(" or ")})`);
       }
 
-      const codeNameTokens = commaTokens($("searchCodeName").value);
+      const codeNameTokens = searchTokens($("searchCodeName").value);
       if (codeNameTokens.length) {
         const columns = ["NAAB Code", "Sire Name"].map((column) => state.columnIds[column]).filter(Boolean);
-        const clauses = codeNameTokens.flatMap((token) => columns.map((id) =>
-          `${id} contains '${token.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
-        ));
+        const clauses = searchConditions(columns, codeNameTokens);
         if (clauses.length) conditions.push(`(${clauses.join(" or ")})`);
       }
 
-      const pedigreeTokens = commaTokens($("searchPedigree").value);
+      const pedigreeTokens = searchTokens($("searchPedigree").value);
       if (pedigreeTokens.length) {
         const columns = ["Sire", "MGS"].map((column) => state.columnIds[column]).filter(Boolean);
-        const clauses = pedigreeTokens.flatMap((token) => columns.map((id) =>
-          `${id} contains '${token.replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'`
-        ));
+        const clauses = searchConditions(columns, pedigreeTokens);
         if (clauses.length) conditions.push(`(${clauses.join(" or ")})`);
       }
       return conditions.join(" and ");
@@ -1366,12 +1554,14 @@
         setStatus("pageLoaded", false, { page, count: state.totalRows.toLocaleString(languageLocale()) });
         setProgress("done", "progressDone");
         state.progressTimer = window.setTimeout(hideProgress, 1200);
+        return true;
       } catch (error) {
         console.error("Google Sheet page load failed:", error);
         window.clearTimeout(state.loadingTimer);
         const connectionError = describeConnectionError(error, state.pageRows.length > 0);
         setStatus(connectionError.key, true, connectionError.vars);
         hideProgress();
+        return false;
       } finally {
         if (requestId === state.pageRequest) $("refresh").disabled = false;
       }
@@ -1386,21 +1576,20 @@
       state.pageRows = [];
       state.page = 1;
       state.analysisRows = null;
+      state.analysisFailed = false;
       state.analysisRequest += 1;
       state.analysisLoading = false;
-      state.analysisObserver?.disconnect();
-      state.analysisObserver = null;
-      $("loadAnalysis").disabled = false;
+      state.analysisPromise = null;
       state.rows = [];
       state.isComplete = false;
       state.filterOptions.clear();
       state.filterOptionRequests.clear();
       state.siresByName.clear();
       state.siresByCode.clear();
+      state.cousinIndex.clear();
       state.ancestorLookupRequests.clear();
       state.ancestorLookupFailures.clear();
       state.ancestorLookupRequestId += 1;
-      $("loadAnalysis").hidden = false;
       try {
         if (!Object.keys(state.columnIds).length) {
           setProgress("loading", "loadingInitial");
@@ -1415,8 +1604,8 @@
           state.columnIds = schema.columnIds;
           buildFilters();
         }
-        await loadPage(1, { initialize: true });
-        observeAnalysisWhenVisible();
+        const pageLoaded = await loadPage(1, { initialize: true });
+        if (pageLoaded) loadAnalysisRows();
       } catch (error) {
         console.error("Google Sheet initialization failed:", error);
         window.clearTimeout(state.loadingTimer);
@@ -1427,35 +1616,28 @@
       }
     }
 
-    function observeAnalysisWhenVisible() {
-      if (state.analysisRows || state.analysisObserver) return;
-      const sections = ["statsTitle", "studTitle", "suggestTitle"]
-        .map((id) => $(id).closest(".section"))
-        .filter(Boolean);
-      if (!sections.length) return;
-      if (!("IntersectionObserver" in window)) {
-        loadAnalysisRows();
-        return;
-      }
-      state.analysisObserver = new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          state.analysisObserver.disconnect();
-          state.analysisObserver = null;
-          loadAnalysisRows();
-        }
-      }, { rootMargin: "160px" });
-      sections.forEach((section) => state.analysisObserver.observe(section));
+    function loadAnalysisRows() {
+      if (state.analysisRows || !state.columns.length) return Promise.resolve();
+      if (state.analysisPromise) return state.analysisPromise;
+      const request = fetchAnalysisRows();
+      let tracked;
+      tracked = request.finally(() => {
+        if (state.analysisPromise === tracked) state.analysisPromise = null;
+      });
+      state.analysisPromise = tracked;
+      return tracked;
     }
 
-    async function loadAnalysisRows() {
-      if (state.analysisRows || state.analysisLoading || !state.columns.length) return;
+    async function fetchAnalysisRows() {
+      if (state.analysisRows || !state.columns.length) return;
       state.analysisLoading = true;
+      state.analysisFailed = false;
       const requestId = ++state.analysisRequest;
       window.clearTimeout(state.progressTimer);
       window.clearTimeout(state.loadingTimer);
-      $("loadAnalysis").disabled = true;
       setStatus("analysesLoading");
       setProgress("loading", "analysesLoading");
+      renderAll();
       state.loadingTimer = window.setTimeout(() => {
         if (requestId !== state.analysisRequest) return;
         setStatus("overTenSeconds");
@@ -1468,11 +1650,11 @@
         state.analysisRows = complete.rows;
         state.rows = complete.rows;
         state.isComplete = true;
-        indexSiresByName(complete.rows);
+        indexSiresByName(complete.rows, true);
+        buildCousinIndex(complete.rows);
         state.filterOptions.clear();
         buildFilters();
         renderAll();
-        $("loadAnalysis").hidden = true;
         setStatus("analysesReady");
         setProgress("done", "progressDone");
         state.progressTimer = window.setTimeout(hideProgress, 1200);
@@ -1482,18 +1664,20 @@
         console.error("Google Sheet analysis load failed:", error);
         const connectionError = describeConnectionError(error, state.pageRows.length > 0);
         setStatus(connectionError.key, true, connectionError.vars);
+        state.analysisFailed = true;
+        renderAll();
         hideProgress();
       } finally {
         if (requestId === state.analysisRequest) {
           window.clearTimeout(state.loadingTimer);
           state.analysisLoading = false;
-          $("loadAnalysis").disabled = Boolean(state.analysisRows);
         }
       }
     }
 
     function sireNameKey(name) {
-      return text(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase().replace(/\s+/g, " ");
+      return text(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase()
+        .replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " ");
     }
 
     function indexSiresByName(rows, replace = false) {
@@ -1514,7 +1698,8 @@
 
     function findAncestorCode(name, breed) {
       const matches = state.siresByName.get(sireNameKey(name)) || [];
-      const sameBreed = matches.find((row) => text(row.BREED) === text(breed) && text(row["NAAB Code"]));
+      const breedKey = text(breed).toLocaleLowerCase();
+      const sameBreed = matches.find((row) => text(row.BREED).toLocaleLowerCase() === breedKey && text(row["NAAB Code"]));
       const anyBreed = matches.find((row) => text(row["NAAB Code"]));
       return sameBreed || anyBreed || null;
     }
@@ -1527,9 +1712,15 @@
       const escapedName = text(name).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
       const requestId = state.ancestorLookupRequestId;
       const request = (async () => {
-        const response = await jsonpSheetRequest(`where ${columnId} = '${escapedName}' limit 10`);
+        let response = await jsonpSheetRequest(`where ${columnId} = '${escapedName}' limit 20`);
         if (requestId !== state.ancestorLookupRequestId) return;
-        const matches = parseSheetResponse(response).rows;
+        let matches = parseSheetResponse(response).rows;
+        if (!matches.some((candidate) => sireNameKey(candidate["Sire Name"]) === sireNameKey(name))) {
+          response = await jsonpSheetRequest(`where ${columnId} contains '${escapedName}' limit 50`);
+          if (requestId !== state.ancestorLookupRequestId) return;
+          matches = parseSheetResponse(response).rows
+            .filter((candidate) => sireNameKey(candidate["Sire Name"]) === sireNameKey(name));
+        }
         if (matches.length) indexSiresByName(matches);
         else state.ancestorLookupFailures.add(key);
         if (state.activePedigreeCode === subjectCode && !$("pedigreePopover").hidden) {
@@ -1711,6 +1902,24 @@
 
     function commaTokens(value) {
       return text(value).split(",").map((token) => token.trim().toLocaleLowerCase()).filter(Boolean);
+    }
+
+    function searchTokens(value) {
+      return text(value).split(",").map((token) => token.trim()).filter(Boolean);
+    }
+
+    function escapeQueryString(value) {
+      return text(value).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    }
+
+    function escapeRegex(value) {
+      return text(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function searchConditions(columns, tokens) {
+      return tokens.flatMap((token) => columns.map((id) =>
+        `${id} matches '(?i).*${escapeQueryString(escapeRegex(token))}.*'`
+      ));
     }
 
     function matchesSearch(row, columns, tokens) {
@@ -1911,8 +2120,19 @@
     }
 
     function makePedigreeNode(labelKey, name, breed, knownCode = "") {
+      if (!text(name) && !knownCode) return null;
       const node = document.createElement("div");
       node.className = "pedigree-node";
+      const generation = {
+        sireLabel: "parent",
+        paternalGrandfather: "grandparent",
+        paternalMGS: "grandparent",
+        mgsLabel: "grandparent",
+        mggsLabel: "great-grandparent",
+        maternalGrandfatherSire: "great-grandparent",
+        maternalGrandfatherMGS: "great-grandparent"
+      }[labelKey];
+      if (generation) node.classList.add(`pedigree-generation-${generation}`);
       const label = document.createElement("span");
       label.className = "pedigree-node-label";
       label.textContent = translate(labelKey);
@@ -1935,26 +2155,70 @@
       return node;
     }
 
-    function renderPedigreePopover(row) {
-      const popover = $("pedigreePopover");
-      popover.replaceChildren();
-      const sireName = text(row["Sire Name"]) || text(row["NAAB Code"]);
+    function sireRecordFor(name, breed) {
+      if (!text(name)) return null;
+      return findAncestorCode(name, breed);
+    }
 
-      const header = document.createElement("header");
-      header.className = "pedigree-card-header";
-      const title = document.createElement("h3");
-      title.className = "pedigree-card-title";
-      title.textContent = sireName;
-      const meta = document.createElement("div");
-      meta.className = "pedigree-card-meta";
-      [row["NAAB Code"], row.STUD].filter((value) => text(value)).forEach((value) => {
-        const chip = document.createElement("span");
-        chip.className = "pedigree-chip";
-        chip.textContent = text(value);
-        meta.appendChild(chip);
+    function uniquePedigreeNodes(nodes) {
+      const seen = new Set();
+      return nodes.filter((node) => {
+        if (!node) return false;
+        const key = sireNameKey(node.querySelector(".pedigree-node-name")?.textContent);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
       });
-      header.append(title, meta);
+    }
 
+    function knownPedigreeGrandparents(row) {
+      const names = new Set([text(row.MGS)].filter(Boolean));
+      const sireRecord = sireRecordFor(row.Sire, row.BREED);
+      if (sireRecord) {
+        [sireRecord.Sire, sireRecord.MGS].map(text).filter(Boolean).forEach((name) => names.add(name));
+      }
+      return names;
+    }
+
+    function buildCousinIndex(rows) {
+      const index = new Map();
+      rows.forEach((row) => {
+        const code = text(row["NAAB Code"]);
+        if (!code) return;
+        knownPedigreeGrandparents(row).forEach((name) => {
+          const key = sireNameKey(name);
+          if (!key) return;
+          if (!index.has(key)) index.set(key, new Map());
+          index.get(key).set(code, row);
+        });
+      });
+      state.cousinIndex = index;
+    }
+
+    function findCousinRows(row) {
+      if (!state.analysisRows) return [];
+      const grandparents = [...knownPedigreeGrandparents(row)]
+        .map((name) => [sireNameKey(name), name])
+        .filter(([key]) => key);
+      if (!grandparents.length) return [];
+      const closeFamily = new Set([row.Sire, row.MGS, row.MGGS].map(sireNameKey).filter(Boolean));
+      const candidates = new Map();
+      grandparents.forEach(([key, name]) => {
+        state.cousinIndex.get(key)?.forEach((candidate, code) => {
+          if (code === text(row["NAAB Code"]) || closeFamily.has(sireNameKey(candidate["Sire Name"]))) return;
+          if (text(candidate.BREED) && text(row.BREED) && text(candidate.BREED) !== text(row.BREED)) return;
+          if (!candidates.has(code)) candidates.set(code, { row: candidate, shared: [] });
+          candidates.get(code).shared.push(name);
+        });
+      });
+      return [...candidates.values()]
+        .map((candidate) => ({ ...candidate, shared: [...new Set(candidate.shared)] }))
+        .sort((a, b) => compareRows(a.row, b.row, DEFAULT_SORT))
+        .slice(0, 6);
+    }
+
+    function buildPedigreeTree(row, lookupAncestors = true) {
+      const sireName = text(row["Sire Name"]) || text(row["NAAB Code"]);
       const tree = document.createElement("div");
       tree.className = "pedigree-tree";
       const subject = document.createElement("div");
@@ -1970,27 +2234,235 @@
       const paternalTitle = document.createElement("h4");
       paternalTitle.className = "pedigree-branch-title";
       paternalTitle.textContent = translate("paternalBranch");
-      paternal.append(paternalTitle, makePedigreeNode("sireLabel", row.Sire, row.BREED));
+      const sireRecord = sireRecordFor(row.Sire, row.BREED);
+      const paternalNodes = uniquePedigreeNodes([
+        makePedigreeNode("sireLabel", row.Sire, row.BREED),
+        sireRecord && makePedigreeNode("paternalGrandfather", sireRecord.Sire, row.BREED),
+        sireRecord && makePedigreeNode("paternalMGS", sireRecord.MGS, row.BREED)
+      ]);
+      if (paternalNodes.length) paternal.append(paternalTitle, ...paternalNodes);
 
       const maternal = document.createElement("section");
       maternal.className = "pedigree-branch";
       const maternalTitle = document.createElement("h4");
       maternalTitle.className = "pedigree-branch-title";
       maternalTitle.textContent = translate("maternalBranch");
-      const maternalPath = document.createElement("div");
-      maternalPath.className = "pedigree-maternal-path";
-      maternalPath.append(
+      const maternalRecord = sireRecordFor(row.MGS, row.BREED);
+      const maternalNodes = uniquePedigreeNodes([
         makePedigreeNode("mgsLabel", row.MGS, row.BREED),
-        makePedigreeNode("mggsLabel", row.MGGS, row.BREED)
-      );
-      maternal.append(maternalTitle, maternalPath);
+        makePedigreeNode("mggsLabel", row.MGGS, row.BREED),
+        maternalRecord && makePedigreeNode("maternalGrandfatherSire", maternalRecord.Sire, row.BREED),
+        maternalRecord && makePedigreeNode("maternalGrandfatherMGS", maternalRecord.MGS, row.BREED)
+      ]);
+      if (maternalNodes.length) maternal.append(maternalTitle, ...maternalNodes);
 
-      branches.append(paternal, maternal);
+      if (paternalNodes.length) branches.appendChild(paternal);
+      if (maternalNodes.length) branches.appendChild(maternal);
       tree.append(subject, branches);
-      popover.append(header, tree);
-      popover.querySelectorAll(".pedigree-code[data-ancestor-name]").forEach((element) => {
-        lookupPedigreeAncestor(element.dataset.ancestorName, element.dataset.ancestorBreed, text(row["NAAB Code"]));
+      const cousins = findCousinRows(row);
+      if (cousins.length) {
+        const cousinSection = document.createElement("section");
+        cousinSection.className = "pedigree-cousins";
+        const cousinTitle = document.createElement("h4");
+        cousinTitle.className = "pedigree-branch-title";
+        cousinTitle.textContent = translate("cousins");
+        const cousinList = document.createElement("div");
+        cousinList.className = "pedigree-cousin-list";
+        cousins.forEach(({ row: cousin, shared }) => {
+          const card = document.createElement("div");
+          card.className = "pedigree-cousin-card";
+          const name = document.createElement("strong");
+          name.textContent = text(cousin["Sire Name"]) || text(cousin["NAAB Code"]);
+          const code = document.createElement("span");
+          code.textContent = text(cousin["NAAB Code"]);
+          const ancestor = document.createElement("span");
+          ancestor.textContent = `${translate("sharedAncestor")}: ${shared.join(", ")}`;
+          card.append(name, code, ancestor);
+          cousinList.appendChild(card);
+        });
+        cousinSection.append(cousinTitle, cousinList);
+        tree.appendChild(cousinSection);
+      }
+      if (lookupAncestors) {
+        tree.querySelectorAll(".pedigree-code[data-ancestor-name]").forEach((element) => {
+          lookupPedigreeAncestor(element.dataset.ancestorName, element.dataset.ancestorBreed, text(row["NAAB Code"]));
+        });
+      }
+      return tree;
+    }
+
+    function renderPedigreePopover(row) {
+      const popover = $("pedigreePopover");
+      popover.replaceChildren();
+      const header = document.createElement("header");
+      header.className = "pedigree-card-header";
+      const title = document.createElement("h3");
+      title.className = "pedigree-card-title";
+      title.textContent = text(row["Sire Name"]) || text(row["NAAB Code"]);
+      const meta = document.createElement("div");
+      meta.className = "pedigree-card-meta";
+      [row["NAAB Code"], row.STUD].filter((value) => text(value)).forEach((value) => {
+        const chip = document.createElement("span");
+        chip.className = "pedigree-chip";
+        chip.textContent = text(value);
+        meta.appendChild(chip);
       });
+      const actions = document.createElement("div");
+      actions.className = "pedigree-header-actions";
+      const download = document.createElement("button");
+      download.type = "button";
+      download.className = "pedigree-download";
+      download.dataset.action = "download-pedigree";
+      download.textContent = translate("downloadPedigree");
+      download.setAttribute("aria-label", translate("downloadPedigree"));
+      actions.append(meta, download);
+      header.append(title, actions);
+      popover.append(header, buildPedigreeTree(row));
+    }
+
+    function xmlEscape(value) {
+      return text(value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;"
+      })[character]);
+    }
+
+    function svgTextLines(value, maxChars) {
+      const words = text(value).split(/\s+/).filter(Boolean);
+      const lines = [];
+      let line = "";
+      words.forEach((word) => {
+        const candidate = line ? `${line} ${word}` : word;
+        if (line && candidate.length > maxChars) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = candidate;
+        }
+      });
+      if (line) lines.push(line);
+      return lines.length ? lines : [""];
+    }
+
+    function svgText(value, x, y, { size = 15, weight = 400, color = "#61351f", maxChars = 42, lineHeight = 20 } = {}) {
+      const lines = svgTextLines(value, maxChars);
+      return `<text x="${x}" y="${y}" fill="${color}" font-family="Arial, Helvetica, sans-serif" font-size="${size}" font-weight="${weight}">${lines.map((line, index) => `<tspan x="${x}" dy="${index ? lineHeight : 0}">${xmlEscape(line)}</tspan>`).join("")}</text>`;
+    }
+
+    async function downloadPedigreeImage() {
+      try {
+        const popover = $("pedigreePopover");
+        const code = state.activePedigreeCode;
+        if (!code) throw new Error("The selected sire is unavailable.");
+        const selectedAnchor = state.pedigreeAnchor;
+        if (!state.analysisRows) {
+          await loadAnalysisRows();
+          if (!state.analysisRows) throw new Error("The full pedigree data is not available yet.");
+          const row = state.siresByCode.get(code);
+          if (!row) throw new Error("The selected sire is no longer available.");
+          renderPedigreePopover(row);
+          state.activePedigreeCode = code;
+          state.pinnedCode = code;
+          state.pedigreeAnchor = selectedAnchor?.isConnected
+            ? selectedAnchor
+            : [...document.querySelectorAll(".pedigree-trigger")].find((trigger) => trigger.dataset.pedigreeCode === code);
+          popover.hidden = false;
+          if (state.pedigreeAnchor) positionPedigreePopover(state.pedigreeAnchor);
+        }
+        const tree = popover.querySelector(".pedigree-tree");
+        if (!tree) throw new Error("Pedigree data is unavailable.");
+        const width = 1120;
+        const margin = 44;
+        const gap = 20;
+        const branchSections = [...tree.querySelectorAll(".pedigree-branches > .pedigree-branch")];
+        const nodeData = (node) => ({
+          label: node.querySelector(".pedigree-node-label")?.textContent || "",
+          name: node.querySelector(".pedigree-node-name")?.textContent || "",
+          code: node.querySelector(".pedigree-code")?.textContent || "",
+          generation: ["parent", "grandparent", "great-grandparent"]
+            .find((level) => node.classList.contains(`pedigree-generation-${level}`))
+        });
+        const subject = nodeData(tree.querySelector(".pedigree-subject"));
+        let y = 44;
+        let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" viewBox="0 0 ${width} HEIGHT" role="img"><rect width="100%" height="100%" fill="#fffaf6"/><rect x="0" y="0" width="${width}" height="12" fill="#c85c17"/>`;
+        svg += svgText(subject.name, margin, y + 10, { size: 28, weight: 700, color: "#9e4512", maxChars: 54, lineHeight: 34 });
+        y += 38;
+        svg += svgText(`${subject.label} · ${subject.code}`, margin, y, { size: 15, color: "#876957", maxChars: 100 });
+        y += 24;
+        const subjectWidth = 460;
+        const subjectX = (width - subjectWidth) / 2;
+        svg += `<rect x="${subjectX}" y="${y}" width="${subjectWidth}" height="92" rx="14" fill="#fff1e6" stroke="#efb789" stroke-width="2"/>`;
+        svg += svgText(subject.label, subjectX + 20, y + 27, { size: 12, weight: 700, color: "#876957", maxChars: 48 });
+        svg += svgText(subject.name, subjectX + 20, y + 53, { size: 21, weight: 700, color: "#9e4512", maxChars: 38 });
+        svg += svgText(subject.code, subjectX + 20, y + 76, { size: 13, weight: 700, color: "#9e4512", maxChars: 58 });
+        y += 122;
+
+        const branchWidth = (width - margin * 2 - gap) / Math.max(1, branchSections.length);
+        const branchStartY = y;
+        const branchNodeHeight = 100;
+        const branchNodeGap = 12;
+        const maxNodeCount = Math.max(0, ...branchSections.map((section) => section.querySelectorAll(".pedigree-node").length));
+        branchSections.forEach((section, index) => {
+          const x = margin + index * (branchWidth + gap);
+          const heading = section.querySelector(".pedigree-branch-title")?.textContent || "";
+          svg += `<rect x="${x}" y="${branchStartY}" width="${branchWidth}" height="${34 + maxNodeCount * (branchNodeHeight + branchNodeGap)}" rx="12" fill="#ffffff" stroke="#f0d7c6"/>`;
+          svg += svgText(heading, x + 16, branchStartY + 24, { size: 14, weight: 700, color: "#c85c17", maxChars: 52 });
+          [...section.querySelectorAll(".pedigree-node")].forEach((node, nodeIndex) => {
+            const data = nodeData(node);
+            const levelColors = {
+              parent: ["#fff8f1", "#e8bc91"],
+              grandparent: ["#fbfcf5", "#d7d9c1"],
+              "great-grandparent": ["#f5fafb", "#cbd9dc"]
+            };
+            const [fill, stroke] = levelColors[data.generation] || ["#fffaf6", "#ead3c3"];
+            const nodeY = branchStartY + 42 + nodeIndex * (branchNodeHeight + branchNodeGap);
+            svg += `<rect x="${x + 12}" y="${nodeY}" width="${branchWidth - 24}" height="${branchNodeHeight}" rx="9" fill="${fill}" stroke="${stroke}"/>`;
+            svg += svgText(data.label, x + 24, nodeY + 21, { size: 11, weight: 700, color: "#876957", maxChars: 50 });
+            svg += svgText(data.name, x + 24, nodeY + 48, { size: 16, weight: 700, color: "#61351f", maxChars: 42 });
+            svg += svgText(data.code, x + 24, nodeY + 73, { size: 12, weight: 700, color: "#9e4512", maxChars: 50 });
+          });
+        });
+        y = branchStartY + 34 + maxNodeCount * (branchNodeHeight + branchNodeGap) + 24;
+
+        const cousinSection = tree.querySelector(".pedigree-cousins");
+        if (cousinSection) {
+          const cousins = [...cousinSection.querySelectorAll(".pedigree-cousin-card")];
+          const cousinGap = 14;
+          const columns = 3;
+          const cousinWidth = (width - margin * 2 - cousinGap * (columns - 1)) / columns;
+          const cousinHeight = 112;
+          svg += svgText(cousinSection.querySelector(".pedigree-branch-title")?.textContent || "", margin, y, { size: 17, weight: 700, color: "#c85c17", maxChars: 80 });
+          y += 16;
+          cousins.forEach((card, index) => {
+            const col = index % columns;
+            const rowIndex = Math.floor(index / columns);
+            const x = margin + col * (cousinWidth + cousinGap);
+            const cardY = y + rowIndex * (cousinHeight + cousinGap);
+            const [name, code, ancestor] = [...card.querySelectorAll("strong, span")].map((element) => element.textContent);
+            svg += `<rect x="${x}" y="${cardY}" width="${cousinWidth}" height="${cousinHeight}" rx="10" fill="#ffffff" stroke="#ead3c3"/>`;
+            svg += svgText(name, x + 14, cardY + 25, { size: 15, weight: 700, color: "#61351f", maxChars: 36 });
+            svg += svgText(code, x + 14, cardY + 49, { size: 12, color: "#876957", maxChars: 42 });
+            svg += svgText(ancestor, x + 14, cardY + 72, { size: 11, color: "#9e4512", maxChars: 48, lineHeight: 15 });
+          });
+          y += Math.ceil(cousins.length / columns) * (cousinHeight + cousinGap);
+        }
+
+        const height = y + 28;
+        svg = svg.replace("HEIGHT", String(height));
+        svg += svgText(`${text(subject.name)} · ${text(subject.code)}`, margin, height - 12, { size: 10, color: "#876957", maxChars: 120 });
+        svg += "</svg>";
+        const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${text(subject.name).replace(/[^a-z0-9_-]+/gi, "-") || "pedigree"}-${text(subject.code).replace(/[^a-z0-9_-]+/gi, "-")}.svg`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } catch (error) {
+        console.error("Could not export pedigree image:", error);
+        setStatus("pedigreeDownloadError", true, { error: error.message });
+      }
     }
 
     function positionPedigreePopover(anchor) {
@@ -2011,6 +2483,7 @@
       const row = state.siresByCode.get(text(code));
       if (!row) return;
       window.clearTimeout(state.popoverHideTimer);
+      state.pedigreeAnchor = anchor;
       if (state.activePedigreeCode === text(code) && !$("pedigreePopover").hidden) {
         positionPedigreePopover(anchor);
         return;
@@ -2035,7 +2508,8 @@
       });
     }
 
-    function closePedigreePopover() {
+    function closePedigreePopover({ restoreFocus = false } = {}) {
+      const code = state.activePedigreeCode;
       state.pinnedCode = "";
       window.clearTimeout(state.popoverHideTimer);
       $("pedigreePopover").hidden = true;
@@ -2043,6 +2517,15 @@
       document.querySelectorAll(".pedigree-trigger[aria-expanded='true']").forEach((button) => {
         button.setAttribute("aria-expanded", "false");
       });
+      if (restoreFocus) {
+        const trigger = state.pedigreeAnchor?.isConnected && state.pedigreeAnchor.dataset.pedigreeCode === code
+          ? state.pedigreeAnchor
+          : [...document.querySelectorAll(".pedigree-trigger")].find((button) => button.dataset.pedigreeCode === code);
+        state.pedigreeFocusRestore = true;
+        trigger?.focus();
+        window.setTimeout(() => { state.pedigreeFocusRestore = false; }, 0);
+      }
+      state.pedigreeAnchor = null;
     }
 
     function schedulePedigreePopoverHide() {
@@ -2079,7 +2562,7 @@
       return (sortedValues.length - lowerBound) / sortedValues.length;
     }
 
-    function renderSuggestions() {
+    function getBalancedSuggestionRows(limit) {
       const metrics = [
         ["DWP$", true], ["GNM$", true], ["GPTAM", true], ["GPTAF", true], ["GPTAP", true],
         ["GCFP", true], ["GDPR", true], ["GPL", true], ["GSCS", false]
@@ -2101,9 +2584,55 @@
       });
       const top = candidates.filter((item) => item.count)
         .sort((a, b) => b.score - a.score || compareRows(a.row, b.row, DEFAULT_SORT))
-        .slice(0, state.suggestionLimit)
+        .slice(0, limit)
         .map((item) => item.row);
-      $("suggestTableWrap").innerHTML = tableHTML(state.columns, top);
+      return top;
+    }
+
+    function renderSuggestions(rows) {
+      $("suggestTableWrap").innerHTML = tableHTML(state.columns, rows);
+    }
+
+    function renderCrossPedigree(rows) {
+      const select = $("crossPedigreeSelect");
+      const options = [new Option(translate("crossPedigreeAll"), "all")];
+      rows.forEach((row) => {
+        const code = text(row["NAAB Code"]);
+        if (code) options.push(new Option(`${text(row["Sire Name"]) || code} · ${code}`, code));
+      });
+      select.replaceChildren(...options);
+      if (state.crossPedigreeCode !== "all" && !rows.some((row) => text(row["NAAB Code"]) === state.crossPedigreeCode)) {
+        state.crossPedigreeCode = "all";
+      }
+      select.value = state.crossPedigreeCode;
+
+      const selectedRows = state.crossPedigreeCode === "all"
+        ? rows
+        : rows.filter((row) => text(row["NAAB Code"]) === state.crossPedigreeCode);
+      const grid = $("crossPedigreeWrap");
+      grid.replaceChildren();
+      if (!selectedRows.length) {
+        const empty = document.createElement("div");
+        empty.className = "analysis-prompt";
+        empty.textContent = translate("noCrossPedigree");
+        grid.appendChild(empty);
+        return;
+      }
+      selectedRows.forEach((row) => {
+        const card = document.createElement("article");
+        card.className = "cross-pedigree-card";
+        const title = document.createElement("h3");
+        title.textContent = text(row["Sire Name"]) || text(row["NAAB Code"]);
+        const meta = document.createElement("div");
+        meta.className = "cross-pedigree-card-meta";
+        [row["NAAB Code"], row.STUD].filter((value) => text(value)).forEach((value) => {
+          const item = document.createElement("span");
+          item.textContent = text(value);
+          meta.appendChild(item);
+        });
+        card.append(title, meta, buildPedigreeTree(row, false));
+        grid.appendChild(card);
+      });
     }
 
     function renderAll() {
@@ -2112,15 +2641,20 @@
       const rows = getFilteredRows();
       renderMain();
       if (!state.analysisRows) {
-        const prompt = `<div class="analysis-prompt">${escapeHTML(translate("analysisPrompt"))}</div>`;
+        const prompt = state.analysisLoading
+          ? `<div class="analysis-loading" role="status"><span class="analysis-spinner" aria-hidden="true"></span><span>${escapeHTML(translate("analysisLoading"))}</span></div>`
+          : `<div class="analysis-prompt">${escapeHTML(translate(state.analysisFailed ? "analysisFailed" : "analysisLoading"))}</div>`;
         $("statsTableWrap").innerHTML = prompt;
         $("studTableWrap").innerHTML = prompt;
         $("suggestTableWrap").innerHTML = prompt;
+        $("crossPedigreeWrap").innerHTML = prompt;
         return;
       }
       renderStats(rows);
       renderStud(rows);
-      renderSuggestions();
+      const suggestions = getBalancedSuggestionRows(Math.max(state.suggestionLimit, 15));
+      renderSuggestions(suggestions.slice(0, state.suggestionLimit));
+      renderCrossPedigree(suggestions.slice(0, 15));
     }
 
     function resetFilters() {
@@ -2137,8 +2671,24 @@
     }
 
     $("language").addEventListener("change", (event) => setLanguage(event.target.value));
+    $("dashboardTabs").addEventListener("click", (event) => {
+      const tab = event.target.closest('[role="tab"]');
+      if (tab) selectDashboardTab(tab.id);
+    });
+    $("dashboardTabs").addEventListener("keydown", (event) => {
+      const tabs = [...document.querySelectorAll(".dashboard-tab")];
+      const currentIndex = tabs.indexOf(event.target.closest('[role="tab"]'));
+      if (currentIndex < 0) return;
+      let nextIndex;
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (currentIndex + 1) % tabs.length;
+      else if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectDashboardTab(tabs[nextIndex].id, { focus: true });
+    });
     $("refresh").addEventListener("click", loadSheet);
-    $("loadAnalysis").addEventListener("click", loadAnalysisRows);
     $("resetAll").addEventListener("click", resetFilters);
     $("pageSize").addEventListener("change", (event) => {
       state.pageSize = Number(event.target.value) || 15;
@@ -2159,6 +2709,10 @@
       state.suggestionLimit = Number(event.target.value) || 5;
       $("suggestTitle").textContent = translate("suggestions", { count: state.suggestionLimit });
       renderAll();
+    });
+    $("crossPedigreeSelect").addEventListener("change", (event) => {
+      state.crossPedigreeCode = event.target.value || "all";
+      if (state.analysisRows) renderCrossPedigree(getBalancedSuggestionRows(15));
     });
     ["searchCodeName", "searchPedigree"].forEach((id) => {
       $(id).addEventListener("input", () => {
@@ -2185,6 +2739,10 @@
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") closePopups();
+      if (event.key === "Escape" && !$("pedigreePopover").hidden) {
+        event.preventDefault();
+        closePedigreePopover({ restoreFocus: true });
+      }
     });
     document.addEventListener("pointerover", (event) => {
       if (event.target.closest("#pedigreePopover")) {
@@ -2204,22 +2762,31 @@
     });
     document.addEventListener("focusin", (event) => {
       const trigger = event.target.closest(".pedigree-trigger");
-      if (trigger) showPedigreePopover(trigger.dataset.pedigreeCode, trigger);
+      if (trigger) {
+        if (state.pedigreeFocusRestore) return;
+        showPedigreePopover(trigger.dataset.pedigreeCode, trigger);
+        if (trigger.matches(":focus-visible")) {
+          state.pinnedCode = trigger.dataset.pedigreeCode;
+          state.pedigreeAnchor = trigger;
+          $("pedigreePopover").focus({ preventScroll: true });
+        }
+      }
     });
     document.addEventListener("focusout", (event) => {
       if (event.target.closest(".pedigree-trigger") && !event.relatedTarget?.closest?.("#pedigreePopover")) {
         schedulePedigreePopoverHide();
+      }
+      if (event.target.closest("#pedigreePopover") && !event.relatedTarget?.closest?.("#pedigreePopover, .pedigree-trigger")) {
+        closePedigreePopover();
       }
     });
     document.addEventListener("click", (event) => {
       const trigger = event.target.closest(".pedigree-trigger");
       if (trigger) {
         const code = trigger.dataset.pedigreeCode;
-        if (state.pinnedCode === code) closePedigreePopover();
-        else {
-          state.pinnedCode = code;
-          showPedigreePopover(code, trigger);
-        }
+        state.pinnedCode = code;
+        state.pedigreeAnchor = trigger;
+        showPedigreePopover(code, trigger);
         return;
       }
       if (!event.target.closest("#pedigreePopover")) closePedigreePopover();
@@ -2228,7 +2795,14 @@
     $("pedigreePopover").addEventListener("pointerleave", (event) => {
       if (!event.relatedTarget?.closest?.(".pedigree-trigger")) schedulePedigreePopoverHide();
     });
-    window.addEventListener("scroll", closePedigreePopover, true);
+    $("pedigreePopover").addEventListener("click", (event) => {
+      if (event.target.closest("[data-action='download-pedigree']")) void downloadPedigreeImage();
+    });
+    window.addEventListener("scroll", (event) => {
+      if (event.target !== $("pedigreePopover") && !event.target?.closest?.("#pedigreePopover")) {
+        closePedigreePopover();
+      }
+    }, true);
     try {
       const savedLanguage = localStorage.getItem("dairySiresLanguage");
       if (I18N[savedLanguage]) state.language = savedLanguage;
