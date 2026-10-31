@@ -729,6 +729,642 @@
       .pedigree-node-name { font-size: .82rem; }
       .pedigree-card-header { flex-direction: column; }
     }
+
+    :root {
+      --orange: #c76b3d;
+      --orange-dark: #9c4c28;
+      --orange-soft: #fbefe8;
+      --ink: #253746;
+      --muted: #647583;
+      --line: #dce4e8;
+      --surface: #fff;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: #f4f7f8;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { background: #f4f7f8; }
+    button, input, select { font: inherit; }
+    button { transition: color .16s ease, background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+
+    .hero {
+      min-height: 146px;
+      padding: 32px 260px 30px;
+      background: linear-gradient(118deg, #203b4b 0%, #294a58 58%, #315c61 100%);
+      box-shadow: inset 0 -4px 0 #c76b3d;
+      border-radius: 0 0 20px 20px;
+    }
+
+    .hero h1 {
+      max-width: 900px;
+      font-size: clamp(1.35rem, 2.8vw, 2.1rem);
+      letter-spacing: -.025em;
+      line-height: 1.2;
+    }
+
+    .language-selector { top: 20px; left: 28px; gap: 9px; font-size: .78rem; font-weight: 600; }
+    .language-selector select {
+      min-height: 38px;
+      padding: 7px 12px;
+      border: 1px solid #ffffff40;
+      border-radius: 10px;
+      color: #233b49;
+      box-shadow: 0 2px 8px #132a3620;
+    }
+    .brand-date { top: 22px; right: 28px; font-size: .8rem; font-weight: 600; }
+    .page-version { font-size: .72rem; font-weight: 500; }
+
+    main { max-width: 1700px; padding: 26px 30px 56px; }
+    .dashboard-tabs {
+      gap: 8px;
+      margin: 0 0 22px;
+      padding: 6px;
+      border: 1px solid #e0e7eb;
+      border-radius: 14px;
+      background: #eaf0f2;
+    }
+    .dashboard-tab {
+      min-height: 42px;
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 10px;
+      color: #60717e;
+      font-size: .91rem;
+    }
+    .dashboard-tab:hover { color: #294a58; background: #ffffffa6; }
+    .dashboard-tab[aria-selected="true"] {
+      border: 0;
+      color: #fff;
+      background: #294a58;
+      box-shadow: 0 3px 8px #203b4b24;
+    }
+    .dashboard-tab:focus-visible,
+    .action:focus-visible,
+    .filter-button:focus-visible,
+    .pager button:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 3px solid #c76b3d80;
+      outline-offset: 2px;
+    }
+
+    .toolbar {
+      gap: 14px;
+      margin-bottom: 26px;
+      padding: 18px;
+      border: 1px solid #e1e8eb;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 5px 18px #203b4b09;
+    }
+    .search-row { gap: 12px; }
+    .search-row input {
+      min-height: 44px;
+      padding: 10px 14px;
+      border-color: #d7e0e4;
+      border-radius: 10px;
+      background: #fbfcfc;
+    }
+    .search-row input:hover,
+    .table-tools select:hover,
+    .suggestion-tools select:hover { border-color: #b7c7ce; }
+    .search-row input::placeholder { color: #84939d; }
+
+    .action {
+      min-height: 44px;
+      padding: 9px 16px;
+      border-color: #294a58;
+      border-radius: 10px;
+      background: #294a58;
+      font-size: .87rem;
+    }
+    .action:hover { border-color: #203b4b; background: #203b4b; box-shadow: 0 4px 10px #203b4b22; transform: translateY(-1px); }
+    .action.secondary { border-color: #d7e0e4; color: #405563; background: #fff; }
+    .action.secondary:hover { border-color: #aebfc7; background: #f5f8f9; }
+
+    .filter-row { gap: 12px; }
+    .filter-group {
+      padding: 14px;
+      border-color: #e3e9ec;
+      border-radius: 12px;
+      background: #fbfcfc;
+    }
+    .filter-group h2 { margin-bottom: 10px; color: #506876; font-size: .72rem; letter-spacing: .1em; }
+    .filter-buttons { gap: 7px; }
+    .filter-button {
+      width: 116px;
+      height: 34px;
+      padding: 6px 9px;
+      border-color: #d5e0e4;
+      border-radius: 8px;
+      color: #425865;
+      font-size: .76rem;
+      font-weight: 600;
+    }
+    .filter-button:hover { border-color: #c76b3d; background: #fff8f4; }
+    .filter-button.active { border-color: #294a58; color: #fff; background: #294a58; }
+    .filter-popup {
+      border-color: #dce4e8;
+      border-radius: 12px;
+      box-shadow: 0 14px 36px #203b4b1f;
+    }
+    .filter-popup input[type="search"] { border-color: #dce4e8; border-radius: 8px; }
+    .filter-option { border-radius: 6px; }
+    .filter-option:hover { background: #f2f6f7; }
+    .filter-option input { accent-color: #294a58; }
+
+    .loading-progress { gap: 8px; }
+    .progress-label { color: #526b79; font-size: .84rem; }
+    .progress-track { height: 8px; background: #e7eef0; }
+    .progress-fill { background: linear-gradient(90deg, #c76b3d, #e59a66); }
+    .status { color: #71818b; font-size: .82rem; }
+
+    .section { margin-top: 26px; }
+    .section h2 {
+      margin: 0 0 13px;
+      color: #294a58;
+      font-size: 1.12rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .bottom-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .bottom-grid > .section, .section { min-width: 0; }
+    .table-tools, .suggestion-tools { gap: 9px; color: #60717e; font-size: .83rem; }
+    .table-tools select, .suggestion-tools select {
+      min-height: 38px;
+      padding: 7px 11px;
+      border: 1px solid #d9e2e6;
+      border-radius: 9px;
+      color: #304754;
+      background: #fff;
+    }
+    .table-scroll {
+      border-color: #dfe7ea;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px #203b4b08;
+    }
+    table { color: #304754; font-size: .8rem; }
+    th, td { padding: 10px 11px; border-bottom-color: #edf1f3; }
+    th { color: #405c69; background: #edf3f5; }
+    th.sortable:hover { background: #e1ebee; }
+    tbody tr:nth-child(even) { background: #fbfcfc; }
+    tbody tr:hover { background: #f2f7f7; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .pager { margin-top: 12px; color: #6a7b86; font-size: .83rem; }
+    .pager-controls { gap: 7px; }
+    .pager-controls button, .page-numbers button {
+      min-height: 36px;
+      padding: 7px 11px;
+      border-color: #d7e1e5;
+      border-radius: 8px;
+      color: #405967;
+    }
+    .pager-controls button:hover, .page-numbers button:hover { border-color: #9fb3bc; background: #f2f6f7; }
+    .page-numbers button[aria-current="page"] { border-color: #294a58; background: #294a58; }
+
+    .analysis-prompt, .analysis-loading {
+      min-height: 82px;
+      padding: 22px;
+      border-color: #e0e8eb;
+      border-radius: 12px;
+      color: #647783;
+      background: #fbfcfc;
+    }
+    .analysis-spinner { border-color: #e0e8eb; border-top-color: #c76b3d; }
+    .footnote { color: #71818b; font-size: .78rem; line-height: 1.55; }
+    .summary-table th:first-child, .summary-table td:first-child { background: #f6f8f9; }
+    .summary-table th:first-child { background: #eaf0f2; }
+
+    .cross-pedigree-grid { gap: 16px; }
+    .cross-pedigree-card {
+      border-color: #dfe7ea;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 4px 14px #203b4b0a;
+    }
+    .cross-pedigree-card h3 { padding: 15px 16px 0; color: #294a58; font-size: .98rem; }
+    .cross-pedigree-card-meta { padding: 8px 16px 0; color: #6a7b86; font-size: .75rem; }
+    .cross-pedigree-card .pedigree-node { border-radius: 9px; box-shadow: 0 2px 5px #203b4b08; }
+    .pedigree-popover {
+      border-color: #dce4e8;
+      border-radius: 16px;
+      box-shadow: 0 20px 56px #203b4b30, 0 4px 14px #203b4b14;
+    }
+    .pedigree-card-header { background: linear-gradient(115deg, #294a58, #37636a); }
+    .pedigree-download { border-radius: 8px; }
+    .pedigree-trigger { color: #9c4c28; }
+    .pedigree-node { border-color: #dce4e8; border-radius: 10px; box-shadow: 0 2px 7px #203b4b0a; }
+    .pedigree-subject { border-color: #d8a17e; background: #fbefe8; }
+    .pedigree-generation-parent { border-color: #e4c8ae; background: #fff8f1; }
+    .pedigree-generation-grandparent { border-color: #d4ddc8; background: #f8faf4; }
+    .pedigree-generation-great-grandparent { border-color: #c9dce0; background: #f3f9fa; }
+    .pedigree-branches::before,
+    .pedigree-subject-wrap::after,
+    .pedigree-branch::before,
+    .pedigree-cousins { border-color: #dce4e8; }
+    .pedigree-branches::before { background: #dce4e8; }
+    .pedigree-cousin-card { border-color: #e1e8eb; border-radius: 9px; background: #f8fafb; }
+
+    @media (max-width: 1050px) {
+      .hero { padding: 58px 24px 82px; }
+      .brand-date { right: 20px; }
+    }
+    @media (max-width: 650px) {
+      main { padding: 18px 14px 36px; }
+      .hero { min-height: 188px; padding: 58px 14px 82px; }
+      .language-selector { top: 12px; left: 12px; }
+      .dashboard-tabs { overflow-x: auto; }
+      .dashboard-tab { flex: 0 0 auto; padding-inline: 13px; font-size: .84rem; }
+      .toolbar { padding: 13px; border-radius: 13px; }
+      .search-row { grid-template-columns: 1fr 1fr; }
+      .action { padding-inline: 10px; font-size: .8rem; }
+      .filter-group { padding: 11px; }
+      .filter-button { width: 108px; }
+    }
+
+    :root {
+      --orange: #c97b4e;
+      --orange-dark: #9c5c38;
+      --orange-soft: #fbf1e9;
+      --ink: #203b33;
+      --muted: #65796f;
+      --line: #dce6de;
+      --surface: #fff;
+      color: var(--ink);
+      background: #f3f6f2;
+    }
+
+    body { background: #f3f6f2; }
+
+    .hero {
+      min-height: 156px;
+      padding: 30px 260px;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(ellipse at 82% 10%, #ffffff12, transparent 34%),
+        linear-gradient(118deg, #193b33 0%, #244b3e 58%, #31594a 100%);
+      box-shadow: inset 0 -4px 0 #d29362;
+      border-radius: 0 0 22px 22px;
+    }
+
+    .hero::after {
+      position: absolute;
+      z-index: -1;
+      right: 12%;
+      bottom: -156px;
+      width: 310px;
+      height: 310px;
+      border: 1px solid #ffffff12;
+      border-radius: 50%;
+      box-shadow: 0 0 0 30px #ffffff08, 0 0 0 60px #ffffff05;
+      content: "";
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      text-wrap: balance;
+      text-shadow: 0 2px 18px #10281e40;
+    }
+
+    .language-selector select {
+      border-color: #ffffff55;
+      color: #203b33;
+    }
+
+    .brand-date { line-height: 1.5; }
+    .page-version { color: #e4eee6; }
+
+    main { max-width: 1660px; }
+
+    .dashboard-tabs {
+      border-color: #dce5df;
+      background: #e9efea;
+    }
+    .dashboard-tab:hover { color: #244b3e; }
+    .dashboard-tab[aria-selected="true"] {
+      color: #fff;
+      background: #244b3e;
+      box-shadow: 0 4px 10px #193b3326;
+    }
+
+    .toolbar {
+      border-color: #e0e8e1;
+      box-shadow: 0 8px 26px #1c3b2e0a;
+    }
+    .search-row input {
+      border-color: #d7e2da;
+      color: #203b33;
+      background: #fbfcfa;
+      transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+    }
+    .search-row input:focus {
+      border-color: #6a947b;
+      background: #fff;
+      box-shadow: 0 0 0 4px #6a947b1a;
+    }
+    .action {
+      border-color: #244b3e;
+      background: #244b3e;
+    }
+    .action:hover { border-color: #193b33; background: #193b33; }
+    .action.secondary { border-color: #d8e2db; color: #3f5b4d; }
+
+    .filter-group {
+      border-color: #e0e8e1;
+      background: #fafcf9;
+    }
+    .filter-group h2 { color: #5b7366; }
+    .filter-button { border-color: #d8e2db; color: #40594d; }
+    .filter-button:hover { border-color: #c97b4e; background: #fff8f2; }
+    .filter-button.active { border-color: #244b3e; background: #244b3e; }
+    .filter-popup { border-color: #dce6de; }
+    .filter-option:hover { background: #eef4ef; }
+    .filter-option input { accent-color: #315d4a; }
+
+    .section h2 { color: #244b3e; }
+    .table-scroll {
+      border-color: #dce6de;
+      box-shadow: 0 5px 16px #1c3b2e08;
+    }
+    th { color: #385847; background: #edf3ee; }
+    th.sortable:hover { background: #e2ece4; }
+    tbody tr:nth-child(even) { background: #fafcf9; }
+    tbody tr:hover { background: #eff5f0; }
+    .pager-controls button:hover,
+    .page-numbers button:hover { border-color: #abc0b0; background: #f0f5f1; }
+    .page-numbers button[aria-current="page"] { border-color: #244b3e; background: #244b3e; }
+
+    .cross-pedigree-card {
+      border-color: #dce6de;
+      box-shadow: 0 6px 20px #1c3b2e0b;
+    }
+    .cross-pedigree-card h3 { color: #244b3e; }
+    .pedigree-card-header { background: linear-gradient(115deg, #244b3e, #38634f); }
+
+    @media (max-width: 1050px) {
+      .hero { min-height: 166px; padding: 62px 24px 48px; }
+      .brand-date { top: auto; right: 20px; bottom: 12px; }
+      .search-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .search-row input, .search-row .action { min-width: 0; width: 100%; }
+    }
+
+    @media (max-width: 650px) {
+      main { padding: 16px 12px 32px; }
+      .hero { min-height: 188px; padding: 60px 14px 54px; }
+      .hero h1 { font-size: clamp(1.25rem, 6vw, 1.75rem); }
+      .language-selector { top: 12px; left: 12px; }
+      .brand-date { right: 14px; bottom: 10px; font-size: .73rem; }
+      .page-version { margin-top: 1px; }
+      .search-row input { grid-column: 1 / -1; }
+      .action { padding-inline: 8px; font-size: .78rem; }
+      .dashboard-tab { min-height: 40px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+
+    .chart-section {
+      padding: clamp(16px, 3vw, 30px);
+      border: 1px solid #e0e8e1;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 26px #1c3b2e0a;
+    }
+    .chart-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+    .chart-eyebrow {
+      margin: 0 0 5px;
+      color: #9c5c38;
+      font-size: .73rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .chart-heading h2 { margin-bottom: 7px; font-size: clamp(1.35rem, 3vw, 1.8rem); }
+    .chart-description, .chart-control-hint {
+      margin: 0;
+      color: #65796f;
+      font-size: .86rem;
+      line-height: 1.5;
+    }
+    .chart-type-control {
+      display: grid;
+      flex: 0 0 190px;
+      gap: 6px;
+      color: #526b5d;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+    .chart-type-control select, .chart-bull-picker summary {
+      min-height: 42px;
+      padding: 9px 12px;
+      border: 1px solid #d8e2db;
+      border-radius: 9px;
+      color: #304c3e;
+      background: #fff;
+      font: inherit;
+      font-weight: 600;
+    }
+    .chart-controls {
+      display: grid;
+      grid-template-columns: minmax(260px, .9fr) minmax(320px, 1.1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .chart-control-card {
+      min-width: 0;
+      margin: 0;
+      padding: 14px;
+      border: 1px solid #e0e8e1;
+      border-radius: 12px;
+      background: #fafcf9;
+    }
+    .chart-control-title {
+      display: block;
+      margin: 0 0 8px;
+      padding: 0;
+      color: #385847;
+      font-size: .8rem;
+      font-weight: 700;
+    }
+    .chart-bull-picker { position: relative; }
+    .chart-bull-picker summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      list-style: none;
+    }
+    .chart-bull-picker summary::-webkit-details-marker { display: none; }
+    .chart-bull-picker summary::after { color: #65796f; content: "⌄"; font-size: 1.1rem; }
+    .chart-bull-picker[open] summary { border-color: #9eb8a6; border-radius: 9px 9px 0 0; }
+    .chart-bull-options {
+      position: absolute;
+      z-index: 15;
+      top: calc(100% - 1px);
+      right: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      max-height: 260px;
+      overflow: hidden;
+      border: 1px solid #9eb8a6;
+      border-radius: 0 0 9px 9px;
+      background: #fff;
+      box-shadow: 0 12px 25px #193b331c;
+    }
+    .chart-bull-list { min-height: 0; overflow: auto; padding: 7px; }
+    .chart-selected-filter {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 8px 12px;
+      border-top: 1px solid #e5ece6;
+      color: #385847;
+      background: #f7faf7;
+      font-size: .79rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chart-selected-filter input { accent-color: #315d4a; }
+    .chart-choice {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 36px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      color: #40594d;
+      font-size: .82rem;
+      cursor: pointer;
+    }
+    .chart-choice:hover { background: #eef4ef; }
+    .chart-choice input, .chart-metric-choice input { accent-color: #315d4a; }
+    .chart-suggestion-toggle {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-top: 12px;
+      color: #526b5d;
+      font-size: .8rem;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+    .chart-suggestion-toggle input { margin-top: 2px; accent-color: #315d4a; }
+    .chart-metric-card { border-style: solid; }
+    .chart-metric-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 5px;
+      max-height: 166px;
+      overflow: auto;
+    }
+    .chart-metric-choice {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      color: #40594d;
+      font-size: .78rem;
+      cursor: pointer;
+    }
+    .chart-metric-choice:hover { background: #eef4ef; }
+    .chart-control-hint { margin-top: 8px; font-size: .74rem; }
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+    }
+    .chart-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #50675b;
+      font-size: .78rem;
+    }
+    .chart-legend-swatch { width: 10px; height: 10px; border-radius: 3px; }
+    .chart-viewport {
+      min-height: 250px;
+      overflow-x: auto;
+      border: 1px solid #e5ece6;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fcfdfb, #fff);
+    }
+    .chart-viewport svg { display: block; width: 100%; min-width: 560px; height: auto; }
+    .chart-viewport text { font-family: Inter, "Segoe UI", Arial, sans-serif; }
+    .chart-empty {
+      display: grid;
+      min-height: 190px;
+      place-items: center;
+      padding: 25px;
+      border: 1px dashed #dce6de;
+      border-radius: 12px;
+      color: #65796f;
+      background: #fafcf9;
+      text-align: center;
+    }
+    .chart-empty[hidden] { display: none; }
+    .chart-data-title { margin: 22px 0 10px; color: #244b3e; font-size: 1rem; }
+    .chart-scale-note { margin-top: 10px; }
+
+    @media (max-width: 700px) {
+      .chart-heading { align-items: stretch; flex-direction: column; }
+      .chart-type-control { flex-basis: auto; }
+      .chart-controls { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .chart-section { padding: 14px; border-radius: 14px; }
+      .chart-metric-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pager-controls { max-width: 100%; overflow-x: auto; }
+    }
+
+    .hero {
+      min-height: 72px;
+      padding: 12px 220px;
+      border-radius: 0 0 14px 14px;
+    }
+    .hero h1 {
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      line-height: 1.15;
+    }
+    .language-selector { top: 10px; left: 18px; }
+    .language-selector select { min-height: 32px; padding-block: 4px; }
+    .brand-date { top: 9px; right: 18px; font-size: .73rem; }
+    .page-version { margin-top: 1px; font-size: .67rem; }
+
+    @media (max-width: 1050px) {
+      .hero { min-height: 82px; padding: 38px 12px 8px; }
+      .hero h1 { font-size: clamp(.85rem, 2.2vw, 1.1rem); }
+      .language-selector { top: 7px; left: 10px; gap: 6px; font-size: .7rem; }
+      .language-selector select { min-height: 27px; padding: 3px 8px; font-size: .72rem; }
+      .brand-date { top: 7px; right: 10px; bottom: auto; font-size: .68rem; }
+      .page-version { font-size: .62rem; }
+    }
+
+    @media (max-width: 650px) {
+      .hero { min-height: 88px; padding: 40px 10px 8px; }
+      .hero h1 { font-size: clamp(.78rem, 3.35vw, 1rem); }
+      .language-selector { top: 6px; left: 8px; }
+      .language-selector select { max-width: 150px; }
+      .brand-date { top: 6px; right: 8px; font-size: .63rem; }
+      .page-version { font-size: .58rem; }
+    }
   </style>
 </head>
 <body>
@@ -749,6 +1385,7 @@
     <div class="dashboard-tabs" id="dashboardTabs" role="tablist" aria-label="Seções do painel">
       <button class="dashboard-tab" id="generalTab" type="button" role="tab" aria-selected="true" aria-controls="generalPanel" tabindex="0">Geral</button>
       <button class="dashboard-tab" id="crossPedigreeTab" type="button" role="tab" aria-selected="false" aria-controls="crossPedigreePanel" tabindex="-1">Cruzamento genealógico</button>
+      <button class="dashboard-tab" id="chartTab" type="button" role="tab" aria-selected="false" aria-controls="chartPanel" tabindex="-1">Análise gráfica</button>
     </div>
     <section id="generalPanel" role="tabpanel" aria-labelledby="generalTab">
     <section class="toolbar" id="toolbar" aria-label="Filtros do painel">
@@ -798,7 +1435,24 @@
     <div class="bottom-grid">
       <section class="section" aria-labelledby="studTitle">
         <h2 id="studTitle">Top 2 por central</h2>
+        <div class="table-tools">
+          <label id="studPageSizeLabel" for="studPageSize">Linhas por página</label>
+          <select id="studPageSize">
+            <option value="10">10</option>
+            <option value="15" selected>15</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
         <div class="table-scroll" id="studTableWrap"></div>
+        <div class="pager" id="studPager">
+          <span id="studPageInfo"></span>
+          <div class="pager-controls">
+            <button type="button" id="studPrev" aria-label="Página anterior">Anterior</button>
+            <div class="page-numbers" id="studPageNumbers" aria-label="Páginas"></div>
+            <button type="button" id="studNext" aria-label="Próxima página">Próxima</button>
+          </div>
+        </div>
       </section>
       <section class="section" aria-labelledby="suggestTitle">
         <h2 id="suggestTitle">Top 5 sugestões equilibradas de touros</h2>
@@ -814,6 +1468,56 @@
         <p class="footnote" id="suggestFootnote">As sugestões usam os filtros de raça, Plus e central e equilibram os percentis de DWP$, GNM$, GPTAM, GPTAF, GPTAP, GCFP, GDPR, GPL e GSCS (prefere-se GSCS menor).</p>
       </section>
     </div>
+    </section>
+    <section id="chartPanel" role="tabpanel" aria-labelledby="chartTab" hidden>
+      <section class="section chart-section" aria-labelledby="chartTitle">
+        <div class="chart-heading">
+          <div>
+            <p class="chart-eyebrow" id="chartEyebrow">Comparação de reprodutores</p>
+            <h2 id="chartTitle">Análise gráfica</h2>
+            <p class="chart-description" id="chartDescription">Compare os indicadores dos touros selecionados. Os gráficos usam escala relativa; os valores originais aparecem na tabela.</p>
+          </div>
+          <label class="chart-type-control" for="chartType">
+            <span id="chartTypeLabel">Tipo de gráfico</span>
+            <select id="chartType">
+              <option value="bar">Barras</option>
+              <option value="line">Linhas</option>
+              <option value="radar">Radar</option>
+              <option value="scatter">Dispersão</option>
+            </select>
+          </label>
+        </div>
+        <div class="chart-controls">
+          <div class="chart-control-card">
+            <div class="chart-control-title" id="chartBullsLabel">Touros para comparar</div>
+            <details class="chart-bull-picker" id="chartBullPicker" aria-labelledby="chartBullsLabel">
+              <summary id="chartBullSummary" aria-label="Touros para comparar">Selecione os touros</summary>
+              <div class="chart-bull-options" id="chartBullOptions">
+                <div class="chart-bull-list" id="chartBullList"></div>
+                <label class="chart-selected-filter" for="chartSelectedOnly">
+                  <input id="chartSelectedOnly" type="checkbox">
+                  <span id="chartSelectedOnlyLabel">Mostrar apenas os selecionados</span>
+                </label>
+              </div>
+            </details>
+            <label class="chart-suggestion-toggle" for="chartSuggestionsOnly">
+              <input id="chartSuggestionsOnly" type="checkbox">
+              <span id="chartSuggestionsLabel">Exibir somente as 15 sugestões equilibradas</span>
+            </label>
+          </div>
+          <fieldset class="chart-control-card chart-metric-card">
+            <legend class="chart-control-title" id="chartMetricsLabel">Indicadores para comparar</legend>
+            <div class="chart-metric-options" id="chartMetricOptions"></div>
+            <p class="chart-control-hint" id="chartMetricsHint">Selecione até 8 indicadores. Para dispersão, selecione exatamente 2.</p>
+          </fieldset>
+        </div>
+        <div class="chart-legend" id="chartLegend"></div>
+        <div class="chart-empty" id="chartEmpty" role="status" hidden></div>
+        <div class="chart-viewport" id="chartViewport"></div>
+        <h3 class="chart-data-title" id="chartDataTitle">Valores originais selecionados</h3>
+        <div class="table-scroll" id="chartDataTable"></div>
+        <p class="footnote" id="chartScaleNote">Escala relativa de 0 a 100 calculada entre os touros selecionados para cada indicador; para GSCS, valores menores são melhores.</p>
+      </section>
     </section>
     <section id="crossPedigreePanel" role="tabpanel" aria-labelledby="crossPedigreeTab" hidden>
     <section class="section" aria-labelledby="crossPedigreeTitle">
@@ -886,6 +1590,35 @@
         available: "Touros disponíveis",
         rowsPerPage: "Linhas por página",
         suggestionCount: "Quantidade de sugestões",
+        studRowsPerPage: "Linhas por página",
+        chartTab: "Análise gráfica",
+        chartEyebrow: "Comparação de reprodutores",
+        chartTitle: "Análise gráfica",
+        chartDescription: "Compare os indicadores dos touros selecionados. Os gráficos usam escala relativa; os valores originais aparecem na tabela.",
+        chartType: "Tipo de gráfico",
+        chartTypeBar: "Barras",
+        chartTypeLine: "Linhas",
+        chartTypeRadar: "Radar",
+        chartTypeScatter: "Dispersão",
+        chartBulls: "Touros para comparar",
+        chartSelectSires: "Selecione os touros",
+        chartSelectedCount: "{count} touros selecionados",
+        chartSuggestionsOnly: "Exibir somente as 15 sugestões equilibradas",
+        chartSelectedOnly: "Mostrar apenas os selecionados",
+        chartNoSelectedSires: "Nenhum touro selecionado.",
+        chartMetrics: "Indicadores para comparar",
+        chartMetricsHint: "Selecione até 8 indicadores. Para dispersão, selecione exatamente 2.",
+        chartMetricsLimit: "É possível comparar até 8 indicadores por vez.",
+        chartSelectAtLeastOneSire: "Selecione pelo menos um touro para gerar o gráfico.",
+        chartSelectAtLeastOneMetric: "Selecione pelo menos um indicador para gerar o gráfico.",
+        chartNeedTwoMetrics: "Para o gráfico de dispersão, selecione exatamente 2 indicadores.",
+        chartNeedThreeMetrics: "Para o gráfico de radar, selecione pelo menos 3 indicadores.",
+        chartNoSires: "Não há touros disponíveis nesta seleção. Confira os filtros ou aguarde o carregamento das análises.",
+        chartNoNumericMetrics: "Não há indicadores numéricos disponíveis para os touros selecionados.",
+        chartDataTitle: "Valores originais selecionados",
+        chartScaleNote: "Escala relativa de 0 a 100 calculada entre os touros selecionados para cada indicador; para GSCS, valores menores são melhores.",
+        studPageInfo: "Exibindo {start}–{end} de {count}",
+        studPageInfoZero: "Exibindo 0 de 0",
         crossPedigree: "Cruzamento de árvore genealógica",
         generalTab: "Geral",
         crossPedigreeTab: "Cruzamento genealógico",
@@ -1011,6 +1744,35 @@
         available: "Available Sires",
         rowsPerPage: "Rows per page",
         suggestionCount: "Number of suggestions",
+        studRowsPerPage: "Rows per page",
+        chartTab: "Chart analysis",
+        chartEyebrow: "Sire comparison",
+        chartTitle: "Chart analysis",
+        chartDescription: "Compare metrics for selected sires. Charts use a relative scale; original values are shown in the table.",
+        chartType: "Chart type",
+        chartTypeBar: "Bar",
+        chartTypeLine: "Line",
+        chartTypeRadar: "Radar",
+        chartTypeScatter: "Scatter",
+        chartBulls: "Sires to compare",
+        chartSelectSires: "Select sires",
+        chartSelectedCount: "{count} sires selected",
+        chartSuggestionsOnly: "Show only the top 15 balanced suggestions",
+        chartSelectedOnly: "Show selected only",
+        chartNoSelectedSires: "No sires selected.",
+        chartMetrics: "Metrics to compare",
+        chartMetricsHint: "Select up to 8 metrics. For scatter, select exactly 2.",
+        chartMetricsLimit: "You can compare up to 8 metrics at a time.",
+        chartSelectAtLeastOneSire: "Select at least one sire to generate a chart.",
+        chartSelectAtLeastOneMetric: "Select at least one metric to generate a chart.",
+        chartNeedTwoMetrics: "For a scatter chart, select exactly 2 metrics.",
+        chartNeedThreeMetrics: "For a radar chart, select at least 3 metrics.",
+        chartNoSires: "No sires are available for this selection. Check the filters or wait for the analyses to load.",
+        chartNoNumericMetrics: "No numeric metrics are available for the selected sires.",
+        chartDataTitle: "Selected original values",
+        chartScaleNote: "Relative scale from 0 to 100, calculated across selected sires for each metric; lower GSCS values are better.",
+        studPageInfo: "Showing {start}–{end} of {count}",
+        studPageInfoZero: "Showing 0 of 0",
         crossPedigree: "Pedigree comparison",
         generalTab: "General",
         crossPedigreeTab: "Pedigree comparison",
@@ -1128,6 +1890,35 @@
         available: "Sementales disponibles",
         rowsPerPage: "Filas por página",
         suggestionCount: "Número de sugerencias",
+        studRowsPerPage: "Filas por página",
+        chartTab: "Análisis gráfico",
+        chartEyebrow: "Comparación de sementales",
+        chartTitle: "Análisis gráfico",
+        chartDescription: "Compare los indicadores de los sementales seleccionados. Los gráficos usan una escala relativa; la tabla muestra los valores originales.",
+        chartType: "Tipo de gráfico",
+        chartTypeBar: "Barras",
+        chartTypeLine: "Líneas",
+        chartTypeRadar: "Radar",
+        chartTypeScatter: "Dispersión",
+        chartBulls: "Sementales para comparar",
+        chartSelectSires: "Seleccione los sementales",
+        chartSelectedCount: "{count} sementales seleccionados",
+        chartSuggestionsOnly: "Mostrar solo las 15 sugerencias equilibradas",
+        chartSelectedOnly: "Mostrar solo los seleccionados",
+        chartNoSelectedSires: "No hay sementales seleccionados.",
+        chartMetrics: "Indicadores para comparar",
+        chartMetricsHint: "Seleccione hasta 8 indicadores. Para dispersión, seleccione exactamente 2.",
+        chartMetricsLimit: "Puede comparar hasta 8 indicadores a la vez.",
+        chartSelectAtLeastOneSire: "Seleccione al menos un semental para generar el gráfico.",
+        chartSelectAtLeastOneMetric: "Seleccione al menos un indicador para generar el gráfico.",
+        chartNeedTwoMetrics: "Para el gráfico de dispersión, seleccione exactamente 2 indicadores.",
+        chartNeedThreeMetrics: "Para el gráfico de radar, seleccione al menos 3 indicadores.",
+        chartNoSires: "No hay sementales disponibles para esta selección. Revise los filtros o espere a que se carguen los análisis.",
+        chartNoNumericMetrics: "No hay indicadores numéricos disponibles para los sementales seleccionados.",
+        chartDataTitle: "Valores originales seleccionados",
+        chartScaleNote: "Escala relativa de 0 a 100 calculada entre los sementales seleccionados para cada indicador; para GSCS, los valores menores son mejores.",
+        studPageInfo: "Mostrando {start}–{end} de {count}",
+        studPageInfoZero: "Mostrando 0 de 0",
         crossPedigree: "Cruce de árboles genealógicos",
         generalTab: "General",
         crossPedigreeTab: "Cruce genealógico",
@@ -1241,6 +2032,16 @@
       filters: new Map(),
       page: 1,
       pageSize: 15,
+      studRows: [],
+      studPage: 1,
+      studPageSize: 15,
+      chartSelectedCodes: [],
+      chartSelectionTouched: false,
+      chartSuggestionsOnly: false,
+      chartSelectedOnly: false,
+      chartMetrics: ["DWP$", "GNM$", "GPTAM", "GPTAF", "GPTAP"],
+      chartMetricsTouched: false,
+      chartType: "bar",
       totalRows: null,
       pageRows: [],
       pageCache: new Map(),
@@ -1310,6 +2111,7 @@
       $("dashboardTabs").setAttribute("aria-label", translate("dashboardTabs"));
       $("generalTab").textContent = translate("generalTab");
       $("crossPedigreeTab").textContent = translate("crossPedigreeTab");
+      $("chartTab").textContent = translate("chartTab");
       $("dashboardTitle").textContent = translate("dashboardTitle");
       $("languageLabel").textContent = translate("languageLabel");
       $("language").setAttribute("aria-label", translate("languageLabel"));
@@ -1331,6 +2133,12 @@
       $("next").setAttribute("aria-label", translate("next"));
       $("statsTitle").textContent = translate("stats");
       $("studTitle").textContent = translate("topStud");
+      $("studPageSizeLabel").textContent = translate("studRowsPerPage");
+      $("studPrev").textContent = translate("previous");
+      $("studPrev").setAttribute("aria-label", translate("previous"));
+      $("studNext").textContent = translate("next");
+      $("studNext").setAttribute("aria-label", translate("next"));
+      $("studPageNumbers").setAttribute("aria-label", translate("pageNumbers"));
       $("suggestTitle").textContent = translate("suggestions", { count: state.suggestionLimit });
       $("suggestFootnote").textContent = translate("suggestionNote");
       $("crossPedigreeTitle").textContent = translate("crossPedigree");
@@ -1341,6 +2149,23 @@
       $("relatedMgsLabel").textContent = translate("relatedMgsFilter");
       $("relatedMgsSelect").setAttribute("aria-label", translate("relatedMgsFilter"));
       $("relatedPedigreeNote").textContent = translate("relatedPedigreeNote");
+      $("chartEyebrow").textContent = translate("chartEyebrow");
+      $("chartTitle").textContent = translate("chartTitle");
+      $("chartDescription").textContent = translate("chartDescription");
+      $("chartTypeLabel").textContent = translate("chartType");
+      $("chartType").setAttribute("aria-label", translate("chartType"));
+      $("chartType").querySelector('[value="bar"]').textContent = translate("chartTypeBar");
+      $("chartType").querySelector('[value="line"]').textContent = translate("chartTypeLine");
+      $("chartType").querySelector('[value="radar"]').textContent = translate("chartTypeRadar");
+      $("chartType").querySelector('[value="scatter"]').textContent = translate("chartTypeScatter");
+      $("chartBullsLabel").textContent = translate("chartBulls");
+      $("chartBullSummary").setAttribute("aria-label", translate("chartBulls"));
+      $("chartSuggestionsLabel").textContent = translate("chartSuggestionsOnly");
+      $("chartSelectedOnlyLabel").textContent = translate("chartSelectedOnly");
+      $("chartMetricsLabel").textContent = translate("chartMetrics");
+      $("chartMetricsHint").textContent = translate("chartMetricsHint");
+      $("chartDataTitle").textContent = translate("chartDataTitle");
+      $("chartScaleNote").textContent = translate("chartScaleNote");
       $("pedigreePopover").setAttribute("aria-label", translate("pedigreePopoverLabel"));
       if (state.activePedigreeCode) closePedigreePopover();
       $("today").textContent = new Intl.DateTimeFormat(languageLocale(), { dateStyle: "long" }).format(new Date());
@@ -1847,6 +2672,7 @@
           if (requestId !== state.analysisRequest) return;
           render();
           state.analysisStage = stage;
+          renderChart();
         }
         state.analysisFilterKey = currentFilterKey();
         setStatus("analysesReady");
@@ -2352,7 +3178,273 @@
         const metric = group.some((row) => parseNumber(row["DWP$"]) !== null) ? "DWP$" : "GNM$";
         top.push(...[...group].sort((a, b) => compareRows(a, b, [[metric, -1]])).slice(0, 2));
       });
-      $("studTableWrap").innerHTML = tableHTML(state.columns, top);
+      state.studRows = top;
+      const pageCount = Math.max(1, Math.ceil(top.length / state.studPageSize));
+      state.studPage = Math.min(state.studPage, pageCount);
+      const start = (state.studPage - 1) * state.studPageSize;
+      $("studTableWrap").innerHTML = tableHTML(state.columns, top.slice(start, start + state.studPageSize));
+      $("studPageInfo").textContent = top.length
+        ? translate("studPageInfo", {
+          start: (start + 1).toLocaleString(languageLocale()),
+          end: Math.min(start + state.studPageSize, top.length).toLocaleString(languageLocale()),
+          count: top.length.toLocaleString(languageLocale())
+        })
+        : translate("studPageInfoZero");
+      $("studPrev").disabled = state.studPage <= 1;
+      $("studNext").disabled = state.studPage >= pageCount;
+      renderStudPageNumbers(pageCount);
+    }
+
+    function renderStudPageNumbers(pageCount) {
+      const root = $("studPageNumbers");
+      root.replaceChildren();
+      const visible = new Set([1, pageCount, state.studPage - 1, state.studPage, state.studPage + 1]);
+      let previous = 0;
+      [...visible].filter((page) => page >= 1 && page <= pageCount).sort((a, b) => a - b).forEach((page) => {
+        if (previous && page - previous > 1) {
+          const ellipsis = document.createElement("span");
+          ellipsis.className = "page-ellipsis";
+          ellipsis.setAttribute("aria-label", translate("pageEllipsis"));
+          ellipsis.textContent = "...";
+          root.appendChild(ellipsis);
+        }
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = page.toLocaleString(languageLocale());
+        button.dataset.studPage = String(page);
+        if (page === state.studPage) button.setAttribute("aria-current", "page");
+        root.appendChild(button);
+        previous = page;
+      });
+    }
+
+    const CHART_COLORS = ["#2f6d54", "#c77948", "#567e9a", "#8c6b9b", "#bb9b3b", "#398d87", "#ba6670", "#64717a"];
+
+    function sireKey(row) {
+      return text(row["NAAB Code"]) || `${text(row["Sire Name"])}|${text(row.STUD)}`;
+    }
+
+    function chartCandidateRows() {
+      if (!state.analysisRows) return [];
+      return state.chartSuggestionsOnly
+        ? (state.analysisStage >= 3 ? state.suggestionRows.slice(0, 15) : [])
+        : state.studRows;
+    }
+
+    function renderChartControls() {
+      const options = $("chartBullList");
+      const picker = $("chartBullPicker");
+      const wasOpen = picker.open;
+      const candidates = chartCandidateRows();
+      const availableKeys = new Set(candidates.map(sireKey));
+      const hadSelectedSires = state.chartSelectedCodes.length > 0;
+      state.chartSelectedCodes = state.chartSelectedCodes.filter((code) => availableKeys.has(code));
+      if (!state.chartSelectedCodes.length && candidates.length && (!state.chartSelectionTouched || hadSelectedSires)) {
+        state.chartSelectedCodes = candidates.slice(0, Math.min(2, candidates.length)).map(sireKey);
+      }
+      const visibleCandidates = state.chartSelectedOnly
+        ? candidates.filter((row) => state.chartSelectedCodes.includes(sireKey(row)))
+        : candidates;
+      options.innerHTML = visibleCandidates.length
+        ? visibleCandidates.map((row) => {
+          const code = sireKey(row);
+          const label = `${text(row["Sire Name"]) || code} · ${text(row["NAAB Code"]) || text(row.STUD)}`;
+          return `<label class="chart-choice"><input type="checkbox" data-chart-sire="${escapeHTML(code)}"${state.chartSelectedCodes.includes(code) ? " checked" : ""}><span>${escapeHTML(label)}</span></label>`;
+        }).join("")
+        : `<div class="filter-empty">${escapeHTML(state.chartSelectedOnly ? translate("chartNoSelectedSires") : translate("chartNoSires"))}</div>`;
+      picker.open = wasOpen;
+      $("chartSelectedOnly").checked = state.chartSelectedOnly;
+      $("chartBullSummary").textContent = state.chartSelectedCodes.length
+        ? translate("chartSelectedCount", { count: state.chartSelectedCodes.length })
+        : translate("chartSelectSires");
+      $("chartSuggestionsOnly").checked = state.chartSuggestionsOnly;
+
+      const selectedRows = candidates.filter((row) => state.chartSelectedCodes.includes(sireKey(row)));
+      const metricRows = selectedRows.length ? selectedRows : candidates;
+      const availableMetrics = NUMERIC_COLUMNS.filter((column) =>
+        columnExists(column) && metricRows.some((row) => parseNumber(row[column]) !== null)
+      );
+      const hadSelectedMetrics = state.chartMetrics.length > 0;
+      state.chartMetrics = state.chartMetrics.filter((metric) => availableMetrics.includes(metric));
+      if (!state.chartMetrics.length && (!state.chartMetricsTouched || hadSelectedMetrics)) {
+        state.chartMetrics = ["DWP$", "GNM$", "GPTAM", "GPTAF", "GPTAP"].filter((metric) => availableMetrics.includes(metric)).slice(0, 5);
+        if (!state.chartMetrics.length && availableMetrics.length) state.chartMetrics = availableMetrics.slice(0, 5);
+      }
+      $("chartMetricOptions").innerHTML = availableMetrics.length
+        ? availableMetrics.map((metric) => `<label class="chart-metric-choice"><input type="checkbox" data-chart-metric="${escapeHTML(metric)}"${state.chartMetrics.includes(metric) ? " checked" : ""}><span>${escapeHTML(columnLabel(metric))}</span></label>`).join("")
+        : `<div class="filter-empty">${escapeHTML(translate("chartNoNumericMetrics"))}</div>`;
+      $("chartType").value = state.chartType;
+      return { candidates, selectedRows, availableMetrics };
+    }
+
+    function chartScale(rows, metrics) {
+      const bounds = new Map();
+      metrics.forEach((metric) => {
+        const values = rows.map((row) => parseNumber(row[metric])).filter((value) => value !== null);
+        bounds.set(metric, values.length
+          ? { min: Math.min(...values), max: Math.max(...values) }
+          : null);
+      });
+      return (row, metric) => {
+        const value = parseNumber(row[metric]);
+        const range = bounds.get(metric);
+        if (value === null || !range) return null;
+        if (range.max === range.min) return 50;
+        const score = ((value - range.min) / (range.max - range.min)) * 100;
+        return metric === "GSCS" ? 100 - score : score;
+      };
+    }
+
+    function chartSvg(rows, metrics, type) {
+      const width = 1000;
+      const scale = chartScale(rows, metrics);
+      const label = (value) => escapeHTML(value);
+      const grid = (x, y, plotWidth, plotHeight) => [0, 25, 50, 75, 100].map((tick) => {
+        const position = x + plotWidth * tick / 100;
+        return `<line x1="${position}" y1="${y}" x2="${position}" y2="${y + plotHeight}" stroke="#e5ece6" stroke-width="1"/><text x="${position}" y="${y - 10}" text-anchor="middle" fill="#72847a" font-size="12">${tick}</text>`;
+      }).join("");
+      let height = 440;
+      let body = "";
+
+      if (type === "bar") {
+        const groupHeight = Math.max(38, rows.length * 22 + 12);
+        height = 90 + metrics.length * groupHeight + 30;
+        const x = 245;
+        const plotWidth = 680;
+        const plotHeight = height - 90;
+        body = grid(x, 58, plotWidth, plotHeight);
+        metrics.forEach((metric, metricIndex) => {
+          const groupTop = 72 + metricIndex * groupHeight;
+          body += `<text x="225" y="${groupTop + 16}" text-anchor="end" fill="#385847" font-size="13" font-weight="700">${label(columnLabel(metric))}</text>`;
+          rows.forEach((row, rowIndex) => {
+            const value = scale(row, metric);
+            if (value === null) return;
+            const barY = groupTop + rowIndex * 22;
+            const barWidth = Math.max(2, plotWidth * value / 100);
+            body += `<rect x="${x}" y="${barY}" width="${barWidth}" height="15" rx="5" fill="${CHART_COLORS[rowIndex % CHART_COLORS.length]}"><title>${label(text(row["Sire Name"]) || text(row["NAAB Code"]))}: ${label(columnLabel(metric))} ${label(formatValue(metric, row[metric]))}</title></rect><text x="${x + barWidth + 8}" y="${barY + 12}" fill="#53695d" font-size="11">${label(formatValue(metric, row[metric]))}</text>`;
+          });
+        });
+      } else if (type === "line") {
+        const left = 90;
+        const right = 950;
+        const top = 50;
+        const bottom = 360;
+        const plotWidth = right - left;
+        const plotHeight = bottom - top;
+        const xAt = (index) => metrics.length === 1 ? left + plotWidth / 2 : left + index * plotWidth / (metrics.length - 1);
+        const yAt = (value) => bottom - (value / 100) * plotHeight;
+        height = 445;
+        [0, 25, 50, 75, 100].forEach((tick) => {
+          const y = yAt(tick);
+          body += `<line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="#e5ece6"/><text x="${left - 14}" y="${y + 4}" text-anchor="end" fill="#72847a" font-size="12">${tick}</text>`;
+        });
+        rows.forEach((row, rowIndex) => {
+          const points = metrics.map((metric, index) => {
+            const value = scale(row, metric);
+            return value === null ? null : { x: xAt(index), y: yAt(value), metric, value };
+          }).filter(Boolean);
+          if (points.length > 1) body += `<polyline points="${points.map((point) => `${point.x},${point.y}`).join(" ")}" fill="none" stroke="${CHART_COLORS[rowIndex % CHART_COLORS.length]}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+          points.forEach((point) => {
+            body += `<circle cx="${point.x}" cy="${point.y}" r="5" fill="${CHART_COLORS[rowIndex % CHART_COLORS.length]}" stroke="#fff" stroke-width="2"><title>${label(text(row["Sire Name"]) || text(row["NAAB Code"]))}: ${label(columnLabel(point.metric))} ${label(formatValue(point.metric, row[point.metric]))}</title></circle>`;
+          });
+        });
+        metrics.forEach((metric, index) => {
+          body += `<text x="${xAt(index)}" y="${bottom + 25}" text-anchor="middle" fill="#53695d" font-size="12">${label(columnLabel(metric))}</text>`;
+        });
+      } else if (type === "radar") {
+        const centerX = 500;
+        const centerY = 280;
+        const radius = 190;
+        height = 600;
+        [25, 50, 75, 100].forEach((tick) => {
+          const points = metrics.map((_, index) => {
+            const angle = -Math.PI / 2 + 2 * Math.PI * index / metrics.length;
+            return `${centerX + Math.cos(angle) * radius * tick / 100},${centerY + Math.sin(angle) * radius * tick / 100}`;
+          }).join(" ");
+          body += `<polygon points="${points}" fill="none" stroke="#e2eae3" stroke-width="1"/>`;
+        });
+        metrics.forEach((metric, index) => {
+          const angle = -Math.PI / 2 + 2 * Math.PI * index / metrics.length;
+          const x = centerX + Math.cos(angle) * radius;
+          const y = centerY + Math.sin(angle) * radius;
+          const anchor = Math.cos(angle) > .3 ? "start" : Math.cos(angle) < -.3 ? "end" : "middle";
+          body += `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="#dce6de"/><text x="${centerX + Math.cos(angle) * (radius + 24)}" y="${centerY + Math.sin(angle) * (radius + 24)}" text-anchor="${anchor}" dominant-baseline="middle" fill="#53695d" font-size="12">${label(columnLabel(metric))}</text>`;
+        });
+        rows.forEach((row, rowIndex) => {
+          const points = metrics.map((metric, index) => {
+            const value = scale(row, metric);
+            if (value === null) return null;
+            const angle = -Math.PI / 2 + 2 * Math.PI * index / metrics.length;
+            return { x: centerX + Math.cos(angle) * radius * value / 100, y: centerY + Math.sin(angle) * radius * value / 100, metric };
+          });
+          const validPoints = points.filter(Boolean);
+          if (validPoints.length > 1) {
+            body += `<polygon points="${validPoints.map((point) => `${point.x},${point.y}`).join(" ")}" fill="${CHART_COLORS[rowIndex % CHART_COLORS.length]}22" stroke="${CHART_COLORS[rowIndex % CHART_COLORS.length]}" stroke-width="2.5"/>`;
+          }
+          validPoints.forEach((point) => {
+            body += `<circle cx="${point.x}" cy="${point.y}" r="4" fill="${CHART_COLORS[rowIndex % CHART_COLORS.length]}"><title>${label(text(row["Sire Name"]) || text(row["NAAB Code"]))}: ${label(columnLabel(point.metric))} ${label(formatValue(point.metric, row[point.metric]))}</title></circle>`;
+          });
+        });
+      } else {
+        const [xMetric, yMetric] = metrics;
+        const left = 90;
+        const top = 42;
+        const plotWidth = 800;
+        const plotHeight = 340;
+        height = 465;
+        [0, 25, 50, 75, 100].forEach((tick) => {
+          const x = left + plotWidth * tick / 100;
+          const y = top + plotHeight - plotHeight * tick / 100;
+          body += `<line x1="${x}" y1="${top}" x2="${x}" y2="${top + plotHeight}" stroke="#e5ece6"/><line x1="${left}" y1="${y}" x2="${left + plotWidth}" y2="${y}" stroke="#e5ece6"/><text x="${x}" y="${top + plotHeight + 20}" text-anchor="middle" fill="#72847a" font-size="12">${tick}</text><text x="${left - 14}" y="${y + 4}" text-anchor="end" fill="#72847a" font-size="12">${tick}</text>`;
+        });
+        body += `<text x="${left + plotWidth / 2}" y="${height - 18}" text-anchor="middle" fill="#385847" font-size="13" font-weight="700">${label(columnLabel(xMetric))} · 0–100</text><text x="20" y="${top + plotHeight / 2}" transform="rotate(-90 20 ${top + plotHeight / 2})" text-anchor="middle" fill="#385847" font-size="13" font-weight="700">${label(columnLabel(yMetric))} · 0–100</text>`;
+        rows.forEach((row, rowIndex) => {
+          const xValue = scale(row, xMetric);
+          const yValue = scale(row, yMetric);
+          if (xValue === null || yValue === null) return;
+          const x = left + plotWidth * xValue / 100;
+          const y = top + plotHeight - plotHeight * yValue / 100;
+          const name = text(row["Sire Name"]) || text(row["NAAB Code"]);
+          body += `<circle cx="${x}" cy="${y}" r="7" fill="${CHART_COLORS[rowIndex % CHART_COLORS.length]}" stroke="#fff" stroke-width="2"><title>${label(name)}: ${label(columnLabel(xMetric))} ${label(formatValue(xMetric, row[xMetric]))}; ${label(columnLabel(yMetric))} ${label(formatValue(yMetric, row[yMetric]))}</title></circle><text x="${x + 10}" y="${y - 9}" fill="#40594d" font-size="11">${label(name)}</text>`;
+        });
+      }
+      return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHTML(`${translate(`chartType${type[0].toUpperCase()}${type.slice(1)}`)} · ${metrics.map(columnLabel).join(", ")}`)}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+    }
+
+    function renderChart() {
+      const { candidates, selectedRows, availableMetrics } = renderChartControls();
+      const activeMetrics = state.chartMetrics.filter((metric) =>
+        availableMetrics.includes(metric) && selectedRows.some((row) => parseNumber(row[metric]) !== null)
+      );
+      let message = "";
+      if (!selectedRows.length) message = translate(candidates.length ? "chartSelectAtLeastOneSire" : "chartNoSires");
+      else if (!state.chartMetrics.length) message = translate("chartSelectAtLeastOneMetric");
+      else if (!activeMetrics.length) message = translate("chartNoNumericMetrics");
+      else if (state.chartType === "scatter" && activeMetrics.length !== 2) message = translate("chartNeedTwoMetrics");
+      else if (state.chartType === "radar" && activeMetrics.length < 3) message = translate("chartNeedThreeMetrics");
+      const empty = $("chartEmpty");
+      empty.hidden = !message;
+      empty.textContent = message;
+      $("chartViewport").hidden = Boolean(message);
+      $("chartLegend").replaceChildren();
+      if (message) {
+        $("chartDataTable").innerHTML = "";
+        return;
+      }
+      selectedRows.forEach((row, index) => {
+        const item = document.createElement("span");
+        item.className = "chart-legend-item";
+        const swatch = document.createElement("span");
+        swatch.className = "chart-legend-swatch";
+        swatch.style.backgroundColor = CHART_COLORS[index % CHART_COLORS.length];
+        const textNode = document.createElement("span");
+        textNode.textContent = text(row["Sire Name"]) || text(row["NAAB Code"]);
+        item.append(swatch, textNode);
+        $("chartLegend").appendChild(item);
+      });
+      $("chartViewport").innerHTML = chartSvg(selectedRows, activeMetrics, state.chartType);
+      const columns = ["Sire Name", "NAAB Code", "STUD", ...activeMetrics].filter((column) => columnExists(column));
+      $("chartDataTable").innerHTML = tableHTML(columns, selectedRows);
     }
 
     function makePedigreeNode(labelKey, name, breed, knownCode = "") {
@@ -2980,6 +4072,8 @@
           : `<div class="analysis-loading" role="status"><span class="analysis-spinner" aria-hidden="true"></span><span>${escapeHTML(translate(key))}</span></div>`;
         ["statsTableWrap", "studTableWrap", "suggestTableWrap", "crossPedigreeWrap", "relatedPedigreeWrap"]
           .forEach((id) => { $(id).innerHTML = markup; });
+        state.studRows = [];
+        renderChart();
         return;
       }
       const rows = getFilteredRows();
@@ -2999,6 +4093,7 @@
       else renderAnalysisLoading($("crossPedigreeWrap"), "pedigreeLoading");
       if (state.analysisStage >= 5) renderRelatedPedigrees(state.suggestionRows.slice(0, 15));
       else renderAnalysisLoading($("relatedPedigreeWrap"), "relativesLoading");
+      renderChart();
     }
 
     function resetFilters() {
@@ -3040,6 +4135,28 @@
       state.pageCache.clear();
       loadPage(1);
     });
+    $("studPageSize").addEventListener("change", (event) => {
+      state.studPageSize = Number(event.target.value) || 15;
+      state.studPage = 1;
+      renderAll();
+    });
+    $("studPrev").addEventListener("click", () => {
+      state.studPage = Math.max(1, state.studPage - 1);
+      renderAll();
+    });
+    $("studNext").addEventListener("click", () => {
+      const pages = Math.ceil(state.studRows.length / state.studPageSize);
+      if (state.studPage < pages) {
+        state.studPage += 1;
+        renderAll();
+      }
+    });
+    $("studPageNumbers").addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-stud-page]");
+      if (!button) return;
+      state.studPage = Number(button.dataset.studPage);
+      renderAll();
+    });
     $("prev").addEventListener("click", () => loadPage(Math.max(1, state.page - 1)));
     $("next").addEventListener("click", () => {
       const pages = Math.ceil((state.totalRows || 0) / state.pageSize);
@@ -3061,6 +4178,55 @@
     $("relatedMgsSelect").addEventListener("change", (event) => {
       state.relatedMgs = event.target.value || "all";
       if (state.analysisRows) renderRelatedPedigrees(getBalancedSuggestionRows(15));
+    });
+    $("chartSuggestionsOnly").addEventListener("change", (event) => {
+      state.chartSuggestionsOnly = event.target.checked;
+      const candidates = chartCandidateRows();
+      const keys = new Set(candidates.map(sireKey));
+      state.chartSelectedCodes = state.chartSelectedCodes.filter((code) => keys.has(code));
+      if (!state.chartSelectedCodes.length && candidates.length) {
+        state.chartSelectedCodes = candidates.slice(0, Math.min(2, candidates.length)).map(sireKey);
+      }
+      renderChart();
+    });
+    $("chartBullOptions").addEventListener("change", (event) => {
+      if (event.target.closest("#chartSelectedOnly")) {
+        state.chartSelectedOnly = event.target.checked;
+        renderChart();
+        return;
+      }
+      const checkbox = event.target.closest("input[data-chart-sire]");
+      if (!checkbox) return;
+      const code = checkbox.dataset.chartSire;
+      state.chartSelectionTouched = true;
+      state.chartSelectedCodes = checkbox.checked
+        ? [...new Set([...state.chartSelectedCodes, code])]
+        : state.chartSelectedCodes.filter((selected) => selected !== code);
+      renderChart();
+    });
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest("#chartBullPicker")) $("chartBullPicker").open = false;
+    });
+    $("chartMetricOptions").addEventListener("change", (event) => {
+      const checkbox = event.target.closest("input[data-chart-metric]");
+      if (!checkbox) return;
+      const metric = checkbox.dataset.chartMetric;
+      if (checkbox.checked && state.chartMetrics.length >= 8) {
+        checkbox.checked = false;
+        $("chartEmpty").hidden = false;
+        $("chartEmpty").textContent = translate("chartMetricsLimit");
+        $("chartViewport").hidden = true;
+        return;
+      }
+      state.chartMetricsTouched = true;
+      state.chartMetrics = checkbox.checked
+        ? [...new Set([...state.chartMetrics, metric])]
+        : state.chartMetrics.filter((selected) => selected !== metric);
+      renderChart();
+    });
+    $("chartType").addEventListener("change", (event) => {
+      state.chartType = event.target.value;
+      renderChart();
     });
     ["searchCodeName", "searchPedigree"].forEach((id) => {
       $(id).addEventListener("input", () => {
