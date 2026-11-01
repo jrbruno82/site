@@ -329,6 +329,13 @@ if (MODE === 'compare') {
   const S8 = {
     E:  { nome: 'Momento + tendência (atual)', g: { L: [72, 168], th: [0.05, 0.1], H: [72, 168] },
           f: p => (a, i) => h23(a, i) && mom(a, i, p.L) > p.th && a.c[i] > a.e200[i] ? exitOf(a, i, p) : null },
+    // avaliação contínua (a cada hora) em vez de uma vez por dia
+    EH:  { nome: 'Momento + tendência, avaliado toda hora', g: { L: [72], th: [0.05], H: [72] },
+          f: p => (a, i) => mom(a, i, p.L) > p.th && a.c[i] > a.e200[i] ? exitOf(a, i, p) : null },
+    EHX: { nome: 'Momento + tendência, toda hora, só no cruzamento dos 5%', g: { L: [72], th: [0.05], H: [72] },
+          f: p => (a, i) => mom(a, i, p.L) > p.th && !(mom(a, i - 1, p.L) > p.th) && a.c[i] > a.e200[i] ? exitOf(a, i, p) : null },
+    EH4: { nome: 'Momento + tendência, avaliado a cada 4h', g: { L: [72], th: [0.05], H: [72] },
+          f: p => (a, i) => new Date(a.t[i]).getUTCHours() % 4 === 3 && mom(a, i, p.L) > p.th && a.c[i] > a.e200[i] ? exitOf(a, i, p) : null },
     XS: { nome: 'Força relativa (líderes do dia)', g: { L: [72, 168], N: [3, 5, 8], H: [72, 168] },
           f: p => (a, i) => h23(a, i) && a.c[i] > a.e200[i] && mom(a, i, p.L) > 0 && rankAt(a.t[i], p.L).get(a.s) < p.N ? exitOf(a, i, p) : null },
     B:  { nome: 'Rompimento de máxima (Donchian)', g: { N: [48, 96], vol: [0, 1.5], H: [72, 168] },
@@ -407,7 +414,9 @@ if (MODE === 'compare') {
       n: tr.length, acerto: tr.length ? +(tr.filter(r => r > 0).length / tr.length * 100).toFixed(0) : 0, morreu: dead };
   }
   const OUT = {};
+  const ONLY = process.argv[6] ? new Set(process.argv[6].split(',')) : null;
   for (const [key, st] of Object.entries(S8)) {
+    if (ONLY && !ONLY.has(key)) continue;
     const all = grid(st.g).map(p => ({ p, ...evalAll(st.f(p)) })), rows = all.filter(r => r.is.n >= 60);
     if (!rows.length) { console.log(`\n${key} · ${st.nome}: sinais insuficientes (máx. ${Math.max(...all.map(r => r.is.n || 0))} no IS) — descartada`); continue; }
     const best = rows.sort((x, y) => y.is.mean - x.is.mean)[0];
