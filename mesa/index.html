@@ -50,6 +50,30 @@ header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:4px 
 button{font:inherit;font-size:13px;font-weight:500;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
 button:hover{border-color:var(--dim)}
 button.danger{color:var(--down)}
+.sess{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 6px 6px 12px}
+.sess .sess-l{color:var(--muted)}
+.sess b{font-family:"JetBrains Mono",monospace;font-weight:600}
+.sess.over{border-color:var(--accent);background:var(--accent-bg)}
+.sess button{padding:5px 10px}
+.pager{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:10px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.pager button{padding:4px 10px;font-size:12px}
+.pager button:disabled{opacity:.4;cursor:default}
+.pgroup{grid-column:1/-1;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 2px 0;display:flex;align-items:center;gap:8px}
+.pgroup::after{content:"";flex:1;height:1px;background:var(--line)}
+.pgroup.up{color:var(--up)} .pgroup.down{color:var(--down)}
+.lesson{font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:8px;padding-top:8px}
+.lesson b{color:var(--text);font-weight:600}
+.h3{font-size:13px;font-weight:600;margin:16px 0 8px}
+.lessons{display:grid;gap:8px}
+.lrow{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px}
+.lrow .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.lrow ul{margin:4px 0 0;padding-left:18px;color:var(--muted)}
+.lrow ul b{color:var(--text);font-weight:500}
+.lrow .shifts{color:var(--dim);font-size:11.5px;margin-top:6px;font-family:"JetBrains Mono",monospace}
+.an-help{color:var(--muted);font-size:12px;margin:-4px 0 10px;max-width:980px}
+.an-help b{color:var(--text);font-weight:500}
+td.ck.up::before{content:"✓ "} td.ck.down::before{content:"✕ "}
+td.ck.soft.down{color:var(--accent)} td.ck.soft.down::before{content:"– "}
 .cap{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
 .cap select{font-size:13px;padding:6px 8px;border-radius:8px}
 .note{background:var(--accent-bg);color:var(--accent);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px}
@@ -126,8 +150,14 @@ footer{color:var(--dim);font-size:12px;padding:16px 0 8px;line-height:1.6}
       <span>UTC <b id="clkU">—</b></span>
       <span>Ativo há <b id="uptime">—</b></span>
     </div>
+    <div class="sess" id="sessBox">
+      <span class="sess-l">Sessão termina em</span> <b id="sessEnd">—</b> <span class="muted" id="sessLeft"></span>
+      <button id="bRenew" title="Estende a sessão por mais 72h a partir do término atual (ou de agora, se já terminou)">Renovar +72h</button>
+    </div>
     <div class="btns">
       <label class="cap">Capital simulado <select id="capSel"></select></label>
+      <label class="cap">Estratégia <select id="stratSel"></select></label>
+      <label class="cap">Apetite a risco <select id="riskSel"></select></label>
       <button id="bPause">Pausar entradas</button>
       <button id="bCsv">Exportar operações (CSV)</button>
       <button id="bTxt">Exportar planilha (TXT)</button>
@@ -142,8 +172,8 @@ footer{color:var(--dim);font-size:12px;padding:16px 0 8px;line-height:1.6}
     <div class="card kpi"><div class="l">Resultado líquido</div><div class="v" id="kPnl">—</div><div class="s" id="kPnlS">—</div></div>
     <div class="card kpi"><div class="l">Acertos</div><div class="v up" id="kW">—</div><div class="s" id="kWS">—</div></div>
     <div class="card kpi"><div class="l">Perdas</div><div class="v down" id="kL">—</div><div class="s" id="kLS">—</div></div>
-    <div class="card kpi"><div class="l">Risco aberto (máx. 6%)</div><div class="v" id="kRisk">—</div><div class="bar"><i id="kRiskBar" style="width:0"></i></div></div>
-    <div class="card kpi"><div class="l">Custos pagos</div><div class="v" id="kCost">—</div><div class="s" id="kCostS">—</div></div>
+    <div class="card kpi"><div class="l" id="kRiskL">Risco aberto</div><div class="v" id="kRisk">—</div><div class="bar"><i id="kRiskBar" style="width:0"></i></div></div>
+    <div class="card kpi"><div class="l">Taxas pagas</div><div class="v" id="kCost">—</div><div class="s" id="kCostS">—</div></div>
     <div class="card kpi"><div class="l">Se paga?</div><div class="v" id="kSelf">—</div><div class="s" id="kSelfS">—</div></div>
   </section>
 
@@ -164,8 +194,8 @@ footer{color:var(--dim);font-size:12px;padding:16px 0 8px;line-height:1.6}
         <dt>Perda média</dt><dd class="down" id="avgL">—</dd>
         <dt>Fator de lucro</dt><dd id="pf">—</dd>
         <dt>Expectativa por operação</dt><dd id="expt">—</dd>
-        <dt>p estimado (Kelly)</dt><dd id="pEst">—</dd>
-        <dt>Saídas: alvo / stop / tempo</dt><dd id="exits">—</dd>
+        <dt>p · b usados no Kelly</dt><dd id="pEst">—</dd>
+        <dt>Saídas por motivo</dt><dd id="exits">—</dd>
       </dl>
     </div>
   </section>
@@ -187,14 +217,28 @@ footer{color:var(--dim);font-size:12px;padding:16px 0 8px;line-height:1.6}
     <div class="card">
       <h2>Scanner <span class="sub" id="scanSub">aguardando primeiro scan…</span></h2>
       <div class="tbl"><table>
-        <thead><tr><th>Ativo</th><th class="n">Preço</th><th class="n">VWAP 24h</th><th class="n">Desvio</th><th class="n">Var. 24h</th><th class="n">Volume 24h</th><th>Situação</th></tr></thead>
-        <tbody id="scanBody"><tr><td colspan="7" class="empty">—</td></tr></tbody>
+        <thead><tr><th>Ativo (maiores altas do universo)</th><th class="n">Preço</th><th class="n">Var. 24h</th><th class="n">Volume 24h</th><th>Situação</th></tr></thead>
+        <tbody id="scanBody"><tr><td colspan="5" class="empty">—</td></tr></tbody>
       </table></div>
     </div>
     <div class="card">
       <h2>Regras do agente</h2>
       <ul class="rules" id="rules"></ul>
     </div>
+  </section>
+
+  <section class="card" style="margin-bottom:12px">
+    <h2>Análise de entrada · <span id="anStrat"></span> <span class="sub" id="anSub">aguardando a primeira avaliação diária…</span></h2>
+    <p class="an-help"><b>A análise roda continuamente:</b> a cada hora fechada o agente reanalisa os <b>60 pares USDT mais líquidos</b> e mostra aqui quem cumpre o critério naquele momento.
+      <span id="anSched"></span> Critério da estratégia escolhida no topo: <b id="anRule"></b>. Também exige spread ≤ 0,2% e Kelly positivo. Stop inicial a 3×ATR, que sobe a cada hora (nunca desce).
+      Trocar a estratégia vale para as próximas entradas; posições abertas seguem a estratégia com que entraram.
+      Se faltar vaga, entra primeiro quem tem maior <b>expectativa na memória de aprendizado</b> (seção abaixo). A coluna “Histórico do ativo” roda a mesma estratégia nos últimos ~40 dias do ativo:
+      é registrada em cada decisão, mas <b>não bloqueia</b>, porque na pesquisa bloquear ativos com histórico recente ruim cortou justamente as melhores operações.
+      <span id="anStats"></span></p>
+    <div class="tbl"><table>
+      <thead><tr><th>Ativo</th><th class="n">Critério de entrada</th><th class="n">vs EMA200 1h</th><th class="n">ATR 1h</th><th class="n">Stop inicial</th><th class="n">Spread</th><th class="n">Histórico do ativo (~40 dias)</th><th class="n">p · b · Kelly</th><th class="n">Expectativa aprendida</th><th>Decisão</th></tr></thead>
+      <tbody id="anBody"><tr><td colspan="10" class="empty">—</td></tr></tbody>
+    </table></div>
   </section>
 
   <section class="card" style="margin-bottom:12px">
@@ -205,10 +249,33 @@ footer{color:var(--dim);font-size:12px;padding:16px 0 8px;line-height:1.6}
     </table></div>
   </section>
 
+  <section class="card" style="margin-bottom:12px">
+    <h2>Gráficos das operações encerradas <span class="sub" id="ccSub">ganhos primeiro, depois perdas · passe o mouse para ver cada ponto</span></h2>
+    <div class="pcharts" id="ccharts"></div>
+  </section>
+
+  <section class="card" style="margin-bottom:12px">
+    <h2>Memória de aprendizado <span class="sub" id="knSub"></span>
+      <span class="right"><button id="bKnExp">Exportar conhecimento</button><button id="bKnImp">Importar conhecimento</button><input type="file" id="knFile" accept="application/json,.json" hidden></span>
+    </h2>
+    <p class="an-help">Cada operação encerrada da estratégia entra aqui, com as características da entrada (alta de 72h, volatilidade, distância da EMA200 e força do BTC).
+      Cada <b>perda ganha uma revisão</b> com o diagnóstico do que deu errado, registrada na trilha de auditoria. O agente aprende com <b>ganhos e perdas juntos</b>, porque olhar só as perdas distorce a estatística.
+      O ponto de partida é a pesquisa, usando para cada faixa o <b>pior resultado entre os dois períodos</b> (conservador). A experiência real do agente pesa cada vez mais: a pesquisa vale no máximo 40 operações por faixa.
+      <b>Como isso muda as entradas:</b> as vagas vão para os sinais com maior expectativa. Na validação (aprendendo só com mai–ago e testando em ago–out, 3 vagas por dia), isso rendeu +4,6% por operação, contra +3,6% escolhendo pela maior alta.
+      Nos apetites Baixo e Médio, sinais com expectativa negativa nem entram. Aumentar o tamanho das posições pela “convicção” foi testado, não ajudou e por isso não é usado.
+      Este conhecimento fica salvo no navegador, separado da conta: sobrevive a “Zerar conta”. Use “Exportar conhecimento” para guardar uma cópia.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Característica da entrada</th><th>Faixa</th><th class="n">Pesquisa (n · média/op)</th><th class="n">Agente (n · média/op)</th><th class="n">Estimativa atual</th><th>Efeito na escolha</th></tr></thead>
+      <tbody id="knBody"></tbody>
+    </table></div>
+    <h3 class="h3">Lições das perdas</h3>
+    <div id="knLessons"></div>
+  </section>
+
   <section class="card">
     <h2>Trilha de auditoria <span class="sub">cada decisão é encadeada por SHA-256 · clique numa linha para ver o registro completo</span>
       <span class="right">
-        <select id="fType"><option value="">Todos</option><option>ENTRADA</option><option>SAIDA</option><option>REJEITADO</option><option>SCAN</option><option value="CAPITAL_G">Capital</option><option value="SISTEMA">Sistema</option></select>
+        <select id="fType"><option value="">Todos</option><option>ENTRADA</option><option>SAIDA</option><option>REJEITADO</option><option>SCAN</option><option>AJUSTE</option><option>AVALIACAO</option><option>LICAO</option><option value="CAPITAL_G">Configuração</option><option value="SISTEMA">Sistema</option></select>
         <button id="bVerify">Verificar integridade</button>
       </span>
     </h2>
@@ -217,12 +284,19 @@ footer{color:var(--dim);font-size:12px;padding:16px 0 8px;line-height:1.6}
       <thead><tr><th class="n">Seq</th><th>Data/hora</th><th>Tipo</th><th>Ativo</th><th>Decisão</th><th>Hash</th></tr></thead>
       <tbody id="logBody"></tbody>
     </table></div>
+    <div class="pager" id="logPager"></div>
   </section>
 
   <footer>
     Simulação educacional: nenhuma ordem real é enviada e nada aqui é recomendação de investimento. Preços públicos da Binance (spot, pares USDT/USDC/FDUSD).
     O agente só opera enquanto esta página estiver aberta; ao reabrir, as posições são reavaliadas pelo preço do momento (um stop pode sair pior que o planejado).
-    Estado salvo no navegador. Exporte o JSON para guardar a trilha fora dele.
+    Estado salvo no navegador. Exporte o JSON para guardar a trilha fora dele.<br>
+    <b>Com a página fechada:</b> esta é uma página estática (sem servidor), então o código só roda com ela aberta. Ao reabrir, o agente reconstitui hora a hora o período em que ficou fechada,
+    com os candles reais de 1h da Binance: stops (pela mínima de cada hora), stop móvel, prazos, avaliações diárias das 21:00 (Brasília) e entradas, tudo registrado na trilha com o horário em que teria acontecido
+    e a marca “reconstituído”. Nas avaliações reconstituídas a compra usa o preço das 00:00 UTC e o spread não pode ser verificado. A conta fica guardada <b>neste navegador</b>: abra sempre no mesmo navegador e aparelho.
+    Durante a sessão (72h, renovável) o agente abre posições; depois dela, só administra as abertas até fecharem.<br>
+    <b>Custos da operação real:</b> os resultados e simulações daqui incluem as taxas da corretora (0,1% por lado) e a derrapagem, mas <b>não</b> incluem custos operacionais:
+    servidor ou computador ligado 24h, dados de mercado, internet, impostos sobre ganhos e eventuais saques. Na operação real eles existem e reduzem o resultado, com peso maior quanto menor o capital.
   </footer>
 </div>
 
@@ -231,33 +305,114 @@ footer{color:var(--dim);font-size:12px;padding:16px 0 8px;line-height:1.6}
 // ───────── Configuração ─────────
 const CFG = {
   START: 50,              // capital simulado (US$)
-  MAX_RISK: 0.06,         // risco total simultâneo máximo (perda até os stops) sobre o patrimônio
+  MAX_RISK: 0.06,         // teto absoluto de risco simultâneo (perda até os stops), em qualquer apetite a risco
   MAX_MARKETS: 1000,      // teto de mercados escaneados
-  MISP_MIN: 0.02,         // desvio mínimo abaixo do VWAP 24h para considerar preço errado
-  MISP_MAX: 0.08,         // desvio máximo (acima disso tende a ser notícia, não erro de preço)
   MIN_QVOL: 2e6,          // liquidez mínima: US$ 2 mi negociados em 24h
   FEE: 0.001,             // taxa por lado (0,1%)
   SLIP: 0.0005,           // derrapagem simulada por lado
   CAPITALS: [50, 100, 150, 200, 250, 300], // opções do seletor de capital
   MIN_NOTIONAL: 5,        // ordem mínima da corretora
-  CASH_BUFFER: 0.05,      // 5% do patrimônio fica em caixa para pagar o custo operacional
-  KELLY_MULT: 0.5,        // meio Kelly
-  PRIOR_A: 5.5, PRIOR_B: 4.5, // prior Beta: p inicial 55%, peso de 10 operações
-  TGT: 0.6, STP: 0.4,     // alvo = 60% da volta ao VWAP; stop = 40% do desvio abaixo da entrada
-  TIME_STOP: 4 * 3600e3,
+  CASH_BUFFER: 0.05,      // 5% do patrimônio fica em caixa
+  CLOSED_CHARTS: 24,      // gráficos das últimas 24 operações encerradas
+  CLOSED_HIST_KEEP: 60,   // guarda o histórico de preço das últimas 60 encerradas
   COOLDOWN: 30 * 60e3,
-  COST_HOUR: 0.01,        // custo operacional do agente (US$/h) — ele precisa se pagar
+  // Custo operacional (servidor, dados, internet, impostos) fica FORA do cálculo; na operação real ele existe.
   SCAN_MS: 60e3, TICK_MS: 5e3, HEARTBEAT_MS: 15 * 60e3,
-  LOG_CAP: 20000, EQ_CAP: 3000, HIST_CAP: 3000,
+  LOG_CAP: 20000, EQ_CAP: 3000, HIST_CAP: 3000, LOG_PAGE: 15,
+  // Regras comuns às estratégias (parâmetros de cada uma em STRATS; pesquisa/research.mjs, 56 ativos, 18/mai–31/out/2026)
+  UNIVERSE: 60,           // os 60 pares USDT mais líquidos, como na pesquisa
+  KLINES_1H: 1000,        // ~41 dias de candles de 1h por ativo
+  EMA_LEN: 200,           // tendência: fechamento acima da EMA200 de 1h
+  ATR_K: 3,               // stop inicial e móvel a 3×ATR(14) de 1h
+  ENTRY_WINDOW_H: 2,      // avaliação às 00:00 UTC; se a página abrir até 2h depois, ainda avalia ao vivo
+  SESSION_H: 72,          // sessão de operação: 72h, renovável pelo botão
+  CATCHUP_MIN_MS: 3 * 60e3, // acima de 3 min sem rodar, reconstitui o período perdido com candles reais
+  CATCHUP_MAX_D: 25,      // reconstitui no máximo os últimos 25 dias
+  PRIOR_N: 30,            // peso (em operações) da pesquisa frente aos resultados reais do agente
+  MAX_SPREAD: 0.002,      // spread máximo de 0,2%
+  // Estratégia anterior (reversão ao VWAP): mantida só para encerrar posições abertas antes da troca
+  TGT: 0.6, STP: 0.4, TIME_STOP: 4 * 3600e3, BE_TRIGGER: 0.6,
 };
-const STABLE = new Set(['USDC','FDUSD','TUSD','BUSD','DAI','USDP','PYUSD','USDE','USD1','BFUSD','XUSD','EUR','EURI','AEUR','TRY','BRL','GBP','AUD','UST','USTC','USDS','RLUSD','PAX','SUSD']);
+// fora do universo: stablecoins, moedas fiduciárias e tokens lastreados em ouro
+const STABLE = new Set(['USDC','FDUSD','TUSD','BUSD','DAI','USDP','PYUSD','USDE','USD1','BFUSD','XUSD','EUR','EURI','AEUR','TRY','BRL','GBP','AUD','UST','USTC','USDS','RLUSD','PAX','SUSD','U','RWUSD','XAUT','PAXG']);
 const QUOTES = ['FDUSD', 'USDT', 'USDC']; // pares cotados em dólar: a conta em US$ vale para todos
 const BASES = ['https://data-api.binance.vision', 'https://api.binance.com'];
 const LS_KEY = 'mesa-simulada-v1';
-const SYS_TYPES = new Set(['INICIO','RETOMADA','PAUSA','RETOMAR','ERRO','MORTE','RESET']);
-const CAP_TYPES = new Set(['APORTE','REDUCAO','RESGATE','CAPITAL']);
+const SYS_TYPES = new Set(['INICIO','RETOMADA','PAUSA','RETOMAR','ERRO','MORTE','RESET','MEMORIA']);
+const CAP_TYPES = new Set(['APORTE','REDUCAO','RESGATE','CAPITAL','APETITE','ESTRATEGIA']);
 // Mais capital, mais operações simultâneas: US$ 50 → 3, +2 a cada US$ 50 (US$ 300 → 13)
 const maxPosFor = c => 3 + Math.round((c - 50) / 50) * 2;
+// Apetite a risco: fração do Kelly, teto de risco total (nunca acima dos 6%), tamanho de cada posição em "vagas"
+// e se exige expectativa positiva na memória de aprendizado para entrar
+const RISK_LEVELS = {
+  baixo:   { label: 'Baixo',   kelly: 0.25, cap: 0.02, slot: 0.6, needEv: true,  desc: '¼ Kelly · risco total até 2% · posições de 0,6 vaga · só entra com expectativa positiva no aprendizado' },
+  medio:   { label: 'Médio',   kelly: 0.5,  cap: 0.04, slot: 1.0, needEv: true,  desc: '½ Kelly · risco total até 4% · posições de 1 vaga · só entra com expectativa positiva no aprendizado' },
+  alto:    { label: 'Alto',    kelly: 0.5,  cap: 0.06, slot: 1.5, needEv: false, desc: '½ Kelly · risco total até 6% · posições de até 1,5 vaga · aceita todos os sinais, os melhores primeiro' },
+  gigante: { label: 'Gigante', kelly: 1.0,  cap: 0.06, slot: 2.0, needEv: false, desc: 'Kelly cheio · risco total até 6% (teto absoluto) · posições de até 2 vagas · aceita todos os sinais, os melhores primeiro' },
+};
+const riskLvl = () => RISK_LEVELS[S.risk] || RISK_LEVELS.alto;
+// ───────── Estratégias (pesquisa/research.mjs, modo compare) ─────────
+// Todas avaliadas uma vez por dia no fechamento do candle de 1h das 23:00 UTC, com stop móvel de 3×ATR(14) e saída por prazo.
+// Dados de cada uma vindos da pesquisa (56 ativos, mai–out/2026): estatísticas por operação, ponto de partida da memória de
+// aprendizado (o pior dos dois períodos em cada faixa) e simulação da carteira por capital e apetite, SEM custo operacional.
+// sim[capital][apetite] = [ganho %/mês no período todo, maior queda %, %/mês antes de 26/ago, %/mês depois, total %, operações, acerto %, morreu]
+const STRAT_DATA = {"E":{"params":{"L":72,"th":0.05,"H":72},"mu0":0.00719,"prior":{"mom":[[585,0.00819],[317,0.01189],[103,-0.01745],[35,-0.08182]],"atrPct":[[404,0.0092],[489,0.0043],[97,-0.00607],[50,-0.10277]],"vsEma":[[182,-0.00399],[461,0.01356],[254,0.01315],[143,-0.01779]],"btc72":[[52,-0.00083],[231,-0.02348],[359,-0.01446],[398,0.02553]]},"p":0.3481,"aw":0.11253,"al":0.04088,"opIs":0.719,"opOos":1.79,"acerto":34.8,"sim":{"50":{"baixo":[5.2,-10.5,0,12.7,29.9,137,29,0],"medio":[26.4,-22.8,-2,77.9,232.1,150,27,0],"alto":[19.3,-43.1,-11.8,79.1,147.2,185,30,0],"gigante":[12.1,-43.2,-13,57.5,79.4,181,29,0]},"100":{"baixo":[16.1,-18.6,0.5,41.1,115.2,206,29,0],"medio":[25.8,-23.7,1,68.9,224.4,218,30,0],"alto":[24.7,-40.2,-11.7,98.1,210,318,30,0],"gigante":[25.3,-44,-13.6,106.5,218.6,255,31,0]},"150":{"baixo":[11.1,-15.6,-0.9,29.7,71.8,257,28,0],"medio":[17.8,-20.5,-0.2,47.2,132.1,266,29,0],"alto":[19.1,-34.8,-6.9,66,145.7,395,30,0],"gigante":[23.6,-39,-10.8,91.9,197.1,326,30,0]},"200":{"baixo":[9.1,-13.4,0.5,21.7,56.1,291,28,0],"medio":[14.7,-18.1,1.5,35.2,102.3,302,29,0],"alto":[15.6,-29.6,-6.3,53.1,110.1,460,30,0],"gigante":[19.5,-35.5,-7.2,67.9,149.5,392,30,0]},"250":{"baixo":[7.6,-11.7,0.7,17.6,45.3,321,29,0],"medio":[12.9,-16.2,1.3,30.5,86.2,334,30,0],"alto":[12.8,-28.7,-5.9,44,85.4,541,31,0],"gigante":[16.7,-33.1,-7.4,59.2,120.7,451,29,0]},"300":{"baixo":[7.2,-10.4,0.9,16.3,42.8,348,30,0],"medio":[12.1,-14.7,2.1,27,79.5,360,31,0],"alto":[11.9,-28.2,-5.1,39.4,77.7,583,31,0],"gigante":[14.3,-28.8,-6.1,48.8,98.1,498,30,0]}}},"EL":{"params":{"L":72,"th":0.05,"H":168},"mu0":0.00683,"prior":{"mom":[[580,0.00708],[310,0.0122],[98,-0.01684],[32,-0.08182]],"atrPct":[[400,0.01194],[476,0.01012],[96,-0.00575],[48,-0.10614]],"vsEma":[[181,-0.00444],[458,0.01446],[246,0.01373],[135,-0.01884]],"btc72":[[52,-0.00415],[226,-0.02411],[352,-0.01318],[390,0.02685]]},"p":0.351,"aw":0.11454,"al":0.0407,"opIs":0.683,"opOos":2.093,"acerto":35.1,"sim":{"50":{"baixo":[12.2,-16.6,1.8,27.8,80.2,142,32,0],"medio":[28.7,-27.3,-2.5,86.7,264.7,156,30,0],"alto":[36.1,-37.4,-9.3,134.8,386,173,34,0],"gigante":[31.7,-42.7,-11.2,123.9,311.1,166,34,0]},"100":{"baixo":[16.8,-22.8,-0.8,45.4,121.4,207,29,0],"medio":[24.5,-29.5,-2.6,73.2,207.7,227,30,0],"alto":[25.3,-41.5,-13.2,105.1,217.4,291,32,0],"gigante":[32.2,-42.9,-13.8,134.9,318.6,237,32,0]},"150":{"baixo":[12.2,-19.6,-0.7,32.1,80.4,260,31,0],"medio":[18.4,-25.9,-0.7,49.8,137.6,282,30,0],"alto":[19.6,-36.8,-8.8,72.3,151,361,32,0],"gigante":[25.7,-38.2,-11,99.9,223.1,302,32,0]},"200":{"baixo":[9.6,-16.8,0.3,23.4,60,299,30,0],"medio":[15.9,-22.8,1.1,39.2,113.1,320,30,0],"alto":[17.7,-28.4,-5,57,131,426,33,0],"gigante":[20.3,-37.7,-9.1,75.3,158.4,357,32,0]},"250":{"baixo":[8.2,-14.7,0.4,19.5,49.6,328,30,0],"medio":[14.1,-20.3,1.7,33,96.4,351,31,0],"alto":[15.4,-26.7,-5.3,50.6,108.5,507,32,0],"gigante":[18.6,-30.5,-6.7,63.6,139.5,415,33,0]},"300":{"baixo":[7.5,-13,1,17,45.2,350,32,0],"medio":[11.9,-18.5,1.7,27.2,77.9,385,31,0],"alto":[13.9,-27,-5.4,46,94.6,542,32,0],"gigante":[17.1,-27,-4.8,54.7,124.6,470,33,0]}}},"E10":{"params":{"L":72,"th":0.1,"H":72},"mu0":0.00635,"prior":{"mom":[[0,0.00635],[406,0.01042],[127,-0.00892],[35,-0.08182]],"atrPct":[[112,0.0111],[330,0.00276],[80,-0.00005],[46,-0.12059]],"vsEma":[[18,0.00069],[152,0.00681],[239,0.0147],[159,-0.01193]],"btc72":[[31,-0.00163],[118,-0.06116],[162,-0.01721],[257,0.02756]]},"p":0.3468,"aw":0.14043,"al":0.05018,"opIs":0.635,"opOos":2.524,"acerto":34.7,"sim":{"50":{"baixo":[15.6,-23.3,-0.9,42.3,110.8,77,30,0],"medio":[23.5,-27.6,-3.6,72.2,194.9,83,28,0],"alto":[27.2,-41.6,-12.5,110.1,243,165,30,0],"gigante":[21.9,-49.8,-17.3,105.6,176.7,154,32,0]},"100":{"baixo":[12.1,-18.6,-0.8,32.1,79.4,105,30,0],"medio":[20.1,-23.2,0.2,53.2,155.7,108,31,0],"alto":[16,-44.6,-13,70.7,114.3,245,29,0],"gigante":[20.7,-45.3,-13.5,88.9,162.9,207,29,0]},"150":{"baixo":[9.8,-16,0.3,23.9,61.4,122,31,0],"medio":[15.9,-21.3,1.6,38.5,113.4,129,32,0],"alto":[13.9,-40.4,-11.2,59.1,94.8,283,30,0],"gigante":[15.1,-45.2,-13.5,69,105.9,254,29,0]},"200":{"baixo":[8.2,-13.5,0.9,18.9,49.9,136,33,0],"medio":[14.2,-18.3,2.6,31.8,97.2,142,34,0],"alto":[12.1,-38.3,-10.3,51.4,80,321,30,0],"gigante":[14.5,-40.9,-10.9,60.3,100.4,283,30,0]},"250":{"baixo":[7.6,-11.5,1.5,16.3,45.6,149,35,0],"medio":[12.8,-15.9,2.9,27.5,85.1,157,36,0],"alto":[9.2,-35.5,-9.3,40.2,57.3,356,31,0],"gigante":[13.5,-38.7,-10.7,56.6,91.4,315,30,0]},"300":{"baixo":[7,-10.2,1.5,14.7,41.4,162,36,0],"medio":[11.8,-14.4,2.8,25.1,77.1,169,37,0],"alto":[6.6,-33.7,-8.7,31.2,38.9,385,30,0],"gigante":[10.3,-36.9,-9.9,44.9,65.6,337,31,0]}}},"XS":{"params":{"L":72,"N":8,"H":72},"mu0":-0.00323,"prior":{"mom":[[407,-0.00285],[198,-0.0007],[93,-0.03449],[39,-0.08367]],"atrPct":[[205,0],[384,-0.00096],[97,-0.01768],[51,-0.10277]],"vsEma":[[180,-0.00475],[255,-0.00436],[162,0.00901],[140,-0.02043]],"btc72":[[84,-0.00893],[276,-0.0176],[285,-0.01407],[92,0.02669]]},"p":0.2972,"aw":0.1327,"al":0.04603,"opIs":-0.323,"opOos":2,"acerto":29.7,"sim":{"50":{"baixo":[4,-9.4,0.9,8.2,22,32,38,0],"medio":[7.8,-17.6,2.4,15.6,47.3,34,35,0],"alto":[20.3,-39.7,4.6,45.2,158.2,234,35,0],"gigante":[-0.3,-52.2,-2.4,2.5,-1.6,189,33,0]},"100":{"baixo":[3.9,-9.7,1.4,7.2,21.5,44,39,0],"medio":[6.5,-16.7,2.1,12.6,37.9,49,41,0],"alto":[25.6,-35.8,-0.3,71.4,222.3,355,30,0],"gigante":[24.5,-42.2,1,64.8,207.2,277,34,0]},"150":{"baixo":[3.1,-7.9,1.2,5.6,16.8,56,39,0],"medio":[4.9,-14.4,2.2,8.7,27.9,62,37,0],"alto":[18.6,-37.9,-2.7,54.8,139.6,455,30,0],"gigante":[25.3,-37.9,-2.8,76.2,218,359,30,0]},"200":{"baixo":[2.5,-7.3,1.2,4.4,13.7,65,37,0],"medio":[4.2,-12.9,1.8,7.4,23.4,69,38,0],"alto":[13.9,-36.4,-4.5,44.2,94.6,519,31,0],"gigante":[19.5,-38.8,-2.7,57.6,149.9,448,30,0]},"250":{"baixo":[2.2,-6.6,1,3.7,11.6,69,38,0],"medio":[3.4,-11.4,1.4,6.1,18.7,70,37,0],"alto":[11.3,-33.5,-4,35.8,73.4,624,31,0],"gigante":[14.9,-38.4,-4.3,46.9,103.9,512,31,0]},"300":{"baixo":[1.8,-6,0.8,3.2,9.5,70,37,0],"medio":[2.9,-9.7,1.2,5.2,15.8,70,37,0],"alto":[12.6,-33.9,-4.2,39.9,83.9,681,30,0],"gigante":[13.8,-33,-2.9,40.9,94.3,578,31,0]}}},"EHX":{"params":{"L":72,"th":0.05,"H":72},"mu0":0.00127,"prior":{"mom":[[1415,0.00221],[48,-0.0101],[9,-0.09173],[3,-0.13802]],"atrPct":[[759,0.0024],[605,-0.0088],[92,-0.03068],[19,-0.03784]],"vsEma":[[508,-0.00572],[705,0.00698],[200,-0.00858],[62,-0.04957]],"btc72":[[77,-0.02266],[390,-0.00699],[601,-0.01034],[407,0.01789]]},"p":0.3166,"aw":0.09688,"al":0.03534,"opIs":0.127,"opOos":1.211,"acerto":31.7,"sim":{"50":{"baixo":[2.9,-11.5,2.6,3.2,15.5,155,34,0],"medio":[3.4,-18.3,4.7,1.6,18.6,157,34,0],"alto":[-1,-57.4,-15.6,22.6,-5.1,289,31,0],"gigante":[0.4,-57.7,-17.3,30.4,2.3,276,30,0]},"100":{"baixo":[3.6,-8.2,2.4,5.3,20,221,36,0],"medio":[6.2,-14.4,4,9.1,35.8,225,36,0],"alto":[-3,-61.3,-20.4,26.4,-14.4,452,29,0],"gigante":[-6.7,-61.6,-20.1,14.7,-30.1,379,31,0]},"150":{"baixo":[3.4,-8,2.5,4.7,18.9,269,34,0],"medio":[5.8,-13.8,3.1,9.6,33.7,275,34,0],"alto":[4.7,-53.9,-16.1,41.1,26.8,575,30,0],"gigante":[1.9,-57.8,-17.9,36.2,10.1,491,30,0]},"200":{"baixo":[4,-6.4,3,5.2,22,306,36,0],"medio":[7.6,-10.9,4.4,12.2,46,312,36,0],"alto":[6.8,-49.5,-14.2,43.3,40.2,651,31,0],"gigante":[6,-53,-15.5,44,35.1,577,30,0]},"250":{"baixo":[3.9,-6.1,2.4,5.9,21.7,344,36,0],"medio":[7.2,-10.2,4.7,10.7,42.8,346,36,0],"alto":[8.4,-46.7,-10.8,40.7,51.1,768,30,0],"gigante":[6.7,-50.7,-14.5,43.9,39.8,649,31,0]},"300":{"baixo":[3.7,-5.9,2.5,5.5,20.6,377,36,0],"medio":[6.6,-10.2,4.4,9.6,38.8,382,37,0],"alto":[6.7,-43.1,-9.6,33.3,39.2,840,29,0],"gigante":[7.2,-47.7,-12.2,40.2,42.7,722,31,0]}}}};
+const STRATS = {
+  E:   { nome: 'Momento + tendência', curto: 'momento', kind: 'mom', resumo: 'compra quem subiu mais de 5% em 72h e está acima da EMA200 de 1h; sai em até 72h',
+         perfil: 'a original: melhor equilíbrio entre a fase fraca e a de alta' },
+  EL:  { nome: 'Momento + tendência, prazo de 7 dias', curto: 'momento 7d', kind: 'mom', resumo: 'mesma entrada da original, mas segura até 7 dias (168h)',
+         perfil: 'a mais agressiva: ganhou mais na alta, perdeu parecido na fase fraca' },
+  E10: { nome: 'Momento forte (alta > 10%)', curto: 'momento forte', kind: 'mom', resumo: 'só compra quem subiu mais de 10% em 72h e está acima da EMA200; sai em até 72h',
+         perfil: 'mais seletiva: menos operações, ganho médio por operação maior' },
+  XS:  { nome: 'Força relativa (8 líderes do dia)', curto: 'força relativa', kind: 'xs', resumo: 'compra entre os 8 ativos do universo que mais subiram em 72h, se estiverem em alta e acima da EMA200; sai em até 72h',
+         perfil: 'a mais estável no apetite Médio: positiva nos dois períodos, mas com menos ganho na alta' },
+  EHX: { nome: 'Momento contínuo (toda hora)', curto: 'momento contínuo', kind: 'momx', sched: 'hourly',
+         resumo: 'avalia a cada hora fechada e compra quando a alta de 72h cruza +5% com o preço acima da EMA200 de 1h; sai em até 72h',
+         perfil: 'entra a qualquer hora: rende menos por operação que a avaliação diária, mas foi positiva nos dois períodos no apetite Médio' },
+};
+for (const s of Object.values(STRATS)) s.sched ||= 'daily';   // as demais avaliam 1×/dia às 00:00 UTC (horário validado)
+for (const [k, s] of Object.entries(STRATS)) Object.assign(s, STRAT_DATA[k]);
+const curStrat = () => STRATS[S.strat] ? S.strat : 'E';
+const stratOf = k => STRATS[k] || STRATS.E;
+const simFor = (lvlKey, stratKey = curStrat(), cap = S.capital) => {
+  const r = ((stratOf(stratKey).sim || {})[cap] || {})[lvlKey]; if (!r) return null;
+  const [mes, dd, mesIs, mesOos, total, n, acerto, morreu] = r; return { mes, dd, mesIs, mesOos, total, n, acerto, morreu: !!morreu };
+};
+const pct0 = v => (v > 0 ? '+' : v < 0 ? '−' : '') + nf(Math.abs(v), 0) + '%';
+const simText = r => !r ? '' : r.morreu ? `~${pct0(r.mes)}/mês · morreu na simulação` : `~${pct0(r.mes)}/mês · queda máx. ${pct0(r.dd)}`;
+const simTip = (r, cap) => !r ? '' : `Simulação com US$ ${cap} (mai–out/2026, com taxas, sem custo operacional): ${pct0(r.mes)} por mês no período, ` +
+  `${pct0(r.mesIs)}/mês antes de 26/ago e ${pct0(r.mesOos)}/mês depois (alta de setembro), total ${pct0(r.total)}, maior queda ${pct0(r.dd)}, ${r.n} operações, ${r.acerto}% de acerto${r.morreu ? ', agente morreu' : ''}. Passado, não promessa.`;
+
+// ───────── Memória de aprendizado (persistente; sobrevive a "Zerar conta") ─────────
+const KN_KEY = 'mesa-conhecimento-v1';
+const DIMS = {
+  mom:    { label: 'Alta de 72h',            edges: [-9, 0.10, 0.20, 0.40, 9], names: ['até 10%', '10–20%', '20–40%', '≥ 40%'] },
+  atrPct: { label: 'Volatilidade (ATR 1h)',  edges: [0, 0.015, 0.03, 0.05, 9],   names: ['< 1,5%', '1,5–3%', '3–5%', '≥ 5%'] },
+  vsEma:  { label: 'Distância da EMA200',    edges: [0, 0.03, 0.08, 0.15, 9],    names: ['< 3%', '3–8%', '8–15%', '≥ 15%'] },
+  btc72:  { label: 'BTC nas últimas 72h',    edges: [-9, -0.03, 0, 0.03, 9],     names: ['< −3%', '−3% a 0', '0 a +3%', '≥ +3%'] },
+};
+const PRIOR_W = 40;   // a pesquisa vale no máximo 40 operações por faixa: a experiência real do agente pesa cada vez mais
+function loadKN() { try { const r = localStorage.getItem(KN_KEY); if (r) { const k = JSON.parse(r); if (k && Array.isArray(k.trades)) return k; } } catch (e) {} return { v: 1, createdAt: Date.now(), trades: [], lessons: [] }; }
+function saveKN() { try { localStorage.setItem(KN_KEY, JSON.stringify(KN)); } catch (e) {} }
+let KN = loadKN();
+const bucketOf = (d, v) => { const e = DIMS[d].edges; for (let b = 0; b < e.length - 1; b++) if (v >= e[b] && v < e[b + 1]) return b; return v < e[0] ? 0 : e.length - 2; };
+// Estimativa por faixa = (pesquisa × peso + resultados reais do agente com esta estratégia) / (peso + operações do agente).
+// Aprende com ganhos e perdas: olhar só as perdas distorceria a estatística. Cada estratégia tem a sua memória.
+function knModel(sk = curStrat()) {
+  const st = stratOf(sk), tr = KN.trades.filter(t => (t.strat || 'E') === sk), sA = tr.reduce((s, t) => s + t.r, 0);
+  const mu = (PRIOR_W * st.mu0 + sA) / (PRIOR_W + tr.length), dims = {};
+  for (const [d, D] of Object.entries(DIMS)) dims[d] = D.names.map((name, b) => {
+    const [pn, pm] = st.prior[d][b], pShr = (pn * pm + 20 * st.mu0) / (pn + 20), w = Math.min(pn, PRIOR_W);
+    const xs = tr.filter(t => bucketOf(d, t.f[d]) === b), s = xs.reduce((a, t) => a + t.r, 0);
+    return { name, pn, pm, n: xs.length, mean: xs.length ? s / xs.length : null, post: (w * pShr + s) / (w + xs.length) };
+  });
+  return { mu, n: tr.length, dims, strat: sk };
+}
+// Expectativa de uma entrada: média geral + metade da soma dos desvios de cada faixa (as características se sobrepõem)
+function knEV(f, M = knModel()) {
+  const parts = Object.keys(DIMS).map(d => { const b = bucketOf(d, f[d]); return { d, b, delta: M.dims[d][b].post - M.mu }; });
+  return { ev: M.mu + 0.5 * parts.reduce((s, x) => s + x.delta, 0), parts };
+}
 
 // ───────── SHA-256 (puro JS, determinístico em qualquer contexto) ─────────
 const sha256 = (() => {
@@ -299,16 +454,20 @@ const openRows = new Set();
 
 function newState() {
   return { v: 1, startedAt: Date.now(), start: CFG.START, cash: CFG.START, positions: [], closed: [], log: [],
-    capital: CFG.START, deposited: CFG.START, withdrawn: 0, pending: null,
+    capital: CFG.START, deposited: CFG.START, withdrawn: 0, pending: null, risk: 'alto', strat: 'EHX',
+    expiresAt: Date.now() + CFG.SESSION_H * 3600e3, expiredLogged: false,
     anchor: '0'.repeat(64), seq: 0, nextId: 1, equity: [], fees: 0, opCost: 0, alive: true, paused: false,
     lastActive: Date.now(), cooldown: {}, rejectSeen: {}, lastHeartbeat: 0, lastErr: 0 };
 }
 function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) {} }
 function load() { try { const r = localStorage.getItem(LS_KEY); if (r) return JSON.parse(r); } catch (e) {} return null; }
 
-function record(type, sym, msg, d) {
+// ts: horário do evento (padrão: agora). Eventos com horário passado vêm da reconstituição do período com a página fechada.
+function record(type, sym, msg, d, ts) {
   const prev = S.log.length ? S.log[S.log.length - 1].hash : S.anchor;
-  const e = { seq: ++S.seq, ts: new Date().toISOString(), type, sym: sym || '', msg, d: d || {}, prev };
+  d = d || {};
+  if (ts != null && ts < Date.now() - 60e3) d = { ...d, reconstituido: true };
+  const e = { seq: ++S.seq, ts: new Date(ts ?? Date.now()).toISOString(), type, sym: sym || '', msg, d, prev };
   e.hash = sha256(JSON.stringify(e));
   S.log.push(e);
   if (S.log.length > CFG.LOG_CAP) { const cut = S.log.splice(0, S.log.length - CFG.LOG_CAP); S.anchor = cut[cut.length - 1].hash; }
@@ -334,7 +493,6 @@ const maxPos = () => maxPosFor(S.capital);
 // P&L líquido se vendesse agora, com derrapagem e as duas taxas (mesma conta de closePos)
 const netIfSold = (p, price) => p.qty * price * (1 - CFG.SLIP) * (1 - CFG.FEE) - p.cost - p.entryFee;
 const openRisk = () => sum(S.positions, p => Math.max(0, p.qty * (curPx(p) - p.stop)) + p.qty * p.stop * CFG.FEE);
-const winProb = () => { const w = S.closed.filter(t => t.pnl > 0).length; return (w + CFG.PRIOR_A) / (S.closed.length + CFG.PRIOR_A + CFG.PRIOR_B); };
 function stats() {
   const c = S.closed, w = c.filter(t => t.pnl > 0), l = c.filter(t => t.pnl <= 0);
   const gw = sum(w, t => t.pnl), gl = -sum(l, t => t.pnl), n = c.length;
@@ -369,16 +527,16 @@ async function scan() {
     .sort((a, b) => b.qv - a.qv).slice(0, CFG.MAX_MARKETS);
   for (const m of mk) { m.dev = (m.last - m.vwap) / m.vwap; PRICES[m.sym] = m.last; }
   const liquid = mk.filter(m => m.qv >= CFG.MIN_QVOL);
-  const band = liquid.filter(m => -m.dev >= CFG.MISP_MIN && -m.dev <= CFG.MISP_MAX && m.chg > -0.2).sort((a, b) => a.dev - b.dev);
-  LAST_SCAN = { at: now, scanned: mk.length, liquid: liquid.length, band, top: liquid.slice().sort((a, b) => a.dev - b.dev).slice(0, 12) };
+  const universe = liquid.filter(m => m.sym.endsWith('USDT')).slice(0, CFG.UNIVERSE);   // mk já vem do mais para o menos líquido
+  LAST_SCAN = { at: now, scanned: mk.length, liquid: liquid.length, universe, top: universe.slice().sort((a, b) => b.chg - a.chg).slice(0, 12) };
   lastScanAt = now;
-  if (now - S.lastHeartbeat >= CFG.HEARTBEAT_MS) {
+  // com reconstituição pendente, o registro periódico espera, para a trilha ficar em ordem cronológica
+  if (now - S.lastHeartbeat >= CFG.HEARTBEAT_MS && now - S.lastActive < CFG.CATCHUP_MIN_MS) {
     S.lastHeartbeat = now;
-    const best = band[0];
-    record('SCAN', '', `${mk.length} mercados · ${liquid.length} líquidos · ${band.length} com preço 2–8% abaixo do VWAP`,
-      { mercados: mk.length, liquidos: liquid.length, naFaixa: band.length, melhor: best ? { sym: best.sym, desvio: +best.dev.toFixed(5) } : null });
+    record('SCAN', '', `${mk.length} mercados · ${liquid.length} líquidos · universo da estratégia: ${universe.length} pares USDT mais líquidos`,
+      { mercados: mk.length, liquidos: liquid.length, universo: universe.map(m => m.sym) });
   }
-  return band;
+  return universe;
 }
 
 async function refreshPrices() {
@@ -417,67 +575,368 @@ function reject(sym, reason, d) {
   record('REJEITADO', sym, reason, d);
 }
 
-function tryEnter(band) {
-  if (!S.alive || S.paused || S.pending) return;
-  const now = Date.now();
-  for (const m of band) {
-    if (S.positions.length >= maxPos()) break;
-    if (S.positions.some(p => p.sym === m.sym || p.base === m.base)) continue;
-    if (S.cooldown[m.sym] && now < S.cooldown[m.sym]) continue;
-    const eq = equity();
-    const gap = m.vwap - m.last;
-    const fill = m.last * (1 + CFG.SLIP);
-    const target = fill + CFG.TGT * gap, stop = fill - CFG.STP * gap;
-    const feeU = fill * CFG.FEE * 2;
-    const b = (target - fill - feeU) / (fill - stop + feeU);
-    const p = winProb();
-    const kelly = p - (1 - p) / b;
-    const budget = CFG.MAX_RISK * eq - openRisk();
-    const d = { preco: m.last, vwap: m.vwap, desvio: +m.dev.toFixed(5), volume24h: Math.round(m.qv), p: +p.toFixed(4), b: +b.toFixed(4),
-      kelly: +kelly.toFixed(4), patrimonio: +eq.toFixed(4), orcamentoRisco: +budget.toFixed(4), sentimentoX: 'indisponível (peso 0)' };
-    if (!(b > 0) || kelly <= 0) { reject(m.sym, `Sem vantagem após taxas: Kelly ${(kelly * 100).toFixed(1)}% (p=${(p * 100).toFixed(1)}%, b=${b.toFixed(2)})`, d); continue; }
-    if (budget <= 0.01) { reject('', 'Limite de 6% de risco simultâneo atingido — nenhuma entrada nova', { riscoAberto: +openRisk().toFixed(4), patrimonio: +eq.toFixed(4) }); break; }
-    const riskPerUnit = fill - stop + feeU;
-    let risk = kelly * CFG.KELLY_MULT * eq, by = '½ Kelly';
-    if (budget < risk) { risk = budget; by = 'teto de 6%'; }
-    let qty = risk / riskPerUnit, notional = qty * fill;
-    const cap = Math.min((S.cash - CFG.CASH_BUFFER * eq) / (1 + CFG.FEE), eq * (1 - CFG.CASH_BUFFER) / maxPos());
-    if (notional > cap) { notional = cap; qty = notional / fill; risk = qty * riskPerUnit; by = 'caixa / diversificação'; }
-    if (notional < CFG.MIN_NOTIONAL) { reject(m.sym, `Ordem de US$ ${notional.toFixed(2)} abaixo do mínimo de US$ ${CFG.MIN_NOTIONAL}`, d); continue; }
-    const fee = notional * CFG.FEE;
-    S.cash -= notional + fee; S.fees += fee;
-    const pos = { id: S.nextId++, sym: m.sym, base: m.base, openedAt: now, entry: fill, qty, cost: notional, entryFee: fee, stop, target,
-      risk, riskPct: risk / eq, kelly, p, b, by, last: m.last, vwap: m.vwap, dev: m.dev, hist: [[now, fill]], bf: true };
-    const e = record('ENTRADA', m.sym,
-      `Compra ${fmtQty(qty)} @ ${px(fill)} · stop ${px(stop)} · alvo ${px(target)} · risco ${usd(risk)} (${pct(risk / eq)}) · limitado por ${by}`,
-      { ...d, id: pos.id, qtd: qty, precoExec: fill, nocional: +notional.toFixed(4), taxa: +fee.toFixed(5), stop, alvo: target, risco: +risk.toFixed(5), riscoPct: +(risk / eq).toFixed(5), limitadoPor: by, prazo: '4h' });
-    pos.entryHash = e.hash;
-    S.positions.push(pos);
+// ───────── Motor das estratégias: dados de mercado e indicadores ─────────
+const KCACHE = {};       // candles de 1h por ativo, válidos até fechar o próximo candle
+let LAST_ANALYSIS = null;
+
+async function candles1h(sym, limit) {
+  const now = Date.now(), key = sym + '|' + limit, c = KCACHE[key];
+  if (c && now < c.validUntil) return c.k;
+  const raw = await api(`/api/v3/klines?symbol=${sym}&interval=1h&limit=${limit}`);
+  const k = raw.filter(r => +r[6] < now).map(r => ({ t: +r[0], o: +r[1], h: +r[2], l: +r[3], c: +r[4] }));
+  KCACHE[key] = { k, validUntil: k.length ? k[k.length - 1].t + 2 * 3600e3 : 0 };
+  return k;
+}
+function emaSeries(x, n) { const o = new Array(x.length), a = 2 / (n + 1); o[0] = x[0]; for (let i = 1; i < x.length; i++) o[i] = a * x[i] + (1 - a) * o[i - 1]; return o; }
+function atrSeries(k, n = 14) {
+  const o = new Array(k.length).fill(NaN); let a = 0;
+  for (let i = 1; i < k.length; i++) {
+    const tr = Math.max(k[i].h - k[i].l, Math.abs(k[i].h - k[i - 1].c), Math.abs(k[i].l - k[i - 1].c));
+    if (i <= n) { a += tr; if (i === n) { a /= n; o[i] = a; } } else { a = (a * (n - 1) + tr) / n; o[i] = a; }
+  }
+  return o;
+}
+const isSignalBar = t => new Date(t).getUTCHours() === 23;   // candle das 23:00 UTC, fecha às 00:00 UTC
+const momOf = (k, i, L) => i >= L ? k[i].c / k[i - L].c - 1 : NaN;
+const dayKey = t => new Date(t).toISOString().slice(0, 10);
+const hourStart = t => Math.floor(t / 3600e3) * 3600e3;
+// próxima decisão de entrada: toda hora fechada (estratégia contínua) ou 00:00 UTC (estratégias diárias)
+function nextEvalAt(now) {
+  if (stratOf(curStrat()).sched === 'hourly') return S.lastEvalHour === hourStart(now) ? hourStart(now) + 3600e3 : now;
+  const d0 = Date.parse(dayKey(now) + 'T00:00:00Z');
+  return S.lastEvalDay !== dayKey(now) && now < d0 + CFG.ENTRY_WINDOW_H * 3600e3 ? d0 : d0 + 86400e3;
+}
+// condição de entrada de cada estratégia no candle i (a força relativa depende do ranking do dia e é tratada à parte)
+function entrySignal(k, e200, i, st) {
+  const L = st.params.L, th = st.params.th, m = momOf(k, i, L);
+  if (st.kind === 'mom') return m > th && k[i].c > e200[i];
+  if (st.kind === 'momx') return m > th && !(momOf(k, i - 1, L) > th) && k[i].c > e200[i];
+  return false;
+}
+
+// A mesma estratégia rodada no histórico do próprio ativo (~40 dias). Informativo: não bloqueia entradas,
+// porque na pesquisa bloquear ativos com histórico recente ruim cortou justamente as melhores operações.
+// A força relativa depende do ranking entre todos os ativos, então não tem histórico por ativo isolado.
+function assetHistory(k, e200, atr, st) {
+  if (st.kind === 'xs') return { n: 0, w: 0, mean: null, dias: Math.round(k.length / 24), na: true };
+  const H = st.params.H, hourly = st.sched === 'hourly', cost = 2 * CFG.FEE + 2 * CFG.SLIP; let n = 0, w = 0, s = 0;
+  for (let i = 210; i < k.length - 1; i++) {
+    if ((!hourly && !isSignalBar(k[i].t)) || !entrySignal(k, e200, i, st)) continue;
+    const e = i + 1, entry = k[e].o; let stop = entry - CFG.ATR_K * atr[i], exit = null, j;
+    for (j = e; j < k.length; j++) {
+      if (k[j].l <= stop) { exit = Math.min(k[j].o, stop); break; }
+      stop = Math.max(stop, k[j].c - CFG.ATR_K * atr[j]);
+      if (j - e + 1 >= H) { exit = k[j].c; break; }
+    }
+    if (exit === null) break;
+    const r = exit / entry - 1 - cost; n++; if (r > 0) w++; s += r; i = j;
+  }
+  return { n, w, mean: n ? s / n : null, dias: Math.round(k.length / 24) };
+}
+
+// p e b da estratégia: a pesquisa é o ponto de partida, atualizado pelos resultados reais do agente com ela
+function eStats(sk = curStrat()) {
+  const st = stratOf(sk), tr = S.closed.filter(t => t.strat === sk), w = tr.filter(t => t.pnlPct > 0), l = tr.filter(t => t.pnlPct <= 0);
+  const N = CFG.PRIOR_N, p0 = st.p;
+  const p = (w.length + N * p0) / (tr.length + N);
+  const aw = (sum(w, t => t.pnlPct) + N * p0 * st.aw) / (w.length + N * p0);
+  const al = (-sum(l, t => t.pnlPct) + N * (1 - p0) * st.al) / (l.length + N * (1 - p0));
+  return { p, b: aw / al, n: tr.length };
+}
+
+// variação do BTC nas 72h até o candle t (contexto de mercado usado pelo aprendizado)
+function btcChange72(btcK, t) {
+  const i = btcK.findIndex(x => x.t === t);
+  return i >= 72 ? btcK[i].c / btcK[i - 72].c - 1 : 0;
+}
+
+// Etapa 1: números de cada ativo no candle de sinal (sem consultar o livro de ofertas).
+// barMode 'daily' = último candle das 23:00 UTC; 'last' = último candle de 1h fechado.
+async function analyzeE(m, st, btcK, M, getK, barMode = 'daily') {
+  const k = await getK(m.sym);
+  if (k.length < 300) return { sym: m.sym, m, signal: false, pass: false, mom: NaN, momL: NaN, reason: 'Histórico curto demais (ativo novo)' };
+  let i = k.length - 1; if (barMode === 'daily') while (i > 0 && !isSignalBar(k[i].t)) i--;
+  const e200 = emaSeries(k.map(x => x.c), CFG.EMA_LEN), atr = atrSeries(k);
+  const c = k[i].c, mom = momOf(k, i, 72), momL = momOf(k, i, st.params.L), vsEma = c / e200[i] - 1;
+  const f = { mom, atrPct: atr[i] / c, vsEma, btc72: btcChange72(btcK, k[i].t) };
+  const a = { sym: m.sym, m, barT: k[i].t, close: c, mom, momL, vsEma, atr: atr[i], atrPct: atr[i] / c, hist: assetHistory(k, e200, atr, st), f, ev: knEV(f, M), lagMin: Math.max(0, Math.round((Date.now() - (k[i].t + 3600e3)) / 60000)) };
+  if (st.kind === 'mom' || st.kind === 'momx') {
+    a.signal = entrySignal(k, e200, i, st);
+    if (!a.signal) a.reason = momL <= st.params.th ? `Alta de ${st.params.L}h ${sgnPct(momL)} (mín. ${pct0(st.params.th * 100)})`
+      : vsEma <= 0 ? `Abaixo da EMA200 de 1h (${sgnPct(vsEma)})`
+      : `Já estava acima de ${pct0(st.params.th * 100)} na hora anterior: só entra no cruzamento`;
+  }
+  return a;
+}
+// Força relativa: sinal para os N que mais subiram no período entre todos os analisados, se em alta e acima da EMA200
+function rankSignals(results, st) {
+  if (st.kind !== 'xs') return;
+  const ok = results.filter(a => isFinite(a.momL)).sort((x, y) => y.momL - x.momL);
+  ok.forEach((a, r) => {
+    a.rank = r + 1;
+    a.signal = r < st.params.N && a.momL > 0 && a.vsEma > 0;
+    if (!a.signal) a.reason = r >= st.params.N ? `${r + 1}º em alta de ${st.params.L}h (entram os ${st.params.N} primeiros)` : a.momL <= 0 ? `Sem alta em ${st.params.L}h (${sgnPct(a.momL)})` : `Abaixo da EMA200 de 1h (${sgnPct(a.vsEma)})`;
+  });
+}
+// Etapa 2: para quem teve sinal, preço real de compra (ask), spread, stop e Kelly
+async function confirmE(a, eS) {
+  const book = await api(`/api/v3/ticker/bookTicker?symbol=${encodeURIComponent(a.sym)}`);
+  const bid = +book.bidPrice, ask = +book.askPrice, spread = ask > 0 && bid > 0 ? (ask - bid) / ((ask + bid) / 2) : 1;
+  Object.assign(a, { spread, fill: ask * (1 + CFG.SLIP), p: eS.p, b: eS.b, kelly: eS.p - (1 - eS.p) / eS.b });
+  a.stop = a.fill - CFG.ATR_K * a.atr;
+  a.pass = false;
+  if (spread > CFG.MAX_SPREAD) a.reason = `Spread de ${pct(spread, 2)} acima de ${pct(CFG.MAX_SPREAD, 1)}`;
+  else if (!(a.stop > 0)) a.reason = 'Stop inválido (volatilidade extrema)';
+  else if (a.kelly <= 0) a.reason = `Sem vantagem: Kelly ${pct(a.kelly, 1)}`;
+  else { a.pass = true; a.reason = 'Sinal confirmado'; }
+}
+const summary = a => ({ estrategia: stratOf(curStrat()).nome, alta72h: +a.mom.toFixed(4), altaNoPeriodo: isFinite(a.momL) ? +a.momL.toFixed(4) : null, ranking: a.rank ?? null,
+  vsEma200: +a.vsEma.toFixed(4), atr1h: a.atr, atrPct: +a.atrPct.toFixed(4),
+  historicoAtivo: a.hist.na ? 'não se aplica' : { sinais: a.hist.n, acertos: a.hist.w, mediaPorOp: a.hist.mean == null ? null : +a.hist.mean.toFixed(4), dias: a.hist.dias },
+  spread: a.spread != null ? +a.spread.toFixed(5) : null, p: a.p != null ? +a.p.toFixed(4) : null, b: a.b != null ? +a.b.toFixed(3) : null,
+  kelly: a.kelly != null ? +a.kelly.toFixed(4) : null, candleSinal: new Date(a.barT).toISOString(), atrasoMin: a.lagMin ?? null,
+  btc72h: +a.f.btc72.toFixed(4), expectativaAprendida: +a.ev.ev.toFixed(5), apetite: riskLvl().label, sentimentoX: 'indisponível (peso 0)' });
+
+// Análise completa do universo. Três usos:
+//  · decisão de entrada ao vivo (estratégias diárias às 00:00 UTC; a contínua a cada hora fechada);
+//  · decisão reconstituída (hist), com os candles fechados até "at" e compra pelo fechamento do candle de sinal + derrapagem;
+//  · prévia (preview): roda a cada hora fechada para mostrar quem cumpre o critério agora, sem comprar nem registrar.
+async function runEvaluation({ at = Date.now(), hist = false, preview = false, getK = null, force = false, key = null } = {}) {
+  if (!LAST_SCAN) return;
+  const sk = curStrat(), st = stratOf(sk), hourly = st.sched === 'hourly';
+  const barMode = hourly || preview ? 'last' : 'daily';
+  const ts = hist ? at : undefined, rec = (type, sym, msg, d) => record(type, sym, msg, d, ts);
+  getK ||= hist ? async sym => (await api(`/api/v3/klines?symbol=${encodeURIComponent(sym)}&interval=1h&endTime=${at - 1}&limit=${CFG.KLINES_1H}`)).map(k1h)
+    : sym => candles1h(sym, CFG.KLINES_1H);
+  const eS = eStats(sk), uni = LAST_SCAN.universe, results = [], M = knModel(sk);
+  const btcK = await getK('BTCUSDT');
+  for (let i = 0; i < uni.length; i += 6) results.push(...(await Promise.all(uni.slice(i, i + 6).map(m => analyzeE(m, st, btcK, M, getK, barMode).catch(() => null)))).filter(Boolean));
+  rankSignals(results, st);
+  const signals = results.filter(a => a.signal);
+  if (preview) { LAST_ANALYSIS = { at, results, eS, strat: sk, preview: true }; return; }
+  for (const a of signals) {
+    if (hist) {
+      Object.assign(a, { spread: null, fill: a.close * (1 + CFG.SLIP), p: eS.p, b: eS.b, kelly: eS.p - (1 - eS.p) / eS.b, lagMin: 0 });
+      a.stop = a.fill - CFG.ATR_K * a.atr;
+      a.pass = a.stop > 0 && a.kelly > 0;
+      a.reason = a.pass ? 'Sinal confirmado' : !(a.stop > 0) ? 'Stop inválido (volatilidade extrema)' : `Sem vantagem: Kelly ${pct(a.kelly, 1)}`;
+    } else await confirmE(a, eS).catch(() => { a.pass = false; a.reason = 'Falha ao ler o livro de ofertas'; });
+  }
+  if (hourly) S.lastEvalHour = key ?? hourStart(at); else S.lastEvalDay = dayKey(at);
+  LAST_ANALYSIS = { at, results, eS, strat: sk, hist };
+  const blocked = !S.alive ? 'agente morto' : S.paused ? 'entradas pausadas' : S.pending ? 'redução de capital pendente' : null;
+  let entered = 0;
+  const lvl = riskLvl();
+  // as vagas vão para os sinais com maior expectativa na memória de aprendizado (validado fora da amostra)
+  for (const a of signals.filter(a => a.pass).sort((x, y) => y.ev.ev - x.ev.ev)) {
+    if (blocked) { a.decision = 'não entrou: ' + blocked; rec('REJEITADO', a.sym, `Sinal válido, mas ${blocked}`, summary(a)); continue; }
+    if (lvl.needEv && a.ev.ev <= 0) {
+      a.decision = `não entrou: expectativa ${sgnPct(a.ev.ev)} (apetite ${lvl.label} exige positiva)`;
+      rec('REJEITADO', a.sym, `Aprendizado prevê expectativa ${sgnPct(a.ev.ev)} por operação; apetite ${lvl.label} só entra com expectativa positiva`, summary(a)); continue;
+    }
+    if (S.positions.some(p => p.base === a.m.base)) { a.decision = 'já em carteira'; continue; }
+    if (S.positions.length >= maxPos()) { a.decision = 'não entrou: sem vaga'; rec('REJEITADO', a.sym, `Sinal válido, mas sem vaga (${S.positions.length}/${maxPos()} posições)`, summary(a)); continue; }
+    a.decision = openE(a, sk, ts); if (a.decision === 'comprou') entered++;
+  }
+  for (const a of signals.filter(a => !a.pass)) { a.decision = 'rejeitado'; rec('REJEITADO', a.sym, a.reason, summary(a)); }
+  rec('AVALIACAO', '', `Avaliação ${hourly ? 'horária' : 'diária'} (${st.nome})${hist ? ' reconstituída' : ''}: ${results.length} ativos do universo · ${signals.length} com sinal · ${entered} compra(s)`,
+    { estrategia: st.nome, candleSinal: signals[0] ? new Date(signals[0].barT).toISOString() : null, universo: results.length, sinais: signals.map(a => a.sym), compras: entered, p: +eS.p.toFixed(4), b: +eS.b.toFixed(3), ...(force ? { forcada: true } : {}) });
+}
+
+// Estratégias diárias: decide uma vez por dia, na janela de 2h após as 00:00 UTC, enquanto a sessão estiver ativa.
+// Com histAt (00:00 UTC de um dia em que a página estava fechada), refaz a decisão daquele momento.
+async function dailyEvaluation(force = false, histAt = null) {
+  const hist = histAt != null, now = hist ? histAt : Date.now(), today = dayKey(now);
+  if (stratOf(curStrat()).sched !== 'daily') return;
+  if (!hist && !force && (S.lastEvalDay === today || now >= Date.parse(today + 'T00:00:00Z') + CFG.ENTRY_WINDOW_H * 3600e3 || !sessionOpen(now))) return;
+  await runEvaluation({ at: now, hist, force });
+}
+
+// Chamado a cada scan: decide entradas no horário certo de cada estratégia e mantém a análise atualizada a cada hora fechada
+let PREVIEW_KEY = null;
+async function scheduleEvaluations(now) {
+  const st = stratOf(curStrat()), hk = hourStart(now);
+  if (st.sched === 'hourly') {
+    if (sessionOpen(now)) {
+      if (S.lastEvalHour !== hk) await runEvaluation({ at: now, key: hk });
+      else if (!LAST_ANALYSIS) await runEvaluation({ preview: true });   // página recarregada depois da decisão desta hora
+      PREVIEW_KEY = hk;
+    } else if (PREVIEW_KEY !== hk) { PREVIEW_KEY = hk; await runEvaluation({ preview: true }); }
+    return;
+  }
+  const evalBefore = S.lastEvalDay;
+  await dailyEvaluation();
+  if (S.lastEvalDay !== evalBefore) { PREVIEW_KEY = hk; return; }   // acabou de decidir: a análise da tela já é a da decisão
+  if (PREVIEW_KEY !== hk) { PREVIEW_KEY = hk; await runEvaluation({ preview: true }); }
+}
+
+function openE(a, sk, at) {
+  const now = at ?? Date.now(), m = a.m, { fill, stop, kelly, p, b } = a, eq = equity(), st = stratOf(sk);
+  const lvl = riskLvl(), capPct = Math.min(lvl.cap, CFG.MAX_RISK), capTxt = `teto de ${pct(capPct, 0)}`;
+  const feeU = fill * CFG.FEE * 2, budget = capPct * eq - openRisk();
+  const d = { preco: at != null ? a.close : m.last, volume24h: Math.round(m.qv), patrimonio: +eq.toFixed(4), orcamentoRisco: +budget.toFixed(4), ...summary(a) };
+  if (budget <= 0.01) { record('REJEITADO', m.sym, `Limite de ${pct(capPct, 0)} de risco simultâneo (apetite ${lvl.label}) atingido`, d, at); return 'não entrou: ' + capTxt; }
+  const riskPerUnit = fill - stop + feeU;
+  let risk = kelly * lvl.kelly * eq, by = `${lvl.kelly === 1 ? 'Kelly cheio' : lvl.kelly === 0.5 ? '½ Kelly' : '¼ Kelly'} (apetite ${lvl.label})`;
+  if (budget < risk) { risk = budget; by = capTxt; }
+  let qty = risk / riskPerUnit, notional = qty * fill;
+  const cap = Math.min((S.cash - CFG.CASH_BUFFER * eq) / (1 + CFG.FEE), eq * (1 - CFG.CASH_BUFFER) / maxPos() * lvl.slot);
+  if (notional > cap) { notional = cap; qty = notional / fill; risk = qty * riskPerUnit; by = 'caixa / diversificação'; }
+  if (notional < CFG.MIN_NOTIONAL) { record('REJEITADO', m.sym, `Ordem de US$ ${notional.toFixed(2)} abaixo do mínimo de US$ ${CFG.MIN_NOTIONAL}`, d, at); return 'não entrou: ordem pequena'; }
+  const fee = notional * CFG.FEE;
+  S.cash -= notional + fee; S.fees += fee;
+  const H = st.params.H;
+  const pos = { id: S.nextId++, strat: sk, sym: m.sym, base: m.base, openedAt: now, entry: fill, qty, cost: notional, entryFee: fee,
+    stop, stop0: stop, target: null, atr: a.atr, lastBarT: a.barT, maxHold: H * 3600e3, hi: fill,
+    risk, riskPct: risk / eq, kelly, p, b, by, last: at != null ? a.close : m.last, mom: a.mom, histN: a.hist.n, histW: a.hist.w, hist: [[now, fill]], bf: true,
+    f: a.f, ev: a.ev.ev, lagMin: a.lagMin, stopHist: [[now, stop]] };
+  PRICES[m.sym] ??= pos.last;
+  const e = record('ENTRADA', m.sym,
+    `Compra ${fmtQty(qty)} @ ${px(fill)} · ${st.nome} · alta 72h ${sgnPct(a.mom)}${a.rank ? ` (${a.rank}º do dia)` : ''} · expectativa aprendida ${sgnPct(a.ev.ev)} · stop móvel ${px(stop)} (3×ATR) · alvo móvel ${px(movingTarget(pos))} · saída em até ${H}h · p ${pct(p, 1)} · b ${nf(b, 2)} · risco ${usd(risk)} (${pct(risk / eq)}) · limitado por ${by}`,
+    { ...d, id: pos.id, qtd: qty, precoExec: fill, nocional: +notional.toFixed(4), taxa: +fee.toFixed(5), stop, alvoMovel: movingTarget(pos),
+      risco: +risk.toFixed(5), riscoPct: +(risk / eq).toFixed(5), limitadoPor: by, prazo: H + 'h' }, at);
+  pos.entryHash = e.hash;
+  S.positions.push(pos);
+  return 'comprou';
+}
+
+// Stop móvel: a cada candle de 1h fechado, stop = máx(stop, fechamento − 3×ATR)
+async function updateTrails() {
+  for (const p of S.positions.filter(p => p.strat)) {
+    if (Date.now() < p.lastBarT + 2 * 3600e3) continue;
+    const k = await candles1h(p.sym, 300), atr = atrSeries(k), old = p.stop;
+    for (let i = 0; i < k.length; i++) {
+      if (k[i].t <= p.lastBarT || !(atr[i] > 0)) continue;
+      p.stop = Math.max(p.stop, k[i].c - CFG.ATR_K * atr[i]); p.atr = atr[i]; p.lastBarT = k[i].t;
+    }
+    if (p.stop > old) (p.stopHist ||= [[p.openedAt, p.stop0]]).push([Date.now(), p.stop]);
+    if (p.stop > old) record('AJUSTE', p.sym, `Stop móvel elevado de ${px(old)} para ${px(p.stop)} (fechamento de 1h − 3×ATR)` +
+      (netIfSold(p, p.stop) > 0 ? ` · lucro mínimo travado ${sgnUsd(netIfSold(p, p.stop))}` : ''),
+      { id: p.id, stopAnterior: old, novoStop: p.stop, atr1h: p.atr, candle: new Date(p.lastBarT).toISOString() });
   }
 }
 
-function closePos(p, price, reason) {
+// Alvo móvel das estratégias de momento (referência: elas não vendem no alvo, quem encerra é o stop móvel ou o prazo).
+// É o maior entre "compra + ganho médio dos acertos da estratégia na pesquisa" e "maior preço desde a compra + 1×ATR":
+// fica parado enquanto o preço não chega nele e sobe junto quando o preço passa.
+const movingTarget = p => p.strat ? Math.max(p.entry * (1 + stratOf(p.strat).aw), (p.hi ?? p.entry) + (p.atr || 0)) : p.target;
+
+function closePos(p, price, reason, at = Date.now()) {
   const exit = price * (1 - CFG.SLIP);
   const proceeds = p.qty * exit, fee = proceeds * CFG.FEE;
   const pnl = proceeds - fee - (p.cost + p.entryFee);
   S.cash += proceeds - fee; S.fees += fee;
   S.positions = S.positions.filter(x => x !== p);
-  S.cooldown[p.sym] = Date.now() + CFG.COOLDOWN;
+  S.cooldown[p.sym] = at + CFG.COOLDOWN;
   const res = pnl > 0 ? 'ACERTO' : 'PERDA';
   const e = record('SAIDA', p.sym, `Venda ${fmtQty(p.qty)} @ ${px(exit)} · ${reason} · ${res} ${sgnUsd(pnl)} (${sgnPct(pnl / (p.cost + p.entryFee))})`,
-    { id: p.id, motivo: reason, precoExec: exit, taxa: +fee.toFixed(5), pnl: +pnl.toFixed(5), resultado: res, entradaHash: p.entryHash });
-  S.closed.push({ id: p.id, sym: p.sym, openedAt: p.openedAt, closedAt: Date.now(), entry: p.entry, exit, qty: p.qty, reason,
-    pnl, pnlPct: pnl / (p.cost + p.entryFee), entryHash: p.entryHash, exitHash: e.hash });
+    { id: p.id, motivo: reason, precoExec: exit, taxa: +fee.toFixed(5), pnl: +pnl.toFixed(5), resultado: res, entradaHash: p.entryHash }, at);
+  const now = at;
+  const rec = { id: p.id, sym: p.sym, openedAt: p.openedAt, closedAt: now, entry: p.entry, exit, qty: p.qty, reason,
+    pnl, pnlPct: pnl / (p.cost + p.entryFee), strat: p.strat || 'VWAP', entryHash: p.entryHash, exitHash: e.hash,
+    stop: p.stop, stop0: p.stop0 ?? p.stop, target: movingTarget(p) ?? null, movingTarget: !!p.strat,
+    hist: downsample((p.hist || [[p.openedAt, p.entry]]).filter(x => x[0] <= now).concat([[now, price]]), 150) };
+  S.closed.push(rec);
+  for (const t of S.closed.slice(0, -CFG.CLOSED_HIST_KEEP)) if (t.hist) { delete t.hist; t.hf = true; }   // limita o espaço salvo
+  learnFromTrade(p, rec);
+}
+
+function downsample(a, n) {
+  if (a.length <= n) return a;
+  const out = [], step = (a.length - 1) / (n - 1);
+  for (let i = 0; i < n; i++) out.push(a[Math.round(i * step)]);
+  return out;
+}
+
+// ───────── Revisão pós-operação ─────────
+// Toda operação da estratégia entra na memória (ganhos e perdas). Cada perda ganha um diagnóstico registrado na trilha.
+function learnFromTrade(p, rec) {
+  if (!p.strat || !p.f) return;
+  const before = knModel();
+  const prices = (p.hist || []).map(x => x[1]).concat([rec.exit]);
+  const mfe = Math.max(...prices) / p.entry - 1, hours = (rec.closedAt - p.openedAt) / 3600e3;
+  KN.trades.push({ id: p.id, strat: p.strat, sym: p.sym, t: rec.closedAt, r: rec.pnlPct, reason: rec.reason, f: p.f, mfe, hours });
+  if (rec.pnl <= 0) {
+    const after = knModel(), diag = diagnose(p, rec, mfe, hours);
+    const shifts = Object.keys(DIMS).map(d => { const b = bucketOf(d, p.f[d]);
+      return `${DIMS[d].label} ${DIMS[d].names[b]}: ${sgnPct(before.dims[d][b].post)} → ${sgnPct(after.dims[d][b].post)}`; });
+    KN.lessons.push({ id: p.id, sym: p.sym, t: rec.closedAt, r: rec.pnlPct, pnl: rec.pnl, reason: rec.reason, diag, shifts, f: p.f, mfe, hours });
+    rec.lesson = diag;
+    record('LICAO', p.sym, `Revisão da perda #${p.id}: ${diag.map(x => x.titulo).join(' · ')}`,
+      { id: p.id, diagnostico: diag, ajusteDasFaixas: shifts, caracteristicas: p.f, maiorAlta: +mfe.toFixed(4), horas: +hours.toFixed(1), saidaHash: rec.exitHash }, rec.closedAt);
+  }
+  saveKN();
+}
+function diagnose(p, rec, mfe, hours) {
+  const f = p.f, out = [];
+  if (f.atrPct >= 0.05) out.push({ titulo: 'volatilidade extrema', txt: `ATR de ${pct(f.atrPct, 1)} por hora: nessa faixa a estratégia perdeu nos dois períodos da pesquisa. Ativos assim passam a ficar no fim da fila.` });
+  if (f.vsEma >= 0.15) out.push({ titulo: 'preço esticado', txt: `Comprou ${pct(f.vsEma, 0)} acima da EMA200: faixa negativa nos dois períodos da pesquisa (perto do topo do movimento).` });
+  if (f.mom >= 0.20) out.push({ titulo: 'alta de 72h forte demais', txt: `Subiu ${pct(f.mom, 0)} em 72h antes da compra: acima de 20% o resultado piorou na pesquisa (exaustão).` });
+  if (f.btc72 < 0.03) out.push({ titulo: 'mercado sem força', txt: `BTC ${sgnPct(f.btc72)} em 72h: abaixo de +3% a estratégia rendeu menos; com o BTC forte, rendeu mais.` });
+  if (mfe >= 0.03) out.push({ titulo: 'devolveu ganho', txt: `Chegou a subir ${pct(mfe, 1)} e terminou no prejuízo: o stop móvel de 3×ATR é largo. Registrado para acompanhar se isso se repete.` });
+  if (rec.reason.startsWith('STOP') && hours < 6) out.push({ titulo: 'stop rápido', txt: `Stop em ${nf(hours, 1)}h: comprou no fim do impulso.` });
+  if ((p.lagMin || 0) > 30) out.push({ titulo: 'entrada atrasada', txt: `Comprou ${p.lagMin} min depois do sinal, a um preço diferente do sinal original.` });
+  if (rec.reason === 'TEMPO') out.push({ titulo: 'momento não continuou', txt: '72h sem tendência suficiente para compensar as taxas.' });
+  if (!out.length) out.push({ titulo: 'perda normal da estratégia', txt: 'Nenhum erro identificável: a estratégia acerta ~35% das vezes e perdas pequenas fazem parte dela. Só a estatística é atualizada.' });
+  return out;
+}
+
+// Posições da estratégia abertas antes da memória existir: reconstrói as características a partir da trilha
+async function ensureFeatures() {
+  for (const p of S.positions.filter(p => p.strat && !p.f)) {
+    const e = S.log.find(x => x.type === 'ENTRADA' && x.d && x.d.id === p.id); if (!e) continue;
+    const btcK = await candles1h('BTCUSDT', CFG.KLINES_1H), sigT = Date.parse(e.d.candleSinal);
+    p.f = { mom: e.d.alta72h, atrPct: e.d.atrPct, vsEma: e.d.vsEma200, btc72: btcChange72(btcK, sigT) };
+    p.lagMin = e.d.atrasoMin; p.ev = knEV(p.f).ev;
+  }
+}
+
+// Encerradas antes de alvo e stop serem guardados no registro: recupera da trilha (entrada e ajustes de stop)
+function restoreClosedLevels() {
+  for (const t of S.closed) {
+    if ('target' in t && 'stop' in t) continue;
+    const ent = S.log.find(e => e.type === 'ENTRADA' && e.d && e.d.id === t.id);
+    if (!ent) continue;
+    const adj = S.log.filter(e => e.type === 'AJUSTE' && e.d && e.d.id === t.id).pop();
+    t.target = ent.d.alvo ?? null; t.stop0 = ent.d.stop; t.stop = adj ? adj.d.novoStop : ent.d.stop;
+  }
+}
+
+// Operações encerradas sem histórico de preço guardado (anteriores aos gráficos): busca candles uma única vez
+async function backfillClosed() {
+  for (const t of S.closed.slice(-CFG.CLOSED_CHARTS)) {
+    if (t.hist || t.hf) continue;
+    t.hf = true;
+    const iv = t.closedAt - t.openedAt > 16 * 3600e3 ? '15m' : '1m';
+    const k = await api(`/api/v3/klines?symbol=${t.sym}&interval=${iv}&startTime=${t.openedAt}&endTime=${t.closedAt}&limit=1000`);
+    t.hist = downsample([[t.openedAt, t.entry]].concat(k.map(r => [Math.min(+r[6], t.closedAt), +r[4]]), [[t.closedAt, t.exit]]), 150);
+  }
 }
 
 function checkExits() {
   const now = Date.now();
   for (const p of [...S.positions]) {
     const price = PRICES[p.sym]; if (!price) continue;
-    p.last = price;
+    p.last = price; p.hi = Math.max(p.hi ?? p.entry, price);
     addHist(p, now, price);
+    if (p.strat) {
+      if (price <= p.stop) closePos(p, price, p.stop > p.stop0 ? 'STOP MÓVEL' : 'STOP');
+      // redução de capital pendente: sai assim que estiver no positivo já pagas as duas taxas; o prazo fica suspenso
+      else if (S.pending && netIfSold(p, price) > 1e-9) closePos(p, price, 'REDUÇÃO');
+      else if (!S.pending && now - p.openedAt >= p.maxHold) closePos(p, price, 'TEMPO');
+      continue;
+    }
+    // posições da estratégia anterior — proteção de lucro: percorrido 60% do caminho até o alvo, o stop sobe para o empate (taxas e derrapagem pagas)
+    if (!p.be && price - p.entry >= CFG.BE_TRIGGER * (p.target - p.entry)) {
+      const be = p.entry * (1 + 2 * CFG.FEE + 3 * CFG.SLIP);
+      if (be > p.stop && be < price) {
+        record('AJUSTE', p.sym, `Stop elevado de ${px(p.stop)} para o empate ${px(be)}: operação protegida contra prejuízo (salvo gap de preço)`,
+          { id: p.id, stopAnterior: p.stop, novoStop: be, precoAtual: price });
+        p.stop = be; p.be = true;
+      }
+    }
     if (price >= p.target) closePos(p, price, 'ALVO');
-    else if (price <= p.stop) closePos(p, price, 'STOP');
+    else if (price <= p.stop) closePos(p, price, p.be ? 'EMPATE' : 'STOP');
     // redução de capital pendente: sai assim que estiver no positivo já pagas as duas taxas; o prazo de 4h fica suspenso
     else if (S.pending && netIfSold(p, price) > 1e-9) closePos(p, price, 'REDUÇÃO');
     else if (!S.pending && now - p.openedAt >= CFG.TIME_STOP) closePos(p, price, 'TEMPO');
@@ -514,36 +973,152 @@ function applyReduction() {
     { resgate: +out.toFixed(4), capital: to, maxOperacoes: maxPosFor(to), caixa: +S.cash.toFixed(4) });
 }
 
-function accrueCost(now) {
-  const dt = Math.min(now - S.lastActive, 5 * 60e3);
-  if (dt <= 0) return;
-  const c = CFG.COST_HOUR * dt / 3600e3;
-  S.cash -= c; S.opCost += c;
-}
-
-function checkDeath() {
+function checkDeath(at = Date.now()) {
   if (!S.alive) return;
   if (equity() < CFG.MIN_NOTIONAL) {
-    for (const p of [...S.positions]) closePos(p, curPx(p), 'LIQUIDAÇÃO');
+    for (const p of [...S.positions]) closePos(p, curPx(p), 'LIQUIDAÇÃO', at);
     S.alive = false;
-    record('MORTE', '', `Patrimônio ${usd(equity())} abaixo de US$ ${CFG.MIN_NOTIONAL}: o agente não se pagou e parou de operar`, { patrimonio: +equity().toFixed(4) });
+    record('MORTE', '', `Patrimônio ${usd(equity())} abaixo de US$ ${CFG.MIN_NOTIONAL}: o agente não se pagou e parou de operar`, { patrimonio: +equity().toFixed(4) }, at);
   }
+}
+
+// ───────── Sessão de 72h ─────────
+const sessionOpen = (t = Date.now()) => t < S.expiresAt;
+function checkSessionEnd(at = Date.now()) {
+  if (S.expiredLogged || at < S.expiresAt) return;
+  S.expiredLogged = true;
+  record('SESSAO', '', `Sessão encerrada em ${tsFmt(S.expiresAt)}: sem novas entradas. As ${S.positions.length} posições abertas seguem com stop móvel e prazo até fecharem. Renove para voltar a operar.`,
+    { expirouEm: new Date(S.expiresAt).toISOString(), posicoesAbertas: S.positions.length }, S.expiresAt);
+}
+function renewSession() {
+  const base = Math.max(S.expiresAt, Date.now()), old = S.expiresAt;
+  S.expiresAt = base + CFG.SESSION_H * 3600e3; S.expiredLogged = false;
+  record('SESSAO', '', `Sessão renovada por mais ${CFG.SESSION_H}h: termina em ${tsFmt(S.expiresAt)}`, { terminoAnterior: new Date(old).toISOString(), novoTermino: new Date(S.expiresAt).toISOString() });
+}
+
+// ───────── Reconstituição do período com a página fechada ─────────
+// Hospedado como página estática (GitHub Pages), o agente só executa com a página aberta. Ao voltar, ele refaz hora a hora,
+// com os candles reais de 1h da Binance, tudo o que teria feito: stops (pela mínima de cada hora; se a mínima tocou o stop,
+// vende no stop ou na abertura, se abriu abaixo), stop móvel no fechamento, prazos, mortes, avaliações diárias e entradas.
+// Cada evento vai para a trilha com o horário em que teria acontecido e a marca "reconstituido".
+const k1h = r => ({ t: +r[0], o: +r[1], h: +r[2], l: +r[3], c: +r[4] });
+let CATCHING = false;
+function reconBar(p, c, atrV, full, at, RS) {
+  const out = (price, reason) => { closePos(p, price, reason, at); RS.saidas++; };
+  if (full) p.hi = Math.max(p.hi ?? p.entry, c.h);
+  p.last = c.c; PRICES[p.sym] = c.c; addHist(p, at, c.c);
+  if (p.strat) {
+    if (full && c.l <= p.stop) return out(Math.min(c.o, p.stop), p.stop > p.stop0 ? 'STOP MÓVEL' : 'STOP');
+    if (c.t > p.lastBarT && atrV > 0) {
+      const old = p.stop; p.stop = Math.max(p.stop, c.c - CFG.ATR_K * atrV); p.atr = atrV; p.lastBarT = c.t;
+      if (p.stop > old) {
+        (p.stopHist ||= [[p.openedAt, p.stop0]]).push([at, p.stop]); RS.ajustes++;
+        record('AJUSTE', p.sym, `Stop móvel elevado de ${px(old)} para ${px(p.stop)} (fechamento de 1h − 3×ATR)` +
+          (netIfSold(p, p.stop) > 0 ? ` · lucro mínimo travado ${sgnUsd(netIfSold(p, p.stop))}` : ''), { id: p.id, stopAnterior: old, novoStop: p.stop, atr1h: atrV, candle: new Date(c.t).toISOString() }, at);
+      }
+    }
+    if (S.pending && netIfSold(p, c.c) > 1e-9) return out(c.c, 'REDUÇÃO');
+    if (!S.pending && at - p.openedAt >= p.maxHold) return out(c.c, 'TEMPO');
+    return;
+  }
+  // posições da estratégia anterior (alvo fixo)
+  if (full && c.l <= p.stop) return out(Math.min(c.o, p.stop), p.be ? 'EMPATE' : 'STOP');
+  if (full && c.h >= p.target) return out(Math.max(c.o, p.target), 'ALVO');
+  if (S.pending && netIfSold(p, c.c) > 1e-9) return out(c.c, 'REDUÇÃO');
+  if (!S.pending && at - p.openedAt >= CFG.TIME_STOP) return out(c.c, 'TEMPO');
+}
+// Para reconstituir a estratégia contínua: baixa uma vez os candles de 1h do universo e corta em cada hora do período
+async function preloadUniverse(now) {
+  const KU = {}, syms = ['BTCUSDT', ...LAST_SCAN.universe.map(m => m.sym)];
+  for (let i = 0; i < syms.length; i += 6) await Promise.all(syms.slice(i, i + 6).map(s =>
+    api(`/api/v3/klines?symbol=${encodeURIComponent(s)}&interval=1h&endTime=${now}&limit=${CFG.KLINES_1H}`)
+      .then(raw => { KU[s] = raw.map(k1h).filter(x => x.t + 3600e3 <= now); }).catch(() => {})));
+  return KU;
+}
+const sliceTo = (KU, sym, T) => { const k = KU[sym] || []; let j = k.length - 1; while (j >= 0 && k[j].t > T) j--; return k.slice(0, j + 1); };
+
+async function catchUp(now) {
+  const from = S.lastActive;
+  if (!S.alive || !(now - from >= CFG.CATCHUP_MIN_MS)) return;
+  CATCHING = true; feedMsg = 'reconstituindo o período fora do ar…'; render();
+  const RS = { horas: 0, avaliacoes: 0, entradas: 0, saidas: 0, ajustes: 0 };
+  const startH = Math.max(Math.floor(from / 3600e3) * 3600e3, now - CFG.CATCHUP_MAX_D * 86400e3);
+  const endH = Math.floor(now / 3600e3) * 3600e3;   // abertura do candle ainda em andamento
+  const KC = {}; let KU = null;   // KC: candles das posições; KU: universo inteiro (só para a estratégia contínua)
+  const getK = async sym => {
+    if (!KC[sym]) {
+      const k = (await api(`/api/v3/klines?symbol=${encodeURIComponent(sym)}&interval=1h&startTime=${startH - 300 * 3600e3}&endTime=${now}&limit=1000`)).map(k1h);
+      KC[sym] = { k, atr: atrSeries(k), idx: new Map(k.map((x, i) => [x.t, i])) };
+    }
+    return KC[sym];
+  };
+  try {
+    for (let T = startH; T < endH && S.alive; T += 3600e3) {
+      const at = T + 3600e3; RS.horas++;
+      checkSessionEnd(Math.min(at, now));   // registra o fim da sessão antes dos eventos desta hora (trilha em ordem)
+      for (const p of [...S.positions]) {
+        if (at <= p.openedAt) continue;                 // candle inteiro antes da compra
+        const K = await getK(p.sym), i = K.idx.get(T); if (i == null) continue;
+        reconBar(p, K.k[i], K.atr[i], T >= p.openedAt, at, RS);
+      }
+      applyReduction();
+      S.equity.push({ t: at, v: +equity().toFixed(5), c: contributed() });
+      checkDeath(at);
+      checkSessionEnd(at);
+      const stc = stratOf(curStrat()), before = S.positions.length;
+      if (stc.sched === 'hourly') {
+        // estratégia contínua: a decisão que aconteceria no fechamento de cada hora
+        if (S.alive && at > from && sessionOpen(at) && S.lastEvalHour !== at) {
+          KU ||= await preloadUniverse(now);
+          await runEvaluation({ at, hist: true, key: at, getK: sym => sliceTo(KU, sym, T) });
+          RS.avaliacoes++; RS.entradas += Math.max(0, S.positions.length - before);
+        }
+      } else if (new Date(at).getUTCHours() === 0 && S.alive && at > from && sessionOpen(at) && S.lastEvalDay !== dayKey(at)
+          && now >= at + CFG.ENTRY_WINDOW_H * 3600e3) {
+        // 00:00 UTC: momento da avaliação diária que aconteceria com a página aberta
+        await dailyEvaluation(false, at);
+        RS.avaliacoes++; RS.entradas += Math.max(0, S.positions.length - before);
+      }
+    }
+    // candle em andamento: mínimas de 1 em 1 minuto desde a abertura dele (ou desde que o agente parou)
+    for (const p of [...S.positions]) {
+      const st0 = Math.max(endH, p.openedAt, from);
+      if (now - st0 < 60e3) continue;
+      const m1 = (await api(`/api/v3/klines?symbol=${encodeURIComponent(p.sym)}&interval=1m&startTime=${st0}&endTime=${now}&limit=1000`)).map(k1h);
+      for (const c of m1) {
+        if (!S.positions.includes(p)) break;
+        const at = Math.min(c.t + 60e3, now);
+        p.hi = Math.max(p.hi ?? p.entry, c.h);
+        if (c.l <= p.stop) { closePos(p, Math.min(c.o, p.stop), p.strat ? (p.stop > p.stop0 ? 'STOP MÓVEL' : 'STOP') : (p.be ? 'EMPATE' : 'STOP'), at); RS.saidas++; }
+        else if (!p.strat && c.h >= p.target) { closePos(p, Math.max(c.o, p.target), 'ALVO', at); RS.saidas++; }
+      }
+    }
+    S.equity.sort((a, b) => a.t - b.t);
+    record('RETOMADA', '', `Agente retomado após ${dur(now - from)} com a página fechada. Período reconstituído com candles reais da Binance: ${RS.horas} h, ` +
+      `${RS.avaliacoes} avaliação(ões) de entrada, ${RS.entradas} entrada(s), ${RS.saidas} saída(s), ${RS.ajustes} ajuste(s) de stop.`,
+      { foraDoArMs: now - from, desde: new Date(from).toISOString(), ...RS, posicoesAbertas: S.positions.length });
+  } finally { CATCHING = false; }
 }
 
 async function tick() {
   if (busy) return; busy = true;
   const now = Date.now();
   try {
-    let band = null;
-    if (now - lastScanAt >= CFG.SCAN_MS) band = await scan(); else await refreshPrices();
+    let scanned = false;
+    if (now - lastScanAt >= CFG.SCAN_MS) { await scan(); scanned = true; } else await refreshPrices();
+    // página ficou fechada (ou o computador dormiu): refaz o período perdido antes de seguir ao vivo
+    if (now - S.lastActive >= CFG.CATCHUP_MIN_MS) { await catchUp(now); await refreshPrices(); }
     await backfill().catch(() => {});
+    await ensureFeatures().catch(() => {});
+    await backfillClosed().catch(() => {});
+    await updateTrails().catch(() => {});
     if (S.alive) {
-      accrueCost(now);
       checkExits();
       applyReduction();
-      if (band) tryEnter(band);
+      if (scanned) await scheduleEvaluations(now);
       checkDeath();
     }
+    checkSessionEnd();
     const last = S.equity[S.equity.length - 1];
     if (!last || now - last.t >= 60e3 || last.c !== contributed()) { S.equity.push({ t: now, v: +equity().toFixed(5), c: contributed() }); if (S.equity.length > CFG.EQ_CAP) S.equity.splice(0, S.equity.length - CFG.EQ_CAP); }
     S.lastActive = now;
@@ -576,7 +1151,9 @@ const $ = id => document.getElementById(id);
 function render() {
   const now = Date.now(), eq = equity(), st = stats(), base = contributed(), net = eq - base, risk = openRisk();
   const status = $('status');
-  if (!S.alive) { status.className = 'pill down'; status.innerHTML = '<i class="dot"></i>MORTO'; }
+  if (CATCHING) { status.className = 'pill info'; status.innerHTML = '<i class="dot"></i>RECONSTITUINDO'; }
+  else if (!S.alive) { status.className = 'pill down'; status.innerHTML = '<i class="dot"></i>MORTO'; }
+  else if (!sessionOpen()) { status.className = 'pill warn'; status.innerHTML = '<i class="dot"></i>SESSÃO ENCERRADA'; }
   else if (S.pending) { status.className = 'pill warn'; status.innerHTML = '<i class="dot"></i>REDUZINDO CAPITAL'; }
   else if (S.paused) { status.className = 'pill warn'; status.innerHTML = '<i class="dot"></i>ENTRADAS PAUSADAS'; }
   else { status.className = 'pill up'; status.innerHTML = '<i class="dot"></i>OPERANDO'; }
@@ -586,11 +1163,31 @@ function render() {
   $('bPause').textContent = S.paused ? 'Retomar entradas' : 'Pausar entradas';
   $('bPause').disabled = !S.alive;
   $('uptime').textContent = dur(now - S.startedAt);
+  renderSession();
 
   const sel = $('capSel');
   if (!sel.options.length) sel.innerHTML = CFG.CAPITALS.map(v => `<option value="${v}">US$ ${v} · até ${maxPosFor(v)} operações</option>`).join('');
   if (document.activeElement !== sel) sel.value = String(S.pending ? S.pending.to : S.capital);
   sel.disabled = !S.alive;
+  const rsel = $('riskSel'), ssel = $('stratSel'), lvl = riskLvl(), sk = curStrat(), stc = stratOf(sk);
+  // o ganho estimado depende do capital, do apetite e da estratégia: refaz as opções quando algum deles muda
+  const optKey = `${S.capital}|${S.risk}|${sk}`;
+  if (rsel.dataset.key !== optKey && document.activeElement !== rsel && document.activeElement !== ssel) {
+    rsel.dataset.key = optKey;
+    rsel.innerHTML = Object.entries(RISK_LEVELS).map(([k, l]) => {
+      const r = simFor(k);
+      return `<option value="${k}" title="${esc(l.desc + (r ? ' | ' + stc.nome + ': ' + simTip(r, S.capital) : ''))}">${l.label}${r ? ' · ' + simText(r) : ''}</option>`;
+    }).join('');
+    ssel.innerHTML = Object.entries(STRATS).map(([k, s]) => {
+      const r = simFor(S.risk, k);
+      return `<option value="${k}" title="${esc(`${s.resumo}. Perfil: ${s.perfil}. ` + (r ? `Apetite ${lvl.label}: ` + simTip(r, S.capital) : ''))}">${s.nome}${r ? ' · ' + simText(r) : ''}</option>`;
+    }).join('');
+  }
+  if (document.activeElement !== rsel) rsel.value = S.risk;
+  if (document.activeElement !== ssel) ssel.value = sk;
+  rsel.title = rsel.options[rsel.selectedIndex]?.title || lvl.desc;
+  ssel.title = ssel.options[ssel.selectedIndex]?.title || stc.resumo;
+  ssel.disabled = !S.alive;
   const note = $('capNote');
   if (S.pending) {
     const waiting = S.positions.map(p => `${esc(p.sym)} ${sgnUsd(netIfSold(p, curPx(p)))}`).join(' · ');
@@ -607,10 +1204,12 @@ function render() {
   $('kW').textContent = st.wins; $('kWS').textContent = st.n ? `${pct(st.winRate, 1)} das ${st.n} operações` : 'nenhuma operação encerrada';
   $('kL').textContent = st.losses; $('kLS').textContent = st.n ? `${pct(st.lossRate, 1)} das ${st.n} operações` : 'nenhuma operação encerrada';
   const rp = eq > 0 ? risk / eq : 0;
-  $('kRisk').textContent = pct(rp); $('kRisk').className = 'v ' + (rp > CFG.MAX_RISK + 1e-9 ? 'down' : '');
-  $('kRiskBar').style.width = Math.min(100, rp / CFG.MAX_RISK * 100) + '%';
+  const capPct = Math.min(lvl.cap, CFG.MAX_RISK);
+  $('kRiskL').textContent = `Risco aberto (máx. ${pct(capPct, 0)} · ${lvl.label})`;
+  $('kRisk').textContent = pct(rp); $('kRisk').className = 'v ' + (rp > capPct + 1e-9 ? 'acc' : '');
+  $('kRiskBar').style.width = Math.min(100, rp / capPct * 100) + '%';
   const costs = S.fees + S.opCost;
-  $('kCost').textContent = usd(costs); $('kCostS').textContent = `taxas ${usd(S.fees)} · operacional ${usd(S.opCost)}`;
+  $('kCost').textContent = usd(costs); $('kCostS').textContent = '0,1% por lado · custo operacional fora do cálculo (existe na operação real)';
   const selfPaid = net >= 0;
   $('kSelf').textContent = !S.alive ? 'Morreu' : selfPaid ? 'Sim' : 'Ainda não';
   $('kSelf').className = 'v ' + (!S.alive ? 'down' : selfPaid ? 'up' : 'acc');
@@ -625,44 +1224,51 @@ function render() {
   $('avgL').textContent = st.losses ? sgnUsd(st.avgL) : '—';
   $('pf').textContent = st.n ? (st.pf === Infinity ? '∞' : nf(st.pf, 2)) : '—';
   $('expt').textContent = st.n ? sgnUsd(st.exp) : '—'; $('expt').className = cls(st.exp);
-  $('pEst').textContent = pct(winProb(), 1) + (st.n < 10 ? ' (prior)' : '');
-  $('exits').textContent = `${st.byReason('ALVO')} / ${st.byReason('STOP')} / ${st.byReason('TEMPO')}` + (st.byReason('REDUÇÃO') ? ` · redução ${st.byReason('REDUÇÃO')}` : '');
+  const eS = eStats();
+  $('pEst').textContent = `${pct(eS.p, 1)} · ${nf(eS.b, 2)}` + (eS.n < 10 ? ' (pesquisa)' : '');
+  const reasons = {}; for (const t of S.closed) reasons[t.reason] = (reasons[t.reason] || 0) + 1;
+  $('exits').textContent = Object.entries(reasons).map(([r, n]) => `${r.toLowerCase()} ${n}`).join(' · ') || '—';
 
   // posições
   $('posSub').textContent = `${S.positions.length}/${maxPos()} · risco aberto ${usd(risk)}`;
   $('posBody').innerHTML = S.positions.length ? S.positions.map(p => {
     const c = curPx(p), upnl = p.qty * c * (1 - CFG.FEE) - p.cost - p.entryFee;
     return `<tr><td class="n">${p.id}</td><td><b>${esc(p.sym)}</b></td><td>${tsFmt(p.openedAt)}</td><td class="n">${px(p.entry)}</td><td class="n">${px(c)}</td>
-      <td class="n down">${px(p.stop)}</td><td class="n up">${px(p.target)}</td><td class="n">${fmtQty(p.qty)}</td><td class="n">${usd(p.cost)}</td>
+      <td class="n ${p.strat && p.stop > p.stop0 ? 'acc' : 'down'}">${px(p.stop)}</td><td class="n up">${px(movingTarget(p))}${p.strat ? ' <span class="muted">móvel</span>' : ''}</td><td class="n">${fmtQty(p.qty)}</td><td class="n">${usd(p.cost)}</td>
       <td class="n">${usd(p.risk)} <span class="muted">(${pct(p.riskPct)})</span></td><td class="n">${pct(p.kelly, 1)} <span class="muted">→ ${esc(p.by)}</span></td>
-      <td class="n ${cls(upnl)}">${sgnUsd(upnl)}</td><td class="n">${S.pending ? '<span class="acc">sai no positivo</span>' : dur(CFG.TIME_STOP - (now - p.openedAt))}</td></tr>`;
-  }).join('') : `<tr><td colspan="13" class="empty">Nenhuma posição aberta${S.alive ? ' — aguardando ativo com preço 2–8% abaixo do valor justo' : ''}</td></tr>`;
+      <td class="n ${cls(upnl)}">${sgnUsd(upnl)}</td><td class="n">${S.pending ? '<span class="acc">sai no positivo</span>' : dur((p.maxHold ?? CFG.TIME_STOP) - (now - p.openedAt))}</td></tr>`;
+  }).join('') : `<tr><td colspan="13" class="empty">Nenhuma posição aberta${S.alive ? ` — próxima avaliação diária em ${tsFmt(nextEvalAt(now))}` : ''}</td></tr>`;
 
   renderPosCharts();
 
   // scanner
   if (LAST_SCAN) {
-    $('scanSub').textContent = `${LAST_SCAN.scanned} mercados escaneados · ${LAST_SCAN.liquid} líquidos · ${LAST_SCAN.band.length} na faixa · ${tsFmt(LAST_SCAN.at)}`;
+    $('scanSub').textContent = `${LAST_SCAN.scanned} mercados escaneados · ${LAST_SCAN.liquid} líquidos · universo de ${LAST_SCAN.universe.length} · ${tsFmt(LAST_SCAN.at)}`;
+    const sig = new Set((LAST_ANALYSIS?.results || []).filter(a => a.signal).map(a => a.sym));
     $('scanBody').innerHTML = LAST_SCAN.top.map(m => {
-      const inBand = -m.dev >= CFG.MISP_MIN && -m.dev <= CFG.MISP_MAX && m.chg > -0.2;
       const held = S.positions.some(p => p.sym === m.sym);
-      const cool = S.cooldown[m.sym] && Date.now() < S.cooldown[m.sym];
-      const sit = held ? '<span class="pill info">em carteira</span>' : cool ? '<span class="pill neutral">resfriando</span>'
-        : inBand ? '<span class="pill up">preço errado</span>' : -m.dev > CFG.MISP_MAX ? '<span class="pill down">queda &gt; 8%</span>' : '<span class="pill neutral">fora da faixa</span>';
-      return `<tr><td><b>${esc(m.sym)}</b></td><td class="n">${px(m.last)}</td><td class="n">${px(m.vwap)}</td><td class="n ${cls(m.dev)}">${sgnPct(m.dev)}</td>
-        <td class="n ${cls(m.chg)}">${sgnPct(m.chg)}</td><td class="n">${compact(m.qv)}</td><td>${sit}</td></tr>`;
+      const sit = held ? '<span class="pill info">em carteira</span>' : sig.has(m.sym) ? '<span class="pill up">sinal hoje</span>' : '<span class="pill neutral">no universo</span>';
+      return `<tr><td><b>${esc(m.sym)}</b></td><td class="n">${px(m.last)}</td><td class="n ${cls(m.chg)}">${sgnPct(m.chg)}</td><td class="n">${compact(m.qv)}</td><td>${sit}</td></tr>`;
     }).join('');
   }
+
+  renderAnalysis();
 
   // regras
   const rules = [
     [true, `Capital simulado de ${usd(S.capital)} (escolha entre US$ 50 e US$ 300)`, `Até ${maxPos()} operações simultâneas neste nível. Aumentar aporta a diferença na hora; reduzir espera todas as posições fecharem no positivo, já pagas as taxas, antes de resgatar. Patrimônio atual ${usd(eq)}.`],
-    [rp <= CFG.MAX_RISK + 1e-9, 'Nunca arriscar mais de 6% de uma vez', `Soma das perdas até os stops de todas as posições ≤ 6% do patrimônio. Agora: ${pct(rp)}.`],
-    [true, 'Escanear até 1.000 mercados', LAST_SCAN ? `${LAST_SCAN.scanned} pares USDT/USDC/FDUSD ativos na Binance neste scan (teto de 1.000; a corretora não lista mais que isso).` : 'Aguardando scan.'],
-    [true, 'Preço errado até 8%', `Compra só quando o preço está entre 2% e 8% abaixo do VWAP 24h (valor justo). Desvios maiores são tratados como notícia, não erro.`],
-    [true, 'Critério de Kelly', `f* = p − (1−p)/b, com b líquido de taxas e p bayesiano (prior 55%, atualizado pelos resultados). Usa ½ Kelly, sempre abaixo do teto de 6%.`],
+    [rp <= CFG.MAX_RISK + 1e-9, 'Nunca arriscar mais de 6% de uma vez', `Soma das perdas até os stops de todas as posições ≤ 6% do patrimônio, em qualquer apetite a risco. Agora: ${pct(rp)}.`],
+    [true, `Apetite a risco: ${lvl.label}`, lvl.desc + `. Ao reduzir o apetite, as posições abertas não são vendidas: só não entram novas até o risco caber no novo teto.` +
+      (simFor(S.risk) ? ` Na simulação da pesquisa com US$ ${S.capital} e a estratégia atual: ${simText(simFor(S.risk))} (passado, não promessa; sem custo operacional).` : '')],
+    [true, 'Aprender com os erros', `Cada perda recebe uma revisão registrada na trilha e na memória de aprendizado (${KN.lessons.length} lições, ${KN.trades.length} operações aprendidas). A memória decide quais sinais ocupam as vagas.`],
+    [true, 'Escanear até 1.000 mercados', LAST_SCAN ? `${LAST_SCAN.scanned} pares USDT/USDC/FDUSD ativos na Binance neste scan (teto de 1.000). A estratégia opera os ${LAST_SCAN.universe.length} pares USDT mais líquidos, como na pesquisa.` : 'Aguardando scan.'],
+    [true, `Estratégia: ${stc.nome}`, `${stc.resumo}. Perfil: ${stc.perfil}. Na pesquisa (56 ativos, mai–out/2026) acertou ${nf(stc.acerto, 0)}% das operações, com resultado médio de ${sgnPct(stc.opIs / 100)} por operação antes de 26/ago e ${sgnPct(stc.opOos / 100)} depois. Nenhuma das 4 estratégias do combo foi melhor que as outras nos dois períodos: todas ganharam na alta de setembro e perderam na fase fraca.`],
+    [false, 'Preço errado até 8% (substituída)', 'A pesquisa mostrou que comprar 2–8% abaixo do valor justo (VWAP 24h) perdeu dinheiro nas 16 variações testadas (−0,24% por operação fora da amostra). A regra foi trocada pela de momento.'],
+    [true, 'Critério de Kelly', `f* = p − (1−p)/b com p ${pct(eS.p, 1)} e b ${nf(eS.b, 2)} (ganho médio ÷ perda média) da estratégia atual: f* = ${pct(eS.p - (1 - eS.p) / eS.b, 1)}. Ponto de partida: as operações da pesquisa, atualizado pelos resultados reais. A fração usada depende do apetite, sempre abaixo do teto de 6%.`],
+    [true, 'Análise do histórico do ativo', 'Para cada ativo, roda a mesma estratégia nos últimos ~40 dias e registra o resultado na trilha (exceto força relativa, que depende do ranking do dia). Não bloqueia: na pesquisa, bloquear ativos com histórico recente ruim cortou as melhores operações (+5,7% contra +0,4% por operação).'],
+    [true, 'Stop móvel e prazo', `Stop inicial a 3×ATR(14) de 1h abaixo da compra. A cada hora fechada sobe para fechamento − 3×ATR (nunca desce), travando lucro nas operações que andam. Saída obrigatória após ${stc.params.H}h na estratégia atual.`],
     [false, 'Sentimento no X', 'Sem acesso à API do X neste ambiente: o sinal não é usado (peso 0) e cada entrada registra isso na trilha.'],
-    [S.alive, 'Pagar por si mesmo ou morrer', `Paga 0,1% de taxa por lado + US$ ${nf(CFG.COST_HOUR, 2)}/h de custo operacional. Morre se o patrimônio cair abaixo de US$ ${CFG.MIN_NOTIONAL}.`],
+    [S.alive, 'Pagar por si mesmo ou morrer', `Paga 0,1% de taxa por lado e a derrapagem. Custo operacional fora do cálculo, mas existe na operação real (servidor, dados, internet, impostos). Morre se o patrimônio cair abaixo de US$ ${CFG.MIN_NOTIONAL}.`],
   ];
   $('rules').innerHTML = rules.map(([ok, t, d]) =>
     `<li><span class="ic ${ok ? 'up' : 'down'}">${ok ? '✓' : '✕'}</span><div>${esc(t)}<div class="d">${esc(d)}</div></div></li>`).join('');
@@ -676,14 +1282,63 @@ function render() {
     <td class="n ${cls(t.pnl)}">${sgnPct(t.pnlPct)}</td><td class="hash" title="${t.entryHash} → ${t.exitHash}">${t.entryHash.slice(0, 8)} → ${t.exitHash.slice(0, 8)}</td></tr>`).join('')
     : '<tr><td colspan="13" class="empty">Nenhuma operação encerrada ainda</td></tr>';
 
+  renderClosedCharts();
+  renderKnowledge();
   renderLog();
   drawChart();
 }
 
-const TYPE_PILL = { ENTRADA: 'up', SAIDA: 'info', REJEITADO: 'warn', SCAN: 'neutral', ERRO: 'down', MORTE: 'down', APORTE: 'up', REDUCAO: 'warn', RESGATE: 'warn', CAPITAL: 'neutral' };
+const TYPE_PILL = { ENTRADA: 'up', SAIDA: 'info', REJEITADO: 'warn', SCAN: 'neutral', ERRO: 'down', MORTE: 'down', APORTE: 'up', REDUCAO: 'warn', RESGATE: 'warn', CAPITAL: 'neutral', AJUSTE: 'info', AVALIACAO: 'neutral', LICAO: 'warn', APETITE: 'warn', ESTRATEGIA: 'warn' };
+
+// texto da regra de entrada de cada estratégia e se o ativo a cumpre
+const ast0 = A => stratOf(A.strat).sched === 'hourly' ? 'horária' : 'diária';
+const ruleText = st => st.kind === 'xs'
+  ? `estar entre os ${st.params.N} que mais subiram em ${st.params.L}h, com alta positiva e acima da EMA200 de 1h; sai em até ${st.params.H}h`
+  : st.kind === 'momx'
+  ? `a alta de ${st.params.L}h cruzar +${nf(st.params.th * 100, 0)}% (estava abaixo na hora anterior) com o preço acima da EMA200 de 1h; sai em até ${st.params.H}h`
+  : `subir mais de ${nf(st.params.th * 100, 0)}% em ${st.params.L}h e fechar acima da EMA200 de 1h; sai em até ${st.params.H}h`;
+function renderAnalysis() {
+  const live = stratOf(curStrat());
+  $('anRule').textContent = ruleText(live);
+  $('anSched').textContent = live.sched === 'hourly'
+    ? 'Com esta estratégia as compras também acontecem a qualquer hora, no fechamento de cada candle de 1h.'
+    : 'Com esta estratégia as compras acontecem uma vez por dia, às 00:00 UTC (21:00 em Brasília): foi o horário validado na pesquisa. Avaliar e comprar a toda hora rendeu menos (+0,98% por operação contra +1,79% na validação). Nas outras horas a lista abaixo é uma prévia de quem entraria.';
+  $('anStats').textContent = `Na pesquisa (56 ativos, mai–out/2026) esta estratégia acertou ${nf(live.acerto, 0)}% das operações, com ganho médio de ${pct(live.aw, 1)} e perda média de ${pct(live.al, 1)} por operação.`;
+  const A = LAST_ANALYSIS, nxt = `próxima avaliação: ${tsFmt(nextEvalAt(Date.now()))}`;
+  $('anStrat').textContent = A && A.strat !== curStrat() ? `${stratOf(A.strat).nome} (análise de hoje) → ${live.nome} a partir da próxima` : live.nome;
+  if (!A) { $('anSub').textContent = S.lastEvalDay === dayKey(Date.now()) ? `avaliação de hoje já feita · ${nxt}` : nxt; return; }
+  const sigs = A.results.filter(a => a.signal);
+  $('anSub').textContent = A.preview
+    ? `prévia contínua · ${A.results.length} ativos reanalisados às ${new Date(A.at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} (candle de 1h fechado) · ${sigs.length} cumprem o critério agora · próxima reanálise ${new Date(hourStart(Date.now()) + 3600e3).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} · ${!sessionOpen() ? 'sessão encerrada: sem compras' : stratOf(curStrat()).sched === 'hourly' ? 'próxima decisão de compra no fechamento da hora' : 'compras: ' + tsFmt(nextEvalAt(Date.now()))}`
+    : `${A.hist ? 'decisão reconstituída' : 'decisão'} ${ast0(A)} · ${A.results.length} ativos analisados em ${tsFmt(A.at)} · ${sigs.length} com sinal · ${A.results.filter(a => a.decision === 'comprou').length} compra(s) · ${nxt}`;
+  const ok = (cond, txt) => `<td class="n ck ${cond ? 'up' : 'down'}">${txt}</td>`;
+  const ast = stratOf(A.strat);
+  const rows = sigs.sort((x, y) => y.momL - x.momL).concat(A.results.filter(a => !a.signal && isFinite(a.momL)).sort((x, y) => y.momL - x.momL).slice(0, Math.max(0, 15 - sigs.length)));
+  $('anBody').innerHTML = rows.length ? rows.map(a => {
+    const h = a.hist, hTxt = h.na ? 'não se aplica' : h.n ? `${h.w}/${h.n} · ${sgnPct(h.mean)}/op` : 'sem sinais';
+    const dec = a.decision === 'comprou' ? '<span class="pill up">comprou</span>'
+      : A.preview && a.signal ? `<span class="pill info">cumpre agora</span> <span class="muted">${ast.sched === 'hourly' ? '' : 'entra às 21:00 se mantiver'}</span>`
+      : a.decision ? `<span class="muted">${esc(a.decision === 'rejeitado' ? a.reason : a.decision)}</span>` : `<span class="muted">${esc(a.reason || '')}</span>`;
+    const crit = ast.kind === 'xs' ? ok(a.rank <= ast.params.N && a.momL > 0, `${sgnPct(a.momL)} em ${ast.params.L}h · ${a.rank ?? '—'}º`)
+      : ok(a.momL > ast.params.th, `${sgnPct(a.momL)} em ${ast.params.L}h`);
+    return `<tr><td><b>${esc(a.sym)}</b></td>${crit}${ok(a.vsEma > 0, sgnPct(a.vsEma))}
+      <td class="n">${pct(a.atrPct, 2)}</td><td class="n">${a.stop ? px(a.stop) : '—'}</td>${a.spread != null ? ok(a.spread <= CFG.MAX_SPREAD, pct(a.spread, 2)) : '<td class="n muted">—</td>'}
+      <td class="n ${h.n ? cls(h.mean) : 'muted'}">${hTxt}</td><td class="n">${a.p != null ? `${pct(a.p, 1)} · ${nf(a.b, 2)} · ${pct(a.kelly, 1)}` : '—'}</td>
+      <td class="n ${a.ev ? cls(a.ev.ev) : 'muted'}" title="${a.ev ? esc(a.ev.parts.map(x => `${DIMS[x.d].label} ${DIMS[x.d].names[x.b]}: ${sgnPct(x.delta)}`).join(' | ')) : ''}">${a.ev ? sgnPct(a.ev.ev) + '/op' : '—'}</td><td class="wrapc">${dec}</td></tr>`;
+  }).join('') : '<tr><td colspan="10" class="empty">Nenhum ativo analisado</td></tr>';
+}
+let logPage = 1;
 function renderLog() {
   const f = $('fType').value;
-  const rows = S.log.filter(e => !f || (f === 'SISTEMA' ? SYS_TYPES.has(e.type) : f === 'CAPITAL_G' ? CAP_TYPES.has(e.type) : e.type === f)).slice(-300).reverse();
+  const all = S.log.filter(e => !f || (f === 'SISTEMA' ? SYS_TYPES.has(e.type) : f === 'CAPITAL_G' ? CAP_TYPES.has(e.type) : e.type === f)).reverse();
+  const pages = Math.max(1, Math.ceil(all.length / CFG.LOG_PAGE));
+  logPage = Math.min(Math.max(1, logPage), pages);
+  const rows = all.slice((logPage - 1) * CFG.LOG_PAGE, logPage * CFG.LOG_PAGE);
+  $('logPager').innerHTML = `<span>${all.length} registros · página ${logPage} de ${pages}</span>
+    <button data-pg="1" ${logPage === 1 ? 'disabled' : ''} title="Primeira página">«</button>
+    <button data-pg="${logPage - 1}" ${logPage === 1 ? 'disabled' : ''}>‹ Anterior</button>
+    <button data-pg="${logPage + 1}" ${logPage === pages ? 'disabled' : ''}>Próxima ›</button>
+    <button data-pg="${pages}" ${logPage === pages ? 'disabled' : ''} title="Última página">»</button>`;
   $('logBody').innerHTML = rows.length ? rows.map(e => {
     const main = `<tr class="click" data-seq="${e.seq}"><td class="n mono">${e.seq}</td><td>${tsFmt(e.ts)}</td>
       <td><span class="pill ${TYPE_PILL[e.type] || 'neutral'}">${e.type}</span></td><td><b>${esc(e.sym)}</b></td>
@@ -747,7 +1402,7 @@ function renderPosCharts() {
   }
   box.querySelector('.empty')?.remove();
   const ids = new Set(S.positions.map(p => String(p.id)));
-  for (const el of [...box.children]) if (!ids.has(el.dataset.id)) el.remove();
+  for (const el of [...box.children]) if (!el.classList.contains('pgroup') && !ids.has(el.dataset.id)) el.remove();
   const now = Date.now();
   for (const p of S.positions) {
     let el = box.querySelector(`.pc[data-id="${p.id}"]`);
@@ -757,18 +1412,136 @@ function renderPosCharts() {
       box.appendChild(el); hookPosHover(el);
     }
     const c = curPx(p), chg = c / p.entry - 1, upnl = p.qty * c * (1 - CFG.FEE) - p.cost - p.entryFee;
-    const toT = p.target / c - 1, toS = p.stop / c - 1;
+    const toS = p.stop / c - 1, atStop = netIfSold(p, p.stop);
     el.querySelector('.pch-top').innerHTML = `<span class="muted">#${p.id}</span><b>${esc(p.sym)}</b>
       <span class="pill ${upnl > 0 ? 'up' : 'down'}">${sgnUsd(upnl)}</span>
       <span class="cur ${cls(chg)}">${px(c)} (${sgnPct(chg)})</span>`;
+    const tgt = movingTarget(p);
+    const second = `<div><div class="l" title="${p.strat ? 'Referência: a estratégia não vende no alvo; quem encerra é o stop móvel ou o prazo. Sobe junto quando o preço passa dele.' : ''}">${p.strat ? 'Alvo móvel' : 'Alvo'} (falta ${sgnPct(tgt / c - 1)})</div><div class="v up">${px(tgt)}</div></div>`;
+    const moved = p.strat ? p.stop > p.stop0 : p.be;
     el.querySelector('.pch-meta').innerHTML = `
       <div><div class="l">Compra · ${tsFmt(p.openedAt)}</div><div class="v">${px(p.entry)}</div></div>
-      <div><div class="l">Alvo (falta ${sgnPct(toT)})</div><div class="v up">${px(p.target)}</div></div>
-      <div><div class="l">Stop (falta ${sgnPct(toS)})</div><div class="v down">${px(p.stop)}</div></div>
+      ${second}
+      <div><div class="l">${p.strat ? 'Stop móvel' : p.be ? 'Stop no empate' : 'Stop'} (falta ${sgnPct(toS)}) · se bater: ${sgnUsd(atStop)}</div><div class="v ${moved ? 'acc' : 'down'}">${px(p.stop)}</div></div>
       ${S.pending ? '<div><div class="l">Redução de capital</div><div class="v acc">sai no positivo</div></div>'
-        : `<div><div class="l">Expira em</div><div class="v">${dur(CFG.TIME_STOP - (now - p.openedAt))}</div></div>`}`;
+        : `<div><div class="l">Expira em</div><div class="v">${dur((p.maxHold ?? CFG.TIME_STOP) - (now - p.openedAt))}</div></div>`}`;
     drawPosChart(el.querySelector('canvas'), p);
   }
+  // ordem: no lucro primeiro (maior ganho no topo), depois no prejuízo
+  const order = S.positions.map(p => ({ id: p.id, u: netIfSold(p, curPx(p)) })).sort((a, b) => b.u - a.u);
+  const wins = order.filter(x => x.u > 0), losses = order.filter(x => x.u <= 0);
+  POS_HDR.w.textContent = `No lucro · ${wins.length}`; POS_HDR.l.textContent = `No prejuízo · ${losses.length}`;
+  const nodes = [...(wins.length ? [POS_HDR.w] : []), ...wins.map(x => box.querySelector(`.pc[data-id="${x.id}"]`)),
+    ...(losses.length ? [POS_HDR.l] : []), ...losses.map(x => box.querySelector(`.pc[data-id="${x.id}"]`))];
+  for (const h of [POS_HDR.w, POS_HDR.l]) if (!nodes.includes(h)) h.remove();
+  nodes.forEach((n, i) => { if (box.children[i] !== n) box.insertBefore(n, box.children[i] || null); });
+}
+const POS_HDR = (() => { const mk = c => { const d = document.createElement('div'); d.className = 'pgroup ' + c; return d; }; return { w: mk('up'), l: mk('down') }; })();
+
+// ───────── Gráficos das operações encerradas ─────────
+let closedSig = '';
+function renderClosedCharts() {
+  const box = $('ccharts'), list = S.closed.slice(-CFG.CLOSED_CHARTS);
+  const sig = list.map(t => t.id + ':' + (t.hist ? t.hist.length : 0)).join(',') + '|' + box.clientWidth;
+  if (sig === closedSig) return;
+  closedSig = sig;
+  if (!list.length) { box.innerHTML = '<div class="empty">Nenhuma operação encerrada ainda</div>'; return; }
+  const sorted = list.slice().sort((a, b) => b.pnl - a.pnl), wins = sorted.filter(t => t.pnl > 0), losses = sorted.filter(t => t.pnl <= 0);
+  $('ccSub').textContent = `últimas ${list.length} · ${wins.length} ganhos primeiro, depois ${losses.length} perdas · passe o mouse para ver cada ponto`;
+  const card = t => {
+    const win = t.pnl > 0, d = t.closedAt - t.openedAt;
+    const lesson = t.lesson ? `<div class="lesson"><b>Lição:</b> ${t.lesson.map(x => esc(x.txt)).join(' ')}</div>` : '';
+    return `<div class="pc" data-cid="${t.id}">
+      <div class="pch-top"><span class="muted">#${t.id}</span><b>${esc(t.sym)}</b><span class="pill ${win ? 'up' : 'down'}">${win ? 'ACERTO' : 'PERDA'} ${sgnUsd(t.pnl)}</span>
+        <span class="pill neutral">${esc(t.reason)}</span><span class="cur ${cls(t.pnl)}">${sgnPct(t.pnlPct)}</span></div>
+      <div class="pch-meta">
+        <div><div class="l">Compra · ${tsFmt(t.openedAt)}</div><div class="v">${px(t.entry)}</div></div>
+        <div><div class="l">Venda · ${tsFmt(t.closedAt)}</div><div class="v ${cls(t.pnl)}">${px(t.exit)}</div></div>
+        <div><div class="l">Duração</div><div class="v">${dur(d)}</div></div>
+        <div><div class="l">Estratégia</div><div class="v">${STRATS[t.strat] ? STRATS[t.strat].curto : 'VWAP (antiga)'}</div></div>
+      </div>
+      <div class="pchart"><canvas></canvas><div class="tip"></div></div>${lesson}</div>`;
+  };
+  box.innerHTML = (wins.length ? `<div class="pgroup up">Ganhos · ${wins.length}</div>` + wins.map(card).join('') : '')
+    + (losses.length ? `<div class="pgroup down">Perdas · ${losses.length}</div>` + losses.map(card).join('') : '');
+  for (const el of box.querySelectorAll('.pc')) {
+    const t = list.find(x => String(x.id) === el.dataset.cid);
+    hookPosHover(el); drawClosedChart(el.querySelector('canvas'), t);
+  }
+}
+
+function drawClosedChart(cv, t) {
+  const box = cv.parentElement, dpr = window.devicePixelRatio || 1, W = box.clientWidth, H = box.clientHeight;
+  if (!W || !H) return;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+  const cs = getComputedStyle(document.documentElement), col = n => cs.getPropertyValue(n).trim();
+  const data = t.hist && t.hist.length > 1 ? t.hist : [[t.openedAt, t.entry], [t.closedAt, t.exit]];
+  const levels = [t.entry, t.exit, t.stop, t.stop0, t.target].filter(v => isFinite(v) && v > 0);
+  const vs = data.map(x => x[1]).concat(levels);
+  let lo = Math.min(...vs), hi = Math.max(...vs); const sp = hi - lo || hi * 0.01; lo -= sp * 0.08; hi += sp * 0.08;
+  const t0 = t.openedAt, t1 = Math.max(t.closedAt, t0 + 120e3);
+  const pad = { l: 8, r: 128, t: 10, b: 22 };
+  const X = x => pad.l + (x - t0) / (t1 - t0) * (W - pad.l - pad.r);
+  const Y = v => pad.t + (hi - v) / (hi - lo) * (H - pad.t - pad.b);
+  const xR = W - pad.r, up = col('--up'), down = col('--down'), muted = col('--muted'), win = t.pnl > 0, line = win ? up : down;
+  // faixa entre o preço de compra e o de venda: verde no ganho, vermelha na perda
+  ctx.fillStyle = col(win ? '--up-bg' : '--down-bg');
+  ctx.fillRect(pad.l, Y(Math.max(t.entry, t.exit)), xR - pad.l, Math.abs(Y(t.exit) - Y(t.entry)));
+  const hline = (v, color, dash) => { const y = Math.round(Y(v)) + .5; ctx.setLineDash(dash); ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(xR, y); ctx.stroke(); ctx.setLineDash([]); };
+  hline(t.entry, muted, [2, 3]);
+  if (isFinite(t.stop)) hline(t.stop, t.stop > t.entry ? up : down, [5, 4]);
+  if (t.target) hline(t.target, up, [5, 4]);
+  const pts = data.map(d => ({ x: X(d[0]), y: Y(d[1]), t: d[0], v: d[1] }));
+  ctx.beginPath(); pts.forEach((q, i) => i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y));
+  ctx.strokeStyle = line; ctx.lineWidth = 1.8; ctx.lineJoin = 'round'; ctx.stroke();
+  // marcadores de compra e venda
+  const ex = X(t.openedAt), ey = Y(t.entry), sx = X(t.closedAt), sy = Y(t.exit);
+  ctx.beginPath(); ctx.arc(ex, ey, 4, 0, 7); ctx.fillStyle = col('--panel'); ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = col('--info'); ctx.stroke();
+  ctx.beginPath(); ctx.arc(sx, sy, 4.5, 0, 7); ctx.fillStyle = line; ctx.fill();
+  ctx.font = '600 10.5px Inter, sans-serif'; ctx.textBaseline = 'bottom';
+  ctx.fillStyle = col('--info'); ctx.textAlign = 'left'; ctx.fillText('COMPRA ' + new Date(t.openedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), ex + 6, ey - 5);
+  ctx.fillStyle = line; ctx.textAlign = 'right'; ctx.fillText('VENDA ' + new Date(t.closedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), sx - 6, sy - 6);
+  const labels = [
+    { v: t.entry, text: 'Compra ' + px(t.entry), color: muted },
+    { v: t.exit, text: 'Venda ' + px(t.exit), color: line, tag: true },
+    ...(isFinite(t.stop) ? [{ v: t.stop, text: 'Stop ' + px(t.stop), color: t.stop > t.entry ? up : down }] : []),
+    ...(t.target ? [{ v: t.target, text: 'Alvo ' + px(t.target), color: up }] : []),
+  ].map(l => ({ ...l, y: Y(l.v) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < 15) labels[i].y = labels[i - 1].y + 15;
+  const over = labels[labels.length - 1].y - (H - pad.b - 6); if (over > 0) for (const l of labels) l.y -= over;
+  ctx.font = '500 11px "JetBrains Mono", monospace'; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  for (const l of labels) {
+    if (l.tag) { const w = ctx.measureText(l.text).width + 10; ctx.fillStyle = l.color; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(xR + 4, l.y - 8, w, 16, 4) : ctx.rect(xR + 4, l.y - 8, w, 16); ctx.fill(); ctx.fillStyle = col('--bg'); ctx.fillText(l.text, xR + 9, l.y); }
+    else { ctx.fillStyle = l.color; ctx.fillText(l.text, xR + 6, l.y); }
+  }
+  ctx.font = '10.5px "JetBrains Mono", monospace'; ctx.fillStyle = col('--dim'); ctx.textBaseline = 'top';
+  ctx.textAlign = 'left'; ctx.fillText(tsFmt(t0), pad.l, H - pad.b + 6);
+  ctx.textAlign = 'right'; ctx.fillText(tsFmt(t.closedAt), xR, H - pad.b + 6);
+  cv._pts = pts; cv._p = { entry: t.entry };
+}
+
+// ───────── Painel da memória de aprendizado ─────────
+let knSig = '';
+function renderKnowledge() {
+  const sig = KN.trades.length + '|' + KN.lessons.length + '|' + curStrat();
+  if (sig === knSig) return;
+  knSig = sig;
+  const M = knModel();
+  $('knSub').textContent = `${stratOf(M.strat).nome}: ${M.n} operações aprendidas · expectativa geral ${sgnPct(M.mu)}/op · ${KN.lessons.length} lições de perdas no total`;
+  $('knBody').innerHTML = Object.entries(DIMS).map(([d, D]) => M.dims[d].map((x, b) => {
+    const delta = x.post - M.mu;
+    const eff = delta > 0.005 ? '<span class="up">↑ prioriza</span>' : delta < -0.005 ? '<span class="down">↓ fica no fim da fila</span>' : '<span class="muted">neutro</span>';
+    return `<tr><td>${b ? '' : `<b>${D.label}</b>`}</td><td>${x.name}</td><td class="n">${x.pn} · ${sgnPct(x.pm)}</td>
+      <td class="n ${x.n ? cls(x.mean) : 'muted'}">${x.n ? `${x.n} · ${sgnPct(x.mean)}` : '—'}</td><td class="n ${cls(x.post)}"><b>${sgnPct(x.post)}</b></td><td>${eff}</td></tr>`;
+  }).join('')).join('');
+  const ls = KN.lessons.slice(-20).reverse();
+  $('knLessons').innerHTML = ls.length ? `<div class="lessons">${ls.map(l => `<div class="lrow">
+      <div class="top"><b>${esc(l.sym)}</b><span class="muted">#${l.id} · ${tsFmt(l.t)}</span><span class="pill down">${sgnUsd(l.pnl)} (${sgnPct(l.r)})</span><span class="pill neutral">${esc(l.reason)}</span>
+        ${l.diag.map(x => `<span class="pill warn">${esc(x.titulo)}</span>`).join('')}</div>
+      <ul>${l.diag.map(x => `<li>${esc(x.txt)}</li>`).join('')}</ul>
+      <div class="shifts">Estimativas atualizadas: ${l.shifts.map(esc).join(' · ')}</div></div>`).join('')}</div>`
+    : '<div class="empty">Nenhuma perda revisada ainda. A primeira perda da estratégia vai gerar a primeira lição.</div>';
 }
 
 function drawPosChart(cv, p) {
@@ -779,19 +1552,22 @@ function drawPosChart(cv, p) {
   const cs = getComputedStyle(document.documentElement), col = n => cs.getPropertyValue(n).trim();
   const now = Date.now(), c = curPx(p);
   const data = (p.hist && p.hist.length ? p.hist : [[p.openedAt, p.entry]]).concat([[now, c]]);
-  const vs = data.map(d => d[1]).concat([p.stop, p.target, p.entry]);
+  const tgt = movingTarget(p);
+  const vs = data.map(d => d[1]).concat([p.stop, tgt, p.entry]);
   let lo = Math.min(...vs), hi = Math.max(...vs); const sp = hi - lo; lo -= sp * 0.08; hi += sp * 0.08;
   const t0 = p.openedAt, t1 = Math.max(now, t0 + 120e3);
-  const pad = { l: 8, r: 112, t: 10, b: 22 };
+  const pad = { l: 8, r: 128, t: 10, b: 22 };
   const X = t => pad.l + (t - t0) / (t1 - t0) * (W - pad.l - pad.r);
   const Y = v => pad.t + (hi - v) / (hi - lo) * (H - pad.t - pad.b);
   const xR = W - pad.r, up = col('--up'), down = col('--down'), muted = col('--muted');
 
-  // zonas de ganho (entrada→alvo) e de perda (entrada→stop)
-  ctx.fillStyle = col('--up-bg'); ctx.fillRect(pad.l, Y(p.target), xR - pad.l, Y(p.entry) - Y(p.target));
-  ctx.fillStyle = col('--down-bg'); ctx.fillRect(pad.l, Y(p.entry), xR - pad.l, Y(p.stop) - Y(p.entry));
+  // zonas: entrada→alvo (ganho) e entrada→stop (perda, ou lucro travado quando o stop móvel passa da entrada)
+  ctx.fillStyle = col('--up-bg'); ctx.fillRect(pad.l, Y(tgt), xR - pad.l, Y(Math.max(p.entry, p.stop)) - Y(tgt));
+  const stopUp = p.stop > p.entry;
+  ctx.fillStyle = col(stopUp ? '--up-bg' : '--down-bg'); ctx.fillRect(pad.l, Y(Math.max(p.entry, p.stop)), xR - pad.l, Math.abs(Y(p.stop) - Y(p.entry)));
   const hline = (v, color, dash) => { const y = Math.round(Y(v)) + .5; ctx.setLineDash(dash); ctx.strokeStyle = color; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(xR, y); ctx.stroke(); ctx.setLineDash([]); };
-  hline(p.target, up, [5, 4]); hline(p.stop, down, [5, 4]); hline(p.entry, muted, [2, 3]);
+  hline(tgt, up, [5, 4]);
+  hline(p.stop, stopUp ? up : down, [5, 4]); hline(p.entry, muted, [2, 3]);
 
   // oscilação do papel
   const pts = data.map(d => ({ x: X(d[0]), y: Y(d[1]), t: d[0], v: d[1] }));
@@ -811,9 +1587,9 @@ function drawPosChart(cv, p) {
 
   // rótulos na margem direita, afastados para não se sobreporem
   const labels = [
-    { v: p.target, text: 'Alvo ' + px(p.target), color: up },
+    { v: tgt, text: 'Alvo ' + px(tgt), color: up },
     { v: p.entry, text: 'Compra ' + px(p.entry), color: muted },
-    { v: p.stop, text: 'Stop ' + px(p.stop), color: down },
+    { v: p.stop, text: 'Stop ' + px(p.stop), color: stopUp ? up : down },
     { v: c, text: px(c), color: line, tag: true },
   ].map(l => ({ ...l, y: Y(l.v) })).sort((a, b) => a.y - b.y);
   for (let i = 1; i < labels.length; i++) if (labels[i].y - labels[i - 1].y < 15) labels[i].y = labels[i - 1].y + 15;
@@ -884,7 +1660,8 @@ function buildTxt() {
   add('Ganho médio (US$)', n(st.avgW, 4)); add('Perda média (US$)', n(st.avgL, 4));
   add('Fator de lucro', st.pf === Infinity ? 'infinito' : n(st.pf, 4)); add('Expectativa por operação (US$)', n(st.exp, 4));
   add('Saídas no alvo', st.byReason('ALVO')); add('Saídas no stop', st.byReason('STOP')); add('Saídas por tempo', st.byReason('TEMPO')); add('Saídas por redução de capital', st.byReason('REDUÇÃO'));
-  add('Risco aberto (%)', n(eq > 0 ? openRisk() / eq * 100 : 0, 4)); add('Taxas pagas (US$)', n(S.fees, 5)); add('Custo operacional (US$)', n(S.opCost, 5));
+  add('Risco aberto (%)', n(eq > 0 ? openRisk() / eq * 100 : 0, 4)); add('Taxas pagas (US$)', n(S.fees, 5)); add('Custo operacional', 'fora do cálculo (existe na operação real: servidor, dados, internet, impostos)');
+  add('Estratégia atual', stratOf(curStrat()).nome); add('Apetite a risco', riskLvl().label);
   add('Situação do agente', !S.alive ? 'MORTO' : S.paused ? 'ENTRADAS PAUSADAS' : 'OPERANDO');
   add('Integridade da trilha', v.ok ? `ÍNTEGRA (${v.n} registros)` : `VIOLADA no registro ${v.at}: ${v.why}`); add('Hash da cabeça', v.ok ? v.head : ''); add();
   add('OPERAÇÕES ENCERRADAS');
@@ -893,10 +1670,15 @@ function buildTxt() {
     n(t.entry, 8), n(t.exit, 8), n(t.qty, 8), t.reason, t.pnl > 0 ? 'ACERTO' : 'PERDA', n(t.pnl, 6), n(t.pnlPct * 100, 4), t.entryHash, t.exitHash);
   add();
   add('POSIÇÕES ABERTAS');
-  add('ID', 'Ativo', 'Aberta em (ISO)', 'Aberta em (local)', 'Preço entrada', 'Preço atual', 'Stop', 'Alvo', 'Quantidade', 'Nocional (US$)', 'Risco (US$)', 'Risco (%)', 'Kelly f (%)', 'Limitado por', 'P&L não realizado (US$)', 'Hash entrada');
+  add('ID', 'Ativo', 'Aberta em (ISO)', 'Aberta em (local)', 'Preço entrada', 'Preço atual', 'Stop', 'Stop no empate', 'Alvo', 'Quantidade', 'Nocional (US$)', 'Risco (US$)', 'Risco (%)', 'p final (%)', 'Histórico (acertos/sinais)', 'Score', 'Kelly f (%)', 'Limitado por', 'P&L não realizado (US$)', 'Hash entrada');
   for (const p of S.positions) { const c = curPx(p);
-    add(p.id, p.sym, iso(p.openedAt), loc(p.openedAt), n(p.entry, 8), n(c, 8), n(p.stop, 8), n(p.target, 8), n(p.qty, 8), n(p.cost, 4),
-      n(p.risk, 5), n(p.riskPct * 100, 4), n(p.kelly * 100, 2), p.by, n(p.qty * c * (1 - CFG.FEE) - p.cost - p.entryFee, 6), p.entryHash); }
+    add(p.id, p.sym, iso(p.openedAt), loc(p.openedAt), n(p.entry, 8), n(c, 8), n(p.stop, 8), p.be || (p.strat && p.stop > p.entry) ? 'sim' : 'não', n(p.target ?? NaN, 8), n(p.qty, 8), n(p.cost, 4),
+      n(p.risk, 5), n(p.riskPct * 100, 4), n(p.p * 100, 2), p.histN != null ? `${p.histW}/${p.histN}` : '', p.score ?? '', n(p.kelly * 100, 2), p.by,
+      n(p.qty * c * (1 - CFG.FEE) - p.cost - p.entryFee, 6), p.entryHash); }
+  add();
+  add('LIÇÕES DAS PERDAS (memória de aprendizado)');
+  add('ID', 'Ativo', 'Data (ISO)', 'Data (local)', 'P&L (US$)', 'P&L (%)', 'Motivo da saída', 'Diagnóstico', 'Detalhe', 'Estimativas atualizadas');
+  for (const l of KN.lessons) add(l.id, l.sym, iso(l.t), loc(l.t), n(l.pnl, 6), n(l.r * 100, 4), l.reason, l.diag.map(x => x.titulo).join(' / '), l.diag.map(x => x.txt).join(' '), l.shifts.join(' / '));
   add();
   add('TRILHA DE AUDITORIA');
   add('Seq', 'Data/hora (ISO)', 'Data/hora (local)', 'Tipo', 'Ativo', 'Decisão', 'Hash anterior', 'Hash');
@@ -910,7 +1692,7 @@ $('bTxt').onclick = () => {
 };
 $('bJson').onclick = () => {
   const v = verifyChain();
-  download(`auditoria-${stamp()}.json`, JSON.stringify({ exportadoEm: new Date().toISOString(), config: CFG, integridade: v, ancora: S.anchor,
+  download(`auditoria-${stamp()}.json`, JSON.stringify({ exportadoEm: new Date().toISOString(), config: CFG, apetite: S.risk, conhecimento: KN, integridade: v, ancora: S.anchor,
     resumo: { patrimonio: equity(), ...stats(), byReason: undefined }, posicoesAbertas: S.positions, operacoes: S.closed, trilha: S.log }, null, 2), 'application/json');
 };
 $('bVerify').onclick = () => {
@@ -921,34 +1703,84 @@ $('bVerify').onclick = () => {
 };
 $('bPause').onclick = () => { S.paused = !S.paused; record(S.paused ? 'PAUSA' : 'RETOMAR', '', S.paused ? 'Entradas pausadas manualmente (saídas continuam ativas)' : 'Entradas retomadas manualmente', {}); save(); render(); };
 $('bReset').onclick = () => {
-  if (!confirm('Zerar a conta simulada? Toda a trilha local será apagada. Exporte o JSON antes se quiser guardá-la.')) return;
+  if (!confirm('Zerar a conta simulada? Toda a trilha local será apagada. Exporte o JSON antes se quiser guardá-la. A memória de aprendizado é mantida.')) return;
   const oldHead = S.log.length ? S.log[S.log.length - 1].hash : S.anchor;
   S = newState(); record('RESET', '', 'Conta simulada zerada e reiniciada com US$ 50', { cabecaAnterior: oldHead }); lastScanAt = 0; save(); render(); tick();
 };
-$('fType').onchange = renderLog;
+$('fType').onchange = () => { logPage = 1; renderLog(); };
+$('logPager').addEventListener('click', ev => { const b = ev.target.closest('button[data-pg]'); if (!b || b.disabled) return; logPage = +b.dataset.pg; renderLog(); });
+$('stratSel').onchange = ev => {
+  const v = ev.target.value, from = stratOf(curStrat()); ev.target.blur();
+  if (!STRATS[v] || v === S.strat) return;
+  S.strat = v; const to = stratOf(v), r = simFor(S.risk, v);
+  record('ESTRATEGIA', '', `Estratégia alterada de "${from.nome}" para "${to.nome}": ${to.resumo}. Vale a partir da próxima avaliação diária; posições abertas seguem a estratégia com que entraram.`,
+    { de: from.nome, para: to.nome, parametros: to.params, simulacao: r ? { capital: S.capital, apetite: riskLvl().label, ganhoMes: r.mes, quedaMax: r.dd, antes26ago: r.mesIs, depois26ago: r.mesOos } : null });
+  save(); render();
+};
+$('riskSel').onchange = ev => {
+  const v = ev.target.value, from = riskLvl(); ev.target.blur();
+  if (!RISK_LEVELS[v] || v === S.risk) return;
+  S.risk = v; const to = riskLvl();
+  record('APETITE', '', `Apetite a risco alterado de ${from.label} para ${to.label}: ${to.desc}`, { de: from.label, para: to.label, kelly: to.kelly, tetoRisco: to.cap, vagaPorPosicao: to.slot, exigeExpectativaPositiva: to.needEv });
+  save(); render();
+};
+$('bKnExp').onclick = () => download(`conhecimento-${stamp()}.json`, JSON.stringify(KN, null, 2), 'application/json');
+$('bKnImp').onclick = () => $('knFile').click();
+$('knFile').onchange = async ev => {
+  const file = ev.target.files[0]; ev.target.value = '';
+  if (!file) return;
+  try {
+    const k = JSON.parse(await file.text());
+    if (!k || !Array.isArray(k.trades) || !Array.isArray(k.lessons)) throw new Error('arquivo não é uma memória de aprendizado');
+    const ok = t => t && isFinite(t.r) && t.f && ['mom', 'atrPct', 'vsEma', 'btc72'].every(d => isFinite(t.f[d]));
+    const key = t => t.sym + '|' + t.t, have = new Set(KN.trades.map(key)), haveL = new Set(KN.lessons.map(key));
+    const nt = k.trades.filter(t => ok(t) && !have.has(key(t))), nl = k.lessons.filter(l => l && l.sym && Array.isArray(l.diag) && !haveL.has(key(l)));
+    KN.trades.push(...nt); KN.lessons.push(...nl); KN.trades.sort((a, b) => a.t - b.t); KN.lessons.sort((a, b) => a.t - b.t);
+    saveKN(); knSig = '';
+    record('MEMORIA', '', `Memória de aprendizado importada: +${nt.length} operações, +${nl.length} lições`, { arquivo: file.name, operacoes: nt.length, licoes: nl.length });
+    save(); render();
+  } catch (e) { alert('Não foi possível importar: ' + e.message); }
+};
 $('capSel').onchange = ev => { setCapital(+ev.target.value); ev.target.blur(); save(); render(); };
 $('logBody').addEventListener('click', ev => {
   const tr = ev.target.closest('tr.click'); if (!tr) return;
   const s = +tr.dataset.seq; openRows.has(s) ? openRows.delete(s) : openRows.add(s); renderLog();
 });
+function renderSession() {
+  const left = S.expiresAt - Date.now(), open = left > 0;
+  $('sessEnd').textContent = new Date(S.expiresAt).toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  $('sessLeft').textContent = open ? `(faltam ${dur(left)})` : '(encerrada: sem novas entradas)';
+  $('sessBox').classList.toggle('over', !open);
+  $('bRenew').disabled = !S.alive;
+}
+$('bRenew').onclick = () => { renewSession(); save(); render(); };
 function clocks() {
   const d = new Date();
   $('clkL').textContent = d.toLocaleTimeString('pt-BR');
   $('clkU').textContent = d.toISOString().slice(11, 19);
+  if (S) renderSession();
 }
 window.addEventListener('resize', () => { drawChart(); renderPosCharts(); });
 
 // ───────── Início ─────────
 S = load();
-if (!S) { S = newState(); record('INICIO', '', `Conta simulada aberta com ${usd(CFG.START)}`, { config: CFG }); }
+if (!S) { S = newState(); record('INICIO', '', `Conta simulada aberta com ${usd(CFG.START)} · sessão de ${CFG.SESSION_H}h até ${tsFmt(S.expiresAt)}`, { config: CFG, terminoSessao: new Date(S.expiresAt).toISOString() }); }
 else {
-  S.capital ??= S.start; S.deposited ??= S.start; S.withdrawn ??= 0; S.pending ??= null;
+  S.capital ??= S.start; S.deposited ??= S.start; S.withdrawn ??= 0; S.pending ??= null; S.risk ??= 'alto'; S.strat ??= 'E';
+  // o custo operacional saiu do cálculo: devolve ao caixa, uma única vez, o que já tinha sido cobrado
+  if (S.opCost > 0) {
+    const back = S.opCost; S.cash += back; S.opCost = 0;
+    record('MEMORIA', '', `Custo operacional removido do cálculo: ${usd(back)} cobrados até aqui voltaram ao caixa. Na operação real esse custo existe.`, { devolvido: +back.toFixed(5) });
+  }
+  restoreClosedLevels();
+  if (!S.expiresAt) { S.expiresAt = Date.now() + CFG.SESSION_H * 3600e3; record('SESSAO', '', `Sessão de ${CFG.SESSION_H}h iniciada: termina em ${tsFmt(S.expiresAt)}`, { termino: new Date(S.expiresAt).toISOString() }); }
   const off = Date.now() - S.lastActive;
   for (const p of S.positions) if (!p.hist || off > CFG.TICK_MS * 2) p.bf = false;
-  if (off > CFG.TICK_MS * 2) record('RETOMADA', '', `Agente retomado após ${dur(off)} fora do ar; posições serão reavaliadas pelo preço atual`, { foraDoArMs: off, posicoesAbertas: S.positions.length });
+  // o período fora do ar é reconstituído no primeiro ciclo (catchUp), que registra a RETOMADA com o resumo
 }
-S.lastActive = Math.max(S.lastActive, Date.now() - CFG.TICK_MS);
+if (!S.expiresAt) { S.expiresAt = Date.now() + CFG.SESSION_H * 3600e3; record('SESSAO', '', `Sessão de ${CFG.SESSION_H}h iniciada: termina em ${tsFmt(S.expiresAt)}`, { termino: new Date(S.expiresAt).toISOString() }); }
 save(); clocks(); render();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
 setInterval(clocks, 1000);
 setInterval(tick, CFG.TICK_MS);
 tick();
