@@ -94,6 +94,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
 .tbtn{position:absolute;border-radius:50%;border:0;font-family:var(--display);pointer-events:auto;touch-action:none}
 .actbtn{right:calc(20px + env(safe-area-inset-right,0px));bottom:165px;width:84px;height:84px;background:var(--buoy);box-shadow:0 4px 0 var(--buoy-deep);color:#1d0d04;font-size:20px}
 .jumpbtn{right:calc(116px + env(safe-area-inset-right,0px));bottom:150px;width:58px;height:58px;background:rgba(240,223,179,.75);color:#1d0d04;font-size:14px}
+.lightbtn{right:calc(36px + env(safe-area-inset-right,0px));bottom:262px;width:52px;height:52px;background:rgba(255,241,208,.85);color:#1d0d04;font-size:14px}
 
 .panel{position:absolute;z-index:15;left:50%;top:50%;transform:translate(-50%,-50%);width:min(600px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;background:var(--panel-solid);border:1px solid var(--line);border-radius:4px;box-shadow:0 24px 70px rgba(0,0,0,.55)}
 .panel header{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 18px;background:var(--panel-solid);border-bottom:1px solid var(--line)}
@@ -213,6 +214,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
   .joy{bottom:18px;left:calc(18px + env(safe-area-inset-left,0px));width:104px;height:104px}
   .actbtn{bottom:22px;right:calc(18px + env(safe-area-inset-right,0px));width:76px;height:76px;font-size:18px}
   .jumpbtn{bottom:104px;right:calc(30px + env(safe-area-inset-right,0px));width:52px;height:52px}
+  .lightbtn{bottom:30px;right:calc(104px + env(safe-area-inset-right,0px));width:48px;height:48px}
   .flyhud{top:6px;padding:5px 10px;gap:3px;width:min(380px,calc(100% - 340px))}.fh-row b{font-size:17px}.fh-keys{display:none}
   .lockhint{display:none}
   .panel{max-height:calc(100% - 12px)}
@@ -292,6 +294,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
   <div class="touch" id="touch" hidden>
     <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
     <button class="tbtn jumpbtn" id="jumpBtn" tabindex="-1">Pular</button>
+    <button class="tbtn lightbtn" id="lightBtn" tabindex="-1">Luz</button>
     <button class="tbtn actbtn" id="actBtn" tabindex="-1">Ação</button>
   </div>
 
@@ -304,6 +307,11 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
     <header><div><h2>Hangar</h2><small>O velho monomotor, peça por peça</small></div><button class="x" data-close aria-label="Fechar">×</button></header>
     <ul class="stages" id="stages"></ul>
     <div class="pbody" id="hangarBody"></div>
+  </section>
+
+  <section class="panel" id="give" hidden aria-label="Dar itens">
+    <header><div><h2 id="giveTitle">Dar itens</h2><small>Escolha o que passar da sua mochila</small></div><button class="x" data-close aria-label="Fechar">×</button></header>
+    <ul class="rows" id="giveList"></ul>
   </section>
 
   <section class="panel" id="journal" hidden aria-label="Diário de missões">
@@ -322,7 +330,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
           <li><span>2</span><div><strong>Siga as missões.</strong> O diário mostra o próximo passo e dá recompensas.</div></li>
           <li><span>3</span><div><strong>Junte peças.</strong> Caixotes do navio, caixas militares e tambores de combustível estão espalhados pela ilha.</div></li>
           <li><span>4</span><div><strong>Monte e decole.</strong> No hangar: fuselagem, asas, motor e combustível. Libere a pista e acelere. O avião leva piloto e passageiro.</div></li>
-          <li><span>+</span><div><strong>Jogue em dupla.</strong> Crie uma partida online, mande o código para um amigo e sobrevivam juntos no mesmo mundo.</div></li>
+          <li><span>+</span><div><strong>Jogue com amigos.</strong> Crie uma partida online para até 6 náufragos, mande o código e sobrevivam juntos no mesmo mundo. Olhe para um amigo e aperte E para dar itens.</div></li>
         </ol>
         <div class="keys">
           <span><kbd>WASD</kbd> andar</span>
@@ -332,7 +340,8 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
           <span><kbd>Shift</kbd> correr</span>
           <span><kbd>C</kbd> bancada</span>
           <span><kbd>J</kbd> diário</span>
-          <span><kbd>E</kbd> subir e descer da bicicleta</span>
+          <span><kbd>E</kbd> bicicleta e dar itens</span>
+          <span><kbd>F</kbd> lanterna</span>
           <span><kbd>1</kbd>–<kbd>9</kbd> comer ou beber</span>
         </div>
       </div>
@@ -394,13 +403,16 @@ const ITEMS={
   lata:{n:'Enlatado',d:'Comida do navio, ainda boa.',eat:{food:30,water:5}},
 };
 const ORDER=['madeira','pedra','fibra','corda','sucata','pano','pecas','combustivel','coco','frutas','carne','assada','agua','lata'];
-const TOOLS={machado:'Machado de pedra',picareta:'Picareta',lanca:'Lança',cantil:'Cantil de coco'};
+const TOOLS={machado:'Machado de pedra',picareta:'Picareta',lanca:'Lança',cantil:'Cantil de coco',lanterna:'Lanterna'};
+// até 6 náufragos por partida; o avião leva todos: piloto na frente e 5 passageiros em fila
+const MAXP=6,SEAT_Z=[0,1.0,.35,-.3,-.95,-1.6,-2.25];
 const RECIPES=[
   {id:'corda',n:'Corda',need:{fibra:2},give:{corda:1},d:'Fibras trançadas. Vai em quase tudo.'},
   {id:'machado',n:'Machado de pedra',need:{madeira:3,pedra:2,corda:1},tool:1,d:'Derruba árvores três vezes mais rápido.'},
   {id:'picareta',n:'Picareta',need:{madeira:3,pedra:3,corda:1},tool:1,d:'Quebra rochas três vezes mais rápido.'},
   {id:'lanca',n:'Lança',need:{madeira:2,pedra:1,corda:1},tool:1,d:'Mata caranguejos num golpe. Eles viram carne.'},
   {id:'cantil',n:'Cantil de coco',need:{coco:1,corda:1},tool:1,d:'Guarda até 5 águas. Encha numa lagoa.'},
+  {id:'lanterna',n:'Lanterna',need:{sucata:2,corda:1},tool:1,d:'Lâmpada e pilhas do naufrágio presas numa lata. Liga e desliga com F.'},
   {id:'fogueira',n:'Fogueira',need:{madeira:4,pedra:3},place:1,d:'Assa carne, ilumina a noite e deixa você dormir até o amanhecer.'},
 ];
 const STAGES=[
@@ -450,6 +462,7 @@ function icon(k){
     case'machado':L([8,27,22,9],'#8a5a32',3.5);g.fillStyle='#9aa0a3';g.beginPath();g.moveTo(18,6);g.lineTo(27,9);g.lineTo(26,18);g.lineTo(20,13);g.closePath();g.fill();break;
     case'picareta':L([10,28,20,10],'#8a5a32',3.5);g.strokeStyle='#9aa0a3';g.lineWidth=4;g.beginPath();g.moveTo(7,11);g.quadraticCurveTo(19,2,29,12);g.stroke();break;
     case'lanca':L([5,28,23,10],'#8a5a32',3);g.fillStyle='#b3b1a6';g.beginPath();g.moveTo(29,3);g.lineTo(20,9);g.lineTo(24,13);g.closePath();g.fill();break;
+    case'lanterna':g.save();g.translate(16,16);g.rotate(-.7);g.fillStyle='#2c2f33';g.fillRect(-11,-4,15,8);g.fillStyle='#d8462a';g.fillRect(4,-6,5,12);g.fillStyle='#fff3c8';g.fillRect(9,-5,2,10);g.fillStyle='rgba(255,236,170,.35)';g.beginPath();g.moveTo(11,-5);g.lineTo(18,-10);g.lineTo(18,10);g.lineTo(11,5);g.fill();g.restore();break;
     case'cantil':L([6,9,16,4,26,9],'#c49a5c',2);C(16,19,10,'#6b4528');E(16,13,5,2,0,'#4fc0e0');break;
     case'fogueira':L([7,27,25,21],'#6b4224',4);L([7,21,25,27],'#8a5a32',4);E(16,14,6,10,0,'#ff6a1f');E(16,17,3.5,6,0,'#ffc23a');break;
   }
@@ -741,7 +754,7 @@ function placeLoot(rng){
   const pts=[];
   for(let k=0;k<14&&pts.length<10;k++){const a=k/14*Math.PI*2+rng()*.2;let last=null;for(let r=20;r<150;r+=1){const x=Math.cos(a)*r,z=Math.sin(a)*r,h=hAt(x,z);if(h<.3)break;if(h<1.8&&h>.5)last={x,z};}if(last&&Math.hypot(last.x-spawn.x,last.z-spawn.z)>12)pts.push(last);}
   shuffleArr(pts,rng).forEach((p,i)=>addCrate('ship',p.x,p.z,shipLoot[i]||{lata:1},rng));
-  const a=Math.atan2(spawn.z,spawn.x);addCrate('ship',spawn.x+Math.cos(a+1.4)*4,spawn.z+Math.sin(a+1.4)*4,{lata:1,corda:1},rng);
+  const a=Math.atan2(spawn.z,spawn.x);addCrate('ship',spawn.x+Math.cos(a+1.4)*4,spawn.z+Math.sin(a+1.4)*4,{lata:1,corda:1,tool:'lanterna'},rng);
   const inland=(n,kind,loot,minD,maxD)=>{let c=0;for(let t=0;t<5000&&c<n;t++){const x=(rng()-.5)*240,z=(rng()-.5)*240,h=hAt(x,z),d=Math.hypot(x,z);if(h<3||h>18||d<minD||d>maxD||rwDist(x,z)<8||slopeAt(x,z)>.5||ponds.some(p=>Math.hypot(p.x-x,p.z-z)<p.r+4))continue;if(objs.some(o=>(o.kind==='crate')&&Math.hypot(o.x-x,o.z-z)<28))continue;addCrate(kind,x,z,loot,rng);c++;}};
   inland(4,'army',{pecas:1,sucata:1},25,95);
   inland(4,'drum',{combustivel:1},20,100);
@@ -789,7 +802,7 @@ function buildPlane(){
   // 1: fuselagem
   const f=mesh(new THREE.CylinderGeometry(.6,.32,7,14),MAT.fus,1,1,1,0,1.3,0,s[1]);f.rotation.x=Math.PI/2;f.userData.own=1;
   mesh(SG.box,MAT.fus,.08,1.3,1.1,0,2.1,-3.1,s[1]);mesh(SG.box,MAT.fus,2.8,.07,.8,0,1.4,-3.2,s[1]);
-  mesh(SG.box,MAT.glass,.84,.46,1.9,0,1.85,.55,s[1]).castShadow=false;
+  mesh(SG.box,MAT.glass,.84,.46,4.2,0,1.85,-.55,s[1]).castShadow=false;
   for(const sx of[-1,1]){const st=mesh(SG.box,MAT.metal,.06,.85,.06,sx*.6,.7,1.2,s[1]);st.rotation.z=sx*.4;const wh=mesh(SG.cyl,MAT.dark,.32,.16,.32,sx*.85,.32,1.2,s[1]);wh.rotation.z=Math.PI/2;}
   mesh(SG.box,MAT.metal,.06,.5,.06,0,.75,-3.2,s[1]);
   // 2: asas
@@ -803,8 +816,8 @@ function buildPlane(){
   // 4: combustível (galões no chão até o abastecimento)
   for(let i=0;i<3;i++)mesh(SG.box,MAT.drum,.32,.42,.2,2.2+i*.38,.21,-1.2,s[4]);
   g.traverse(o=>{if(o.isMesh&&o.material!==MAT.glass)o.castShadow=true;});
-  const seatG={1:new THREE.Group(),2:new THREE.Group()};seatG[1].position.set(0,.5,1.0);seatG[2].position.set(0,.5,.12);g.add(seatG[1],seatG[2]);
-  return{g,s,prop,stage:0,seatG,seatKey:{1:'',2:''}};
+  const seatG={},seatKey={};for(let n=1;n<=MAXP;n++){seatG[n]=new THREE.Group();seatG[n].position.set(0,.5,SEAT_Z[n]);g.add(seatG[n]);seatKey[n]='';}
+  return{g,s,prop,stage:0,seatG,seatKey};
 }
 // ================= bicicletas =================
 const BIKE_MAT={frame:new THREE.MeshPhongMaterial({color:0xd8462a,shininess:60}),tire:new THREE.MeshLambertMaterial({color:0x1d1d1f}),metal:new THREE.MeshPhongMaterial({color:0xb9bec2,shininess:80}),seat:new THREE.MeshLambertMaterial({color:0x2a2420})};
@@ -822,7 +835,8 @@ function bikeMesh(){
 }
 function makeBikes(){
   bikes=[];const a=Math.atan2(spawn.z,spawn.x);
-  const spots=[[spawn.x+Math.cos(a-1.3)*5,spawn.z+Math.sin(a-1.3)*5],[spawn.x+Math.cos(a-1.6)*6.5,spawn.z+Math.sin(a-1.6)*6.5],[hangarPos.x+RW.dx*4,hangarPos.z+RW.dz*4]];
+  const spots=[[spawn.x+Math.cos(a-1.3)*5,spawn.z+Math.sin(a-1.3)*5],[spawn.x+Math.cos(a-1.6)*6.5,spawn.z+Math.sin(a-1.6)*6.5],[spawn.x+Math.cos(a-1.9)*5,spawn.z+Math.sin(a-1.9)*5],[spawn.x+Math.cos(a-2.2)*6.5,spawn.z+Math.sin(a-2.2)*6.5],
+    [hangarPos.x+RW.dx*4,hangarPos.z+RW.dz*4],[hangarPos.x+RW.dx*5.5,hangarPos.z+RW.dz*5.5]];
   spots.forEach(([x,z],i)=>{const g=bikeMesh();world.add(g);const b={kind:'bike',i,g,x,z,y:0,r:.5,hy:.5,yaw:a+i,rider:null};placeBike(b);bikes.push(b);});
 }
 function placeBike(b){b.y=hAt(b.x,b.z);b.g.position.set(b.x,b.y,b.z);b.g.rotation.set(0,b.yaw,0);b.g.visible=true;}
@@ -830,10 +844,10 @@ const underRoof=()=>hangarPos&&Math.hypot(P.x-hangarPos.x,P.z-hangarPos.z)<7.5;
 function mountBike(b){if(b.rider)return;b.rider='me';P.bike=b;b.g.visible=false;net('bm',b.i);toast('Você subiu na bicicleta. Aperte E para descer.');}
 function dismountBike(){const b=P.bike;if(!b)return;P.bike=null;b.rider=null;b.x=P.x+Math.cos(P.yaw)*.9;b.z=P.z-Math.sin(P.yaw)*.9;b.yaw=P.yaw+Math.PI;placeBike(b);net('bd',b.i,+b.x.toFixed(2),+b.z.toFixed(2),+b.yaw.toFixed(2));}
 // posição de um assento no mundo
-function seatWorld(n,dy){plane.g.updateMatrixWorld();return plane.g.localToWorld(new V3(0,.5+(dy||0),n===1?1.0:.12));}
+function seatWorld(n,dy){plane.g.updateMatrixWorld();return plane.g.localToWorld(new V3(0,.5+(dy||0),SEAT_Z[n]||0));}
 // mostra quem está sentado em cada assento
 function syncSeats(){
-  for(const n of[1,2]){
+  for(let n=1;n<=MAXP;n++){
     let who=null;
     if(P&&P.seat===n)who={sk:[skinSel.tone,skinSel.outfit],self:true};
     else for(const R of MP.remotes.values())if(R.seat===n&&!R.dead){who={sk:R.sk};break;}
@@ -926,7 +940,12 @@ function buildViewmodel(){
   for(const s of[-1,1]){const grip=new THREE.Mesh(new THREE.CylinderGeometry(.026,.026,.12,8),BIKE_MAT.seat);grip.rotation.z=Math.PI/2;grip.position.x=s*.27;bars.add(grip);
     const h=new THREE.Mesh(new THREE.BoxGeometry(.11,.08,.1),skin);h.position.set(s*.27,.035,0);bars.add(h);
     const sl=new THREE.Mesh(new THREE.CylinderGeometry(.07,.08,.4,10),sleeve);sl.rotation.x=Math.PI/2-.5;sl.position.set(s*.3,.04,.2);bars.add(sl);}
-  vm={root,R,L:Lf,tools,cur:null,bars};
+  // lanterna na mão esquerda
+  const lamp=new THREE.Group();lamp.position.set(0,.03,-.52);lamp.visible=false;Lf.arm.add(lamp);
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(.03,.034,.2,10),new THREE.MeshPhongMaterial({color:0x2c2f33,shininess:60}));body.rotation.x=Math.PI/2;lamp.add(body);
+  const head=new THREE.Mesh(new THREE.CylinderGeometry(.045,.034,.06,12),new THREE.MeshPhongMaterial({color:0xd8462a,shininess:60}));head.rotation.x=Math.PI/2;head.position.z=-.12;lamp.add(head);
+  const lens=new THREE.Mesh(new THREE.CircleGeometry(.04,14),new THREE.MeshBasicMaterial({color:0xfff6d8}));lens.position.z=-.152;lens.rotation.y=Math.PI;lamp.add(lens);
+  vm={root,R,L:Lf,tools,cur:null,bars,lamp};
 }
 function showTool(k){if(!vm||vm.cur===k)return;for(const t in vm.tools)vm.tools[t].visible=t===k;vm.cur=k;}
 
@@ -985,26 +1004,35 @@ const roomNet={
 };
 // transporte 2: WebRTC direto entre os jogadores via PeerJS (GitHub Pages e qualquer site estático)
 const peerNet=(()=>{
-  const ID=c=>'ilha-naufrago-v1-'+c.toLowerCase();
+  const ID=c=>'ilha-naufrago-v2-'+c.toLowerCase();
+  // estrela: cada convidado fala só com o anfitrião, que repassa a presença de cada um para os outros
   function makeRoom(peer,isHost){
-    const conns=new Map();const mine={};let snap=null;
-    const pushAll=()=>{const msg=JSON.stringify({t:'p',p:mine});for(const c of conns.values())if(c.conn.open)try{c.conn.send(msg);}catch(e){}};
-    const drop=id=>{if(conns.delete(id))snap=null;};
+    const conns=new Map(),relayed=new Map();const mine={};let snap=null;
+    const send=(c,msg)=>{if(c.conn.open)try{c.conn.send(msg);}catch(e){}};
+    const pushAll=()=>{const msg=JSON.stringify({t:'p',p:mine});for(const c of conns.values())send(c,msg);};
+    const relay=(fromId,p)=>{if(!isHost)return;const msg=JSON.stringify({t:'r',id:fromId,p});for(const[id,c]of conns)if(id!==fromId)send(c,msg);};
+    const drop=id=>{if(conns.delete(id)){snap=null;if(isHost){const msg=JSON.stringify({t:'gone',id});for(const c of conns.values())send(c,msg);}}};
+    const okP=p=>p&&typeof p==='object'&&!Array.isArray(p);
     const room={full:false,
       attach(conn){
-        conn.on('open',()=>{if(!conns.has(conn.peer))conns.set(conn.peer,{conn,presence:Object.freeze({})});snap=null;try{conn.send(JSON.stringify({t:'p',p:mine}));}catch(e){}});
+        conn.on('open',()=>{if(!conns.has(conn.peer))conns.set(conn.peer,{conn,presence:Object.freeze({})});snap=null;
+          const c=conns.get(conn.peer);send(c,JSON.stringify({t:'p',p:mine}));
+          if(isHost)for(const[id,o]of conns)if(id!==conn.peer)send(c,JSON.stringify({t:'r',id,p:o.presence}));});
         conn.on('data',d=>{let m;try{m=typeof d==='string'?JSON.parse(d):d;}catch(e){return;}if(!m||typeof m!=='object')return;
-          if(m.t==='p'&&m.p&&typeof m.p==='object'&&!Array.isArray(m.p)){conns.set(conn.peer,{conn,presence:Object.freeze(m.p)});snap=null;}
+          if(m.t==='p'&&okP(m.p)){conns.set(conn.peer,{conn,presence:Object.freeze(m.p)});snap=null;relay(conn.peer,m.p);}
+          else if(m.t==='r'&&!isHost&&typeof m.id==='string'&&m.id!==peer.id&&okP(m.p)){relayed.set(m.id,Object.freeze(m.p));snap=null;}
+          else if(m.t==='gone'&&!isHost&&typeof m.id==='string'){if(relayed.delete(m.id))snap=null;}
           else if(m.t==='full')room.full=true;});
-        conn.on('close',()=>drop(conn.peer));conn.on('error',()=>drop(conn.peer));
+        conn.on('close',()=>{drop(conn.peer);if(!isHost){relayed.clear();snap=null;}});conn.on('error',()=>drop(conn.peer));
       },
       presence(p){for(const k in p){if(p[k]===null)delete mine[k];else mine[k]=p[k];}snap=null;pushAll();return Promise.resolve();},
-      peers(){if(!snap)snap=[{peer:peer.id,by:null,isMe:true,sameTab:true,kind:'viewer',guest:false,presence:mine},
-        ...[...conns].map(([id,c])=>({peer:id,by:null,isMe:false,sameTab:false,kind:'viewer',guest:false,presence:c.presence}))];return snap;},
-      leave(){conns.clear();snap=null;try{peer.destroy();}catch(e){}return Promise.resolve();},
+      peers(){if(!snap){const v=(id,pr)=>({peer:id,by:null,isMe:false,sameTab:false,kind:'viewer',guest:false,presence:pr});
+        snap=[{peer:peer.id,by:null,isMe:true,sameTab:true,kind:'viewer',guest:false,presence:mine},
+          ...[...conns].map(([id,c])=>v(id,c.presence)),...[...relayed].filter(([id])=>!conns.has(id)).map(([id,pr])=>v(id,pr))];}return snap;},
+      leave(){conns.clear();relayed.clear();snap=null;try{peer.destroy();}catch(e){}return Promise.resolve();},
     };
     if(isHost)peer.on('connection',conn=>{
-      if([...conns.keys()].some(k=>k!==conn.peer)){conn.on('open',()=>{try{conn.send(JSON.stringify({t:'full'}));}catch(e){}setTimeout(()=>conn.close(),400);});return;}
+      if(conns.size>=MAXP-1&&!conns.has(conn.peer)){conn.on('open',()=>{try{conn.send(JSON.stringify({t:'full'}));}catch(e){}setTimeout(()=>conn.close(),400);});return;}
       room.attach(conn);});
     peer.on('disconnected',()=>{try{if(!peer.destroyed)peer.reconnect();}catch(e){}});
     return room;
@@ -1051,14 +1079,15 @@ async function joinMatch(raw){
   try{
     try{MP.r=await MP.net.connect(code);}catch(e){MP.r=null;throw e;}MP.code=code;
     let host=null,list=[];for(let t=0;t<40&&!host&&!MP.r.full;t++){await sleepMs(250);list=others();host=list.find(p=>p.presence.role==='host');}
-    if(MP.r.full){mpNote('Essa partida já tem dois náufragos.',true);await leaveMatch();}
+    if(MP.r.full){mpNote(`Essa partida já está cheia (${MAXP} náufragos).`,true);await leaveMatch();}
     else if(!host){mpNote(`Nenhuma partida aberta com o código ${code}. Confira o código com seu amigo.`,true);await leaveMatch();}
-    else if(list.length>=2){mpNote('Essa partida já tem dois náufragos.',true);await leaveMatch();}
+    else if(list.length>=MAXP){mpNote(`Essa partida já está cheia (${MAXP} náufragos).`,true);await leaveMatch();}
     else{MP.isHost=false;MP.seq=0;MP.acts=[];MP.seen.clear();MP.wv=0;MP.noHostT=0;
       MP.r.presence({g:MP.code,role:'guest',sk:[skinSel.tone,skinSel.outfit],seat:0}).catch(()=>{});
       newGame(seedOf(MP.code));
       const hi=host.presence.is|0;if(hi>0&&hi<1000){islandNo=hi;buildWorld(islandSeed(hi));for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}plane.stage=4;syncPlane();newPlayer();reveal(P.x,P.z);reveal(hangarPos.x,hangarPos.z);}
-      P.x+=1.8;P.z+=1.2;mpNote('');start();}
+      const ja=Math.random()*Math.PI*2,jr=1.8+Math.random()*2;if(okPos(P.x+Math.cos(ja)*jr,P.z+Math.sin(ja)*jr)){P.x+=Math.cos(ja)*jr;P.z+=Math.sin(ja)*jr;P.fy=hAt(P.x,P.z);}
+      mpNote('');start();}
   }catch(e){
     const c=e&&e.code;
     mpNote(c==='notfound'?`Nenhuma partida aberta com o código ${code}. Confira o código com seu amigo.`:c==='network'||c==='timeout'?'Não foi possível conectar com a partida. Verifique a internet; algumas redes de escola ou empresa bloqueiam o modo online.':'Não foi possível entrar. Tente de novo em alguns segundos.',true);
@@ -1096,7 +1125,14 @@ function applyWorld(w){
   if(typeof w.b==='string'&&w.b.length===bushIdx.length)bushIdx.forEach((i,k)=>{const o=objs[i],n=+w.b[k];if(o.dead||(MP.pending.get(i)||0)>now||!(n>=0&&n<=3))return;if(o.berries!==n){o.berries=n;setBerries(o);}});
   if(Array.isArray(w.f))for(const f of w.f)if(Array.isArray(f)&&Number.isFinite(f[0])&&Number.isFinite(f[1])&&Math.abs(f[0])<HALF&&Math.abs(f[1])<HALF&&!fires.some(o=>Math.hypot(o.x-f[0],o.z-f[1])<.8))makeFire(f[0],f[1]);
 }
-function applyAct(a){
+function applyAct(a,pe){
+  if(a[1]==='gv'){
+    const[, ,to,k,n]=a;
+    if(MP.me&&to===MP.me.peer&&typeof k==='string'&&Object.prototype.hasOwnProperty.call(ITEMS,k)&&Number.isInteger(n)&&n>0&&n<=999){
+      P.inv[k]=(P.inv[k]|0)+n;invDirty=true;const R=pe&&MP.remotes.get(pe.peer);
+      toast(`${R?nameOf(R):'Um parceiro'} te deu ${n} ${ITEMS[k].n}.`);floatAt(camAhead(1.4),`+${n} ${shortN(k)}`,'#8fd16a');}
+    return;
+  }
   if(!Array.isArray(a)||typeof a[1]!=='string')return;const[,t,x,y]=a;const o=Number.isInteger(x)&&x>=0&&x<MP.base?objs[x]:null;
   switch(t){
     case'h':if(o&&o.max&&!o.dead&&o.falling===undefined&&Number.isFinite(y)){o.hp-=CL(y,0,3);hitObj(o,0,o.kind==='rock'?'#9a9890':'#8a6040');
@@ -1117,7 +1153,7 @@ function nameOf(R){if(R.nm)return R.nm;if(R.by&&MP.user&&!MP.names.has(R.by)){MP
 function processPeers(dt){
   if(!MP.r)return;
   let list;try{list=MP.r.peers();}catch(e){return;}
-  let me=null,host=null,count=0;const seen=new Set();
+  let me=list.find(p=>p.sameTab)||null,host=null,count=0;const seen=new Set();MP.me=me;
   for(const pe of list){
     if(pe.sameTab){me=pe;continue;}
     const pr=pe.presence||{};if(pr.g!==MP.code||pe.kind!=='viewer')continue;
@@ -1126,7 +1162,7 @@ function processPeers(dt){
     const acts=Array.isArray(pr.acts)?pr.acts:[];const maxSeq=acts.length&&Array.isArray(acts[acts.length-1])?acts[acts.length-1][0]|0:0;
     const last=MP.seen.get(pe.peer);
     if(last===undefined)MP.seen.set(pe.peer,maxSeq);
-    else if(maxSeq>last){const same=(pr.is|0)===islandNo;if(world&&(state==='play'||state==='takeoff'||state==='fly'))for(const a of acts)if(Array.isArray(a)&&(a[0]|0)>last&&(same||a[1]==='land'||a[1]==='esc'))applyAct(a);MP.seen.set(pe.peer,maxSeq);}
+    else if(maxSeq>last){const same=(pr.is|0)===islandNo;if(world&&(state==='play'||state==='takeoff'||state==='fly'))for(const a of acts)if(Array.isArray(a)&&(a[0]|0)>last&&(same||a[1]==='land'||a[1]==='esc'))applyAct(a,pe);MP.seen.set(pe.peer,maxSeq);}
     else if(maxSeq<last)MP.seen.set(pe.peer,maxSeq);
     updateRemote(pe,pr,dt);
   }
@@ -1135,7 +1171,7 @@ function processPeers(dt){
   if(MP.isHost){if(host&&me&&host.peer<me.peer){MP.isHost=false;MP.noHostT=0;}}
   else if(host){MP.noHostT=0;if(world&&state!=='title')applyWorld(host.presence.w);}
   else if(state==='play'){MP.noHostT+=dt;if(MP.noHostT>4){MP.isHost=true;MP.wDirty=true;toast('O anfitrião saiu. A ilha continua com você.');}}
-  if(state==='title'&&!$('codeBox').hidden)$('waitList').textContent=count?`${count===1?'Seu parceiro já está':'Seus parceiros estão'} na ilha.`:'Só você por enquanto.';
+  if(state==='title'&&!$('codeBox').hidden)$('waitList').textContent=count?`${count===1?'1 amigo já entrou':`${count} amigos já entraram`} (cabem ${MAXP} náufragos).`:`Só você por enquanto. Cabem ${MAXP} náufragos.`;
 }
 function updateRemote(pe,pr,dt){
   let R=MP.remotes.get(pe.peer);
@@ -1148,7 +1184,8 @@ function updateRemote(pe,pr,dt){
   if(Array.isArray(p)&&p.length>=4&&p.slice(0,4).every(Number.isFinite)){if(R.first){R.x=p[0];R.y=p[1];R.z=p[2];R.yaw=p[3];R.first=false;}R.tx=p[0];R.ty=p[1];R.tz=p[2];R.tyaw=p[3];}
   const k=Math.min(1,dt*10),ox=R.x,oz=R.z;R.x+=(R.tx-R.x)*k;R.y+=(R.ty-R.y)*k;R.z+=(R.tz-R.z)*k;
   let dy=R.tyaw-R.yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));R.yaw+=dy*k;
-  R.seat=pr.seat===1||pr.seat===2?pr.seat:0;R.dead=pr.dead===1;R.act=pr.a===1;R.is=pr.is|0;
+  R.seat=Number.isInteger(pr.seat)&&pr.seat>=1&&pr.seat<=MAXP?pr.seat:0;R.fl=pr.fl===1;
+  if(Array.isArray(p)&&Number.isFinite(p[4]))R.pitch=CL(p[4],-1.5,1.5);R.dead=pr.dead===1;R.act=pr.a===1;R.is=pr.is|0;
   const pl=pr.pl;if(Array.isArray(pl)&&pl.length===6&&pl.every(Number.isFinite))R.pl=pl;else R.pl=null;
   const spd=Math.hypot(R.x-ox,R.z-oz)/Math.max(dt,1e-3);R.ph=(R.ph||0)+dt*spd*2.2;
   const here=R.is===islandNo;
@@ -1170,13 +1207,13 @@ function sendPresence(now){
   if(!MP.r||now<MP.sendT)return;MP.sendT=now+100;
   const pr={g:MP.code,role:MP.isHost?'host':'guest',sk:[skinSel.tone,skinSel.outfit],nm:myName,acts:MP.acts};
   pr.is=islandNo;
-  if(P&&state!=='title'){pr.p=[+P.x.toFixed(2),+P.fy.toFixed(2),+P.z.toFixed(2),+P.yaw.toFixed(2)];pr.a=P.act>0?1:0;pr.seat=P.seat|0;pr.hp=P.hp|0;pr.dead=state==='dead'?1:0;pr.bk=P.bike?P.bike.i+1:0;
+  if(P&&state!=='title'){pr.p=[+P.x.toFixed(2),+P.fy.toFixed(2),+P.z.toFixed(2),+P.yaw.toFixed(2),+P.pitch.toFixed(2)];pr.fl=flashOn&&P.tools.lanterna&&!P.seat?1:0;pr.a=P.act>0?1:0;pr.seat=P.seat|0;pr.hp=P.hp|0;pr.dead=state==='dead'?1:0;pr.bk=P.bike?P.bike.i+1:0;
     pr.pl=state==='fly'&&P.seat===1?[FL.x,FL.y,FL.z,FL.yaw,FL.pitch,FL.roll].map(v=>+v.toFixed(2)):null;}
   if(MP.isHost&&world&&state!=='title'&&(MP.wDirty||now>MP.wT)){pr.w=snapshot();MP.wDirty=false;MP.wT=now+1000;}
   MP.r.presence(pr).catch(()=>{});
 }
 const remoteSeated=()=>[...MP.remotes.values()].filter(R=>R.seat&&!R.dead);
-const allAboard=()=>[...MP.remotes.values()].every(R=>R.seat||R.dead);
+const allAboard=()=>[...MP.remotes.values()].every(R=>R.seat||R.dead||R.is!==islandNo);
 
 // ================= missões =================
 const M=[
@@ -1234,7 +1271,7 @@ function renderInv(){
     b.addEventListener('click',()=>{b.blur();useItem(k);});el.appendChild(b);}
   if(!slotKeys.length)el.innerHTML='<span class="empty">Mochila vazia</span>';
   $('tools').innerHTML=Object.keys(TOOLS).filter(t=>P.tools[t]).map(t=>`<div class="tool" title="${TOOLS[t]}"><img alt="${TOOLS[t]}" src="${icon(t)}"></div>`).join('');
-  if(panel==='craft')buildCraft();if(panel==='hangar')buildHangarPanel();
+  if(panel==='craft')buildCraft();if(panel==='hangar')buildHangarPanel();if(panel==='give')buildGive();
 }
 function useItem(k){
   if(state!=='play')return;const it=ITEMS[k];if(!it.eat){toast(`${it.n}: ${it.d}`);return;}if((P.inv[k]|0)<=0)return;
@@ -1264,29 +1301,51 @@ function buildHangarPanel(){
   }else{
     const left=runwayObs.filter(o=>!o.dead).length;
     if(left){body.innerHTML=`<h3>Avião pronto, pista bloqueada</h3><p>Ainda há ${left} ${left===1?'obstáculo':'obstáculos'} sobre a pista. Sem uma pista livre, o avião não ganha velocidade para subir.</p><button class="act" disabled>Decolar</button>`;return;}
-    const rs=remoteSeated(),taken={1:rs.some(R=>R.seat===1),2:rs.some(R=>R.seat===2)},online=MP.remotes.size>0;
+    const rs=remoteSeated(),pilotTaken=rs.some(R=>R.seat===1),online=MP.remotes.size>0;
+    const aboard=rs.length+(P.seat?1:0),group=aboard+[...MP.remotes.values()].filter(R=>!R.seat&&!R.dead&&R.is===islandNo).length+(P.seat?0:1);
+    const freePass=freeSeat(2),count=`<p><b>${aboard} de ${MAXP}</b> lugares ocupados${online?` · ${group} ${group===1?'náufrago':'náufragos'} nesta ilha`:''}.</p>`;
     let html;
     if(!P.seat){
-      html=`<h3>Pronto para decolar</h3><p>Fuselagem, asas, motor e tanque cheio. O avião tem dois lugares: piloto na frente e passageiro atrás.${online?' Os dois precisam embarcar antes da decolagem.':''}</p>
-        <div class="seatbtns"><button class="act" id="seat1" ${taken[1]?'disabled':''}>${taken[1]?'Piloto ocupado':'Embarcar como piloto'}</button><button class="btn2" id="seat2" ${taken[2]?'disabled':''}>${taken[2]?'Passageiro ocupado':'Embarcar como passageiro'}</button></div>`;
+      html=`<h3>Pronto para decolar</h3><p>Fuselagem, asas, motor e tanque cheio. O avião leva até ${MAXP} pessoas: o piloto na frente e os passageiros em fila atrás.${online?' Todo mundo na ilha precisa embarcar antes da decolagem.':''}</p>${count}
+        <div class="seatbtns"><button class="act" id="seat1" ${pilotTaken?'disabled':''}>${pilotTaken?'Piloto ocupado':'Embarcar como piloto'}</button><button class="btn2" id="seat2" ${freePass?'':'disabled'}>${freePass?'Embarcar como passageiro':'Avião cheio'}</button></div>`;
     }else if(P.seat===1){
       const ready=allAboard();
-      html=`<h3>Você está no assento do piloto</h3><p>${online?(ready?'Seu parceiro está a bordo. Quando quiser, acelere pela pista.':'Esperando seu parceiro embarcar como passageiro.'):'O vento sopra a favor. Quando quiser, acelere pela pista.'}</p>
+      html=`<h3>Você está no assento do piloto</h3><p>${online?(ready?'Todos estão a bordo. Quando quiser, acelere pela pista.':'Esperando o resto do grupo embarcar.'):'O vento sopra a favor. Quando quiser, acelere pela pista.'}</p>${count}
         <div class="seatbtns"><button class="act" id="flyBtn" ${ready?'':'disabled'}>Decolar</button><button class="btn2" id="unseat">Desembarcar</button></div>`;
     }else{
-      html=`<h3>Você está no assento do passageiro</h3><p>${rs.some(R=>R.seat===1)?'O piloto está a bordo. Segure firme: a decolagem começa quando ele acelerar.':'Ninguém no assento do piloto ainda. Seu parceiro precisa embarcar como piloto, ou troque de lugar.'}</p>
-        <div class="seatbtns"><button class="btn2" id="unseat">Desembarcar</button>${taken[1]?'':'<button class="btn2" id="seat1">Passar para o assento do piloto</button>'}</div>`;
+      html=`<h3>Você está no assento ${P.seat-1} de passageiro</h3><p>${pilotTaken?'O piloto está a bordo. Segure firme: a decolagem começa quando ele acelerar.':'Ninguém no assento do piloto ainda. Alguém precisa embarcar como piloto, ou troque de lugar.'}</p>${count}
+        <div class="seatbtns"><button class="btn2" id="unseat">Desembarcar</button>${pilotTaken?'':'<button class="btn2" id="seat1">Passar para o assento do piloto</button>'}</div>`;
     }
     body.innerHTML=html;
-    $('seat1')?.addEventListener('click',()=>takeSeat(1));$('seat2')?.addEventListener('click',()=>takeSeat(2));
+    $('seat1')?.addEventListener('click',()=>takeSeat(1));$('seat2')?.addEventListener('click',()=>{const n=freeSeat(2);if(n)takeSeat(n);});
     $('unseat')?.addEventListener('click',leaveSeat);
     $('flyBtn')?.addEventListener('click',()=>{if(P.seat!==1||!allAboard())return;net('tk');startTakeoff();});
   }
 }
-function takeSeat(n){if(remoteSeated().some(R=>R.seat===n))return;P.seat=n;P.pitch=0;P.yaw=Math.atan2(-RW.dx,-RW.dz);toast(n===1?'Você sentou no lugar do piloto.':'Você sentou no lugar do passageiro.');buildHangarPanel();}
+// dar itens a outro náufrago
+let giveTo=null;
+function openGive(R){giveTo=R;openPanel('give');}
+function buildGive(){
+  const R=giveTo,list=$('giveList');
+  if(!R||!MP.remotes.has(R.peer)){list.innerHTML='<li class="row"><div><h3>Seu parceiro saiu</h3><p>Ele não está mais na partida.</p></div></li>';return;}
+  $('giveTitle').textContent=`Dar para ${nameOf(R)}`;
+  const ks=ORDER.filter(k=>(P.inv[k]|0)>0);
+  if(!ks.length){list.innerHTML='<li class="row"><div><h3>Mochila vazia</h3><p>Junte alguma coisa primeiro.</p></div></li>';return;}
+  list.innerHTML=ks.map(k=>{const c=P.inv[k];return`<li class="row"><img src="${icon(k)}" alt=""><div><h3>${ITEMS[k].n}</h3><p>Você tem ${c}.</p></div><div class="seatbtns"><button class="btn2" data-k="${k}" data-n="1">Dar 1</button>${c>1?`<button class="act" data-k="${k}" data-n="${c}">Dar ${c}</button>`:''}</div></li>`;}).join('');
+  list.querySelectorAll('button[data-k]').forEach(b=>b.addEventListener('click',()=>giveItem(b.dataset.k,+b.dataset.n)));
+}
+function giveItem(k,n){
+  const R=giveTo;if(!R||!MP.remotes.has(R.peer)||!ITEMS[k])return buildGive();
+  if(Math.hypot(R.x-P.x,R.z-P.z)>8){toast(`${nameOf(R)} se afastou. Chegue mais perto para entregar.`);return;}
+  n=Math.min(n|0,P.inv[k]|0);if(n<=0)return;
+  P.inv[k]-=n;invDirty=true;net('gv',R.peer,k,n);
+  toast(`Você deu ${n} ${ITEMS[k].n} para ${nameOf(R)}.`);buildGive();renderInv();
+}
+function freeSeat(from){const used=new Set(remoteSeated().map(R=>R.seat));if(P.seat)used.add(P.seat);for(let n=from;n<=MAXP;n++)if(!used.has(n))return n;return 0;}
+function takeSeat(n){if(remoteSeated().some(R=>R.seat===n))return;if(P.bike)dismountBike();P.seat=n;P.pitch=0;P.yaw=Math.atan2(-RW.dx,-RW.dz);toast(n===1?'Você sentou no lugar do piloto.':'Você sentou no lugar do passageiro.');buildHangarPanel();}
 function leaveSeat(){P.seat=0;const s=seatWorld(1);P.x=s.x+RW.px*3;P.z=s.z+RW.pz*3;P.fy=hAt(P.x,P.z);P.vy=0;buildHangarPanel();}
 function openPanel(name){if(state!=='play')return;closePanel();panel=name;actHeld=actQueued=false;keys.clear();
-  if(name==='craft')buildCraft();else if(name==='hangar')buildHangarPanel();else buildJournal();$(name).hidden=false;if(document.pointerLockElement)document.exitPointerLock();updateLockHint();}
+  if(name==='craft')buildCraft();else if(name==='hangar')buildHangarPanel();else if(name==='give')buildGive();else buildJournal();$(name).hidden=false;if(document.pointerLockElement)document.exitPointerLock();updateLockHint();}
 function closePanel(relock){if(!panel)return;$(panel).hidden=true;panel=null;if(relock)requestLock();updateLockHint();}
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closePanel(true)));
 $('craftBtn').addEventListener('click',()=>{$('craftBtn').blur();panel==='craft'?closePanel(true):openPanel('craft');});
@@ -1310,6 +1369,7 @@ function findTarget(){
   for(const o of near(P.x,P.z,5,_near))consider(o);
   for(const c of crabs)if(Math.abs(c.x-P.x)<5&&Math.abs(c.z-P.z)<5)consider(c);
   for(const b of bikes)if(!b.rider&&Math.abs(b.x-P.x)<5&&Math.abs(b.z-P.z)<5)consider(b);
+  for(const R of MP.remotes.values())if(R.g&&R.g.visible&&Math.abs(R.x-P.x)<5&&Math.abs(R.z-P.z)<5)consider({kind:'player',R,x:R.x,z:R.z,y:R.y,hy:1.2,r:.45});
   const pd=Math.hypot(plane.g.position.x-P.x,plane.g.position.z-P.z);
   if(pd<6.5){const o={kind:'plane',x:plane.g.position.x,z:plane.g.position.z,y:RW.h,hy:1.3,r:3};consider(o);if(!best&&pd<4.5)best=o;}
   if(best)return best;
@@ -1334,6 +1394,7 @@ function label(o){
     case'sea':return'Água salgada';
     case'bike':return'Subir na bicicleta';
     case'ride':return'Descer da bicicleta';
+    case'player':return`Dar item para ${nameOf(o.R)}`;
   }return'';
 }
 function hitObj(o,dmg,col){o.hp-=dmg;o.shake=.25;o.hitT=1.5;setInst(o);burst(o.x,(o.y||0)+(o.hy||1),o.z,col,6);}
@@ -1341,6 +1402,7 @@ function doAction(){
   if(P.bike){dismountBike();P.cd=.45;actHeld=false;return;}
   const o=target;if(!o){P.cd=.15;return;}
   if(o.kind==='bike'){mountBike(o);P.cd=.45;actHeld=false;return;}
+  if(o.kind==='player'){P.cd=.4;actHeld=false;openGive(o.R);return;}
   P.act=.32;P.energy=Math.max(0,P.energy-.3);
   switch(o.kind){
     case'tree':case'pine':case'palm':{
@@ -1467,7 +1529,7 @@ const SKY={dayTop:C_('#3d82c4'),dayHor:C_('#b4d8ec'),setTop:C_('#3f5d95'),setHor
 const _c1=new THREE.Color(),_c2=new THREE.Color(),_cg=new THREE.Color(),sunDir=new V3();
 function updateSky(tm,focus){
   const h=hour(),a=(h-6)/12*Math.PI;sunDir.set(Math.cos(a),Math.sin(a),.35).normalize();
-  const dl=sst(-.12,.25,sunDir.y),setK=CL(1-Math.abs(sunDir.y)*3.2,0,1);
+  const dl=sst(-.12,.25,sunDir.y),setK=CL(1-Math.abs(sunDir.y)*3.2,0,1);dayL=dl*(1-rainLvl*.5);
   _c1.copy(SKY.dayTop).lerp(SKY.setTop,setK*.7);_c1.lerp(SKY.nightTop,1-dl);skyU.top.value.copy(_c1);
   _c2.copy(SKY.dayHor).lerp(SKY.setHor,setK);_c2.lerp(SKY.nightHor,1-dl);
   const rk=rainLvl*.75;if(rk>0){_c1.lerp(_cg.setRGB(.32,.35,.38).multiplyScalar(.3+.7*dl),rk);skyU.top.value.copy(_c1);_c2.lerp(_cg.setRGB(.45,.48,.5).multiplyScalar(.3+.7*dl),rk);}
@@ -1521,8 +1583,37 @@ function updateRain(dt){
   if(rainLvl>.7){flashT-=dt;if(flashT<=0){flash=1;flashT=7+Math.random()*14;if(Math.random()<.5)setTimeout(()=>{flash=.7;},140);}}
 }
 
+// ================= lanterna =================
+let flashOn=false,dayL=1;
+const torch=new THREE.SpotLight(0xfff1d0,0,40,.42,.55,1.4);scene.add(torch,torch.target);
+const beamGeo=new THREE.ConeGeometry(2.2,11,18,1,true);beamGeo.rotateX(-Math.PI/2);beamGeo.translate(0,0,5.5);
+const beamMat=new THREE.MeshBasicMaterial({color:0xfff0c0,transparent:true,opacity:.07,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false});
+const remoteTorches=[0,1,2].map(()=>{const l=new THREE.SpotLight(0xfff1d0,0,32,.42,.6,1.4);scene.add(l,l.target);return l;});
+function toggleFlash(){
+  if(state!=='play')return;
+  if(!P.tools.lanterna){toast('Você ainda não tem lanterna. Ela está no caixote perto da praia onde você acordou, ou crie uma na bancada.');return;}
+  flashOn=!flashOn;
+}
+function updateFlash(){
+  const on=flashOn&&state==='play'&&!P.seat&&P.tools.lanterna;
+  const dark=1-dayL*.88;torch.intensity=on?2.4*dark:0;
+  if(on){camera.getWorldDirection(_dir);torch.position.copy(camera.position).addScaledVector(_dir,.3);torch.position.y-=.25;torch.target.position.copy(camera.position).addScaledVector(_dir,12);}
+  if(vm&&vm.lamp){vm.lamp.visible=on;vm.L.arm.rotation.x=on?.35:.1;}
+  // lanternas dos parceiros: luz e um feixe visível
+  const lit=[...MP.remotes.values()].filter(R=>R.fl&&R.g&&R.g.visible).sort((a,b)=>Math.hypot(a.x-P.x,a.z-P.z)-Math.hypot(b.x-P.x,b.z-P.z));
+  remoteTorches.forEach((l,i)=>{const R=lit[i];if(!R){l.intensity=0;return;}
+    const fx=Math.sin(R.yaw+Math.PI),fz=Math.cos(R.yaw+Math.PI),cp=Math.cos(R.pitch||0),sp=Math.sin(R.pitch||0);
+    l.position.set(R.x+fx*.4,R.y+1.4,R.z+fz*.4);l.target.position.set(R.x+fx*cp*12,R.y+1.4+sp*12,R.z+fz*cp*12);l.intensity=2*dark;});
+  beamMat.opacity=.02+.07*(1-dayL);
+  for(const R of MP.remotes.values()){if(!R.g)continue;
+    if(!R.beam){R.beam=new THREE.Mesh(beamGeo,beamMat);R.beam.position.set(-.3,1.35,.25);R.beam.renderOrder=5;R.g.add(R.beam);}
+    if(R.beam.parent!==R.g){R.g.add(R.beam);}
+    R.beam.visible=!!R.fl;R.beam.rotation.x=-(R.pitch||0);}
+}
+
 let waterFrame=0;
 function animateWorld(dt,tm){
+  updateFlash();
   if(water){water.position.x=Math.round(camera.position.x/40)*40;water.position.z=Math.round(camera.position.z/40)*40;}
   if(++waterFrame%2===0&&water){const p=water.geometry.attributes.position,wx=water.position.x,wz=water.position.z,amp=1+rainLvl*.8;for(let i=0;i<p.count;i++){const x=waterBase[i*3]+wx,z=waterBase[i*3+2]+wz;p.array[i*3+1]=(Math.sin(x*.07+tm*.9)*.14+Math.cos(z*.06+tm*1.1)*.12)*amp;}p.needsUpdate=true;water.geometry.computeVertexNormals();}
   updateRain(dt);
@@ -1568,7 +1659,7 @@ function enterFlight(){
   state='fly';stats.flown=1;
   Object.assign(FL,{x:plane.g.position.x,y:plane.g.position.y,z:plane.g.position.z,yaw:Math.atan2(RW.dx,RW.dz),pitch:tk.pitch,roll:0,v:tk.v,warn:0});
   $('flyHud').hidden=false;$('fhKeys').hidden=P.seat!==1;
-  if(isTouch&&P.seat===1){$('touch').hidden=false;$('jumpBtn').hidden=true;$('actBtn').textContent='Pousar';}
+  if(isTouch&&P.seat===1){$('touch').hidden=false;$('jumpBtn').hidden=true;$('lightBtn').hidden=true;$('actBtn').textContent='Pousar';}
   toast(P.seat===1?(isTouch?'Você está pilotando. Use o joystick para subir, descer e virar.':'Você está pilotando. W desce, S sobe, A e D viram, Shift acelera.'):'Seu parceiro está pilotando. Aproveite a vista.');
 }
 function nbH(x,z){if(!NB)return -12;return sampleH(NB.H,x-NB.x,z-NB.z);}
@@ -1614,7 +1705,7 @@ function tryLand(){if(state==='fly'&&P.seat===1&&landOpt!==null)landAt(landOpt,f
 function landAt(id,remote){
   if(!remote)net('land',id);
   const newIsland=id!==islandNo;
-  fadeT=2;$('flyHud').hidden=true;$('landBtn').hidden=true;$('jumpBtn').hidden=false;$('actBtn').textContent='Ação';
+  fadeT=2;$('flyHud').hidden=true;$('landBtn').hidden=true;$('jumpBtn').hidden=false;$('lightBtn').hidden=false;$('actBtn').textContent='Ação';
   if(newIsland){
     islandNo=id;buildWorld(islandSeed(id));
     for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}
@@ -1706,11 +1797,12 @@ addEventListener('keydown',e=>{
   if(e.code==='KeyJ'||e.code==='Tab'){panel==='journal'?closePanel(true):openPanel('journal');return;}
   if(panel)return;
   keys.add(e.code);
-  if(e.code==='KeyE'||e.code==='KeyF'){if(!e.repeat)actQueued=true;actHeld=true;}
+  if(e.code==='KeyE'){if(!e.repeat)actQueued=true;actHeld=true;}
+  if(e.code==='KeyF'&&!e.repeat)toggleFlash();
   if(e.code==='Space')P.jump=true;
   if(/^Digit[1-9]$/.test(e.code)){const k=slotKeys[+e.code.slice(5)-1];if(k)useItem(k);}
 });
-addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='KeyE'||e.code==='KeyF')actHeld=false;});
+addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='KeyE')actHeld=false;});
 addEventListener('blur',()=>{keys.clear();actHeld=false;});
 // toque
 const joyEl=$('joy'),knob=$('knob');let joyId=null,jcx=0,jcy=0;
@@ -1723,6 +1815,7 @@ const actBtn=$('actBtn');actBtn.addEventListener('pointerdown',e=>{e.preventDefa
 $('landBtn').addEventListener('click',tryLand);
 for(const ev of['pointerup','pointercancel','pointerleave'])actBtn.addEventListener(ev,()=>{actHeld=false;});
 $('jumpBtn').addEventListener('pointerdown',e=>{e.preventDefault();if(P)P.jump=true;});
+$('lightBtn').addEventListener('pointerdown',e=>{e.preventDefault();toggleFlash();});
 function startSolo(){if(MP.r){leaveMatch();newGame();}start();}
 $('startBtn').addEventListener('click',startSolo);
 $('createBtn').addEventListener('click',createMatch);
@@ -1750,7 +1843,7 @@ function frame(now){
   else if(state==='fly'){updateFly(dt);focus.copy(plane.g.position);}
   else focus.copy(camera.position);
   if(MP.r){processPeers(dt);sendPresence(now);if(panel==='hangar'&&now>hangarT){hangarT=now+600;buildHangarPanel();}
-    const c=`${MP.count}/2`;if(c!==mpCountTxt){mpCountTxt=c;$('mpCount').textContent=MP.count>1?'2 náufragos':'só você';}}
+    const c=`${MP.count}`;if(c!==mpCountTxt){mpCountTxt=c;$('mpCount').textContent=MP.count>1?`${MP.count} de ${MAXP} náufragos`:'só você';}}
   if(plane)syncSeats();
   if(state!==lastState){lastState=state;updateFsBtn();}
   updateSky(tm,focus);animateWorld(dt,tm);
