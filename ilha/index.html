@@ -193,6 +193,30 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
 .ptag{position:absolute;left:0;top:0;padding:2px 8px;background:rgba(6,30,38,.75);border-radius:3px;font-weight:700;font-size:13px;color:var(--sand);white-space:nowrap;will-change:transform}
 .ptag i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#5ec8ff;margin-right:5px}
 .seatbtns{display:flex;flex-wrap:wrap;gap:8px}
+.flyhud{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:5;width:min(440px,calc(100% - 24px));background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:9px 14px;display:grid;gap:6px;justify-items:center;text-align:center}
+.fh-row{display:flex;gap:18px;font-size:13px;font-weight:600;color:var(--sand-dim);letter-spacing:.06em;text-transform:uppercase}
+.fh-row b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--sand);letter-spacing:0;font-variant-numeric:tabular-nums}
+.fh-dir{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+#fhArrow{display:block;width:18px;height:20px;background:var(--buoy);clip-path:polygon(50% 0,100% 100%,50% 75%,0 100%);transition:transform .15s linear}
+.fh-esc{font-size:13px;color:var(--sand-dim)}
+.fh-keys{font-size:12px;color:var(--sand-dim);display:flex;gap:4px;flex-wrap:wrap;justify-content:center;align-items:center}
+.fsbtn{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:6;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;background:var(--sand);color:#1d0d04;border:0;border-radius:3px;padding:7px 12px;box-shadow:0 2px 0 #8f7f58}
+@media (max-height:500px) and (orientation:landscape){
+  .stats{top:8px;left:calc(8px + env(safe-area-inset-left,0px));width:170px;padding:5px 8px 6px;gap:3px}
+  #dayN{font-size:17px}.stat{grid-template-columns:44px 1fr 22px;gap:6px;font-size:10px}.bar{height:6px}
+  .side{top:8px;right:calc(8px + env(safe-area-inset-right,0px));width:150px;gap:5px}
+  .mapbox{width:96px;padding:4px}.mission{padding:6px 8px}.mission p{display:none}.mission h4{font-size:14px}
+  .bottom{bottom:6px;gap:5px;padding-left:calc(150px + env(safe-area-inset-left,0px));padding-right:calc(150px + env(safe-area-inset-right,0px))}
+  .slot{width:38px;height:38px}.slot img{width:26px;height:26px}.tool{width:30px;height:30px}.tool img{width:22px;height:22px}
+  .hbtn{height:38px;font-size:14px;padding:0 9px}.hbtn kbd{display:none}
+  .toast{font-size:13px;padding:5px 10px}
+  .joy{bottom:18px;left:calc(18px + env(safe-area-inset-left,0px));width:104px;height:104px}
+  .actbtn{bottom:22px;right:calc(18px + env(safe-area-inset-right,0px));width:76px;height:76px;font-size:18px}
+  .jumpbtn{bottom:104px;right:calc(30px + env(safe-area-inset-right,0px));width:52px;height:52px}
+  .flyhud{top:6px;padding:5px 10px;gap:3px;width:min(380px,calc(100% - 340px))}.fh-row b{font-size:17px}.fh-keys{display:none}
+  .lockhint{display:none}
+  .panel{max-height:calc(100% - 12px)}
+}
 @media (max-width:820px){
   .intro{grid-template-columns:1fr;gap:20px}
   .screen{place-items:start center}
@@ -256,6 +280,15 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
     </div>
   </div>
 
+  <div class="flyhud" id="flyHud" hidden>
+    <div class="fh-row"><span>Altitude <b id="fhAlt">0</b> m</span><span>Velocidade <b id="fhSpd">0</b> km/h</span></div>
+    <div class="fh-dir"><i id="fhArrow"></i><span id="fhTgt">Ilha vizinha</span></div>
+    <div class="fh-esc" id="fhEsc"></div>
+    <div class="fh-keys" id="fhKeys"><kbd>W</kbd><kbd>S</kbd> descer e subir · <kbd>A</kbd><kbd>D</kbd> virar · <kbd>Shift</kbd> acelerar · <kbd>L</kbd> pousar</div>
+    <button class="act" id="landBtn" hidden>Pousar</button>
+  </div>
+  <button class="fsbtn" id="fsBtn" hidden>Tela cheia</button>
+
   <div class="touch" id="touch" hidden>
     <div class="joy" id="joy"><div class="knob" id="knob"></div></div>
     <button class="tbtn jumpbtn" id="jumpBtn" tabindex="-1">Pular</button>
@@ -299,6 +332,7 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
           <span><kbd>Shift</kbd> correr</span>
           <span><kbd>C</kbd> bancada</span>
           <span><kbd>J</kbd> diário</span>
+          <span><kbd>E</kbd> subir e descer da bicicleta</span>
           <span><kbd>1</kbd>–<kbd>9</kbd> comer ou beber</span>
         </div>
       </div>
@@ -430,7 +464,7 @@ renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.autoClear=false;
 const scene=new THREE.Scene();
 scene.fog=new THREE.Fog(0xa9d3ea,40,260);
-const camera=new THREE.PerspectiveCamera(70,1,.1,1200);camera.rotation.order='YXZ';
+const camera=new THREE.PerspectiveCamera(70,1,.1,3400);camera.rotation.order='YXZ';
 const vmScene=new THREE.Scene(),vmCam=new THREE.PerspectiveCamera(58,1,.01,10);
 const vmAmb=new THREE.HemisphereLight(0xdfefff,0x4a3b2a,.7),vmDir=new THREE.DirectionalLight(0xffffff,.8);vmDir.position.set(.5,1,.6);vmScene.add(vmAmb,vmDir);
 function resize(){const w=cv.clientWidth||innerWidth,h=cv.clientHeight||innerHeight;renderer.setSize(w,h,false);camera.aspect=vmCam.aspect=w/h;camera.updateProjectionMatrix();vmCam.updateProjectionMatrix();}
@@ -438,13 +472,13 @@ addEventListener('resize',resize);
 
 // céu
 const skyU={top:{value:new THREE.Color()},hor:{value:new THREE.Color()},bot:{value:new THREE.Color(0x0b3a48)},sunDir:{value:new V3(0,1,0)},sunCol:{value:new THREE.Color(1,.9,.7)}};
-const sky=new THREE.Mesh(new THREE.SphereGeometry(900,32,16),new THREE.ShaderMaterial({uniforms:skyU,side:THREE.BackSide,depthWrite:false,fog:false,
+const sky=new THREE.Mesh(new THREE.SphereGeometry(3000,32,16),new THREE.ShaderMaterial({uniforms:skyU,side:THREE.BackSide,depthWrite:false,fog:false,
   vertexShader:'varying vec3 vW;void main(){vW=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader:'uniform vec3 top,hor,bot,sunDir,sunCol;varying vec3 vW;void main(){float h=vW.y;vec3 c=h>0.?mix(hor,top,pow(clamp(h,0.,1.),.5)):mix(hor,bot,clamp(-h*5.,0.,1.));float s=max(dot(vW,sunDir),0.);c+=sunCol*(pow(s,900.)*2.+pow(s,10.)*.22);gl_FragColor=vec4(c,1.);}'}));
 sky.renderOrder=-1;scene.add(sky);
-const starGeo=new THREE.BufferGeometry();{const a=new Float32Array(900*3);for(let i=0;i<900;i++){const u=Math.random()*Math.PI*2,v=Math.acos(Math.random()*.95);a[i*3]=Math.sin(v)*Math.cos(u)*850;a[i*3+1]=Math.cos(v)*850;a[i*3+2]=Math.sin(v)*Math.sin(u)*850;}starGeo.setAttribute('position',new THREE.BufferAttribute(a,3));}
+const starGeo=new THREE.BufferGeometry();{const a=new Float32Array(900*3);for(let i=0;i<900;i++){const u=Math.random()*Math.PI*2,v=Math.acos(Math.random()*.95);a[i*3]=Math.sin(v)*Math.cos(u)*2800;a[i*3+1]=Math.cos(v)*2800;a[i*3+2]=Math.sin(v)*Math.sin(u)*2800;}starGeo.setAttribute('position',new THREE.BufferAttribute(a,3));}
 const stars=new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xffffff,size:1.6,sizeAttenuation:false,transparent:true,opacity:0,fog:false,depthWrite:false}));scene.add(stars);
-const moon=new THREE.Mesh(new THREE.SphereGeometry(14,16,12),new THREE.MeshBasicMaterial({color:0xe8eef8,fog:false}));scene.add(moon);
+const moon=new THREE.Mesh(new THREE.SphereGeometry(46,16,12),new THREE.MeshBasicMaterial({color:0xe8eef8,fog:false}));scene.add(moon);
 
 const hemi=new THREE.HemisphereLight(0xcfe8ff,0x5a4a32,.6);scene.add(hemi);
 const sun=new THREE.DirectionalLight(0xffffff,1);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
@@ -520,8 +554,40 @@ function mesh(geo,mat,sx,sy,sz,x,y,z,parent){const m=new THREE.Mesh(geo,mat);m.s
 
 // ================= mundo =================
 const N=160,SIZE=320,HALF=SIZE/2,CELL=SIZE/N;
-let HG,world,terrainGeo,water,waterBase,ponds,RW,hangarPos,planeStart,objs,crabs,fires,grid,runwayObs,inst,berryMesh,plane,spawn,bushIdx=[];
-function hAt(x,z){const gx=(x+HALF)/CELL,gz=(z+HALF)/CELL;if(gx<0||gz<0||gx>=N||gz>=N)return -12;const ix=gx|0,iz=gz|0,fx=gx-ix,fz=gz-iz,i=iz*(N+1)+ix;const a=HG[i],b=HG[i+1],c=HG[i+N+1],d=HG[i+N+2];return a+(b-a)*fx+(c-a)*fz+(a-b-c+d)*fx*fz;}
+let HG,world,terrainGeo,water,waterBase,ponds,RW,hangarPos,planeStart,objs,crabs,fires,grid,runwayObs,inst,berryMesh,plane,spawn,bushIdx=[],bikes=[],NB=null,worldSeed=0,islandNo=0,baseSeed=0;
+const islandSeed=n=>n?(Math.imul(baseSeed^0x9e3779b9,n+1)+n*7919)>>>0:baseSeed;
+function sampleH(H,x,z){const gx=(x+HALF)/CELL,gz=(z+HALF)/CELL;if(gx<0||gz<0||gx>=N||gz>=N)return -12;const ix=gx|0,iz=gz|0,fx=gx-ix,fz=gz-iz,i=iz*(N+1)+ix;const a=H[i],b=H[i+1],c=H[i+N+1],d=H[i+N+2];return a+(b-a)*fx+(c-a)*fz+(a-b-c+d)*fx*fz;}
+function hAt(x,z){return sampleH(HG,x,z);}
+// ilha vizinha vista de longe: mesmo relevo da ilha real, em baixa resolução
+function buildNeighbor(){
+  const id=islandNo+1,s=islandSeed(id),r0=mulberry32((worldSeed^0x5bd1e995)>>>0);
+  const ang=r0()*Math.PI*2,dist=1150,nx=Math.cos(ang)*dist,nz=Math.sin(ang)*dist;
+  const save={HG,RW,hangarPos,planeStart,ponds};
+  genTerrain(mulberry32(s));
+  const H2=HG,RW2=RW,hp2=hangarPos;
+  const step=4,n=N/step,pos=new Float32Array((n+1)*(n+1)*3),idx=[];
+  for(let gz=0;gz<=n;gz++)for(let gx=0;gx<=n;gx++){const i=gz*(n+1)+gx;pos[i*3]=-HALF+gx*CELL*step;pos[i*3+1]=H2[(gz*step)*(N+1)+gx*step];pos[i*3+2]=-HALF+gz*CELL*step;}
+  for(let gz=0;gz<n;gz++)for(let gx=0;gx<n;gx++){const a=gz*(n+1)+gx,b=a+1,c=a+n+1,d=c+1;idx.push(a,c,b,b,c,d);}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();
+  const col=new Float32Array(pos.length),nr=geo.attributes.normal;
+  for(let i=0;i<(n+1)*(n+1);i++){const c=terrainColor(pos[i*3],pos[i*3+2],pos[i*3+1],nr.getY(i),.5);col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];}
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  HG=save.HG;RW=save.RW;hangarPos=save.hangarPos;planeStart=save.planeStart;ponds=save.ponds;
+  const g=new THREE.Group();g.position.set(nx,0,nz);world.add(g);
+  const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({vertexColors:true}));m.receiveShadow=true;m.userData.own=1;g.add(m);
+  // árvores
+  const rd=(x,z)=>{const a=x*RW2.dx+z*RW2.dz,p=x*RW2.px+z*RW2.pz;return Math.hypot(Math.max(0,Math.abs(a)-RW2.half),Math.max(0,Math.abs(p)-RW2.w/2));};
+  const tl=[],pl=[];
+  for(let t=0;t<9000&&tl.length<260;t++){const x=(r0()-.5)*290,z=(r0()-.5)*290,h=sampleH(H2,x,z);if(rd(x,z)<7)continue;if(h>2.6&&h<15&&r0()<.5)tl.push([x,h,z]);else if(h>.6&&h<2.2&&r0()<.25&&pl.length<90)pl.push([x,h,z]);}
+  const put=(list,geo2,mat)=>{const im=new THREE.InstancedMesh(geo2,mat,Math.max(1,list.length));im.frustumCulled=false;const M4=new THREE.Matrix4(),Q=new THREE.Quaternion(),S=new V3(),Pp=new V3();
+    const wc=new THREE.Color(1,1,1);for(let i=0;i<Math.max(1,list.length);i++)im.setColorAt(i,wc);
+    list.forEach(([x,h,z],i)=>{Q.setFromAxisAngle(new V3(0,1,0),r0()*6.28);const sc=.8+r0()*.5;S.set(sc,sc,sc);Pp.set(x,h-.05,z);M4.compose(Pp,Q,S);im.setMatrixAt(i,M4);});
+    if(!list.length)im.setMatrixAt(0,new THREE.Matrix4().makeScale(0,0,0));g.add(im);};
+  put(tl,GEO.tree,MAT.veg);put(pl,GEO.palm,MAT.palm);
+  // mastro laranja do hangar, visível do alto
+  const pole=mesh(SG.cyl,MAT.buoy,.25,26,.25,hp2.x,sampleH(H2,hp2.x,hp2.z)+13,hp2.z,g);pole.castShadow=false;
+  NB={id,x:nx,z:nz,H:H2};
+}
 const slopeAt=(x,z)=>Math.hypot(hAt(x+1,z)-hAt(x-1,z),hAt(x,z+1)-hAt(x,z-1))/2;
 function rwLocal(x,z){return{a:x*RW.dx+z*RW.dz,p:x*RW.px+z*RW.pz};}
 function rwDist(x,z){const{a,p}=rwLocal(x,z);return Math.hypot(Math.max(0,Math.abs(a)-RW.half),Math.max(0,Math.abs(p)-RW.w/2));}
@@ -580,7 +646,8 @@ function terrainColor(x,z,h,ny,n){
 function buildWorld(seed){
   if(world){scene.remove(world);world.traverse(o=>{if(o.userData.own&&o.geometry)o.geometry.dispose();});}
   world=new THREE.Group();scene.add(world);
-  const rng=mulberry32(seed==null?(Math.random()*2147483647)|0:seed);
+  if(seed==null)seed=(Math.random()*2147483647)|0;worldSeed=seed;
+  const rng=mulberry32(seed);
   genTerrain(rng);
   const cn=makeNoise(rng);
   // malha do terreno
@@ -594,8 +661,8 @@ function buildWorld(seed){
   terrainGeo.setAttribute('color',new THREE.BufferAttribute(col,3));
   const terrain=new THREE.Mesh(terrainGeo,new THREE.MeshLambertMaterial({vertexColors:true}));terrain.receiveShadow=true;terrain.userData.own=1;world.add(terrain);
   // mar
-  const wg=new THREE.PlaneGeometry(1600,1600,90,90);wg.rotateX(-Math.PI/2);waterBase=Float32Array.from(wg.attributes.position.array);
-  water=new THREE.Mesh(wg,new THREE.MeshPhongMaterial({color:0x1d6f86,specular:0xbfe6f0,shininess:90,transparent:true,opacity:.86}));water.userData.own=1;world.add(water);
+  const wg=new THREE.PlaneGeometry(3600,3600,110,110);wg.rotateX(-Math.PI/2);waterBase=Float32Array.from(wg.attributes.position.array);
+  water=new THREE.Mesh(wg,new THREE.MeshPhongMaterial({color:0x1d6f86,specular:0x4f7f8a,shininess:140,transparent:true,opacity:.86}));water.userData.own=1;world.add(water);
   for(const p of ponds){const m=new THREE.Mesh(new THREE.CircleGeometry(p.r+.6,28),new THREE.MeshPhongMaterial({color:0x3a96b2,specular:0xddeeff,shininess:100,transparent:true,opacity:.85}));m.rotation.x=-Math.PI/2;m.position.set(p.x,p.y,p.z);m.userData.own=1;world.add(m);}
   // marcações da pista
   for(let i=-3;i<=3;i++){const m=new THREE.Mesh(new THREE.PlaneGeometry(.6,6),MAT.marking);m.rotation.set(-Math.PI/2,0,-Math.atan2(RW.dz,RW.dx)+Math.PI/2);const a=i*12;m.position.set(RW.dx*a,RW.h+.04,RW.dz*a);m.userData.own=1;world.add(m);}
@@ -640,6 +707,7 @@ function buildWorld(seed){
   plane.g.position.set(planeStart.x,RW.h,planeStart.z);plane.g.rotation.y=Math.atan2(RW.dx,RW.dz);
   for(let i=-1;i<=2;i++){const o={kind:'planecol',x:planeStart.x+RW.dx*i*2,z:planeStart.z+RW.dz*i*2,r:1,solid:true,dead:false,nointeract:true};objs.push(o);gadd(o);}
   objs.forEach((o,i)=>o.idx=i);MP.base=objs.length;bushIdx=objs.filter(o=>o.kind==='bush').map(o=>o.idx);
+  makeBikes();buildNeighbor(seed);
   for(let k=0;k<10;k++)spawnCrab(true);
   buildMinimap();
 }
@@ -738,6 +806,29 @@ function buildPlane(){
   const seatG={1:new THREE.Group(),2:new THREE.Group()};seatG[1].position.set(0,.5,1.0);seatG[2].position.set(0,.5,.12);g.add(seatG[1],seatG[2]);
   return{g,s,prop,stage:0,seatG,seatKey:{1:'',2:''}};
 }
+// ================= bicicletas =================
+const BIKE_MAT={frame:new THREE.MeshPhongMaterial({color:0xd8462a,shininess:60}),tire:new THREE.MeshLambertMaterial({color:0x1d1d1f}),metal:new THREE.MeshPhongMaterial({color:0xb9bec2,shininess:80}),seat:new THREE.MeshLambertMaterial({color:0x2a2420})};
+const BIKE_GEO={tire:new THREE.TorusGeometry(.34,.045,8,22),rod:new THREE.CylinderGeometry(.025,.025,1,6)};
+function rod(g,a,b,mat,r){const m=new THREE.Mesh(BIKE_GEO.rod,mat);const d=new V3().subVectors(b,a);m.scale.set(r||1,d.length(),r||1);m.position.copy(a).addScaledVector(d,.5);m.quaternion.setFromUnitVectors(new V3(0,1,0),d.normalize());m.castShadow=true;g.add(m);return m;}
+function bikeMesh(){
+  const g=new THREE.Group(),wheels=[];
+  for(const z of[-.55,.55]){const w=new THREE.Mesh(BIKE_GEO.tire,BIKE_MAT.tire);w.rotation.y=Math.PI/2;w.position.set(0,.38,z);w.castShadow=true;g.add(w);wheels.push(w);
+    for(let k=0;k<3;k++){const s=rod(w,new V3(-.32,0,0).applyAxisAngle(new V3(0,0,1),k*1.05),new V3(.32,0,0).applyAxisAngle(new V3(0,0,1),k*1.05),BIKE_MAT.metal,.4);s.castShadow=false;}}
+  const F=BIKE_MAT.frame,bb=new V3(0,.4,-.05),seatT=new V3(0,.9,-.25),head=new V3(0,.88,.42),rearA=new V3(0,.38,-.55),frontA=new V3(0,.38,.55);
+  rod(g,bb,seatT,F);rod(g,bb,head,F);rod(g,seatT,head,F);rod(g,bb,rearA,F);rod(g,seatT,rearA,F);rod(g,head,frontA,BIKE_MAT.metal);
+  rod(g,head,new V3(0,1.05,.38),BIKE_MAT.metal);rod(g,new V3(-.28,1.05,.38),new V3(.28,1.05,.38),BIKE_MAT.metal);
+  const s=new THREE.Mesh(new THREE.BoxGeometry(.14,.05,.26),BIKE_MAT.seat);s.position.set(0,.94,-.27);s.userData.own=1;g.add(s);
+  g.userData.wheels=wheels;return g;
+}
+function makeBikes(){
+  bikes=[];const a=Math.atan2(spawn.z,spawn.x);
+  const spots=[[spawn.x+Math.cos(a-1.3)*5,spawn.z+Math.sin(a-1.3)*5],[spawn.x+Math.cos(a-1.6)*6.5,spawn.z+Math.sin(a-1.6)*6.5],[hangarPos.x+RW.dx*4,hangarPos.z+RW.dz*4]];
+  spots.forEach(([x,z],i)=>{const g=bikeMesh();world.add(g);const b={kind:'bike',i,g,x,z,y:0,r:.5,hy:.5,yaw:a+i,rider:null};placeBike(b);bikes.push(b);});
+}
+function placeBike(b){b.y=hAt(b.x,b.z);b.g.position.set(b.x,b.y,b.z);b.g.rotation.set(0,b.yaw,0);b.g.visible=true;}
+const underRoof=()=>hangarPos&&Math.hypot(P.x-hangarPos.x,P.z-hangarPos.z)<7.5;
+function mountBike(b){if(b.rider)return;b.rider='me';P.bike=b;b.g.visible=false;net('bm',b.i);toast('Você subiu na bicicleta. Aperte E para descer.');}
+function dismountBike(){const b=P.bike;if(!b)return;P.bike=null;b.rider=null;b.x=P.x+Math.cos(P.yaw)*.9;b.z=P.z-Math.sin(P.yaw)*.9;b.yaw=P.yaw+Math.PI;placeBike(b);net('bd',b.i,+b.x.toFixed(2),+b.z.toFixed(2),+b.yaw.toFixed(2));}
 // posição de um assento no mundo
 function seatWorld(n,dy){plane.g.updateMatrixWorld();return plane.g.localToWorld(new V3(0,.5+(dy||0),n===1?1.0:.12));}
 // mostra quem está sentado em cada assento
@@ -809,7 +900,7 @@ function buildCharacter(sel){
 let vm=null;
 const TOOLGEO={};
 function buildViewmodel(){
-  if(vm)vmScene.remove(vm.root);
+  if(vm){vmScene.remove(vm.root);if(vm.bars)vmScene.remove(vm.bars);}
   const O=OUTFITS[skinSel.outfit],skin=new THREE.MeshLambertMaterial({color:TONES[skinSel.tone]}),sleeve=topMat(O);
   const root=new THREE.Group();vmScene.add(root);
   const mk=(side)=>{const arm=new THREE.Group();arm.position.set(side*.26,-.33,-.26);root.add(arm);
@@ -827,7 +918,15 @@ function buildViewmodel(){
   const spear=new THREE.Group();const sh=handle(1.1);sh.position.y=.35;spear.add(sh);const tip=new THREE.Mesh(new THREE.ConeGeometry(.04,.16,6),MAT.stone);tip.position.y=.98;spear.add(tip);tools.lanca=spear;
   const cant=new THREE.Group();const cc=new THREE.Mesh(new THREE.SphereGeometry(.09,10,8),new THREE.MeshLambertMaterial({color:'#6b4528'}));cc.position.y=.04;cant.add(cc);tools.cantil=cant;
   for(const k in tools){tools[k].visible=false;tools[k].position.set(0,.02,-.5);tools[k].rotation.x=-.35;R.arm.add(tools[k]);}
-  vm={root,R,L:Lf,tools,cur:null};
+  // guidão da bicicleta
+  const bars=new THREE.Group();bars.position.set(0,-.3,-.58);bars.rotation.x=.25;bars.visible=false;vmScene.add(bars);
+  const bar=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.62,8),BIKE_MAT.metal);bar.rotation.z=Math.PI/2;bars.add(bar);
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,.3,8),BIKE_MAT.metal);stem.position.set(0,-.14,.04);bars.add(stem);
+  const tube=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.5,8),BIKE_MAT.frame);tube.position.set(0,-.3,.3);tube.rotation.x=1.1;bars.add(tube);
+  for(const s of[-1,1]){const grip=new THREE.Mesh(new THREE.CylinderGeometry(.026,.026,.12,8),BIKE_MAT.seat);grip.rotation.z=Math.PI/2;grip.position.x=s*.27;bars.add(grip);
+    const h=new THREE.Mesh(new THREE.BoxGeometry(.11,.08,.1),skin);h.position.set(s*.27,.035,0);bars.add(h);
+    const sl=new THREE.Mesh(new THREE.CylinderGeometry(.07,.08,.4,10),sleeve);sl.rotation.x=Math.PI/2-.5;sl.position.set(s*.3,.04,.2);bars.add(sl);}
+  vm={root,R,L:Lf,tools,cur:null,bars};
 }
 function showTool(k){if(!vm||vm.cur===k)return;for(const t in vm.tools)vm.tools[t].visible=t===k;vm.cur=k;}
 
@@ -957,7 +1056,9 @@ async function joinMatch(raw){
     else if(list.length>=2){mpNote('Essa partida já tem dois náufragos.',true);await leaveMatch();}
     else{MP.isHost=false;MP.seq=0;MP.acts=[];MP.seen.clear();MP.wv=0;MP.noHostT=0;
       MP.r.presence({g:MP.code,role:'guest',sk:[skinSel.tone,skinSel.outfit],seat:0}).catch(()=>{});
-      newGame(seedOf(MP.code));P.x+=1.8;P.z+=1.2;mpNote('');start();}
+      newGame(seedOf(MP.code));
+      const hi=host.presence.is|0;if(hi>0&&hi<1000){islandNo=hi;buildWorld(islandSeed(hi));for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}plane.stage=4;syncPlane();newPlayer();reveal(P.x,P.z);reveal(hangarPos.x,hangarPos.z);}
+      P.x+=1.8;P.z+=1.2;mpNote('');start();}
   }catch(e){
     const c=e&&e.code;
     mpNote(c==='notfound'?`Nenhuma partida aberta com o código ${code}. Confira o código com seu amigo.`:c==='network'||c==='timeout'?'Não foi possível conectar com a partida. Verifique a internet; algumas redes de escola ou empresa bloqueiam o modo online.':'Não foi possível entrar. Tente de novo em alguns segundos.',true);
@@ -977,11 +1078,12 @@ function net(type,...a){
 }
 function packDead(){const n=MP.base,b=new Uint8Array(Math.ceil(n/8));for(let i=0;i<n;i++){const o=objs[i];if(o.dead||o.falling!==undefined)b[i>>3]|=1<<(i&7);}let s='';for(const x of b)s+=String.fromCharCode(x);return btoa(s);}
 function snapshot(){
-  return{v:++MP.wv,t:+tod.toFixed(4),d:day,gt:Math.round(gt),st:plane.stage,dd:packDead(),b:bushIdx.map(i=>objs[i].dead?0:objs[i].berries).join(''),
+  return{v:++MP.wv,is:islandNo,rn:+rainTarget.toFixed(2),t:+tod.toFixed(4),d:day,gt:Math.round(gt),st:plane.stage,dd:packDead(),b:bushIdx.map(i=>objs[i].dead?0:objs[i].berries).join(''),
     f:fires.slice(-15).map(f=>[+f.x.toFixed(1),+f.z.toFixed(1)])};
 }
 function applyWorld(w){
-  if(!w||typeof w!=='object'||w.v===MP.lastW)return;MP.lastW=w.v;
+  if(!w||typeof w!=='object'||w.v===MP.lastW||(w.is|0)!==islandNo)return;MP.lastW=w.v;
+  if(Number.isFinite(w.rn))rainTarget=CL(w.rn,0,1);
   if(Number.isFinite(w.t)&&Math.abs(w.t-tod)>.003)tod=CL(w.t,0,.9999);
   if(Number.isInteger(w.d)&&w.d>0)day=w.d;if(Number.isFinite(w.gt))gt=w.gt;
   if(Number.isInteger(w.st)&&w.st>plane.stage&&w.st<=4){plane.stage=w.st;syncPlane();}
@@ -1005,6 +1107,10 @@ function applyAct(a){
     case's':if(Number.isInteger(x)&&x>plane.stage&&x<=4){plane.stage=x;syncPlane();if(MP.isHost)MP.wDirty=true;toast(`Seu parceiro montou: ${STAGES[x-1].n}.`);if(panel==='hangar')buildHangarPanel();}break;
     case'z':if(MP.isHost){tod=0;day++;MP.wDirty=true;}break;
     case'tk':if(P&&P.seat&&state==='play')startTakeoff();break;
+    case'bm':{const b=bikes[x];if(b&&b.rider!=='me')b.rider='remote';break;}
+    case'bd':{const b=bikes[x];if(b&&b.rider!=='me'&&[y,a[4],a[5]].every(Number.isFinite)&&Math.abs(y)<HALF&&Math.abs(a[4])<HALF){b.rider=null;b.x=y;b.z=a[4];b.yaw=a[5];placeBike(b);}break;}
+    case'land':if(P&&P.seat&&(state==='fly'||state==='takeoff')&&Number.isInteger(x))landAt(x,true);break;
+    case'esc':if(P&&P.seat&&(state==='fly'||state==='takeoff')){state='won';showEnd(true);}break;
   }
 }
 function nameOf(R){if(R.nm)return R.nm;if(R.by&&MP.user&&!MP.names.has(R.by)){MP.names.set(R.by,'');Promise.resolve(MP.user.profiles([R.by])).then(ps=>{const n=ps&&ps[R.by]&&ps[R.by].name;if(n)MP.names.set(R.by,n);}).catch(()=>{});}return(R.by&&MP.names.get(R.by))||'Parceiro';}
@@ -1020,11 +1126,11 @@ function processPeers(dt){
     const acts=Array.isArray(pr.acts)?pr.acts:[];const maxSeq=acts.length&&Array.isArray(acts[acts.length-1])?acts[acts.length-1][0]|0:0;
     const last=MP.seen.get(pe.peer);
     if(last===undefined)MP.seen.set(pe.peer,maxSeq);
-    else if(maxSeq>last){if(world&&(state==='play'||state==='takeoff'))for(const a of acts)if(Array.isArray(a)&&(a[0]|0)>last)applyAct(a);MP.seen.set(pe.peer,maxSeq);}
+    else if(maxSeq>last){const same=(pr.is|0)===islandNo;if(world&&(state==='play'||state==='takeoff'||state==='fly'))for(const a of acts)if(Array.isArray(a)&&(a[0]|0)>last&&(same||a[1]==='land'||a[1]==='esc'))applyAct(a);MP.seen.set(pe.peer,maxSeq);}
     else if(maxSeq<last)MP.seen.set(pe.peer,maxSeq);
     updateRemote(pe,pr,dt);
   }
-  for(const[k,R]of MP.remotes)if(!seen.has(k)){if(R.g)scene.remove(R.g);R.el.remove();MP.remotes.delete(k);if(state==='play')toast(`${nameOf(R)} saiu da ilha.`);}
+  for(const[k,R]of MP.remotes)if(!seen.has(k)){if(R.g)scene.remove(R.g);R.el.remove();MP.remotes.delete(k);if(R.bikeRef&&R.bikeRef.rider==='remote'){R.bikeRef.rider=null;R.bikeRef.x=R.x;R.bikeRef.z=R.z;placeBike(R.bikeRef);}if(state==='play')toast(`${nameOf(R)} saiu da ilha.`);}
   MP.me=me;MP.count=count+1;
   if(MP.isHost){if(host&&me&&host.peer<me.peer){MP.isHost=false;MP.noHostT=0;}}
   else if(host){MP.noHostT=0;if(world&&state!=='title')applyWorld(host.presence.w);}
@@ -1042,21 +1148,30 @@ function updateRemote(pe,pr,dt){
   if(Array.isArray(p)&&p.length>=4&&p.slice(0,4).every(Number.isFinite)){if(R.first){R.x=p[0];R.y=p[1];R.z=p[2];R.yaw=p[3];R.first=false;}R.tx=p[0];R.ty=p[1];R.tz=p[2];R.tyaw=p[3];}
   const k=Math.min(1,dt*10),ox=R.x,oz=R.z;R.x+=(R.tx-R.x)*k;R.y+=(R.ty-R.y)*k;R.z+=(R.tz-R.z)*k;
   let dy=R.tyaw-R.yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));R.yaw+=dy*k;
-  R.seat=pr.seat===1||pr.seat===2?pr.seat:0;R.dead=pr.dead===1;R.act=pr.a===1;
+  R.seat=pr.seat===1||pr.seat===2?pr.seat:0;R.dead=pr.dead===1;R.act=pr.a===1;R.is=pr.is|0;
+  const pl=pr.pl;if(Array.isArray(pl)&&pl.length===6&&pl.every(Number.isFinite))R.pl=pl;else R.pl=null;
   const spd=Math.hypot(R.x-ox,R.z-oz)/Math.max(dt,1e-3);R.ph=(R.ph||0)+dt*spd*2.2;
-  const show=!!world&&!R.first&&!R.seat&&!R.dead&&state!=='title';
-  R.g.visible=show;R.g.position.set(R.x,R.y+(spd>.5?Math.abs(Math.sin(R.ph))*.06:0),R.z);R.g.rotation.y=R.yaw+Math.PI;R.g.rotation.x=R.act?.12:0;
-  R.el.textContent=nameOf(R)+(R.dead?' (caído)':R.seat?' (no avião)':'');
+  const here=R.is===islandNo;
+  const show=!!world&&here&&!R.first&&!R.seat&&!R.dead&&state!=='title';
+  // bicicleta do parceiro
+  const bk=Number.isInteger(pr.bk)?bikes[pr.bk-1]:null;
+  if(bk!==R.bikeRef){if(R.bikeRef&&R.bikeRef.rider==='remote'&&!bk){/* 'bd' reposiciona */}R.bikeRef=bk||null;}
+  if(bk&&bk.rider!=='me'&&here){bk.rider='remote';bk.g.visible=show;bk.g.position.set(R.x,hAt(R.x,R.z),R.z);bk.g.rotation.set(0,R.yaw+Math.PI,0);for(const w of bk.g.userData.wheels)w.rotation.x-=spd*dt*2.9;}
+  R.g.visible=show;R.g.position.set(R.x,R.y+(bk?.42:spd>.5?Math.abs(Math.sin(R.ph))*.06:0),R.z);R.g.rotation.y=R.yaw+Math.PI;R.g.rotation.x=bk?.18:R.act?.12:0;
+  R.el.textContent=nameOf(R)+(R.dead?' (caído)':R.seat?' (no avião)':bk?' (de bicicleta)':'');
+  if(!here){R.el.style.opacity=0;return;}
   if(!show&&!R.seat){R.el.style.opacity=0;return;}
   const hp=R.seat?seatWorld(R.seat,1.6):_v.set(R.x,R.y+2.55,R.z);_v.copy(hp).project(camera);
   const far=Math.hypot(R.x-camera.position.x,R.z-camera.position.z)>90;
-  if(_v.z>1||far||state==='takeoff'){R.el.style.opacity=0;return;}
+  if(_v.z>1||far||state==='takeoff'||state==='fly'){R.el.style.opacity=0;return;}
   R.el.style.opacity=1;R.el.style.transform=`translate(${(_v.x*.5+.5)*cv.clientWidth}px,${(-_v.y*.5+.5)*cv.clientHeight}px) translate(-50%,-100%)`;
 }
 function sendPresence(now){
   if(!MP.r||now<MP.sendT)return;MP.sendT=now+100;
   const pr={g:MP.code,role:MP.isHost?'host':'guest',sk:[skinSel.tone,skinSel.outfit],nm:myName,acts:MP.acts};
-  if(P&&state!=='title'){pr.p=[+P.x.toFixed(2),+P.fy.toFixed(2),+P.z.toFixed(2),+P.yaw.toFixed(2)];pr.a=P.act>0?1:0;pr.seat=P.seat|0;pr.hp=P.hp|0;pr.dead=state==='dead'?1:0;}
+  pr.is=islandNo;
+  if(P&&state!=='title'){pr.p=[+P.x.toFixed(2),+P.fy.toFixed(2),+P.z.toFixed(2),+P.yaw.toFixed(2)];pr.a=P.act>0?1:0;pr.seat=P.seat|0;pr.hp=P.hp|0;pr.dead=state==='dead'?1:0;pr.bk=P.bike?P.bike.i+1:0;
+    pr.pl=state==='fly'&&P.seat===1?[FL.x,FL.y,FL.z,FL.yaw,FL.pitch,FL.roll].map(v=>+v.toFixed(2)):null;}
   if(MP.isHost&&world&&state!=='title'&&(MP.wDirty||now>MP.wT)){pr.w=snapshot();MP.wDirty=false;MP.wT=now+1000;}
   MP.r.presence(pr).catch(()=>{});
 }
@@ -1078,7 +1193,9 @@ const M=[
   {t:'Peças perdidas',d:'Encontre 3 peças de motor nas caixas militares verdes espalhadas pela ilha.',p:()=>[Math.min(stats.got.pecas|0,3),3],r:{sucata:1}},
   {t:'Motor',d:'Instale o motor e a hélice no hangar.',p:()=>[plane.stage>=3?1:0,1]},
   {t:'Combustível',d:'Ache 3 tambores vermelhos de gasolina de aviação e abasteça o avião.',p:()=>[plane.stage>=4?1:0,1]},
-  {t:'Decolar',d:'Suba no avião, acelere pela pista e deixe a ilha para trás.',p:()=>[0,1]},
+  {t:'Decolar',d:'Suba no avião, acelere pela pista e ganhe altura.',p:()=>[stats.flown?1:0,1]},
+  {t:'A ilha vizinha',d:'Pilote até a ilha no horizonte e pouse nela.',p:()=>[stats.islands?1:0,1],r:{lata:2}},
+  {t:'Rumo ao continente',d:'Decole outra vez e voe para longe, mais de 2,5 km mar adentro, até avistar o continente.',p:()=>[0,1]},
 ];
 let mShown='';
 function checkMission(){
@@ -1186,11 +1303,13 @@ function give(k,n,o){P.inv[k]=(P.inv[k]|0)+n;stats.got[k]=(stats.got[k]|0)+n;flo
 const _near=[];const _dir=new V3();
 function findTarget(){
   if(P.seat)return{kind:'plane',x:plane.g.position.x,z:plane.g.position.z,y:RW.h,hy:1.3,r:3};
+  if(P.bike)return{kind:'ride',x:P.x,z:P.z,y:P.fy,r:.5};
   camera.getWorldDirection(_dir);const cp=camera.position;let best=null,bs=.42;
   const consider=o=>{if(o.dead||o.nointeract)return;const ty=(o.y||0)+(o.hy||.5);const dx=o.x-cp.x,dy=ty-cp.y,dz=o.z-cp.z;const hd=Math.hypot(dx,dz)-o.r;if(hd>2.4)return;const len=Math.hypot(dx,dy,dz)||1;
     const ang=Math.acos(CL((dx*_dir.x+dy*_dir.y+dz*_dir.z)/len,-1,1))-Math.atan(o.r/len);if(ang<bs){bs=ang;best=o;}};
   for(const o of near(P.x,P.z,5,_near))consider(o);
   for(const c of crabs)if(Math.abs(c.x-P.x)<5&&Math.abs(c.z-P.z)<5)consider(c);
+  for(const b of bikes)if(!b.rider&&Math.abs(b.x-P.x)<5&&Math.abs(b.z-P.z)<5)consider(b);
   const pd=Math.hypot(plane.g.position.x-P.x,plane.g.position.z-P.z);
   if(pd<6.5){const o={kind:'plane',x:plane.g.position.x,z:plane.g.position.z,y:RW.h,hy:1.3,r:3};consider(o);if(!best&&pd<4.5)best=o;}
   if(best)return best;
@@ -1213,11 +1332,15 @@ function label(o){
     case'plane':return P.seat?(P.seat===1?'Painel do piloto':'Seu lugar de passageiro'):plane.stage<4?'Montar o avião':'Avião pronto: embarcar';
     case'pond':return P.tools.cantil?'Beber e encher o cantil':'Beber água doce';
     case'sea':return'Água salgada';
+    case'bike':return'Subir na bicicleta';
+    case'ride':return'Descer da bicicleta';
   }return'';
 }
 function hitObj(o,dmg,col){o.hp-=dmg;o.shake=.25;o.hitT=1.5;setInst(o);burst(o.x,(o.y||0)+(o.hy||1),o.z,col,6);}
 function doAction(){
+  if(P.bike){dismountBike();P.cd=.45;actHeld=false;return;}
   const o=target;if(!o){P.cd=.15;return;}
+  if(o.kind==='bike'){mountBike(o);P.cd=.45;actHeld=false;return;}
   P.act=.32;P.energy=Math.max(0,P.energy-.3);
   switch(o.kind){
     case'tree':case'pine':case'palm':{
@@ -1260,20 +1383,24 @@ function update(dt){
   const sprint=(keys.has('ShiftLeft')||keys.has('ShiftRight'))&&P.energy>5;
   if(P.moving){if(l>1){f/=l;s/=l;}
     const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw),dx=-sy*f+cy*s,dz=-cy*f-sy*s;
-    const g=hAt(P.x,P.z);const sp=(sprint?7.6:4.6)*(g<0?.55:1)*(P.energy<=0?.6:1);
-    const nx=P.x+dx*sp*dt,nz=P.z+dz*sp*dt;if(okPos(nx,P.z))P.x=nx;if(okPos(P.x,nz))P.z=nz;
-    P.walk+=dt*sp;if(sprint)P.energy=Math.max(0,P.energy-dt*.4);}
+    const g=hAt(P.x,P.z);const sp=(P.bike?(sprint?14:10.5)*(1-CL(slopeAt(P.x,P.z)-.25,0,.6)):(sprint?7.6:4.6))*(g<0?.55:1)*(P.energy<=0?.6:1);
+    const ok=(x,z)=>okPos(x,z)&&(!P.bike||hAt(x,z)>-.15);
+    const nx=P.x+dx*sp*dt,nz=P.z+dz*sp*dt;if(ok(nx,P.z))P.x=nx;if(ok(P.x,nz))P.z=nz;
+    P.walk+=dt*sp*(P.bike?.35:1);if(sprint)P.energy=Math.max(0,P.energy-dt*(P.bike?.15:.4));}
+  P.turn=s;
   if(P.seat){const s=seatWorld(P.seat);P.x=s.x;P.z=s.z;P.fy=s.y;P.vy=0;P.ground=true;}
   else{
     for(const o of near(P.x,P.z,3,_near)){if(o.dead||!o.solid)continue;const dx=P.x-o.x,dz=P.z-o.z,d=Math.hypot(dx,dz),m=o.r*(o.s||1)+.35;if(d<m&&d>1e-4){P.x=o.x+dx/d*m;P.z=o.z+dz/d*m;}}
     const g=hAt(P.x,P.z);P.vy-=20*dt;P.fy+=P.vy*dt;if(P.fy<=g){P.fy=g;P.vy=0;P.ground=true;}else P.ground=false;
-    if(P.jump&&P.ground){P.vy=5.6;P.ground=false;P.energy=Math.max(0,P.energy-.4);}
+    if(P.jump&&P.ground&&!P.bike){P.vy=5.6;P.ground=false;P.energy=Math.max(0,P.energy-.4);}
   }
   P.jump=false;
   const ci=Math.floor((P.x+HALF)/CELL)+Math.floor((P.z+HALF)/CELL)*N;if(ci!==P.cell){P.cell=ci;reveal(P.x,P.z);}
   if(!stats.hangar&&Math.hypot(P.x-hangarPos.x,P.z-hangarPos.z)<16)stats.hangar=true;
 
   // necessidades
+  if(!MP.r||MP.isHost)weatherTick(dt);
+  if(rainLvl>.3&&!underRoof())P.water=Math.min(100,P.water+dt*.45*rainLvl);
   P.food=Math.max(0,P.food-dt*.2);P.water=Math.max(0,P.water-dt*.29);P.energy=Math.max(0,P.energy-dt*(P.moving?.11:.05));
   const nearFire=fires.some(o=>Math.hypot(o.x-P.x,o.z-P.z)<5);if(nearFire&&!P.moving)P.energy=Math.min(100,P.energy+dt*.7);
   if(P.water<=0){P.hp-=dt*1.4;cause='A sede venceu você.';}
@@ -1337,31 +1464,68 @@ function drawMini(){
 // ================= céu, luz e efeitos =================
 const C_=(h)=>new THREE.Color(h);
 const SKY={dayTop:C_('#3d82c4'),dayHor:C_('#b4d8ec'),setTop:C_('#3f5d95'),setHor:C_('#f0a06a'),nightTop:C_('#040a1a'),nightHor:C_('#122038')};
-const _c1=new THREE.Color(),_c2=new THREE.Color(),sunDir=new V3();
+const _c1=new THREE.Color(),_c2=new THREE.Color(),_cg=new THREE.Color(),sunDir=new V3();
 function updateSky(tm,focus){
   const h=hour(),a=(h-6)/12*Math.PI;sunDir.set(Math.cos(a),Math.sin(a),.35).normalize();
   const dl=sst(-.12,.25,sunDir.y),setK=CL(1-Math.abs(sunDir.y)*3.2,0,1);
   _c1.copy(SKY.dayTop).lerp(SKY.setTop,setK*.7);_c1.lerp(SKY.nightTop,1-dl);skyU.top.value.copy(_c1);
-  _c2.copy(SKY.dayHor).lerp(SKY.setHor,setK);_c2.lerp(SKY.nightHor,1-dl);skyU.hor.value.copy(_c2);
+  _c2.copy(SKY.dayHor).lerp(SKY.setHor,setK);_c2.lerp(SKY.nightHor,1-dl);
+  const rk=rainLvl*.75;if(rk>0){_c1.lerp(_cg.setRGB(.32,.35,.38).multiplyScalar(.3+.7*dl),rk);skyU.top.value.copy(_c1);_c2.lerp(_cg.setRGB(.45,.48,.5).multiplyScalar(.3+.7*dl),rk);}
+  if(flash>0){_c1.lerp(_cg.setRGB(.85,.9,1),flash);skyU.top.value.copy(_c1);_c2.lerp(_cg.setRGB(.9,.92,1),flash);}
+  skyU.hor.value.copy(_c2);
   skyU.bot.value.copy(_c2).multiplyScalar(.45);scene.fog.color.copy(_c2);
-  skyU.sunDir.value.copy(sunDir);skyU.sunCol.value.setRGB(1,.85-setK*.3,.6-setK*.35).multiplyScalar(dl);
+  skyU.sunDir.value.copy(sunDir);skyU.sunCol.value.setRGB(1,.85-setK*.3,.6-setK*.35).multiplyScalar(dl*(1-rainLvl*.9));
   sky.position.copy(camera.position);stars.position.copy(camera.position);stars.material.opacity=CL(1-dl*1.6,0,1)*.9;
-  moon.position.copy(camera.position).addScaledVector(sunDir,-780);moon.visible=sunDir.y<.1;
+  moon.position.copy(camera.position).addScaledVector(sunDir,-2600);moon.visible=sunDir.y<.1;
   const useSun=sunDir.y>-.06;sun.color.setRGB(1,.92-setK*.25,.82-setK*.4);sun.intensity=useSun?1.05*dl:0;
   if(!useSun){sun.color.set(0x8aa4d6);sun.intensity=.22;}
   const ld=useSun?sunDir:_v.copy(sunDir).negate();sun.position.set(focus.x+ld.x*140,focus.y+ld.y*140,focus.z+ld.z*140);sun.target.position.copy(focus);
-  hemi.intensity=.22+.5*dl;hemi.color.copy(_c2).lerp(C_('#cfe8ff'),.5);
-  vmAmb.intensity=.3+.5*dl;vmDir.intensity=.15+.75*dl;
-  scene.fog.near=lerp(18,45,dl);scene.fog.far=lerp(120,280,dl);
+  if(useSun)sun.intensity*=1-rainLvl*.7;
+  hemi.intensity=.22+.5*dl+flash*1.4;hemi.color.copy(_c2).lerp(C_('#cfe8ff'),.5);
+  vmAmb.intensity=.3+.5*dl+flash;vmDir.intensity=(.15+.75*dl)*(1-rainLvl*.5);
+  const air=state==='fly'||state==='takeoff'?1:0;
+  scene.fog.near=lerp(18,45,dl)*(1-rainLvl*.5)+air*120;scene.fog.far=lerp(120,280,dl)*(1-rainLvl*.4)+air*1500*(1-rainLvl*.5);
   // fogueiras e luzes
   const fl=fires.slice().sort((a,b)=>Math.hypot(a.x-focus.x,a.z-focus.z)-Math.hypot(b.x-focus.x,b.z-focus.z));
   fireLights.forEach((l,i)=>{const f=fl[i];if(f&&Math.hypot(f.x-focus.x,f.z-focus.z)<60){l.position.set(f.x,f.y+1,f.z);l.intensity=(1.6+Math.sin(tm*13+i)*.25+Math.sin(tm*7.3)*.2)*(.45+.55*(1-dl));}else l.intensity=0;});
   for(const f of fires){const k=1+Math.sin(tm*14+f.x)*.12+Math.sin(tm*9.1)*.08;f.f1.scale.set(.32,.9*k,.32);f.f2.scale.set(.18,.55*(2-k),.18);}
   return dl;
 }
+// ================= chuva =================
+let rainLvl=0,rainTarget=0,rainT=140,flash=0,flashT=6,rainWas=false;
+const RAIN_N=2200,RAIN_BOX=34;
+const rainPos=new Float32Array(RAIN_N*6),rainSpd=new Float32Array(RAIN_N);
+for(let i=0;i<RAIN_N;i++){const x=(Math.random()-.5)*RAIN_BOX*2,y=Math.random()*30,z=(Math.random()-.5)*RAIN_BOX*2;rainPos.set([x,y,z,x+.05,y-.7,z],i*6);rainSpd[i]=18+Math.random()*8;}
+const rainGeo=new THREE.BufferGeometry();rainGeo.setAttribute('position',new THREE.BufferAttribute(rainPos,3));
+const rain=new THREE.LineSegments(rainGeo,new THREE.LineBasicMaterial({color:0xb8cfe0,transparent:true,opacity:0,depthWrite:false}));rain.frustumCulled=false;scene.add(rain);
+// o anfitrião (ou quem joga sozinho) decide quando chove
+function weatherTick(dt){
+  rainT-=dt;if(rainT>0)return;
+  if(rainTarget>0){rainTarget=0;rainT=160+Math.random()*220;}else{rainTarget=.55+Math.random()*.45;rainT=60+Math.random()*90;}
+  MP.wDirty=true;
+}
+function updateRain(dt){
+  rainLvl+=(rainTarget-rainLvl)*Math.min(1,dt*.35);if(Math.abs(rainTarget-rainLvl)<.002)rainLvl=rainTarget;
+  const on=rainTarget>0;
+  if(on!==rainWas){rainWas=on;if(state==='play')toast(on?'Começou a chover. Ficar na chuva mata um pouco a sede.':'A chuva parou.');}
+  rain.visible=rainLvl>.02;rain.material.opacity=.45*rainLvl;
+  if(rain.visible){
+    rain.position.set(camera.position.x,camera.position.y-12,camera.position.z);
+    const n=Math.floor(RAIN_N*Math.min(1,rainLvl*1.2)),p=rainPos,ws=state==='fly'?2.4:1;
+    for(let i=0;i<RAIN_N;i++){const o=i*6;if(i>=n){p[o+1]=-999;p[o+4]=-999;continue;}
+      let y=p[o+1]-rainSpd[i]*dt*ws;if(y<0||y>40){y=26+Math.random()*12;p[o]=(Math.random()-.5)*RAIN_BOX*2;p[o+2]=(Math.random()-.5)*RAIN_BOX*2;}
+      p[o+1]=y;p[o+3]=p[o]+.05;p[o+4]=y-.7-rainLvl*.4;p[o+5]=p[o+2];}
+    rainGeo.attributes.position.needsUpdate=true;
+  }
+  flash=Math.max(0,flash-dt*3);
+  if(rainLvl>.7){flashT-=dt;if(flashT<=0){flash=1;flashT=7+Math.random()*14;if(Math.random()<.5)setTimeout(()=>{flash=.7;},140);}}
+}
+
 let waterFrame=0;
 function animateWorld(dt,tm){
-  if(++waterFrame%2===0&&water){const p=water.geometry.attributes.position;for(let i=0;i<p.count;i++){const x=waterBase[i*3],z=waterBase[i*3+2];p.array[i*3+1]=Math.sin(x*.07+tm*.9)*.14+Math.cos(z*.06+tm*1.1)*.12;}p.needsUpdate=true;water.geometry.computeVertexNormals();}
+  if(water){water.position.x=Math.round(camera.position.x/40)*40;water.position.z=Math.round(camera.position.z/40)*40;}
+  if(++waterFrame%2===0&&water){const p=water.geometry.attributes.position,wx=water.position.x,wz=water.position.z,amp=1+rainLvl*.8;for(let i=0;i<p.count;i++){const x=waterBase[i*3]+wx,z=waterBase[i*3+2]+wz;p.array[i*3+1]=(Math.sin(x*.07+tm*.9)*.14+Math.cos(z*.06+tm*1.1)*.12)*amp;}p.needsUpdate=true;water.geometry.computeVertexNormals();}
+  updateRain(dt);
   const fl=world.userData.flag;if(fl){const p=fl.geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i);p.setZ(i,Math.sin(x*2.2-tm*5)*.18*(x+1.2)/2.4);}p.needsUpdate=true;}
   for(const c of crabs){c.y=hAt(c.x,c.z);c.obj.position.set(c.x,c.y,c.z);c.legs.forEach((l,i)=>l.rotation.y=Math.sin(c.ph+i*1.7)*.35);c.mat.emissive.setRGB(c.hurt>0?.6:0,c.hurt>0?.5:0,c.hurt>0?.4:0);}
   for(let i=0;i<PCOUNT;i++){const p=pdata[i];if(p.life<=0)continue;p.life-=dt;p.vy-=12*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;const s=p.life>0?.05*Math.min(1,p.life*2):0;_p.set(p.x,p.y,p.z);_q.identity();_s.set(s,s,s);_m.compose(_p,_q,_s);parts.setMatrixAt(i,_m);}
@@ -1374,7 +1538,9 @@ function animateWorld(dt,tm){
 function updateViewmodel(dt){
   if(!vm)return;const t=target;let k=vm.cur;
   if(t){if(t.kind==='tree'||t.kind==='pine'||t.kind==='palm')k=P.tools.machado?'machado':null;else if(t.kind==='rock')k=P.tools.picareta?'picareta':null;else if(t.kind==='crab')k=P.tools.lanca?'lanca':null;else if(t.kind==='pond')k=P.tools.cantil?'cantil':null;else k=null;}
-  showTool(k);
+  showTool(P.bike?null:k);
+  vm.root.visible=!P.bike;vm.bars.visible=!!P.bike;
+  if(P.bike){vm.bars.rotation.y=CL(-(P.turn||0)*.25,-.3,.3);vm.bars.position.y=-.3+Math.sin(P.walk*2.2)*.006*(P.moving?1:0);return;}
   const mv=P.moving&&P.ground?1:0,bx=Math.sin(P.walk*1.5)*.014*mv,by=Math.abs(Math.cos(P.walk*1.5))*.018*mv;
   vm.root.position.set(bx,-by+Math.sin(gt*1.6)*.004,0);
   const a=P.act>0?1-P.act/.32:0;const rot=P.act>0?(a<.35?lerp(0,.95,a/.35):lerp(.95,-.6,(a-.35)/.65)):0;
@@ -1391,17 +1557,87 @@ function updateTakeoff(dt){
   const x=planeStart.x+RW.dx*tk.d,z=planeStart.z+RW.dz*tk.d,y=RW.h+tk.alt+(tk.alt<.1?Math.sin(tk.t*30)*.02:0);
   plane.g.position.set(x,y,z);plane.g.rotation.set(-tk.pitch,Math.atan2(RW.dx,RW.dz),Math.sin(tk.t*.8)*.04*Math.min(1,tk.alt/5),'YXZ');
   const back=tk.t<6?12+tk.t*1.5:20;camera.position.set(x-RW.dx*back+RW.px*4,y+3.5+Math.min(tk.alt*.3,8),z-RW.dz*back+RW.pz*4);camera.lookAt(x,y+1.5,z);
-  if(tk.t>12&&state==='takeoff'){state='won';showEnd(true);}
+  if(tk.alt>22&&state==='takeoff')enterFlight();
+}
+
+// ================= voo livre =================
+const FL={x:0,y:0,z:0,yaw:0,pitch:0,roll:0,v:40,warn:0};
+let landOpt=null,flyHudT=0;
+const ESCAPE_DIST=2600;
+function enterFlight(){
+  state='fly';stats.flown=1;
+  Object.assign(FL,{x:plane.g.position.x,y:plane.g.position.y,z:plane.g.position.z,yaw:Math.atan2(RW.dx,RW.dz),pitch:tk.pitch,roll:0,v:tk.v,warn:0});
+  $('flyHud').hidden=false;$('fhKeys').hidden=P.seat!==1;
+  if(isTouch&&P.seat===1){$('touch').hidden=false;$('jumpBtn').hidden=true;$('actBtn').textContent='Pousar';}
+  toast(P.seat===1?(isTouch?'Você está pilotando. Use o joystick para subir, descer e virar.':'Você está pilotando. W desce, S sobe, A e D viram, Shift acelera.'):'Seu parceiro está pilotando. Aproveite a vista.');
+}
+function nbH(x,z){if(!NB)return -12;return sampleH(NB.H,x-NB.x,z-NB.z);}
+const groundAt=(x,z)=>Math.max(hAt(x,z),nbH(x,z),0);
+function updateFly(dt){
+  if(P.seat===1){
+    let pin=joy.y,tin=joy.x;
+    if(keys.has('KeyW')||keys.has('ArrowUp'))pin--;if(keys.has('KeyS')||keys.has('ArrowDown'))pin++;
+    if(keys.has('KeyA')||keys.has('ArrowLeft'))tin--;if(keys.has('KeyD')||keys.has('ArrowRight'))tin++;
+    const boost=keys.has('ShiftLeft')||keys.has('ShiftRight');
+    FL.v+=((boost?68:44)-FL.v)*Math.min(1,dt*.6);
+    FL.roll+=(CL(tin,-1,1)*.75-FL.roll)*Math.min(1,dt*2.5);
+    FL.yaw-=FL.roll*dt*.9;
+    FL.pitch+=(CL(pin,-1,1)*.45-FL.pitch)*Math.min(1,dt*1.8);
+    const cp=Math.cos(FL.pitch);
+    FL.x+=Math.sin(FL.yaw)*cp*FL.v*dt;FL.z+=Math.cos(FL.yaw)*cp*FL.v*dt;FL.y+=Math.sin(FL.pitch)*FL.v*dt;
+    const gr=groundAt(FL.x,FL.z)+3;
+    if(FL.y<gr){FL.y=gr;FL.pitch=Math.max(FL.pitch,.12);if(!FL.warn){FL.warn=1;toast('Muito baixo! Puxe o nariz para cima.');}}else if(FL.y>gr+8)FL.warn=0;
+    FL.y=Math.min(FL.y,420);
+    if(Math.hypot(FL.x,FL.z)>ESCAPE_DIST){net('esc');state='won';showEnd(true);return;}
+  }else{
+    const R=[...MP.remotes.values()].find(r=>r.seat===1&&r.pl);
+    if(R){const p=R.pl,k=Math.min(1,dt*6);FL.x+=(p[0]-FL.x)*k;FL.y+=(p[1]-FL.y)*k;FL.z+=(p[2]-FL.z)*k;let d=p[3]-FL.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));FL.yaw+=d*k;FL.pitch+=(p[4]-FL.pitch)*k;FL.roll+=(p[5]-FL.roll)*k;}
+    else{const cp=Math.cos(FL.pitch);FL.x+=Math.sin(FL.yaw)*cp*FL.v*dt;FL.z+=Math.cos(FL.yaw)*cp*FL.v*dt;FL.y=Math.max(FL.y,groundAt(FL.x,FL.z)+3);}
+  }
+  plane.g.position.set(FL.x,FL.y,FL.z);plane.g.rotation.set(-FL.pitch,FL.yaw,FL.roll,'YXZ');
+  const fx=Math.sin(FL.yaw),fz=Math.cos(FL.yaw);
+  _v.set(FL.x-fx*16,FL.y+4.5,FL.z-fz*16);camera.position.lerp(_v,Math.min(1,dt*4));camera.lookAt(FL.x+fx*8,FL.y+1.2,FL.z+fz*8);
+  // pouso possível?
+  landOpt=null;
+  for(const isl of[{id:islandNo,x:0,z:0},NB?{id:NB.id,x:NB.x,z:NB.z}:null])if(isl&&Math.hypot(FL.x-isl.x,FL.z-isl.z)<260&&FL.y<200){landOpt=isl.id;break;}
+  flyHudT-=dt;if(flyHudT<=0){flyHudT=.15;updateFlyHud();}
+}
+function updateFlyHud(){
+  $('fhAlt').textContent=Math.round(FL.y);$('fhSpd').textContent=Math.round(FL.v*3.6);
+  const tg=NB?{x:NB.x,z:NB.z,n:'Ilha vizinha'}:null,dist=tg?Math.hypot(tg.x-FL.x,tg.z-FL.z):0;
+  if(tg){const rel=Math.atan2(tg.x-FL.x,tg.z-FL.z)-FL.yaw;$('fhArrow').style.transform=`rotate(${-Math.atan2(Math.sin(rel),Math.cos(rel))}rad)`;$('fhTgt').textContent=`${tg.n} · ${(dist/1000).toFixed(1).replace('.',',')} km`;}
+  const home=Math.hypot(FL.x,FL.z);$('fhEsc').textContent=`Continente: voe para longe (${(Math.max(0,ESCAPE_DIST-home)/1000).toFixed(1).replace('.',',')} km)`;
+  const can=P.seat===1&&landOpt!==null;$('landBtn').hidden=!can;
+  if(can)$('landBtn').textContent=landOpt===islandNo?'Pousar de volta (L)':'Pousar na ilha nova (L)';
+}
+function tryLand(){if(state==='fly'&&P.seat===1&&landOpt!==null)landAt(landOpt,false);}
+function landAt(id,remote){
+  if(!remote)net('land',id);
+  const newIsland=id!==islandNo;
+  fadeT=2;$('flyHud').hidden=true;$('landBtn').hidden=true;$('jumpBtn').hidden=false;$('actBtn').textContent='Ação';
+  if(newIsland){
+    islandNo=id;buildWorld(islandSeed(id));
+    for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}
+    plane.stage=4;syncPlane();buildMinimap();reveal(planeStart.x,planeStart.z);reveal(hangarPos.x,hangarPos.z);
+    MP.lastW=0;MP.pending.clear();MP.wDirty=true;stats.islands=(stats.islands|0)+1;stats.hangar=true;
+    if(P.bike)P.bike=null;
+  }
+  plane.g.position.set(planeStart.x,RW.h,planeStart.z);plane.g.rotation.set(0,Math.atan2(RW.dx,RW.dz),0);
+  P.yaw=Math.atan2(-RW.dx,-RW.dz);P.pitch=0;
+  const s=seatWorld(P.seat||1);P.x=s.x;P.z=s.z;P.fy=s.y;
+  state='play';$('hud').classList.remove('off');if(isTouch)$('touch').hidden=false;keys.clear();actHeld=false;
+  buildViewmodel();renderInv();requestLock();updateLockHint();
+  toast(newIsland?'Pouso feito numa ilha nova! Explore, junte suprimentos e, quando quiser, decole de novo.':'Pouso feito de volta na pista.');
 }
 
 // ================= fim de jogo =================
-function die(){state='dead';closePanel();if(document.pointerLockElement)document.exitPointerLock();$('hud').classList.add('off');$('touch').hidden=true;showEnd(false);}
+function die(){if(P.bike)dismountBike();state='dead';closePanel();if(document.pointerLockElement)document.exitPointerLock();$('hud').classList.add('off');$('touch').hidden=true;showEnd(false);}
 function showEnd(won){
   const s=$('endScreen'),online=!!MP.r;
   const tally=`<div class="tally"><div><b>${day}</b><span>${day===1?'dia':'dias'} na ilha</span></div><div><b>${mi}</b><span>missões</span></div><div><b>${stats.trees}</b><span>árvores</span></div><div><b>${stats.crabs}</b><span>caranguejos</span></div><div><b>${plane.stage}/4</b><span>avião</span></div></div>`;
-  const duo=won&&tk.duo;
+  const duo=won&&tk.duo;$('flyHud').hidden=true;$('hud').classList.add('off');$('touch').hidden=true;
   s.innerHTML=won
-    ?`<div class="card"><div class="tag">Diário de bordo · último registro</div><h1>${duo?'Vocês escaparam':'Você escapou'}</h1><p>O monomotor sacudiu na pista de terra, levantou o nariz e passou raspando nas copas das palmeiras${duo?', com piloto e passageiro a bordo':''}. Duas horas depois, as luzes de um porto apareceram no horizonte. A ilha ficou para trás.</p>${tally}<button class="btn" data-go>${online?'Voltar ao início':'Nova ilha'}</button></div>`
+    ?`<div class="card"><div class="tag">Diário de bordo · último registro</div><h1>${duo?'Vocês escaparam':'Você escapou'}</h1><p>O monomotor deixou ${stats.islands?'as ilhas':'a ilha'} para trás${duo?', com piloto e passageiro a bordo':''}. Depois de horas sobre o mar aberto, as luzes de um porto apareceram no horizonte e as rodas tocaram uma pista de verdade.</p>${tally}<button class="btn" data-go>${online?'Voltar ao início':'Nova ilha'}</button></div>`
     :`<div class="card"><div class="tag">Diário de bordo · registro interrompido</div><h1>Fim da linha</h1><p>${cause||'A ilha venceu você.'} ${online?'Seu parceiro continua na ilha. Você pode voltar pela praia, de mochila vazia.':'Ninguém chegou a ver a fumaça.'}</p>${tally}<button class="btn" data-go>${online?'Voltar à ilha':'Tentar de novo'}</button>${online?'<p style="margin-top:14px"><button class="link" data-quit>Sair da partida</button></p>':''}</div>`;
   s.hidden=false;
   s.querySelector('[data-go]').addEventListener('click',()=>{
@@ -1413,17 +1649,33 @@ function showEnd(won){
 }
 function respawn(){const keepMi=mi;newPlayer();mi=keepMi;mShown='';P.x+=(Math.random()-.5)*3;$('endScreen').hidden=true;start(true);}
 function backToTitle(){state='title';$('endScreen').hidden=true;$('hud').classList.add('off');$('touch').hidden=true;$('codeBox').hidden=true;$('modes').hidden=false;$('screen').hidden=false;newGame();}
-function newGame(seed){buildWorld(seed);resetRun();newPlayer();syncPlane();reveal(P.x,P.z);reveal(hangarPos.x,hangarPos.z);mShown='';}
+function newGame(seed){baseSeed=seed==null?(Math.random()*2147483647)>>>0:seed;islandNo=0;rainTarget=0;rainLvl=0;rainT=140;buildWorld(baseSeed);resetRun();newPlayer();syncPlane();reveal(P.x,P.z);reveal(hangarPos.x,hangarPos.z);mShown='';}
 function start(again){
   state='play';if(!again&&(!MP.r||MP.isHost))tod=2/24;$('screen').hidden=true;$('endScreen').hidden=true;$('hud').classList.remove('off');if(isTouch)$('touch').hidden=false;keys.clear();actHeld=false;
   $('mpRow').hidden=!MP.r;if(MP.r)$('mpCode').textContent=MP.code;
-  buildViewmodel();renderInv();checkMission();requestLock();updateLockHint();
+  buildViewmodel();renderInv();checkMission();requestLock();updateLockHint();updateFsBtn();
   if(!again)setTimeout(()=>toast(MP.r&&!MP.isHost?'Você chegou na ilha do seu parceiro. As missões são suas; o mundo e o avião são dos dois.':`Missão: ${M[0].t}. ${M[0].d}`),500);
 }
 
 // ================= entrada =================
 const isTouch=matchMedia('(pointer: coarse)').matches||'ontouchstart' in window;
 if(isTouch)$('pkey').textContent='Ação';
+// tela cheia com o celular deitado
+const fsEl=document.documentElement,fsReq=fsEl.requestFullscreen||fsEl.webkitRequestFullscreen,canFS=!!fsReq;
+const isFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+const landscape=()=>innerWidth>innerHeight;
+let fsDenied=false,portraitHinted=false;
+function goFS(){if(isFS()||!canFS||fsDenied)return;
+  try{const p=fsReq.call(fsEl,{navigationUI:'hide'});
+    if(p&&p.then)p.then(()=>{try{screen.orientation.lock('landscape').catch(()=>{});}catch(e){}}).catch(()=>{fsDenied=true;updateFsBtn();});}catch(e){fsDenied=true;}
+  updateFsBtn();}
+function updateFsBtn(){$('fsBtn').hidden=!(isTouch&&canFS&&!fsDenied&&landscape()&&!isFS()&&state==='play');
+  if(isTouch&&state==='play'&&!landscape()&&!portraitHinted){portraitHinted=true;toast('Vire o celular para jogar deitado, em tela cheia.');}}
+document.addEventListener('pointerdown',()=>{if(isTouch&&landscape()&&!isFS()&&state!=='title')goFS();},true);
+addEventListener('resize',updateFsBtn);addEventListener('orientationchange',()=>setTimeout(()=>{resize();updateFsBtn();},250));
+document.addEventListener('fullscreenchange',()=>{updateFsBtn();setTimeout(resize,120);});
+document.addEventListener('webkitfullscreenchange',()=>{updateFsBtn();setTimeout(resize,120);});
+$('fsBtn').addEventListener('click',goFS);
 function requestLock(){if(isTouch||state!=='play'||panel||document.pointerLockElement)return;try{const r=cv.requestPointerLock();if(r&&r.catch)r.catch(()=>{});}catch(e){}}
 document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===cv;if(!locked){actHeld=false;}updateLockHint();});
 document.addEventListener('pointerlockerror',updateLockHint);
@@ -1447,6 +1699,7 @@ addEventListener('keydown',e=>{
   if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')&&state==='title')return;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code))e.preventDefault();
   if(state==='title'){if(e.code==='Enter'&&!$('startBtn').disabled&&!$('modes').hidden)startSolo();return;}
+  if(state==='fly'){keys.add(e.code);if(e.code==='KeyL'||e.code==='KeyE')tryLand();return;}
   if(state!=='play')return;
   if(e.code==='Escape'){closePanel();return;}
   if(e.code==='KeyC'){panel==='craft'?closePanel(true):openPanel('craft');return;}
@@ -1466,7 +1719,8 @@ joyEl.addEventListener('pointerdown',e=>{e.preventDefault();joyId=e.pointerId;jo
 joyEl.addEventListener('pointermove',e=>{if(e.pointerId===joyId)moveJoy(e);});
 const endJoy=e=>{if(e.pointerId!==joyId)return;joyId=null;joy.x=joy.y=0;knob.style.transform='';};
 joyEl.addEventListener('pointerup',endJoy);joyEl.addEventListener('pointercancel',endJoy);
-const actBtn=$('actBtn');actBtn.addEventListener('pointerdown',e=>{e.preventDefault();if(state==='play'&&!panel){actHeld=true;actQueued=true;}});
+const actBtn=$('actBtn');actBtn.addEventListener('pointerdown',e=>{e.preventDefault();if(state==='fly'){tryLand();return;}if(state==='play'&&!panel){actHeld=true;actQueued=true;}});
+$('landBtn').addEventListener('click',tryLand);
 for(const ev of['pointerup','pointercancel','pointerleave'])actBtn.addEventListener(ev,()=>{actHeld=false;});
 $('jumpBtn').addEventListener('pointerdown',e=>{e.preventDefault();if(P)P.jump=true;});
 function startSolo(){if(MP.r){leaveMatch();newGame();}start();}
@@ -1489,14 +1743,16 @@ function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;const tm=now/1000;
   if(state==='title'){renderPreview(tm);const a=tm*.05;camera.position.set(Math.cos(a)*95,32,Math.sin(a)*95);camera.lookAt(0,4,0);focus.set(0,0,0);tod=(.2+Math.sin(tm*.02)*.05);}
   else if(state==='play'){if(!panel||MP.r)update(dt);
-    if(P.seat){camera.position.copy(seatWorld(P.seat,1.22));}
+    if(P.seat){camera.position.copy(seatWorld(P.seat,1.45));}
     else{const bob=P.moving&&P.ground?Math.sin(P.walk*1.5*2)*.045:0;camera.position.set(P.x,P.fy+1.65+bob,P.z);}
     camera.rotation.set(P.pitch,P.yaw,0);focus.set(P.x,P.fy,P.z);updateViewmodel(dt);}
   else if(state==='takeoff'){updateTakeoff(dt);focus.copy(plane.g.position);}
+  else if(state==='fly'){updateFly(dt);focus.copy(plane.g.position);}
   else focus.copy(camera.position);
   if(MP.r){processPeers(dt);sendPresence(now);if(panel==='hangar'&&now>hangarT){hangarT=now+600;buildHangarPanel();}
     const c=`${MP.count}/2`;if(c!==mpCountTxt){mpCountTxt=c;$('mpCount').textContent=MP.count>1?'2 náufragos':'só você';}}
   if(plane)syncSeats();
+  if(state!==lastState){lastState=state;updateFsBtn();}
   updateSky(tm,focus);animateWorld(dt,tm);
   fadeT=Math.max(0,fadeT-dt);
   renderer.clear();renderer.render(scene,camera);
@@ -1513,8 +1769,7 @@ function frame(now){
   }
   requestAnimationFrame(frame);
 }
-let lastPrompt=null,lastFilter='',hangarT=0,mpCountTxt='';
-requestAnimationFrame(frame);
+let lastPrompt=null,lastFilter='',hangarT=0,mpCountTxt='',lastState='';requestAnimationFrame(frame);
 })();
 </script>
 
