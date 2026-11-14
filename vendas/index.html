@@ -261,7 +261,7 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
   --navy: #29463e;
   --navy-ink: #fffdf8;
 }
-html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--ink); }
 body::before { background: #e6a14a; }
 h1, h2, h3, h4 { letter-spacing: -.045em; }
@@ -377,7 +377,7 @@ h1, h2, h3, h4 { letter-spacing: -.045em; }
 
 .offers { max-width: 1440px; margin-inline: auto; padding-top: clamp(88px, 10vw, 140px); }
 .offers-head { gap: 30px 60px; }
-.offers-head h2 { max-width: 13ch; margin-top: 15px; font-size: clamp(2.8rem, 5vw, 5rem); line-height: .99; }
+.offers-head h2 { max-width: 16ch; margin-top: 15px; font-size: clamp(2.35rem, 3.6vw, 3.65rem); line-height: 1.04; }
 .heading-period { color: #72927d; }
 .offers-head > p { max-width: 38ch; color: #6b7871; font-size: 1rem; }
 .offers-description { display: block; margin-top: 10px; }
@@ -424,7 +424,24 @@ h1, h2, h3, h4 { letter-spacing: -.045em; }
   outline: 0;
   box-shadow: 0 0 0 4px rgba(106, 145, 119, .13);
 }
-.search-wrap input { padding-left: 48px; }
+.search-wrap input { padding-left: 48px; padding-right: 84px; }
+html, body { overflow-anchor: none; }
+.clear-filters {
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  padding: 6px 10px;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 999px;
+  background: #edf2eb;
+  color: #486454;
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.clear-filters:hover { background: #e2ebdf; }
 .ceiling { gap: 9px; }
 .ceiling-row { gap: 13px; }
 .ceiling output { min-width: 5ch; color: #3f6956; font-size: 1.8rem; }
@@ -457,6 +474,7 @@ h1, h2, h3, h4 { letter-spacing: -.045em; }
 .cat-head h3 { font-size: clamp(1.7rem, 2.8vw, 2.45rem); }
 .cat-count { padding: 5px 12px; border-radius: 999px; background: #eef2eb; color: #68786e; font-size: .82rem; }
 .items { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.product-grid { margin-top: clamp(42px, 6vw, 76px); overflow-anchor: none; }
 .item {
   grid-template-columns: minmax(0, 1fr);
   align-content: start;
@@ -489,6 +507,16 @@ h1, h2, h3, h4 { letter-spacing: -.045em; }
 .item-price strong { color: #355f49; font-size: 1.35rem; letter-spacing: -.03em; }
 .item-price s { color: #919b94; font-size: .84rem; }
 .off { border-radius: 6px; background: #edf4ec; color: #477354; font-size: .75rem; }
+.category-badge {
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #edf3eb;
+  color: #54755e;
+  font-size: .7rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
 .item-text { min-height: 4.4em; color: #6c7871; font-size: .88rem; line-height: 1.5; }
 .buy {
   display: flex;
@@ -579,7 +607,7 @@ h1, h2, h3, h4 { letter-spacing: -.045em; }
   .panel-actions { width: 100%; }
   .offers { padding-top: 74px; }
   .offers-head { grid-template-columns: minmax(0, 1fr); gap: 18px; }
-  .offers-head h2 { font-size: clamp(2.7rem, 12vw, 4rem); }
+  .offers-head h2 { font-size: clamp(2.2rem, 9vw, 3.2rem); }
   .controls {
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
@@ -635,7 +663,7 @@ h1, h2, h3, h4 { letter-spacing: -.045em; }
 }
 
 /* Keep discovery filters in the global header. */
-html { scroll-padding-top: 130px; }
+.offers, #como, #duvidas, .closing { scroll-margin-top: 160px; }
 .site-header {
   position: sticky;
   top: 0;
@@ -677,7 +705,7 @@ html { scroll-padding-top: 130px; }
 .offers { padding-top: 40px; }
 
 @media (max-width: 1100px) {
-  html { scroll-padding-top: 120px; }
+  .offers, #como, #duvidas, .closing { scroll-margin-top: 130px; }
   .site-header .nav { min-height: 64px; }
   .site-header .nav-links { gap: 15px; }
   .site-header .nav-links a { font-size: .82rem; }
@@ -688,7 +716,7 @@ html { scroll-padding-top: 130px; }
   }
 }
 @media (max-width: 640px) {
-  html { scroll-padding-top: 155px; }
+  .offers, #como, #duvidas, .closing { scroll-margin-top: 200px; }
   .site-header .nav { min-height: 60px; }
   .site-header .nav .btn { padding: .58em .9em; font-size: .8rem; }
   .header-controls {
@@ -715,7 +743,7 @@ html { scroll-padding-top: 130px; }
   <div class="controls header-controls wrap">
     <div class="filter-field search-field">
       <label for="busca-ofertas">O que você está procurando?</label>
-      <div class="search-wrap"><span aria-hidden="true">⌕</span><input type="search" id="busca-ofertas" placeholder="Ex.: casa, beleza, presente..." autocomplete="off"></div>
+      <div class="search-wrap"><span aria-hidden="true">⌕</span><input type="search" id="busca-ofertas" placeholder="Ex.: casa, beleza, presente..." autocomplete="off"><button type="button" class="clear-filters" id="limpar-filtros">Limpar</button></div>
     </div>
     <div class="filter-field">
       <label for="filtro-categoria">Categoria</label>
@@ -783,11 +811,11 @@ html { scroll-padding-top: 130px; }
 
   <section class="offers wrap" id="ofertas" aria-labelledby="ofertas-h">
     <div class="offers-head">
-      <div><p class="section-kicker">Escolhas que facilitam o dia</p><h2 id="ofertas-h">Encontre seu próximo achado<span class="heading-period">.</span></h2></div>
-      <p><span id="data-precos">Carregando ofertas da planilha...</span> <span class="offers-description">Explore a seleção, compare os preços e escolha o que combina com você.</span></p>
+      <div><p class="section-kicker">Escolhas que facilitam o dia</p></div>
+      <p></p>
     </div>
     <p class="summary" id="resumo" aria-live="polite"><strong class="num">20 ofertas</strong> encontradas, somando <strong class="num js-total-off">R$ 942,03</strong> de desconto.</p>
-    <p class="note"><span aria-hidden="true">♡</span> Seleção independente. Ao comprar, você finaliza com segurança no Mercado Livre. Alguns links podem gerar comissão, sem custo extra para você.</p>
+    <p class="note"><span aria-hidden="true">♡</span> Seleção independente. Ao comprar, você finaliza com segurança no Mercado Livre.</p>
     
 <section class="cat" data-grupo="bf" aria-labelledby="g-bf">
   <div class="cat-head"><h3 id="g-bf">Black Friday</h3><p class="cat-count"><span data-count>7</span> ofertas</p></div>
@@ -1036,6 +1064,35 @@ html { scroll-padding-top: 130px; }
   var categoria = document.getElementById('filtro-categoria');
   var faixa = document.getElementById('filtro-preco');
   var busca = document.getElementById('busca-ofertas');
+  var limpar = document.getElementById('limpar-filtros');
+  var categoriasIniciais = [].slice.call(document.querySelectorAll('.cat'));
+  if (categoriasIniciais.length) {
+    var listaInicial = document.createElement('ul');
+    listaInicial.className = 'items product-grid';
+    listaInicial.id = 'lista-produtos';
+    listaInicial.setAttribute('aria-label', 'Produtos disponíveis');
+    categoriasIniciais.forEach(function (grupo) {
+      var nomeCategoria = grupo.querySelector('h3').textContent.trim();
+      [].slice.call(grupo.querySelectorAll('.item')).forEach(function (item) {
+        item.dataset.categoria = nomeCategoria;
+        var etiqueta = document.createElement('span');
+        etiqueta.className = 'category-badge';
+        etiqueta.textContent = nomeCategoria;
+        var corpo = item.querySelector('.item-body');
+        corpo.insertBefore(etiqueta, corpo.firstChild);
+        listaInicial.appendChild(item);
+      });
+      grupo.remove();
+    });
+    document.getElementById('vazio').parentNode.insertBefore(listaInicial, document.getElementById('vazio'));
+    var opcoesIniciais = [].slice.call(listaInicial.querySelectorAll('.item')).map(function (item) { return item.dataset.categoria; }).filter(function (nome, indice, todos) { return todos.indexOf(nome) === indice; });
+    opcoesIniciais.forEach(function (nome) {
+      var opcao = document.createElement('option');
+      opcao.value = nome;
+      opcao.textContent = nome;
+      categoria.appendChild(opcao);
+    });
+  }
   function dentroDaFaixa(preco) {
     var valor = faixa.value.split('-');
     if (faixa.value === 'todos') return true;
@@ -1045,27 +1102,25 @@ html { scroll-padding-top: 130px; }
   }
   function update() {
     var items = [].slice.call(document.querySelectorAll('.item'));
-    var cats = [].slice.call(document.querySelectorAll('.cat'));
     var n = 0, poup = 0;
     var termo = busca.value.trim().toLocaleLowerCase('pt-BR');
     items.forEach(function (it) {
-      var texto = (it.dataset.nome + ' ' + (it.dataset.descricao || '')).toLocaleLowerCase('pt-BR');
+      var descricao = it.dataset.descricao || (it.querySelector('.item-text') || {}).textContent || '';
+      var texto = (it.dataset.nome + ' ' + descricao).toLocaleLowerCase('pt-BR');
       var ok = (!categoria.value || it.dataset.categoria === categoria.value) &&
         dentroDaFaixa(+it.dataset.preco) &&
         (!termo || texto.indexOf(termo) >= 0);
       it.hidden = !ok;
       if (ok) { n++; poup += (+it.dataset.de) - (+it.dataset.preco); }
     });
-    cats.forEach(function (c) {
-      var vis = c.querySelectorAll('.item:not([hidden])').length;
-      c.hidden = vis === 0;
-      var cnt = c.querySelector('[data-count]'); if (cnt) cnt.textContent = vis;
-    });
     vazio.hidden = n !== 0;
     vazio.textContent = n === 0 ? 'Nenhuma oferta encontrada com esses filtros. Ajuste a busca, a categoria ou a faixa de preço.' : '';
     resumo.innerHTML = n === 0
       ? 'Nenhum achado com esses filtros. Experimente ajustar sua busca.'
       : '<strong class="num">' + n + (n === 1 ? ' oferta' : ' ofertas') + '</strong> encontradas, somando <strong class="num">' + brl(Math.round(poup * 100) / 100) + '</strong> de desconto.';
+  }
+  function scrollInstantaneamente(x, y) {
+    window.scrollTo({ left: x, top: y, behavior: 'instant' });
   }
   // Entrances: tag what rises, then let it settle as it enters the screen
   if (!reduce && 'IntersectionObserver' in window) {
@@ -1084,14 +1139,35 @@ html { scroll-padding-top: 130px; }
 
   categoria.addEventListener('change', update);
   faixa.addEventListener('change', update);
-  busca.addEventListener('input', update);
+  busca.addEventListener('focus', function () {
+    if (window.scrollY > 0) {
+      window.requestAnimationFrame(function () { scrollInstantaneamente(window.scrollX, 0); });
+    }
+  });
+  busca.addEventListener('input', function () {
+    var x = window.scrollX, y = window.scrollY;
+    update();
+    window.requestAnimationFrame(function () {
+      if (window.scrollY !== y) scrollInstantaneamente(x, y);
+    });
+  });
+  limpar.addEventListener('click', function () {
+    var x = window.scrollX, y = window.scrollY;
+    busca.value = '';
+    categoria.value = '';
+    faixa.value = 'todos';
+    update();
+    window.requestAnimationFrame(function () {
+      if (window.scrollY !== y) scrollInstantaneamente(x, y);
+    });
+  });
   update();
 
   // Hooks for the spreadsheet loader (site version)
   window.__adj = {
     update: update,
     filtro: function () { return { categoria: categoria.value, faixa: faixa.value, busca: busca.value.trim() }; },
-    resetFiltros: function () { categoria.value = ''; faixa.value = 'todos'; busca.value = ''; }
+    resetFiltros: update
   };
 })();
 </script>
@@ -1113,7 +1189,6 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
   var $$ = function (s) { return [].slice.call(document.querySelectorAll(s)); };
 
   /* ---------- 1. Produtos vindos da planilha ---------- */
-  var GRUPOS = [['bf', 'Black Friday', 'Black Friday'], ['oi', 'Ofertas imperdíveis', 'Imperdíveis'], ['mv', 'Mais vendidos', 'Mais vendidos'], ['ot', 'Outras ofertas', 'Outras']];
   var codigo = function (t) {
     t = String(t || '').toLowerCase();
     if (t.indexOf('black') >= 0) return 'bf';
@@ -1182,7 +1257,7 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
     var de = p.de > p.preco ? ' <s aria-label="Preço anterior">' + brl(p.de) + '</s> <span class="off">' + off(p) + '% off</span>' : '';
     return '<li class="item go" data-preco="' + p.preco + '" data-de="' + (p.de > p.preco ? p.de : p.preco) + '" data-tipo="' + p.cod + '" data-nome="' + esc(p.nome) + '" data-descricao="' + esc(p.descricao || '') + '" data-categoria="' + esc(p.categoria) + '">' +
       '<a class="item-photo" href="' + link + '" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true">' + foto(p, 'thumb') + '</a>' +
-      '<div class="item-body"><h4 class="item-name"><a href="' + link + '" target="_blank" rel="noopener sponsored">' + esc(p.nome) + '</a></h4>' +
+      '<div class="item-body"><span class="category-badge">' + esc(p.categoria) + '</span><h4 class="item-name"><a href="' + link + '" target="_blank" rel="noopener sponsored">' + esc(p.nome) + '</a></h4>' +
       '<p class="item-price"><strong>' + brl(p.preco) + '</strong>' + de + '</p>' +
       (p.descricao ? '<p class="item-text">' + esc(p.descricao) + '</p>' : '') +
       '<a class="buy" href="' + link + '" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a></div></li>';
@@ -1194,17 +1269,17 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
     }).filter(function (p) { return p.nome && safeUrl(p.link) && p.preco > 0; });
     if (!ps.length) return false;
 
-    // Lista por grupo, maior desconto primeiro
     $$('.cat').forEach(function (c) { c.remove(); });
     var vazio = $('#vazio');
-    GRUPOS.forEach(function (g) {
-      var its = ps.filter(function (p) { return p.cod === g[0]; }).sort(function (a, b) { return off(b) - off(a); });
-      if (!its.length) return;
-      var sec = document.createElement('section');
-      sec.className = 'cat'; sec.dataset.grupo = g[0]; sec.setAttribute('aria-labelledby', 'g-' + g[0]);
-      sec.innerHTML = '<div class="cat-head"><h3 id="g-' + g[0] + '">' + g[1] + '</h3><p class="cat-count"><span data-count>' + its.length + '</span> ofertas</p></div><ul class="items">' + its.map(itemHtml).join('') + '</ul>';
-      vazio.parentNode.insertBefore(sec, vazio);
-    });
+    var listaProdutos = $('#lista-produtos');
+    if (!listaProdutos) {
+      listaProdutos = document.createElement('ul');
+      listaProdutos.className = 'items product-grid';
+      listaProdutos.id = 'lista-produtos';
+      listaProdutos.setAttribute('aria-label', 'Produtos disponíveis');
+      vazio.parentNode.insertBefore(listaProdutos, vazio);
+    }
+    listaProdutos.innerHTML = ps.sort(function (a, b) { return off(b) - off(a); }).map(itemHtml).join('');
 
     var categorias = $('#filtro-categoria');
     var listaCategorias = ps.map(function (p) { return p.categoria; }).filter(function (c, i, todos) { return todos.indexOf(c) === i; }).sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
@@ -1348,6 +1423,7 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
   $('#filtro-categoria').addEventListener('change', filtroMudou);
   $('#filtro-preco').addEventListener('change', filtroMudou);
   $('#busca-ofertas').addEventListener('input', filtroMudou);
+  $('#limpar-filtros').addEventListener('click', filtroMudou);
 })();
 
 </script>
