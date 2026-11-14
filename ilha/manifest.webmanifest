@@ -1,0 +1,10 @@
+{
+  "name": "Ilha do Náufrago",
+  "short_name": "Náufrago",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#06222b",
+  "theme_color": "#06222b"
+}
