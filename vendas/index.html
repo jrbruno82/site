@@ -517,6 +517,69 @@ html, body { overflow-anchor: none; }
   font-weight: 800;
   line-height: 1.3;
 }
+.product-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.product-toolbar .summary { flex: 1; margin: 0; }
+.sort-field { display: grid; gap: 5px; min-width: 190px; }
+.sort-field label { color: #52645a; font-size: .75rem; font-weight: 800; }
+.sort-field select {
+  min-height: 42px;
+  padding: 6px 12px;
+  border: 1px solid #dfe5dc;
+  border-radius: 11px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: .86rem;
+}
+.content-tabs { display: flex; gap: 8px; margin-top: 40px; border-bottom: 1px solid #e6e9e2; scroll-margin-top: 170px; }
+.content-tab {
+  padding: 12px 18px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #6a7970;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.content-tab[aria-selected="true"] { border-color: #547a61; color: #29463e; }
+.coupon-status { margin-top: 28px; color: #68776e; }
+.coupon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
+.coupon-card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid #e0e8dc;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fff 0%, #f5f8f2 100%);
+  box-shadow: 0 9px 24px rgba(37, 53, 44, .06);
+}
+.coupon-card::before, .coupon-card::after {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #e0e8dc;
+  border-radius: 50%;
+  background: var(--bg);
+  content: "";
+  transform: translateY(-50%);
+}
+.coupon-card::before { left: -10px; }
+.coupon-card::after { right: -10px; }
+.coupon-discount { color: #355f49; font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 900; letter-spacing: -.06em; line-height: 1; }
+.coupon-name { color: #52645a; font-size: .86rem; font-weight: 700; }
+.coupon-rule { height: 1px; border-top: 1px dashed #d4dfd1; }
+.coupon-details { display: grid; gap: 9px; margin: 0; }
+.coupon-details div { display: grid; grid-template-columns: minmax(86px, .7fr) minmax(0, 1.3fr); gap: 10px; font-size: .82rem; line-height: 1.4; }
+.coupon-details dt { color: #7a887f; }
+.coupon-details dd { margin: 0; color: #354940; font-weight: 700; overflow-wrap: anywhere; }
+.coupon-activate { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; margin-top: auto; border-radius: 11px; background: #29463e; color: #fff; font-size: .88rem; font-weight: 800; text-decoration: none; transition: background .2s, transform .2s; }
+.coupon-activate:hover { transform: translateY(-1px); background: #3c6754; }
 .item-text { min-height: 4.4em; color: #6c7871; font-size: .88rem; line-height: 1.5; }
 .buy {
   display: flex;
@@ -582,6 +645,7 @@ html, body { overflow-anchor: none; }
   .panel { min-height: 470px; }
   .offers-head, .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coupon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .step-1, .step-2, .step-3 { min-height: 245px; padding: 24px; }
   .closing { grid-template-columns: repeat(12, minmax(0, 1fr)); }
@@ -608,6 +672,11 @@ html, body { overflow-anchor: none; }
   .offers { padding-top: 74px; }
   .offers-head { grid-template-columns: minmax(0, 1fr); gap: 18px; }
   .offers-head h2 { font-size: clamp(2.2rem, 9vw, 3.2rem); }
+  .product-toolbar { align-items: stretch; flex-direction: column; }
+  .sort-field { min-width: 0; }
+  .coupon-grid { grid-template-columns: minmax(0, 1fr); }
+  .content-tabs { margin-top: 28px; scroll-margin-top: 220px; }
+  .content-tab { flex: 1; padding-inline: 10px; }
   .controls {
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
@@ -703,6 +772,7 @@ html, body { overflow-anchor: none; }
 .header-controls .search-wrap > span { left: 11px; font-size: 1.2rem; }
 .summary { grid-column: auto; margin: 22px 0 0; padding: 12px 16px; border: 1px solid #e8ebe4; border-radius: 12px; background: #f5f6f1; font-size: .9rem; }
 .offers { padding-top: 40px; }
+.offers-head h2 { font-size: clamp(2rem, 3vw, 3rem); }
 
 @media (max-width: 1100px) {
   .offers, #como, #duvidas, .closing { scroll-margin-top: 130px; }
@@ -737,7 +807,7 @@ html, body { overflow-anchor: none; }
 <div class="site-header">
   <nav class="nav wrap" aria-label="Principal">
     <a class="wordmark" href="#topo" id="topo"><span class="brand-mark" aria-hidden="true">A</span><span>Achados <span>do Júnior</span></span></a>
-    <div class="nav-links"><a href="#ofertas">Explorar ofertas</a><a href="#duvidas">Como funciona</a></div>
+    <div class="nav-links"><a href="#ofertas">Explorar ofertas</a><a href="#cupons" data-aba="cupons">Cupons</a><a href="#duvidas">Como funciona</a></div>
     <a class="btn" href="#ofertas">Ver ofertas</a>
   </nav>
   <div class="controls header-controls wrap">
@@ -814,7 +884,15 @@ html, body { overflow-anchor: none; }
       <div><p class="section-kicker">Escolhas que facilitam o dia</p></div>
       <p></p>
     </div>
-    <p class="summary" id="resumo" aria-live="polite"><strong class="num">20 ofertas</strong> encontradas, somando <strong class="num js-total-off">R$ 942,03</strong> de desconto.</p>
+    <div class="content-tabs" role="tablist" aria-label="Ofertas e cupons">
+      <button class="content-tab" id="tab-produtos" type="button" role="tab" aria-selected="true" aria-controls="painel-produtos">Ofertas</button>
+      <button class="content-tab" id="tab-cupons" type="button" role="tab" aria-selected="false" aria-controls="painel-cupons">Cupons</button>
+    </div>
+    <div id="painel-produtos" role="tabpanel" aria-labelledby="tab-produtos">
+    <div class="product-toolbar">
+      <p class="summary" id="resumo" aria-live="polite"><strong class="num">20 ofertas</strong> encontradas, somando <strong class="num js-total-off">R$ 942,03</strong> de desconto.</p>
+      <div class="sort-field"><label for="ordenar-produtos">Ordenar por</label><select id="ordenar-produtos"><option value="recomendados">Recomendados</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option></select></div>
+    </div>
     <p class="note"><span aria-hidden="true">♡</span> Seleção independente. Ao comprar, você finaliza com segurança no Mercado Livre.</p>
     
 <section class="cat" data-grupo="bf" aria-labelledby="g-bf">
@@ -1010,6 +1088,11 @@ html, body { overflow-anchor: none; }
 </li></ul>
 </section>
     <p class="empty" id="vazio" hidden>Nenhuma oferta encontrada com esses filtros. Ajuste a busca, a categoria ou a faixa de preço.</p>
+</div>
+<section id="painel-cupons" role="tabpanel" aria-labelledby="tab-cupons" hidden>
+  <p class="coupon-status" id="status-cupons" role="status" aria-live="polite">Carregando cupons válidos...</p>
+  <div class="coupon-grid" id="lista-cupons"></div>
+</section>
   </section>
 
   <section class="steps" id="como" aria-label="Como comprar">
@@ -1065,6 +1148,40 @@ html, body { overflow-anchor: none; }
   var faixa = document.getElementById('filtro-preco');
   var busca = document.getElementById('busca-ofertas');
   var limpar = document.getElementById('limpar-filtros');
+  var ordenar = document.getElementById('ordenar-produtos');
+  var tabs = {
+    produtos: document.getElementById('tab-produtos'),
+    cupons: document.getElementById('tab-cupons')
+  };
+  var paineis = {
+    produtos: document.getElementById('painel-produtos'),
+    cupons: document.getElementById('painel-cupons')
+  };
+  function selecionarAba(aba, navegar) {
+    Object.keys(tabs).forEach(function (nome) {
+      var ativo = nome === aba;
+      tabs[nome].setAttribute('aria-selected', ativo ? 'true' : 'false');
+      tabs[nome].tabIndex = ativo ? 0 : -1;
+      paineis[nome].hidden = !ativo;
+    });
+    if (navegar) document.querySelector('.content-tabs').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+  function ordenarProdutos() {
+    var listaProdutos = document.getElementById('lista-produtos');
+    if (!listaProdutos) return;
+    var itens = [].slice.call(listaProdutos.querySelectorAll('.item'));
+    var modo = ordenar.value;
+    itens.sort(function (a, b) {
+      var precoA = Number(a.dataset.preco), precoB = Number(b.dataset.preco);
+      if (modo === 'menor-preco') return precoA - precoB;
+      if (modo === 'maior-preco') return precoB - precoA;
+      var deA = Number(a.dataset.de), deB = Number(b.dataset.de);
+      var descontoA = deA > precoA ? (deA - precoA) / deA : 0;
+      var descontoB = deB > precoB ? (deB - precoB) / deB : 0;
+      return descontoB - descontoA;
+    });
+    itens.forEach(function (item) { listaProdutos.appendChild(item); });
+  }
   var categoriasIniciais = [].slice.call(document.querySelectorAll('.cat'));
   if (categoriasIniciais.length) {
     var listaInicial = document.createElement('ul');
@@ -1161,13 +1278,31 @@ html, body { overflow-anchor: none; }
       if (window.scrollY !== y) scrollInstantaneamente(x, y);
     });
   });
+  ordenar.addEventListener('change', ordenarProdutos);
+  tabs.produtos.addEventListener('click', function () { selecionarAba('produtos'); });
+  tabs.cupons.addEventListener('click', function () { selecionarAba('cupons'); });
+  document.querySelectorAll('[data-aba="cupons"]').forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      event.preventDefault();
+      selecionarAba('cupons', true);
+    });
+  });
+  document.querySelector('[role="tablist"]').addEventListener('keydown', function (event) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    selecionarAba(event.key === 'ArrowRight' ? 'cupons' : 'produtos');
+    tabs[event.key === 'ArrowRight' ? 'cupons' : 'produtos'].focus();
+  });
+  selecionarAba('produtos');
+  ordenarProdutos();
   update();
 
   // Hooks for the spreadsheet loader (site version)
   window.__adj = {
     update: update,
     filtro: function () { return { categoria: categoria.value, faixa: faixa.value, busca: busca.value.trim() }; },
-    resetFiltros: update
+    resetFiltros: update,
+    ordenarProdutos: ordenarProdutos
   };
 })();
 </script>
@@ -1240,6 +1375,67 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
       };
     });
   }
+  function cuponsDaPlanilha(dados) {
+    if (!dados || dados.status !== 'ok' || !dados.table || !dados.table.cols) throw new Error('A planilha não retornou dados válidos.');
+    var cols = dados.table.cols;
+    var linhas = dados.table.rows || [];
+    var aliases = {
+      codigo: ['cupom', 'codigo', 'codigodocupom'],
+      percentual: ['descontopercentual', 'descontoporcento', 'desconto'],
+      valor: ['descontor', 'descontoemreais', 'descontovalor'],
+      onde: ['ondevale', 'ondevalido', 'ondeaplica'],
+      categoria: ['categorianapagina', 'categoria'],
+      minimo: ['compraminima', 'valorminimo'],
+      maximo: ['descontomaximo', 'maximodedesconto'],
+      validade: ['validade', 'datavalidade'],
+      status: ['status'],
+      link: ['linkdocupom', 'link', 'url']
+    };
+    var indices = {};
+    Object.keys(aliases).forEach(function (chave) {
+      indices[chave] = cols.findIndex(function (col) { return aliases[chave].indexOf(campo(col.label || col.id)) >= 0; });
+    });
+    if (indices.status < 0 || indices.link < 0) throw new Error('Confira se a aba cupons tem as colunas Status e Link do cupom.');
+    var celula = function (linha, chave) {
+      var c = indices[chave] >= 0 ? (linha.c || [])[indices[chave]] : null;
+      return c && c.v != null ? c.v : '';
+    };
+    var texto = function (linha, chave) {
+      var c = indices[chave] >= 0 ? (linha.c || [])[indices[chave]] : null;
+      if (!c) return '';
+      if (c.f != null && c.f !== '') return String(c.f).trim();
+      var v = c.v;
+      if (v == null) return '';
+      if (typeof v === 'string') {
+        var data = /^Date\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(v);
+        if (data) return new Date(Number(data[1]), Number(data[2]), Number(data[3])).toLocaleDateString('pt-BR');
+      }
+      return String(v).trim();
+    };
+    var numeroPercentual = function (v) {
+      if (typeof v === 'number') return v > 0 && v <= 1 ? v * 100 : v;
+      var n = precoNumero(String(v || '').replace('%', ''));
+      return n > 0 && n <= 1 ? n * 100 : n;
+    };
+    return linhas.map(function (linha) {
+      var status = texto(linha, 'status');
+      var link = String(celula(linha, 'link') || '').trim();
+      return {
+        codigo: texto(linha, 'codigo'),
+        percentual: numeroPercentual(celula(linha, 'percentual')),
+        valor: precoNumero(celula(linha, 'valor')),
+        onde: texto(linha, 'onde'),
+        categoria: texto(linha, 'categoria'),
+        minimo: precoNumero(celula(linha, 'minimo')),
+        maximo: texto(linha, 'maximo'),
+        validade: texto(linha, 'validade'),
+        status: status,
+        link: /^https:\/\//i.test(link) ? link : ''
+      };
+    }).filter(function (cupom) {
+      return campo(cupom.status) === 'valido' && cupom.link;
+    });
+  }
   var off = function (p) { return p.de > p.preco ? Math.round((1 - p.preco / p.de) * 100) : 0; };
   var ILUSTRA = {
     tesoura: '<svg viewBox="0 0 200 200" role="img" aria-label="Ilustração de uma tesoura"><rect width="200" height="200" fill="#f3f3f1"/><g transform="rotate(-38 100 100)"><path d="M104 96 L190 92 l-4 5 l4 5 l-4 5 l4 5 L104 106 Z" fill="#9aa3b5"/><path d="M104 104 L188 112 l-4 4 l4 5 l-4 5 l4 4 L104 112 Z" fill="#7c859a"/><circle cx="104" cy="104" r="7" fill="#1f2b4d"/><ellipse cx="62" cy="86" rx="30" ry="18" fill="none" stroke="#f7941d" stroke-width="12"/><ellipse cx="62" cy="124" rx="30" ry="18" fill="none" stroke="#1f2b4d" stroke-width="12"/><path d="M88 92 L104 100 M88 118 L104 108" stroke="#1f2b4d" stroke-width="10" stroke-linecap="round"/></g></svg>',
@@ -1280,6 +1476,7 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
       vazio.parentNode.insertBefore(listaProdutos, vazio);
     }
     listaProdutos.innerHTML = ps.sort(function (a, b) { return off(b) - off(a); }).map(itemHtml).join('');
+    window.__adj.ordenarProdutos();
 
     var categorias = $('#filtro-categoria');
     var listaCategorias = ps.map(function (p) { return p.categoria; }).filter(function (c, i, todos) { return todos.indexOf(c) === i; }).sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
@@ -1318,10 +1515,7 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
       script.remove();
       if (mensagem) $('#data-precos').textContent = mensagem;
     }
-    window.google = window.google || {};
-    window.google.visualization = window.google.visualization || {};
-    window.google.visualization.Query = window.google.visualization.Query || {};
-    window.google.visualization.Query.setResponse = function (dados) {
+    window.__adjOfertasResponse = function (dados) {
       try {
         if (!aplicar(produtosDaPlanilha(dados))) throw new Error('Nenhum produto válido foi encontrado na aba ofertas.');
         terminar('Ofertas carregadas da planilha.');
@@ -1333,9 +1527,64 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
       terminar('Planilha indisponível. Torne-a pública para carregar as ofertas automaticamente.');
     };
     script.src = 'https://docs.google.com/spreadsheets/d/' + encodeURIComponent(window.PLANILHA_ID) +
-      '/gviz/tq?tqx=out:json&gid=' + encodeURIComponent(window.PLANILHA_GID);
+      '/gviz/tq?tqx=' + encodeURIComponent('out:json;responseHandler:__adjOfertasResponse') +
+      '&gid=' + encodeURIComponent(window.PLANILHA_GID);
     temporizador = setTimeout(function () {
       terminar('A planilha demorou para responder. Confira se ela está acessível por link.');
+    }, 12000);
+    document.head.appendChild(script);
+  }
+
+  function cupomHtml(cupom) {
+    var destaque = cupom.percentual > 0
+      ? Math.round(cupom.percentual) + '% OFF'
+      : (cupom.valor > 0 ? brl(cupom.valor) + ' OFF' : 'Cupom disponível');
+    var limite = precoNumero(cupom.maximo) > 0 ? brl(precoNumero(cupom.maximo)) : cupom.maximo || 'Não informado';
+    var minimo = cupom.minimo > 0 ? '<div><dt>Compra mínima</dt><dd>' + esc(brl(cupom.minimo)) + '</dd></div>' : '';
+    return '<article class="coupon-card">' +
+      '<div class="coupon-discount">' + esc(destaque) + '</div>' +
+      '<p class="coupon-name">' + esc(cupom.codigo || 'Cupom Mercado Livre') + '</p>' +
+      '<div class="coupon-rule" aria-hidden="true"></div>' +
+      '<dl class="coupon-details">' +
+      '<div><dt>Onde vale</dt><dd>' + esc(cupom.onde || 'Consulte as condições no anúncio') + '</dd></div>' +
+      '<div><dt>Categoria</dt><dd>' + esc(cupom.categoria || 'Não informada') + '</dd></div>' +
+      '<div><dt>Desconto máximo</dt><dd>' + esc(limite) + '</dd></div>' +
+      '<div><dt>Validade</dt><dd>' + esc(cupom.validade || 'Sem data informada') + '</dd></div>' +
+      minimo + '</dl>' +
+      '<a class="coupon-activate" href="' + esc(cupom.link) + '" target="_blank" rel="noopener sponsored" aria-label="Ativar cupom ' + esc(cupom.codigo || '') + '">Ativar cupom <span aria-hidden="true">→</span></a>' +
+      '</article>';
+  }
+  function carregarCupons() {
+    var script = document.createElement('script');
+    var finalizado = false;
+    var temporizador;
+    var status = $('#status-cupons');
+    function terminar(mensagem) {
+      if (finalizado) return;
+      finalizado = true;
+      clearTimeout(temporizador);
+      script.remove();
+      status.textContent = mensagem;
+    }
+    window.__adjCuponsResponse = function (dados) {
+      try {
+        var cupons = cuponsDaPlanilha(dados);
+        $('#lista-cupons').innerHTML = cupons.map(cupomHtml).join('');
+        terminar(cupons.length
+          ? 'Encontramos ' + cupons.length + (cupons.length === 1 ? ' cupom válido.' : ' cupons válidos.')
+          : 'Nenhum cupom válido disponível no momento.');
+      } catch (erro) {
+        terminar('Não foi possível carregar os cupons. Confira se a aba cupons está pública e contém os campos de status e link.');
+      }
+    };
+    script.onerror = function () {
+      terminar('A planilha de cupons está indisponível. Tente novamente mais tarde.');
+    };
+    script.src = 'https://docs.google.com/spreadsheets/d/' + encodeURIComponent(window.PLANILHA_ID) +
+      '/gviz/tq?tqx=' + encodeURIComponent('out:json;responseHandler:__adjCuponsResponse') +
+      '&sheet=' + encodeURIComponent('cupons');
+    temporizador = setTimeout(function () {
+      terminar('A planilha de cupons demorou para responder. Confira se está acessível por link.');
     }, 12000);
     document.head.appendChild(script);
   }
@@ -1348,6 +1597,7 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
   }
 
   carregarPlanilha();
+  carregarCupons();
   if (API) {
     fetch(API, { method: 'GET' }).then(function (r) { return r.json(); }).then(function (d) {
       mostrarAtivos(d.ativos);
