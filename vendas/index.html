@@ -1,0 +1,1355 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Achados do Júnior</title>
+
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Encontre bons achados do Mercado Livre. Busque produtos e compare preços numa seleção independente.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<style>
+/* Layout: the product, large and cropped, on a pale field; a catalogue with photo bullets and a live price ceiling; verbs held on flat fields; the name across the black footer. One light look on purpose. */
+:root {
+  --bg: #ffffff;
+  --surface: #f3f3f1;
+  --ink: #1f2b4d;
+  --muted: #4f566c;
+  --accent: #f7941d;
+  --accent-ink: #1f2b4d;
+  --field-1: #05070a;
+  --field-1-ink: #ffffff;
+  --field-2: #e3e1dc;
+  --navy: #1f2b4d;
+  --navy-ink: #ffffff;
+  --font: "Archivo", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.75rem);
+  --step-head: clamp(2rem, 1.3rem + 3.2vw, 4rem);
+  --step-hero: clamp(3rem, 1rem + 5.6vw, 6.5rem);
+  --gut-l: max(clamp(16px, 3vw, 40px), env(safe-area-inset-left, 0px));
+  --gut-r: max(clamp(16px, 3vw, 40px), env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: var(--step-body); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+h1, h2, h3, h4 { margin: 0; font-weight: 800; font-stretch: 112%; letter-spacing: -0.03em; line-height: 1; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+img { max-width: 100%; display: block; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.wrap { padding-left: var(--gut-l); padding-right: var(--gut-r); }
+.num { font-variant-numeric: tabular-nums; }
+
+.btn { display: inline-flex; align-items: center; gap: .5em; padding: .9em 1.4em; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: var(--step-body); text-decoration: none; border: 0; border-radius: 0; cursor: pointer; transition: transform .2s var(--ease), background-color .2s var(--ease); }
+.btn:hover { transform: translateY(-2px); background: #ffa53a; }
+.btn:active { transform: translateY(0); }
+.btn-ink { background: var(--ink); color: var(--navy-ink); }
+.btn-ink:hover { background: #2c3b66; }
+.btn-paper { background: var(--bg); color: var(--ink); }
+.btn-paper:hover { background: var(--surface); }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; background: var(--surface); padding-block: 24px 0; min-height: clamp(620px, 92svh, 940px); }
+.nav { position: relative; z-index: 3; display: flex; align-items: center; gap: 24px; }
+.wordmark { font-weight: 900; font-stretch: 118%; letter-spacing: -0.02em; text-decoration: none; font-size: var(--step-body); }
+.nav-links { display: flex; gap: 28px; margin-left: auto; }
+.nav-links a { text-decoration: none; font-weight: 600; }
+.nav-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.nav .btn { padding: .55em 1em; }
+.hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 32px; padding-block: clamp(48px, 9vh, 120px) clamp(48px, 8vh, 96px); }
+.hero-text { display: flex; flex-direction: column; gap: 28px; }
+.hero h1 { font-size: var(--step-hero); line-height: .92; letter-spacing: -0.04em; font-stretch: 100%; }
+.hero h1 .l { display: block; white-space: nowrap; }
+.hero .lead, .hero-actions, .hero-fact { max-width: 34rem; }
+.hero .lead { font-size: var(--step-lead); line-height: 1.4; max-width: 30ch; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+.countdown { font-weight: 600; }
+.countdown strong { font-weight: 900; }
+.live { flex-basis: 100%; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.live::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #1f9d55; flex: none; }
+@media (prefers-reduced-motion: no-preference) { .live::before { animation: pulse 2s ease-in-out infinite; } }
+@keyframes pulse { 50% { transform: scale(.6); } }
+.hero-fact { display: grid; gap: 4px; padding-top: 8px; max-width: 28rem; }
+.hero-fact .f-name { font-weight: 700; }
+.hero-fact .f-price { font-size: var(--step-lead); font-weight: 900; font-stretch: 112%; }
+.hero-fact s, .item-price s { color: var(--muted); font-weight: 400; }
+.hero-fact a { font-weight: 700; }
+.hero-figure { position: absolute; z-index: 1; right: calc(-1 * var(--gut-r)); bottom: -14%; width: min(50vw, 820px); aspect-ratio: 1; margin: 0; overflow: hidden; background: var(--bg); }
+.hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.02); transition: opacity 1.6s ease, transform 7s linear; }
+.hero-img.is-on { opacity: 1; transform: scale(1.08); }
+
+/* Gifts: two objects, two fields */
+.gifts { display: grid; grid-template-columns: 1fr 1fr; }
+.panel { position: relative; overflow: hidden; min-height: clamp(560px, 88svh, 900px); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 24px; padding-block: 40px 28px; }
+.panel-a { background: var(--field-2); padding-left: var(--gut-l); padding-right: 28px; }
+.panel-b { background: var(--surface); padding-left: 28px; padding-right: var(--gut-r); }
+.panel-head { display: grid; gap: 16px; max-width: 34rem; }
+.panel-head h2 { font-size: var(--step-head); }
+.panel-media { position: relative; min-height: 0; display: grid; place-items: center; overflow: hidden; background: var(--bg); }
+.panel-img { width: 100%; height: 100%; max-height: 62svh; object-fit: contain; transition: transform 1.2s var(--ease); }
+.panel:hover .panel-img { transform: scale(1.04); }
+.panel-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; }
+.panel-foot .p-name { font-weight: 800; font-size: var(--step-lead); font-stretch: 108%; letter-spacing: -0.02em; line-height: 1.1; }
+.panel-foot .p-fact { font-weight: 600; }
+.panel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.panel-actions .btn { padding: .7em 1.1em; }
+
+/* Offer list */
+.offers { padding-block: clamp(96px, 12vw, 200px) clamp(64px, 8vw, 120px); }
+.offers-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: end; }
+.offers-head h2 { font-size: var(--step-hero); line-height: .92; }
+.offers-head p { max-width: 42ch; }
+.controls { margin-top: 56px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px 64px; background: var(--surface); padding: 32px; }
+.filter-field { display: grid; gap: 12px; align-content: start; }
+.filter-field label { font-weight: 700; }
+.filter-field input, .filter-field select { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--field-2); border-radius: 0; background: var(--bg); color: var(--ink); font: inherit; }
+.search-field { grid-column: 1 / -1; }
+.ceiling { display: grid; gap: 12px; }
+.ceiling label, .types-label { font-weight: 700; }
+.ceiling-row { display: flex; align-items: center; gap: 20px; }
+.ceiling output { font-size: var(--step-head); font-weight: 900; font-stretch: 112%; letter-spacing: -0.03em; white-space: nowrap; min-width: 5.2ch; line-height: 1; }
+input[type="range"] { -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: 44px; background: transparent; cursor: pointer; }
+input[type="range"]::-webkit-slider-runnable-track { height: 8px; background: var(--field-2); }
+input[type="range"]::-moz-range-track { height: 8px; background: var(--field-2); }
+input[type="range"]::-moz-range-progress { height: 8px; background: var(--ink); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -10px; background: var(--accent); border: 0; border-radius: 50%; transition: transform .15s; }
+input[type="range"]::-moz-range-thumb { width: 28px; height: 28px; background: var(--accent); border: 0; border-radius: 50%; }
+input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
+.types { display: grid; gap: 12px; align-content: start; }
+.type-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.type-btns button { font: inherit; font-weight: 700; padding: .55em 1em; border: 0; border-radius: 0; background: var(--bg); color: var(--ink); cursor: pointer; transition: background-color .2s, color .2s, transform .2s var(--ease); }
+.type-btns button:hover { transform: translateY(-1px); background: var(--field-2); }
+.type-btns button[aria-pressed="true"] { background: var(--ink); color: var(--navy-ink); }
+.summary { grid-column: 1 / -1; font-size: var(--step-lead); line-height: 1.35; font-weight: 600; }
+.summary strong { font-weight: 900; }
+.note { margin-top: 16px; color: var(--muted); font-size: var(--step-small); max-width: 70ch; }
+
+.cat { padding-top: clamp(64px, 7vw, 112px); }
+.cat-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-bottom: 40px; }
+.cat-head h3 { font-size: var(--step-head); }
+.cat-count { font-weight: 600; white-space: nowrap; }
+.items { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px 64px; }
+.item { display: grid; grid-template-columns: clamp(96px, 11vw, 148px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.item-photo { display: block; background: var(--bg); overflow: hidden; }
+.thumb { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; mix-blend-mode: multiply; transition: transform .5s var(--ease); }
+.is-drawn { display: block; }
+.is-drawn svg { display: block; width: 100%; height: auto; }
+.item:hover .thumb { transform: scale(1.06); }
+.item-body { display: grid; gap: 8px; min-width: 0; }
+.item-name { font-size: var(--step-body); font-weight: 800; font-stretch: 104%; letter-spacing: -0.01em; line-height: 1.25; }
+.item-name a { text-decoration: none; }
+.item-name a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.item-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-variant-numeric: tabular-nums; }
+.item-price strong { font-size: var(--step-lead); font-weight: 900; font-stretch: 112%; letter-spacing: -0.02em; }
+.off { font-weight: 800; background: var(--field-2); padding: 0 .4em; }
+.item-text { max-width: 46ch; }
+.buy { font-weight: 800; text-underline-offset: 4px; text-decoration-thickness: 2px; text-decoration-color: var(--accent); justify-self: start; transition: color .2s; }
+.buy span { display: inline-block; transition: transform .2s var(--ease); }
+.buy:hover span { transform: translateX(4px); }
+.empty { margin-top: 48px; font-size: var(--step-lead); font-weight: 600; }
+
+/* How it works: one verb at a time */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.step { min-height: clamp(440px, 64svh, 680px); display: flex; flex-direction: column; justify-content: space-between; gap: 48px; padding-block: 48px 40px; }
+.step-1 { background: var(--field-1); color: var(--field-1-ink); padding-left: var(--gut-l); padding-right: 32px; }
+.step-2 { background: var(--navy); color: var(--navy-ink); padding-inline: 32px; }
+.step-3 { background: var(--field-2); color: var(--ink); padding-left: 32px; padding-right: var(--gut-r); }
+.verb { font-size: var(--step-head); font-weight: 900; font-stretch: 100%; letter-spacing: -0.04em; line-height: .95; }
+.step-text { max-width: 30ch; font-size: var(--step-lead); line-height: 1.4; }
+.step-1 .step-text strong, .step-2 .step-text strong { color: var(--accent); }
+
+/* FAQ */
+.faq { padding-block: clamp(96px, 12vw, 200px); }
+.faq h2 { font-size: var(--step-hero); line-height: .92; max-width: 12ch; }
+.faq-list { margin-top: 80px; display: grid; gap: 12px; margin-left: 33%; }
+.faq details { padding: 20px 24px; margin-inline: -24px; transition: background-color .25s; }
+.faq details[open] { background: var(--surface); }
+.faq summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 24px; font-size: var(--step-lead); font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+.faq summary::-webkit-details-marker { display: none; }
+.chev { flex: none; width: 14px; height: 14px; border-right: 3px solid currentColor; border-bottom: 3px solid currentColor; transform: rotate(45deg) translate(-3px, -3px); transition: transform .25s var(--ease); }
+.faq details[open] .chev { transform: rotate(225deg); }
+.faq details p { padding-top: 16px; max-width: 52ch; }
+
+/* Closing: the object returns */
+.closing { position: relative; overflow: hidden; background: var(--field-2); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); min-height: clamp(560px, 88svh, 880px); }
+.closing-media { grid-column: 1 / 9; overflow: hidden; display: flex; align-items: flex-end; background: var(--bg); }
+.cta-img { display: block; width: 122%; max-width: none; height: auto; margin: 0 0 -14% -16%; }
+.closing-text { grid-column: 9 / 13; align-self: center; display: grid; gap: 20px; padding-block: 64px; padding-right: var(--gut-r); padding-left: 16px; }
+.closing-text h2 { font-size: var(--step-head); }
+.closing-text .price { font-size: var(--step-lead); font-weight: 900; font-stretch: 112%; }
+.closing-text .price s { font-weight: 400; color: var(--muted); }
+
+/* Footer: name across the black field */
+.footer { background: var(--field-1); color: var(--field-1-ink); padding-block: 40px calc(32px + env(safe-area-inset-bottom, 0px)); display: grid; gap: clamp(120px, 18vw, 280px); }
+.foot-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 12px 28px; }
+.foot-links a { text-decoration: none; font-weight: 600; }
+.foot-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.foot-name { font-size: var(--step-hero); font-weight: 900; font-stretch: 125%; letter-spacing: -0.05em; line-height: .88; }
+.legal { margin-top: 24px; font-size: var(--step-small); max-width: 70ch; opacity: .8; }
+
+/* Entrances: content is visible at rest; browsers with scroll timelines add a rise. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1, .hero .lead, .hero-actions, .hero-fact { animation: load-rise .9s var(--ease) both; }
+  .hero .lead { animation-delay: .08s; }
+  .hero-actions { animation-delay: .16s; }
+  .hero-fact { animation-delay: .24s; }
+  .hero-figure { animation: load-in 1.4s var(--ease) both .1s; }
+}
+/* Scroll entrances move content but never hide it: it sits 28px low, fully visible, and rises into place. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .rise { transition: transform .9s var(--ease); }
+  .js .rise:not(.go) { transform: translateY(28px); }
+  .js .item .thumb { transition: transform .9s var(--ease); }
+  .js .item:not(.go) .thumb { transform: scale(.9); }
+}
+@media (max-width: 1100px) {
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .step-1, .step-2, .step-3 { padding-left: var(--gut-l); padding-right: var(--gut-r); min-height: 0; }
+}
+@keyframes load-rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes load-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-img { transition: none; }
+  .hero-img.is-on { transform: none; }
+  * { scroll-behavior: auto !important; }
+}
+
+/* Tablet and phone */
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .hero-figure { position: relative; right: auto; bottom: auto; width: calc(100% + var(--gut-r)); margin: 0 calc(-1 * var(--gut-r)) 0 auto; }
+  .hero-fig-wrap { padding-left: var(--gut-l); }
+  .hero { min-height: 0; }
+  .gifts { grid-template-columns: 1fr; }
+  .panel-a, .panel-b { padding-left: var(--gut-l); padding-right: var(--gut-r); }
+  .offers-head, .controls { grid-template-columns: minmax(0, 1fr); }
+  .items { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  .faq-list { margin-left: 0; }
+  .closing { grid-template-columns: minmax(0, 1fr); }
+  .closing-text { grid-column: 1; grid-row: 1; padding-left: var(--gut-l); padding-block: 64px 0; }
+  .closing-media { grid-column: 1; grid-row: 2; }
+}
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .nav { justify-content: space-between; }
+  .controls { padding: 24px 16px; margin-inline: calc(-1 * var(--gut-l)) calc(-1 * var(--gut-r)); }
+  .item { grid-template-columns: 96px minmax(0, 1fr); gap: 16px; }
+  .panel { min-height: 78svh; }
+  .faq details { margin-inline: -16px; padding-inline: 16px; }
+  .step-text { padding-bottom: 28px; }
+}
+
+/* A warmer storefront: calm colors, clear hierarchy, and easy-to-scan product cards. */
+:root {
+  --bg: #fcfbf8;
+  --surface: #f2f5ef;
+  --ink: #20342f;
+  --muted: #64736c;
+  --accent: #e6a14a;
+  --accent-ink: #20342f;
+  --field-1: #20342f;
+  --field-1-ink: #fffdf8;
+  --field-2: #e6ece4;
+  --navy: #29463e;
+  --navy-ink: #fffdf8;
+}
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body { background: var(--bg); color: var(--ink); }
+body::before { background: #e6a14a; }
+h1, h2, h3, h4 { letter-spacing: -.045em; }
+.btn { border-radius: 999px; padding: .85em 1.35em; box-shadow: 0 8px 20px rgba(32, 52, 47, .08); }
+.btn:hover { box-shadow: 0 12px 24px rgba(32, 52, 47, .14); }
+.btn-ink { background: var(--navy); }
+.btn-ink:hover { background: #365b50; }
+
+.hero {
+  min-height: min(820px, 94svh);
+  padding-top: 0;
+  background:
+    radial-gradient(ellipse at 82% 48%, rgba(232, 223, 201, .7), transparent 34%),
+    linear-gradient(120deg, #f3f5ef 0%, #faf8f1 62%, #f5efe3 100%);
+}
+.nav {
+  min-height: 82px;
+  border-bottom: 1px solid rgba(32, 52, 47, .1);
+}
+.wordmark { display: inline-flex; align-items: center; gap: 11px; font-size: 1rem; }
+.wordmark > span:last-child > span { color: var(--muted); font-weight: 600; }
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+.nav-links { gap: clamp(18px, 3vw, 40px); }
+.nav-links a { color: #3e514a; font-size: .94rem; }
+.nav .btn { padding: .68em 1.2em; }
+.hero-grid {
+  grid-template-columns: minmax(0, .98fr) minmax(0, 1.02fr);
+  align-items: center;
+  min-height: 650px;
+  padding-top: 72px;
+  padding-bottom: 76px;
+}
+.hero-text { gap: 23px; max-width: 630px; }
+.hero-kicker, .section-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #577166;
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .11em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.kicker-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b977c; }
+.hero h1 {
+  max-width: 700px;
+  font-size: clamp(3.8rem, 6.5vw, 6.3rem);
+  line-height: .96;
+  letter-spacing: -.065em;
+}
+.hero h1 .l { white-space: normal; }
+.hero h1 .l:last-child { color: #537365; }
+.hero .lead { max-width: 39ch; color: #596961; font-size: clamp(1.1rem, 1.4vw, 1.3rem); line-height: 1.65; }
+.hero-actions { gap: 15px 20px; align-items: center; }
+.hero-actions > .btn { padding: 1em 1.45em; }
+.countdown { color: #62726a; font-size: .92rem; font-weight: 600; }
+.hero-fact {
+  display: grid;
+  gap: 5px;
+  max-width: 390px;
+  padding: 17px 20px;
+  border: 1px solid rgba(32, 52, 47, .09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .76);
+  box-shadow: 0 12px 36px rgba(34, 52, 44, .07);
+}
+.featured-label { color: #718179; font-size: .72rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.hero-fact .f-name { font-size: .98rem; }
+.hero-fact .f-price { font-size: 1.25rem; }
+.hero-fact .f-price s { margin-left: 5px; font-size: .9rem; }
+.hero-fact > span:last-child { color: #567166; font-size: .88rem; font-weight: 700; }
+.hero-fact a { color: var(--ink); text-underline-offset: 3px; }
+.hero-figure {
+  right: max(3vw, calc((100vw - 1440px) / 2));
+  bottom: 8%;
+  width: min(47vw, 660px);
+  border: 12px solid rgba(255, 255, 255, .55);
+  border-radius: 42% 42% 32% 32%;
+  background: linear-gradient(145deg, #fff 5%, #e8ede7 100%);
+  box-shadow: 0 32px 80px rgba(38, 57, 48, .13);
+}
+.hero-img { object-fit: contain; padding: 7%; }
+
+.gifts { gap: 18px; padding: 18px; background: var(--bg); }
+.panel {
+  min-height: 550px;
+  padding: 32px;
+  border: 1px solid rgba(32, 52, 47, .07);
+  border-radius: 24px;
+  box-shadow: 0 12px 35px rgba(37, 53, 44, .045);
+}
+.panel-a, .panel-b { padding-inline: 32px; }
+.panel-a { background: #f4f0e7; }
+.panel-b { background: #edf2eb; }
+.panel-head h2 { font-size: clamp(2rem, 3vw, 3.2rem); }
+.panel-head p { color: #65746c; }
+.panel-media { border-radius: 18px; background: rgba(255, 255, 255, .78); }
+.panel-foot .p-name { font-size: 1.2rem; }
+.panel-foot .p-fact { color: #5d7065; font-size: .94rem; }
+.panel-actions { align-items: center; }
+.panel-actions .btn { padding: .7em 1.05em; }
+
+.offers { max-width: 1440px; margin-inline: auto; padding-top: clamp(88px, 10vw, 140px); }
+.offers-head { gap: 30px 60px; }
+.offers-head h2 { max-width: 13ch; margin-top: 15px; font-size: clamp(2.8rem, 5vw, 5rem); line-height: .99; }
+.heading-period { color: #72927d; }
+.offers-head > p { max-width: 38ch; color: #6b7871; font-size: 1rem; }
+.offers-description { display: block; margin-top: 10px; }
+.controls {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 38px;
+  padding: clamp(22px, 3vw, 36px);
+  border: 1px solid #e8ebe4;
+  border-radius: 24px;
+  background: #f5f6f1;
+  box-shadow: 0 14px 40px rgba(32, 52, 47, .05);
+  position: sticky;
+  top: 10px;
+  z-index: 20;
+  backdrop-filter: blur(14px);
+}
+.filter-field { gap: 9px; }
+.filter-field label, .ceiling label, .types-label { color: #41544a; font-size: .88rem; font-weight: 800; }
+.search-field { grid-column: 1 / -1; }
+.search-wrap { position: relative; }
+.search-wrap > span {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  z-index: 1;
+  color: #829087;
+  font-size: 1.5rem;
+  line-height: 1;
+  transform: translateY(-53%);
+  pointer-events: none;
+}
+.filter-field input, .filter-field select {
+  min-height: 54px;
+  border: 1px solid #e1e6de;
+  border-radius: 13px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(32, 52, 47, .025);
+  font-size: .96rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.filter-field input:focus, .filter-field select:focus {
+  border-color: #7d9a88;
+  outline: 0;
+  box-shadow: 0 0 0 4px rgba(106, 145, 119, .13);
+}
+.search-wrap input { padding-left: 48px; }
+.ceiling { gap: 9px; }
+.ceiling-row { gap: 13px; }
+.ceiling output { min-width: 5ch; color: #3f6956; font-size: 1.8rem; }
+.types { gap: 9px; }
+.type-btns { gap: 8px; }
+.type-btns button {
+  padding: .55em .9em;
+  border: 1px solid #dfe5dc;
+  border-radius: 999px;
+  background: #fff;
+  color: #52645a;
+  font-size: .87rem;
+  transition: background .2s, border-color .2s, color .2s, transform .2s;
+}
+.type-btns button:hover { border-color: #b9c9b9; background: #f6f8f3; }
+.type-btns button[aria-pressed="true"] { border-color: var(--navy); background: var(--navy); color: #fff; }
+.summary {
+  grid-column: 1 / -1;
+  padding-top: 17px;
+  border-top: 1px solid #e3e8e0;
+  color: #66756c;
+  font-size: .95rem;
+}
+.summary strong { color: var(--ink); }
+.note { display: flex; align-items: center; gap: 8px; max-width: 80ch; margin-top: 18px; color: #718077; }
+.note > span { color: #73947c; font-size: 1.15rem; }
+
+.cat { padding-top: clamp(58px, 7vw, 92px); }
+.cat-head { align-items: center; padding-bottom: 23px; }
+.cat-head h3 { font-size: clamp(1.7rem, 2.8vw, 2.45rem); }
+.cat-count { padding: 5px 12px; border-radius: 999px; background: #eef2eb; color: #68786e; font-size: .82rem; }
+.items { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.item {
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 0;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e9ebe5;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 7px 22px rgba(37, 53, 44, .045);
+  transition: transform .24s var(--ease), box-shadow .24s var(--ease), border-color .24s;
+}
+.item:hover { transform: translateY(-4px); border-color: #dce5d9; box-shadow: 0 16px 34px rgba(37, 53, 44, .1); }
+.item-photo {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1.3;
+  padding: 18px;
+  background: #f7f8f5;
+}
+.thumb { width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; mix-blend-mode: multiply; }
+.is-drawn { width: 100%; max-height: 100%; }
+.is-drawn svg { width: 100%; height: 100%; object-fit: contain; }
+.item:hover .thumb { transform: scale(1.035); }
+.item-body { align-content: start; gap: 10px; padding: 18px; }
+.item-name { min-height: 2.5em; font-size: 1rem; line-height: 1.3; }
+.item-name a:hover { color: #547863; }
+.item-price { gap: 5px 9px; }
+.item-price strong { color: #355f49; font-size: 1.35rem; letter-spacing: -.03em; }
+.item-price s { color: #919b94; font-size: .84rem; }
+.off { border-radius: 6px; background: #edf4ec; color: #477354; font-size: .75rem; }
+.item-text { min-height: 4.4em; color: #6c7871; font-size: .88rem; line-height: 1.5; }
+.buy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 45px;
+  margin-top: 4px;
+  border-radius: 11px;
+  background: #edf3eb;
+  color: #385e47;
+  font-size: .88rem;
+  text-decoration: none;
+  transition: background .2s, color .2s;
+}
+.buy:hover { background: var(--navy); color: #fff; }
+.buy span { margin-left: 7px; }
+.empty { padding: 32px; border: 1px dashed #d4ddd2; border-radius: 16px; background: #f7f8f4; color: #66766b; }
+
+.steps { gap: 12px; padding: 16px; background: #f7f6f0; }
+.step {
+  min-height: 240px;
+  justify-content: flex-start;
+  gap: 32px;
+  padding: 30px;
+  border-radius: 18px;
+}
+.step-1, .step-2, .step-3 { padding-inline: 30px; }
+.step-1 { background: #254239; }
+.step-2 { background: #e9efe6; color: var(--ink); }
+.step-3 { background: #f1eade; }
+.verb { font-size: 2rem; }
+.step-text { color: inherit; font-size: 1.05rem; }
+.step-2 .step-text strong { color: #557a62; }
+.faq { padding-block: clamp(76px, 9vw, 130px); }
+.faq h2 { max-width: 16ch; font-size: clamp(2.8rem, 5vw, 4.6rem); }
+.faq-list { margin-top: 42px; margin-left: 20%; gap: 8px; }
+.faq details { margin-inline: 0; padding: 20px 22px; border: 1px solid #e8ebe4; border-radius: 14px; background: #fff; }
+.faq details[open] { background: #f3f6f0; }
+.faq summary { font-size: 1.02rem; }
+.faq details p { color: #66736b; font-size: .96rem; }
+.closing { min-height: 490px; background: #eef2eb; }
+.closing-media { overflow: hidden; align-items: center; justify-content: center; background: #e5ebe2; }
+.cta-img { width: min(90%, 600px); max-width: 100%; height: auto; max-height: 440px; margin: 0; object-fit: contain; }
+.closing-text { gap: 15px; padding: 56px 9% 56px 24px; }
+.closing-text h2 { font-size: clamp(2rem, 3vw, 3rem); }
+.footer { gap: 70px; padding-top: 46px; background: #20342f; }
+.foot-name { font-size: clamp(3rem, 6vw, 6rem); }
+.legal { max-width: 82ch; color: #e4e9e3; opacity: .8; }
+.rise, .rise:not(.go), .item .thumb, .item:not(.go) .thumb { transform: none !important; }
+
+@media (max-width: 960px) {
+  .hero { min-height: 0; }
+  .hero-grid { min-height: 0; grid-template-columns: minmax(0, 1fr); gap: 28px; padding-top: 70px; }
+  .hero-figure {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: min(82vw, 600px);
+    margin: -16px auto 36px;
+  }
+  .gifts { padding: 14px; }
+  .panel { min-height: 470px; }
+  .offers-head, .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .step-1, .step-2, .step-3 { min-height: 245px; padding: 24px; }
+  .closing { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .closing-media { grid-column: 1 / 8; grid-row: 1; }
+  .closing-text { grid-column: 8 / 13; grid-row: 1; padding: 40px 24px; }
+}
+@media (max-width: 640px) {
+  .nav { min-height: 70px; }
+  .nav .btn { padding: .62em .95em; font-size: .87rem; }
+  .wordmark { gap: 8px; font-size: .9rem; }
+  .brand-mark { width: 34px; height: 34px; }
+  .hero-grid { padding-top: 54px; padding-bottom: 34px; }
+  .hero-text { gap: 18px; }
+  .hero h1 { font-size: clamp(3.45rem, 15vw, 5rem); }
+  .hero-actions { align-items: flex-start; }
+  .hero-actions > .btn { width: 100%; justify-content: center; }
+  .hero-figure { width: min(100%, 460px); margin: 0 auto 30px; border-width: 8px; }
+  .hero-fact { max-width: 100%; }
+  .gifts { grid-template-columns: minmax(0, 1fr); padding: 10px; gap: 12px; }
+  .panel { min-height: 460px; padding: 22px; border-radius: 19px; }
+  .panel-a, .panel-b { padding-inline: 22px; }
+  .panel-foot { align-items: flex-start; }
+  .panel-actions { width: 100%; }
+  .offers { padding-top: 74px; }
+  .offers-head { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .offers-head h2 { font-size: clamp(2.7rem, 12vw, 4rem); }
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    margin-top: 28px;
+    padding: 20px 16px;
+    margin-inline: calc(-1 * var(--gut-l)) calc(-1 * var(--gut-r));
+    border-radius: 0;
+    border-inline: 0;
+  }
+  .controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    top: 0;
+    padding: 10px 14px;
+    background: rgba(245, 246, 241, .97);
+    box-shadow: 0 8px 24px rgba(32, 52, 47, .1);
+  }
+  .search-field, .ceiling, .types, .summary { grid-column: 1 / -1; }
+  .filter-field, .ceiling, .types { gap: 5px; }
+  .filter-field label, .ceiling label, .types-label { font-size: .72rem; }
+  .filter-field input, .filter-field select { min-height: 40px; padding-block: 5px; font-size: .84rem; }
+  .ceiling-row { gap: 8px; }
+  .ceiling-row input[type="range"] { height: 34px; }
+  .ceiling output { font-size: 1.2rem; }
+  .type-btns { flex-wrap: nowrap; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .type-btns::-webkit-scrollbar { display: none; }
+  .type-btns button { flex: none; padding: .4em .72em; font-size: .72rem; white-space: nowrap; }
+  .summary { padding-top: 6px; font-size: .76rem; line-height: 1.3; }
+  .ceiling output { font-size: 1.55rem; }
+  .type-btns button { font-size: .82rem; }
+  .items { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .item { grid-template-columns: 112px minmax(0, 1fr); align-items: stretch; }
+  .item-photo { align-self: stretch; aspect-ratio: auto; min-height: 100%; padding: 10px; }
+  .item-body { gap: 7px; padding: 13px; }
+  .item-name { min-height: 0; font-size: .94rem; }
+  .item-price { gap: 3px 7px; }
+  .item-price strong { font-size: 1.18rem; }
+  .item-price s { font-size: .76rem; }
+  .off { font-size: .68rem; }
+  .item-text { min-height: 0; font-size: .81rem; }
+  .buy { min-height: 39px; font-size: .78rem; }
+  .cat { padding-top: 48px; }
+  .cat-head { padding-bottom: 17px; }
+  .steps { grid-template-columns: minmax(0, 1fr); padding: 10px; }
+  .step-1, .step-2, .step-3 { min-height: 190px; padding: 24px; }
+  .faq { padding-block: 72px; }
+  .faq-list { margin-left: 0; }
+  .faq details { padding: 17px; }
+  .closing { grid-template-columns: minmax(0, 1fr); }
+  .closing-media { grid-column: 1; grid-row: 2; min-height: 270px; }
+  .closing-text { grid-column: 1; grid-row: 1; padding: 38px var(--gut-r) 24px var(--gut-l); }
+  .footer { gap: 44px; }
+}
+
+/* Keep discovery filters in the global header. */
+html { scroll-padding-top: 130px; }
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(252, 251, 248, .97);
+  border-bottom: 1px solid rgba(32, 52, 47, .12);
+  box-shadow: 0 8px 24px rgba(32, 52, 47, .055);
+  backdrop-filter: blur(16px);
+}
+.site-header .nav {
+  width: 100%;
+  max-width: 1440px;
+  min-height: 70px;
+  margin-inline: auto;
+  border: 0;
+}
+.header-controls {
+  width: 100%;
+  max-width: 1440px;
+  grid-template-columns: minmax(240px, 1.5fr) minmax(180px, 1fr) minmax(180px, 1fr);
+  gap: 12px;
+  margin: 0 auto;
+  padding: 0 var(--gut-r) 12px var(--gut-l);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  position: static;
+  backdrop-filter: none;
+}
+.header-controls .search-field { grid-column: auto; }
+.header-controls .filter-field { min-width: 0; gap: 4px; }
+.header-controls .filter-field label { font-size: .72rem; white-space: nowrap; }
+.header-controls .filter-field input,
+.header-controls .filter-field select { min-height: 38px; padding: 5px 10px; font-size: .82rem; }
+.header-controls .search-wrap input { padding-left: 34px; }
+.header-controls .search-wrap > span { left: 11px; font-size: 1.2rem; }
+.summary { grid-column: auto; margin: 22px 0 0; padding: 12px 16px; border: 1px solid #e8ebe4; border-radius: 12px; background: #f5f6f1; font-size: .9rem; }
+.offers { padding-top: 40px; }
+
+@media (max-width: 1100px) {
+  html { scroll-padding-top: 120px; }
+  .site-header .nav { min-height: 64px; }
+  .site-header .nav-links { gap: 15px; }
+  .site-header .nav-links a { font-size: .82rem; }
+  .header-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+    padding-bottom: 10px;
+  }
+}
+@media (max-width: 640px) {
+  html { scroll-padding-top: 155px; }
+  .site-header .nav { min-height: 60px; }
+  .site-header .nav .btn { padding: .58em .9em; font-size: .8rem; }
+  .header-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 9px;
+    padding: 0 12px 9px;
+  }
+  .header-controls .search-field { grid-column: 1 / -1; }
+  .header-controls .filter-field label { font-size: .68rem; }
+  .header-controls .filter-field input,
+  .header-controls .filter-field select { min-height: 36px; font-size: .78rem; }
+  .summary { margin-top: 16px; }
+}
+</style>
+
+</head>
+<body>
+<div class="site-header">
+  <nav class="nav wrap" aria-label="Principal">
+    <a class="wordmark" href="#topo" id="topo"><span class="brand-mark" aria-hidden="true">A</span><span>Achados <span>do Júnior</span></span></a>
+    <div class="nav-links"><a href="#ofertas">Explorar ofertas</a><a href="#duvidas">Como funciona</a></div>
+    <a class="btn" href="#ofertas">Ver ofertas</a>
+  </nav>
+  <div class="controls header-controls wrap">
+    <div class="filter-field search-field">
+      <label for="busca-ofertas">O que você está procurando?</label>
+      <div class="search-wrap"><span aria-hidden="true">⌕</span><input type="search" id="busca-ofertas" placeholder="Ex.: casa, beleza, presente..." autocomplete="off"></div>
+    </div>
+    <div class="filter-field">
+      <label for="filtro-categoria">Categoria</label>
+      <select id="filtro-categoria">
+        <option value="">Todas as categorias</option>
+      </select>
+    </div>
+    <div class="filter-field">
+      <label for="filtro-preco">Faixa de preço</label>
+      <select id="filtro-preco">
+        <option value="todos">Todas as faixas</option>
+        <option value="0-50">Até R$ 50</option>
+        <option value="50-100">De R$ 50 a R$ 100</option>
+        <option value="100-200">De R$ 100 a R$ 200</option>
+        <option value="200-500">De R$ 200 a R$ 500</option>
+        <option value="500+">Acima de R$ 500</option>
+      </select>
+    </div>
+  </div>
+</div>
+<header class="hero" hidden>
+  <div class="hero-grid wrap">
+    <div class="hero-text">
+      <p class="hero-kicker"><span class="kicker-dot" aria-hidden="true"></span> Boas descobertas, sem complicação</p>
+      <h1><span class="l">Achados que</span> <span class="l">valem a pena.</span></h1>
+      <p class="lead">Uma seleção feita com carinho para você encontrar bons produtos, comparar preços e comprar com tranquilidade.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#ofertas">Encontrar meu próximo achado <span aria-hidden="true">→</span></a>
+        <p class="countdown" id="countdown">Novos achados para você explorar.</p>
+        <p class="live" id="ao-vivo" hidden></p>
+      </div>
+      <p class="hero-fact" aria-live="polite">
+        <span class="featured-label">Um achado em destaque</span>
+        <span class="f-name" id="hf-nome">Lava Jato Portátil 2 Baterias</span>
+        <span class="f-price num"><span id="hf-por">R$ 98,43</span> <s id="hf-de">R$ 246,87</s></span>
+        <span><span id="hf-off">60% off</span>. <a id="hf-link" href="https://meli.la/2MyeAPh" target="_blank" rel="noopener sponsored">Comprar este</a></span>
+      </p>
+    </div>
+  </div>
+  <div class="hero-fig-wrap"><figure class="hero-figure" id="hero-figure"><img class="hero-img is-on" src="https://http2.mlstatic.com/D_NQ_NP_2X_625289-MLA110412192372_052026-F.webp" alt="Lava jato portátil sem fio com duas baterias, mangueira, bicos e maleta" width="1200" height="1200" referrerpolicy="no-referrer" data-nome="Lava Jato Portátil 2 Baterias" data-por="R$ 98,43" data-de="R$ 246,87" data-off="60% off" data-link="https://meli.la/2MyeAPh"><img class="hero-img" src="https://http2.mlstatic.com/D_NQ_NP_2X_785279-MLB119188989190_112026-F.webp" alt="Nível a laser digital projetando linhas verdes" width="1200" height="1200" referrerpolicy="no-referrer" data-nome="Nível Laser Digital" data-por="R$ 76,07" data-de="R$ 181,50" data-off="58% off" data-link="https://meli.la/2RKcc9a"><img class="hero-img" src="https://http2.mlstatic.com/D_NQ_NP_2X_998126-MLA96118106849_102025-F.webp" alt="Cadeira de refeição infantil Galzerano na cor toffee" width="1200" height="1200" referrerpolicy="no-referrer" data-nome="Cadeira de Refeição Galzerano" data-por="R$ 227,90" data-de="R$ 429,00" data-off="47% off" data-link="https://meli.la/1gzCfes"></figure></div>
+</header>
+
+<main>
+  <section class="gifts" id="presentes" aria-labelledby="presentes-h" hidden>
+    <article class="panel panel-a" data-link="https://meli.la/2ZVNYyn">
+      <div class="panel-head">
+        <h2 id="presentes-h">Natal resolvido</h2>
+        <p>Dois presentes da lista com preço de Black Friday, antes de dezembro chegar.</p>
+      </div>
+      <div class="panel-media"><img class="panel-img" src="https://http2.mlstatic.com/D_NQ_NP_2X_840324-MLA118101870827_092026-F.webp" alt="Trator de esteira de controle remoto amarelo" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></div>
+      <div class="panel-foot">
+        <div><p class="p-name">Trator de esteira RC</p><p class="p-fact num js-fact">R$ 189,03, 37% off</p></div>
+        <div class="panel-actions"><a class="btn btn-ink" href="https://meli.la/2ZVNYyn" target="_blank" rel="noopener sponsored">Comprar</a><a class="btn btn-paper" href="#oferta-trator">Ver detalhes</a></div>
+      </div>
+    </article>
+    <article class="panel panel-b" aria-label="Kit Bebê Moletom 6 Peças" data-link="https://meli.la/2P4VBdE">
+      <div class="panel-head"><p class="p-name">Para os pequenos</p><p>Três conjuntos de moletom peluciado, quentinhos para o frio.</p></div>
+      <div class="panel-media"><img class="panel-img" src="https://http2.mlstatic.com/D_NQ_NP_2X_648193-MLB106733218321_022026-F.webp" alt="Bebê sentado vestindo conjunto de moletom marrom, ao lado de outros conjuntos coloridos" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></div>
+      <div class="panel-foot">
+        <div><p class="p-name">Kit bebê moletom, 6 peças</p><p class="p-fact num js-fact">R$ 78,99, 34% off</p></div>
+        <div class="panel-actions"><a class="btn btn-ink" href="https://meli.la/2P4VBdE" target="_blank" rel="noopener sponsored">Comprar</a><a class="btn btn-paper" href="#oferta-kitbebe">Ver detalhes</a></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="offers wrap" id="ofertas" aria-labelledby="ofertas-h">
+    <div class="offers-head">
+      <div><p class="section-kicker">Escolhas que facilitam o dia</p><h2 id="ofertas-h">Encontre seu próximo achado<span class="heading-period">.</span></h2></div>
+      <p><span id="data-precos">Carregando ofertas da planilha...</span> <span class="offers-description">Explore a seleção, compare os preços e escolha o que combina com você.</span></p>
+    </div>
+    <p class="summary" id="resumo" aria-live="polite"><strong class="num">20 ofertas</strong> encontradas, somando <strong class="num js-total-off">R$ 942,03</strong> de desconto.</p>
+    <p class="note"><span aria-hidden="true">♡</span> Seleção independente. Ao comprar, você finaliza com segurança no Mercado Livre. Alguns links podem gerar comissão, sem custo extra para você.</p>
+    
+<section class="cat" data-grupo="bf" aria-labelledby="g-bf">
+  <div class="cat-head"><h3 id="g-bf">Black Friday</h3><p class="cat-count"><span data-count>7</span> ofertas</p></div>
+  <ul class="items">
+<li class="item reveal" data-preco="76.07" data-de="181.5" data-tipo="bf" data-nome="Nível Laser Digital" id="oferta-nivel">
+  <a class="item-photo" href="https://meli.la/2RKcc9a" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_785279-MLB119188989190_112026-F.webp" alt="Nível a laser digital projetando linhas verdes" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2RKcc9a" target="_blank" rel="noopener sponsored">Nível Laser Digital</a></h4>
+    <p class="item-price"><strong>R$ 76,07</strong> <s aria-label="Preço anterior">R$ 181,50</s> <span class="off">58% off</span></p>
+    <p class="item-text">Laser para pendurar quadros, alinhar prateleiras e marcar obra. Está por menos da metade do preço.</p>
+    <a class="buy" href="https://meli.la/2RKcc9a" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="227.9" data-de="429" data-tipo="bf" data-nome="Cadeira de Refeição Galzerano" id="oferta-cadeira">
+  <a class="item-photo" href="https://meli.la/1gzCfes" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_998126-MLA96118106849_102025-F.webp" alt="Cadeira de refeição infantil Galzerano na cor toffee" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1gzCfes" target="_blank" rel="noopener sponsored">Cadeira de Refeição Galzerano</a></h4>
+    <p class="item-price"><strong>R$ 227,90</strong> <s aria-label="Preço anterior">R$ 429,00</s> <span class="off">47% off</span></p>
+    <p class="item-text">Cadeira de refeição Nick, cor toffee, da Galzerano. Cinto de segurança e apoio para os pés, quase pela metade do preço.</p>
+    <a class="buy" href="https://meli.la/1gzCfes" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="62.9" data-de="99.99" data-tipo="bf" data-nome="Kit 6 Cuecas Boxer Polo Wear" id="oferta-cuecas">
+  <a class="item-photo" href="https://meli.la/1sBmBZB" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_811713-MLB111942331663_052026-F.webp" alt="Seis cuecas boxer Polo Wear em cores sortidas" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1sBmBZB" target="_blank" rel="noopener sponsored">Kit 6 Cuecas Boxer Polo Wear</a></h4>
+    <p class="item-price"><strong>R$ 62,90</strong> <s aria-label="Preço anterior">R$ 99,99</s> <span class="off">37% off</span></p>
+    <p class="item-text">Seis boxers sem costura em microfibra, que não marcam a roupa. Sai a R$ 10,48 cada.</p>
+    <a class="buy" href="https://meli.la/1sBmBZB" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="179.55" data-de="279" data-tipo="bf" data-nome="Kit Maçarico + 2 Gás MAPP" id="oferta-macarico">
+  <a class="item-photo" href="https://meli.la/2XU11oo" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_681869-MLB115772262619_082026-F.webp" alt="Maçarico portátil com duas garrafas de gás MAPP" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2XU11oo" target="_blank" rel="noopener sponsored">Kit Maçarico + 2 Gás MAPP</a></h4>
+    <p class="item-price"><strong>R$ 179,55</strong> <s aria-label="Preço anterior">R$ 279,00</s> <span class="off">36% off</span></p>
+    <p class="item-text">Acendimento automático, giro de 360° e duas garrafas de gás na caixa. Serve para solda, reparos e para dourar a picanha.</p>
+    <a class="buy" href="https://meli.la/2XU11oo" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="78.99" data-de="119.9" data-tipo="bf" data-nome="Kit Bebê Moletom 6 Peças" id="oferta-kitbebe">
+  <a class="item-photo" href="https://meli.la/2P4VBdE" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_648193-MLB106733218321_022026-F.webp" alt="Bebê sentado vestindo conjunto de moletom marrom, ao lado de outros conjuntos coloridos" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2P4VBdE" target="_blank" rel="noopener sponsored">Kit Bebê Moletom 6 Peças</a></h4>
+    <p class="item-price"><strong>R$ 78,99</strong> <s aria-label="Preço anterior">R$ 119,90</s> <span class="off">34% off</span></p>
+    <p class="item-text">Moletom peluciado por dentro e macio por fora. Três conjuntos de blusa e calça para o pequeno passar o frio quentinho.</p>
+    <a class="buy" href="https://meli.la/2P4VBdE" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="76.86" data-de="109.8" data-tipo="bf" data-nome="Seringa de Insulina 0,3 ml (50 un.)" id="oferta-seringa">
+  <a class="item-photo" href="https://meli.la/1UfgSRE" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_871405-MLB120953822499_112026-F.webp" alt="Caixa com 50 seringas de insulina" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1UfgSRE" target="_blank" rel="noopener sponsored">Seringa de Insulina 0,3 ml (50 un.)</a></h4>
+    <p class="item-price"><strong>R$ 76,86</strong> <s aria-label="Preço anterior">R$ 109,80</s> <span class="off">30% off</span></p>
+    <p class="item-text">Caixa com 50 seringas de 0,3 ml e agulha 6x0,25. Para quem usa todo dia, a caixa com desconto faz diferença no mês.</p>
+    <a class="buy" href="https://meli.la/1UfgSRE" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="79.13" data-de="99.99" data-tipo="bf" data-nome="Alicate Prensa Terminal" id="oferta-alicate">
+  <a class="item-photo" href="https://meli.la/2xxZEDh" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_910746-MLB121017987845_112026-F.webp" alt="Alicate crimpador para terminais tubulares" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2xxZEDh" target="_blank" rel="noopener sponsored">Alicate Prensa Terminal</a></h4>
+    <p class="item-price"><strong>R$ 79,13</strong> <s aria-label="Preço anterior">R$ 99,99</s> <span class="off">21% off</span></p>
+    <p class="item-text">Crimpa terminais tubulares e ilhós de 0,08 a 16 mm² com prensagem sextavada. Ferramenta de eletricista.</p>
+    <a class="buy" href="https://meli.la/2xxZEDh" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li></ul>
+</section>
+<section class="cat" data-grupo="oi" aria-labelledby="g-oi">
+  <div class="cat-head"><h3 id="g-oi">Ofertas imperdíveis</h3><p class="cat-count"><span data-count>7</span> ofertas</p></div>
+  <ul class="items">
+<li class="item reveal" data-preco="189.03" data-de="299.99" data-tipo="oi" data-nome="Trator de Esteira RC MoveBrinca" id="oferta-trator">
+  <a class="item-photo" href="https://meli.la/2ZVNYyn" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_840324-MLA118101870827_092026-F.webp" alt="Trator de esteira de controle remoto amarelo" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2ZVNYyn" target="_blank" rel="noopener sponsored">Trator de Esteira RC MoveBrinca</a></h4>
+    <p class="item-price"><strong>R$ 189,03</strong> <s aria-label="Preço anterior">R$ 299,99</s> <span class="off">37% off</span></p>
+    <p class="item-text">Escala 1:20, controle 2.4 GHz, braço que sobe e desce, pá de metal, luzes e som de motor.</p>
+    <a class="buy" href="https://meli.la/2ZVNYyn" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="69.9" data-de="104.9" data-tipo="oi" data-nome="Basic Whey 1 kg Growth" id="oferta-whey">
+  <a class="item-photo" href="https://meli.la/1a47an2" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_899347-MLA115984378274_092026-F.webp" alt="Pote de Basic Whey Growth sabor baunilha" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1a47an2" target="_blank" rel="noopener sponsored">Basic Whey 1 kg Growth</a></h4>
+    <p class="item-price"><strong>R$ 69,90</strong> <s aria-label="Preço anterior">R$ 104,90</s> <span class="off">33% off</span></p>
+    <p class="item-text">Growth Supplements, 1 kg, sabor baunilha. A proteína do dia sem pesar no bolso.</p>
+    <a class="buy" href="https://meli.la/1a47an2" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="32.93" data-de="45.9" data-tipo="oi" data-nome="Tesoura de Escalope LM" id="oferta-tesoura">
+  <a class="item-photo" href="https://meli.la/2Ke3EGe" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><span class="thumb is-drawn"><svg viewBox="0 0 200 200" role="img" aria-label="Ilustração de uma tesoura de escalope"><rect width="200" height="200" fill="#f3f3f1"/><g transform="rotate(-38 100 100)"><path d="M104 96 L190 92 l-4 5 l4 5 l-4 5 l4 5 L104 106 Z" fill="#9aa3b5"/><path d="M104 104 L188 112 l-4 4 l4 5 l-4 5 l4 4 L104 112 Z" fill="#7c859a"/><circle cx="104" cy="104" r="7" fill="#1f2b4d"/><ellipse cx="62" cy="86" rx="30" ry="18" fill="none" stroke="#f7941d" stroke-width="12"/><ellipse cx="62" cy="124" rx="30" ry="18" fill="none" stroke="#1f2b4d" stroke-width="12"/><path d="M88 92 L104 100 M88 118 L104 108" stroke="#1f2b4d" stroke-width="10" stroke-linecap="round"/></g></svg></span></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2Ke3EGe" target="_blank" rel="noopener sponsored">Tesoura de Escalope LM</a></h4>
+    <p class="item-price"><strong>R$ 32,93</strong> <s aria-label="Preço anterior">R$ 45,90</s> <span class="off">28% off</span></p>
+    <p class="item-text">Corta bordas onduladas em papel e artesanato. Queridinha de quem faz scrapbook.</p>
+    <a class="buy" href="https://meli.la/2Ke3EGe" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="56.76" data-de="68.9" data-tipo="oi" data-nome="Tênis Masculino + Relógio Digital" id="oferta-tenis">
+  <a class="item-photo" href="https://meli.la/1Ai71hJ" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_909840-MLB83264818967_032025-F.webp" alt="Tênis masculino preto e dourado com relógio digital" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1Ai71hJ" target="_blank" rel="noopener sponsored">Tênis Masculino + Relógio Digital</a></h4>
+    <p class="item-price"><strong>R$ 56,76</strong> <s aria-label="Preço anterior">R$ 68,90</s> <span class="off">18% off</span></p>
+    <p class="item-text">Tênis de treino e caminhada com um relógio digital no mesmo kit. Preto com detalhes dourados.</p>
+    <a class="buy" href="https://meli.la/1Ai71hJ" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="115.99" data-de="138" data-tipo="oi" data-nome="Kit Elseve Collagen Lifter" id="oferta-elseve">
+  <a class="item-photo" href="https://meli.la/1BtmwqF" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_991247-MLA108093485372_032026-F.webp" alt="Kit de produtos Elseve Collagen Lifter" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1BtmwqF" target="_blank" rel="noopener sponsored">Kit Elseve Collagen Lifter</a></h4>
+    <p class="item-price"><strong>R$ 115,99</strong> <s aria-label="Preço anterior">R$ 138,00</s> <span class="off">16% off</span></p>
+    <p class="item-text">Linha Collagen Lifter da Elseve, para fio fino ganhar corpo e volume a cada lavagem.</p>
+    <a class="buy" href="https://meli.la/1BtmwqF" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="49.64" data-de="55.78" data-tipo="oi" data-nome="Carregador de Bateria Simake 6A" id="oferta-carregador">
+  <a class="item-photo" href="https://meli.la/1rfyUYR" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_799556-MLA109935847761_042026-F.webp" alt="Carregador de bateria automotiva Simake" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1rfyUYR" target="_blank" rel="noopener sponsored">Carregador de Bateria Simake 6A</a></h4>
+    <p class="item-price"><strong>R$ 49,64</strong> <s aria-label="Preço anterior">R$ 55,78</s> <span class="off">11% off</span></p>
+    <p class="item-text">Bivolt, para carro, moto e caminhão. Bateria arriou, você resolve na garagem.</p>
+    <a class="buy" href="https://meli.la/1rfyUYR" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="22.47" data-de="24.97" data-tipo="oi" data-nome="Kit 20 Pincéis Escolares" id="oferta-pinceis">
+  <a class="item-photo" href="https://meli.la/2BpFTBS" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><span class="thumb is-drawn"><svg viewBox="0 0 200 200" role="img" aria-label="Ilustração de pincéis escolares"><rect width="200" height="200" fill="#f3f3f1"/><g stroke-linecap="round"><g transform="rotate(-24 100 178)"><line x1="100" y1="178" x2="100" y2="78" stroke="#1f2b4d" stroke-width="9"/><rect x="94" y="56" width="12" height="24" rx="2" fill="#9aa3b5"/><path d="M94 57 Q100 26 106 57 Z" fill="#3a2e22"/></g><g transform="rotate(-12 100 178)"><line x1="100" y1="178" x2="100" y2="78" stroke="#f7941d" stroke-width="9"/><rect x="94" y="56" width="12" height="24" rx="2" fill="#9aa3b5"/><path d="M94 57 Q100 34 106 57 Z" fill="#3a2e22"/></g><g transform="rotate(0 100 178)"><line x1="100" y1="178" x2="100" y2="78" stroke="#1f2b4d" stroke-width="9"/><rect x="94" y="56" width="12" height="24" rx="2" fill="#9aa3b5"/><path d="M94 57 Q100 26 106 57 Z" fill="#3a2e22"/></g><g transform="rotate(12 100 178)"><line x1="100" y1="178" x2="100" y2="78" stroke="#f7941d" stroke-width="9"/><rect x="94" y="56" width="12" height="24" rx="2" fill="#9aa3b5"/><path d="M94 57 Q100 34 106 57 Z" fill="#3a2e22"/></g><g transform="rotate(24 100 178)"><line x1="100" y1="178" x2="100" y2="78" stroke="#1f2b4d" stroke-width="9"/><rect x="94" y="56" width="12" height="24" rx="2" fill="#9aa3b5"/><path d="M94 57 Q100 26 106 57 Z" fill="#3a2e22"/></g></g></svg></span></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2BpFTBS" target="_blank" rel="noopener sponsored">Kit 20 Pincéis Escolares</a></h4>
+    <p class="item-price"><strong>R$ 22,47</strong> <s aria-label="Preço anterior">R$ 24,97</s> <span class="off">10% off</span></p>
+    <p class="item-text">Vinte pincéis para guache e pintura escolar. Lista de material resolvida de uma vez.</p>
+    <a class="buy" href="https://meli.la/2BpFTBS" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li></ul>
+</section>
+<section class="cat" data-grupo="mv" aria-labelledby="g-mv">
+  <div class="cat-head"><h3 id="g-mv">Mais vendidos</h3><p class="cat-count"><span data-count>6</span> ofertas</p></div>
+  <ul class="items">
+<li class="item reveal" data-preco="98.43" data-de="246.87" data-tipo="mv" data-nome="Lava Jato Portátil 2 Baterias" id="oferta-lavajato">
+  <a class="item-photo" href="https://meli.la/2MyeAPh" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_625289-MLA110412192372_052026-F.webp" alt="Lava jato portátil sem fio com duas baterias, mangueira, bicos e maleta" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2MyeAPh" target="_blank" rel="noopener sponsored">Lava Jato Portátil 2 Baterias</a></h4>
+    <p class="item-price"><strong>R$ 98,43</strong> <s aria-label="Preço anterior">R$ 246,87</s> <span class="off">60% off</span></p>
+    <p class="item-text">Alta pressão sem tomada: duas baterias, mangueira, bicos e maleta. Lava carro, moto e calçada.</p>
+    <a class="buy" href="https://meli.la/2MyeAPh" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="32.9" data-de="49.99" data-tipo="mv" data-nome="Kit 2 Tops de Academia" id="oferta-tops">
+  <a class="item-photo" href="https://meli.la/11iLrfW" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_926577-MLB113889783972_072026-F.webp" alt="Dois tops de academia sem costura" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/11iLrfW" target="_blank" rel="noopener sponsored">Kit 2 Tops de Academia</a></h4>
+    <p class="item-price"><strong>R$ 32,90</strong> <s aria-label="Preço anterior">R$ 49,99</s> <span class="off">34% off</span></p>
+    <p class="item-text">Poliamida sem costura com bojo removível. Sai a R$ 16,45 cada top.</p>
+    <a class="buy" href="https://meli.la/11iLrfW" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="21.99" data-de="32.99" data-tipo="mv" data-nome="Kit 2 Bolsas Marmita Térmica" id="oferta-marmita">
+  <a class="item-photo" href="https://meli.la/2N7uQJe" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_923359-MLB110118138008_042026-F.webp" alt="Duas bolsas térmicas para marmita, uma preta e uma cinza" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/2N7uQJe" target="_blank" rel="noopener sponsored">Kit 2 Bolsas Marmita Térmica</a></h4>
+    <p class="item-price"><strong>R$ 21,99</strong> <s aria-label="Preço anterior">R$ 32,99</s> <span class="off">33% off</span></p>
+    <p class="item-text">Uma preta e uma cinza. Comida de casa no trabalho e na academia, todo dia.</p>
+    <a class="buy" href="https://meli.la/2N7uQJe" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="60" data-de="78" data-tipo="mv" data-nome="Papel de Parede Mármore 6 m" id="oferta-papel">
+  <a class="item-photo" href="https://meli.la/1u7jRXA" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_746885-MLB113779528637_062026-F.webp" alt="Parede revestida com papel efeito mármore branco e dourado" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1u7jRXA" target="_blank" rel="noopener sponsored">Papel de Parede Mármore 6 m</a></h4>
+    <p class="item-price"><strong>R$ 60,00</strong> <s aria-label="Preço anterior">R$ 78,00</s> <span class="off">23% off</span></p>
+    <p class="item-text">Autocolante, lavável, efeito mármore branco com veios dourados. Muda o ambiente sem obra.</p>
+    <a class="buy" href="https://meli.la/1u7jRXA" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="39.89" data-de="45.89" data-tipo="mv" data-nome="Par de Retrovisores Convexos Honda" id="oferta-retrovisor">
+  <a class="item-photo" href="https://meli.la/1vmgZNE" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_705648-MLB88640682914_072025-F.webp" alt="Par de retrovisores convexos para moto" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/1vmgZNE" target="_blank" rel="noopener sponsored">Par de Retrovisores Convexos Honda</a></h4>
+    <p class="item-price"><strong>R$ 39,89</strong> <s aria-label="Preço anterior">R$ 45,89</s> <span class="off">13% off</span></p>
+    <p class="item-text">Modelo Tiger 1200, rosca M10, para Honda. A lente convexa aumenta o campo de visão.</p>
+    <a class="buy" href="https://meli.la/1vmgZNE" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li>
+<li class="item reveal" data-preco="37.9" data-de="39.9" data-tipo="mv" data-nome="Esmalte Sintético Elit 900 ml" id="oferta-esmalte">
+  <a class="item-photo" href="https://meli.la/26aZhJg" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true"><img class="thumb" src="https://http2.mlstatic.com/D_NQ_NP_2X_661039-MLB117380606692_102026-F.webp" alt="Lata de esmalte sintético Elit cor tabaco" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></a>
+  <div class="item-body">
+    <h4 class="item-name"><a href="https://meli.la/26aZhJg" target="_blank" rel="noopener sponsored">Esmalte Sintético Elit 900 ml</a></h4>
+    <p class="item-price"><strong>R$ 37,90</strong> <s aria-label="Preço anterior">R$ 39,90</s> <span class="off">5% off</span></p>
+    <p class="item-text">Brilhante, cor tabaco. Portão, grade e madeira com cara de novos.</p>
+    <a class="buy" href="https://meli.la/26aZhJg" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a>
+  </div>
+</li></ul>
+</section>
+    <p class="empty" id="vazio" hidden>Nenhuma oferta encontrada com esses filtros. Ajuste a busca, a categoria ou a faixa de preço.</p>
+  </section>
+
+  <section class="steps" id="como" aria-label="Como comprar">
+    <div class="step step-1 rise"><h2 class="verb">Escolha.</h2><p class="step-text">Busque pelo que precisa e refine por categoria ou faixa de preço. Cada oferta mostra <strong>o preço anterior, o atual e o desconto</strong>.</p></div>
+    <div class="step step-2 rise"><h2 class="verb">Compre.</h2><p class="step-text">O botão abre o anúncio no Mercado Livre. <strong>O preço é o mesmo do site.</strong></p></div>
+    <div class="step step-3 rise"><h2 class="verb">Receba.</h2><p class="step-text">Entrega, troca e devolução seguem as regras do Mercado Livre, com a proteção do Compra Garantida.</p></div>
+  </section>
+
+  <section class="faq wrap" id="duvidas" aria-labelledby="duvidas-h">
+    <h2 id="duvidas-h">Antes de comprar</h2>
+    <div class="faq-list">
+      <details id="q1"><summary>Comprar por este link custa mais caro?<span class="chev" aria-hidden="true"></span></summary><p>Não. O preço é o do anúncio no Mercado Livre. Quando você compra por um link desta página, o Mercado Livre me paga uma comissão, e isso não muda nada no seu valor.</p></details>
+      <details id="q2"><summary>Os preços podem mudar?<span class="chev" aria-hidden="true"></span></summary><p>Podem. Conferi todos em 12/11/2026, mas na Black Friday os preços e os estoques mudam rápido. O valor que vale é o que aparece no anúncio na hora da compra.</p></details>
+      <details id="q3"><summary>Quem entrega e dá a garantia?<span class="chev" aria-hidden="true"></span></summary><p>O Mercado Livre e o vendedor de cada anúncio, como em qualquer compra no site. Prazos, frete, troca e devolução aparecem no anúncio antes de você pagar.</p></details>
+      <details id="q4"><summary>Como você escolheu essas ofertas?<span class="chev" aria-hidden="true"></span></summary><p>Passei por quase 500 produtos da central de afiliados do Mercado Livre e fiquei só com os que têm a etiqueta Black Friday, Oferta imperdível ou Mais vendido e com preço até R$ 300. Depois comparei o preço atual com o anterior de cada um.</p></details>
+      <details id="q5"><summary>Quando é a Black Friday?<span class="chev" aria-hidden="true"></span></summary><p>Em 27 de novembro de 2026. Muitas ofertas já estão valendo antes disso, e algumas acabam quando o estoque acaba.</p></details>
+      <details id="q6"><summary>Onde vejo as próximas ofertas?<span class="chev" aria-hidden="true"></span></summary><p>No meu Instagram, <a href="https://www.instagram.com/junior.bruno82/" target="_blank" rel="noopener">@junior.bruno82</a>. Comente QUERO nos posts que eu mando o link no direct.</p></details>
+    </div>
+  </section>
+
+  <section class="closing" aria-labelledby="fim-h">
+    <div class="closing-media"><img class="cta-img" src="https://http2.mlstatic.com/D_NQ_NP_2X_625289-MLA110412192372_052026-F.webp" alt="Lava jato portátil sem fio com duas baterias, mangueira, bicos e maleta" width="400" height="400" decoding="async" referrerpolicy="no-referrer"></div>
+    <div class="closing-text">
+      <h2 id="fim-h">O maior desconto da lista</h2>
+      <p id="fim-desc">Lava jato portátil de alta pressão, com duas baterias, mangueira, bicos e maleta. Lava carro, moto e calçada sem depender de tomada.</p>
+      <p class="price num"><span id="fim-por">R$ 98,43</span> <s id="fim-de">R$ 246,87</s></p>
+      <a class="btn" id="fim-link" data-nome="Lava Jato Portátil 2 Baterias" href="https://meli.la/2MyeAPh" target="_blank" rel="noopener sponsored" style="justify-self:start">Comprar o lava jato</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer wrap">
+  <div class="foot-top">
+    <nav class="foot-links" aria-label="Rodapé"><a href="#ofertas">Ofertas</a><a href="#duvidas">Dúvidas</a></nav>
+    <a class="foot-links" href="https://www.instagram.com/junior.bruno82/" target="_blank" rel="noopener" style="text-decoration:none;font-weight:600">Instagram @junior.bruno82</a>
+  </div>
+  <div>
+    <p class="foot-name">Achados do Júnior</p>
+    <p class="legal">Links de afiliado do Mercado Livre: recebo uma comissão quando você compra, sem custo a mais para você. Preços conferidos em 12/11/2026 e sujeitos a alteração. Esta é uma página independente, sem vínculo oficial com o Mercado Livre. Fotos dos produtos: anúncios do Mercado Livre. Produtos sem foto aparecem em ilustração. Este site registra visitas e cliques de forma anônima, sem nome, e-mail ou IP, só para medir o interesse nas ofertas.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var brl = function (v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace(/ /g, ' '); };
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Search and category/price filters
+  var resumo = document.getElementById('resumo');
+  var vazio = document.getElementById('vazio');
+  var categoria = document.getElementById('filtro-categoria');
+  var faixa = document.getElementById('filtro-preco');
+  var busca = document.getElementById('busca-ofertas');
+  function dentroDaFaixa(preco) {
+    var valor = faixa.value.split('-');
+    if (faixa.value === 'todos') return true;
+    if (faixa.value === '500+') return preco > 500;
+    var min = Number(valor[0]), max = Number(valor[1]);
+    return (min === 0 ? preco >= min : preco > min) && preco <= max;
+  }
+  function update() {
+    var items = [].slice.call(document.querySelectorAll('.item'));
+    var cats = [].slice.call(document.querySelectorAll('.cat'));
+    var n = 0, poup = 0;
+    var termo = busca.value.trim().toLocaleLowerCase('pt-BR');
+    items.forEach(function (it) {
+      var texto = (it.dataset.nome + ' ' + (it.dataset.descricao || '')).toLocaleLowerCase('pt-BR');
+      var ok = (!categoria.value || it.dataset.categoria === categoria.value) &&
+        dentroDaFaixa(+it.dataset.preco) &&
+        (!termo || texto.indexOf(termo) >= 0);
+      it.hidden = !ok;
+      if (ok) { n++; poup += (+it.dataset.de) - (+it.dataset.preco); }
+    });
+    cats.forEach(function (c) {
+      var vis = c.querySelectorAll('.item:not([hidden])').length;
+      c.hidden = vis === 0;
+      var cnt = c.querySelector('[data-count]'); if (cnt) cnt.textContent = vis;
+    });
+    vazio.hidden = n !== 0;
+    vazio.textContent = n === 0 ? 'Nenhuma oferta encontrada com esses filtros. Ajuste a busca, a categoria ou a faixa de preço.' : '';
+    resumo.innerHTML = n === 0
+      ? 'Nenhum achado com esses filtros. Experimente ajustar sua busca.'
+      : '<strong class="num">' + n + (n === 1 ? ' oferta' : ' ofertas') + '</strong> encontradas, somando <strong class="num">' + brl(Math.round(poup * 100) / 100) + '</strong> de desconto.';
+  }
+  // Entrances: tag what rises, then let it settle as it enters the screen
+  if (!reduce && 'IntersectionObserver' in window) {
+    document.querySelectorAll('.cat-head, .offers-head > *, .controls, .faq h2, .faq details, .closing-text > *, .panel-head, .panel-foot, .item').forEach(function (el) { el.classList.add('rise'); });
+    document.documentElement.classList.add('js');
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target, sib = el.parentElement ? [].indexOf.call(el.parentElement.children, el) : 0;
+        el.style.transitionDelay = (sib % 4) * 70 + 'ms';
+        el.classList.add('go'); io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.rise').forEach(function (el) { io.observe(el); });
+  }
+
+  categoria.addEventListener('change', update);
+  faixa.addEventListener('change', update);
+  busca.addEventListener('input', update);
+  update();
+
+  // Hooks for the spreadsheet loader (site version)
+  window.__adj = {
+    update: update,
+    filtro: function () { return { categoria: categoria.value, faixa: faixa.value, busca: busca.value.trim() }; },
+    resetFiltros: function () { categoria.value = ''; faixa.value = 'todos'; busca.value = ''; }
+  };
+})();
+</script>
+
+<script>
+/* ==========================================================================
+   Achados do Júnior: produtos da aba ofertas + registro opcional de engajamento.
+   ========================================================================== */
+window.PLANILHA_ID = '152quu_L0RTHjXzne_ZTRVpWHCMKzbxQ_KGUcfrvZMyY';
+window.PLANILHA_GID = '0';
+window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
+
+(function () {
+  var API = /^https:\/\/script\.google(usercontent)?\.com\//.test(window.PLANILHA_API) ? window.PLANILHA_API : '';
+  var brl = function (v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace(/ /g, ' '); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var safeUrl = function (u) { u = String(u || '').trim(); return /^https:\/\//.test(u) || /^data:image\//.test(u) ? u : ''; };
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return [].slice.call(document.querySelectorAll(s)); };
+
+  /* ---------- 1. Produtos vindos da planilha ---------- */
+  var GRUPOS = [['bf', 'Black Friday', 'Black Friday'], ['oi', 'Ofertas imperdíveis', 'Imperdíveis'], ['mv', 'Mais vendidos', 'Mais vendidos'], ['ot', 'Outras ofertas', 'Outras']];
+  var codigo = function (t) {
+    t = String(t || '').toLowerCase();
+    if (t.indexOf('black') >= 0) return 'bf';
+    if (t.indexOf('imperd') >= 0) return 'oi';
+    if (t.indexOf('vendid') >= 0) return 'mv';
+    return 'ot';
+  };
+  var campo = function (s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
+  var precoNumero = function (v) {
+    if (typeof v === 'number') return v;
+    var s = String(v || '').replace(/[R$\s]/gi, '');
+    if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+    return Number(s) || 0;
+  };
+  function produtosDaPlanilha(dados) {
+    if (!dados || dados.status !== 'ok' || !dados.table || !dados.table.cols) throw new Error('A planilha não retornou dados válidos.');
+    var cols = dados.table.cols;
+    var linhas = dados.table.rows || [];
+    var aliases = {
+      nome: ['nome', 'nomedoproduto', 'produto', 'name'],
+      link: ['link', 'url', 'linkafiliado', 'linkdoafiliado', 'linkdoproduto'],
+      preco: ['preco', 'precoatual', 'valor', 'valoratual', 'valordoproduto', 'price'],
+      de: ['de', 'precoanterior', 'precoantigo', 'valororiginal', 'precocheio'],
+      imagem: ['imagem', 'foto', 'urlimagem', 'linkimagem'],
+      descricao: ['descricao', 'descricaosite', 'detalhe', 'especificacao'],
+      tipo: ['tipo', 'tipooferta', 'tipodeoferta', 'oferta', 'grupo'],
+      categoria: ['categoria', 'categorias']
+    };
+    var indices = {};
+    Object.keys(aliases).forEach(function (chave) {
+      indices[chave] = cols.findIndex(function (col) { return aliases[chave].indexOf(campo(col.label || col.id)) >= 0; });
+    });
+    if (indices.nome < 0 || indices.link < 0 || indices.preco < 0) throw new Error('Confira se a aba ofertas tem as colunas Nome, Link e Preço.');
+    return linhas.map(function (linha) {
+      var celulas = linha.c || [];
+      var valor = function (chave) {
+        var i = indices[chave], celula = i >= 0 ? celulas[i] : null;
+        return celula && celula.v != null ? celula.v : (celula && celula.f) || '';
+      };
+      return {
+        nome: valor('nome'),
+        link: valor('link'),
+        preco: precoNumero(valor('preco')),
+        de: precoNumero(valor('de')),
+        imagem: valor('imagem'),
+        descricao: valor('descricao'),
+        tipo: valor('tipo'),
+        categoria: valor('categoria') || valor('tipo') || 'Outros'
+      };
+    });
+  }
+  var off = function (p) { return p.de > p.preco ? Math.round((1 - p.preco / p.de) * 100) : 0; };
+  var ILUSTRA = {
+    tesoura: '<svg viewBox="0 0 200 200" role="img" aria-label="Ilustração de uma tesoura"><rect width="200" height="200" fill="#f3f3f1"/><g transform="rotate(-38 100 100)"><path d="M104 96 L190 92 l-4 5 l4 5 l-4 5 l4 5 L104 106 Z" fill="#9aa3b5"/><path d="M104 104 L188 112 l-4 4 l4 5 l-4 5 l4 4 L104 112 Z" fill="#7c859a"/><circle cx="104" cy="104" r="7" fill="#1f2b4d"/><ellipse cx="62" cy="86" rx="30" ry="18" fill="none" stroke="#f7941d" stroke-width="12"/><ellipse cx="62" cy="124" rx="30" ry="18" fill="none" stroke="#1f2b4d" stroke-width="12"/><path d="M88 92 L104 100 M88 118 L104 108" stroke="#1f2b4d" stroke-width="10" stroke-linecap="round"/></g></svg>',
+    pincel: '<svg viewBox="0 0 200 200" role="img" aria-label="Ilustração de pincéis"><rect width="200" height="200" fill="#f3f3f1"/><g stroke-linecap="round">' + [-24, -12, 0, 12, 24].map(function (a, i) { return '<g transform="rotate(' + a + ' 100 178)"><line x1="100" y1="178" x2="100" y2="78" stroke="' + (i % 2 ? '#f7941d' : '#1f2b4d') + '" stroke-width="9"/><rect x="94" y="56" width="12" height="24" rx="2" fill="#9aa3b5"/><path d="M94 57 Q100 ' + (26 + (i % 2) * 8) + ' 106 57 Z" fill="#3a2e22"/></g>'; }).join('') + '</g></svg>',
+    padrao: '<svg viewBox="0 0 200 200" role="img" aria-label="Ilustração de etiqueta de oferta"><rect width="200" height="200" fill="#f3f3f1"/><path d="M60 50 h60 l40 50 l-40 50 h-60 z" fill="#1f2b4d"/><circle cx="82" cy="100" r="10" fill="#f7941d"/></svg>'
+  };
+  function foto(p, cls) {
+    var src = safeUrl(p.imagem);
+    if (src) return '<img class="' + cls + '" src="' + esc(src) + '" alt="' + esc(p.nome) + '" width="400" height="400" decoding="async" referrerpolicy="no-referrer">';
+    var k = /tesour/i.test(p.nome) ? 'tesoura' : /pinc/i.test(p.nome) ? 'pincel' : 'padrao';
+    return '<span class="' + cls + ' is-drawn">' + ILUSTRA[k] + '</span>';
+  }
+  function itemHtml(p) {
+    var link = esc(safeUrl(p.link));
+    var de = p.de > p.preco ? ' <s aria-label="Preço anterior">' + brl(p.de) + '</s> <span class="off">' + off(p) + '% off</span>' : '';
+    return '<li class="item go" data-preco="' + p.preco + '" data-de="' + (p.de > p.preco ? p.de : p.preco) + '" data-tipo="' + p.cod + '" data-nome="' + esc(p.nome) + '" data-descricao="' + esc(p.descricao || '') + '" data-categoria="' + esc(p.categoria) + '">' +
+      '<a class="item-photo" href="' + link + '" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true">' + foto(p, 'thumb') + '</a>' +
+      '<div class="item-body"><h4 class="item-name"><a href="' + link + '" target="_blank" rel="noopener sponsored">' + esc(p.nome) + '</a></h4>' +
+      '<p class="item-price"><strong>' + brl(p.preco) + '</strong>' + de + '</p>' +
+      (p.descricao ? '<p class="item-text">' + esc(p.descricao) + '</p>' : '') +
+      '<a class="buy" href="' + link + '" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a></div></li>';
+  }
+
+  function aplicar(lista) {
+    var ps = (lista || []).map(function (p) {
+      return { nome: String(p.nome || ''), link: String(p.link || ''), preco: precoNumero(p.preco), de: precoNumero(p.de), imagem: p.imagem, descricao: p.descricao, categoria: String(p.categoria || 'Outros'), cod: codigo(p.tipo) };
+    }).filter(function (p) { return p.nome && safeUrl(p.link) && p.preco > 0; });
+    if (!ps.length) return false;
+
+    // Lista por grupo, maior desconto primeiro
+    $$('.cat').forEach(function (c) { c.remove(); });
+    var vazio = $('#vazio');
+    GRUPOS.forEach(function (g) {
+      var its = ps.filter(function (p) { return p.cod === g[0]; }).sort(function (a, b) { return off(b) - off(a); });
+      if (!its.length) return;
+      var sec = document.createElement('section');
+      sec.className = 'cat'; sec.dataset.grupo = g[0]; sec.setAttribute('aria-labelledby', 'g-' + g[0]);
+      sec.innerHTML = '<div class="cat-head"><h3 id="g-' + g[0] + '">' + g[1] + '</h3><p class="cat-count"><span data-count>' + its.length + '</span> ofertas</p></div><ul class="items">' + its.map(itemHtml).join('') + '</ul>';
+      vazio.parentNode.insertBefore(sec, vazio);
+    });
+
+    var categorias = $('#filtro-categoria');
+    var listaCategorias = ps.map(function (p) { return p.categoria; }).filter(function (c, i, todos) { return todos.indexOf(c) === i; }).sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
+    categorias.innerHTML = '<option value="">Todas as categorias</option>' + listaCategorias.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+    window.__adj.resetFiltros();
+
+    // Números do topo
+    var total = ps.reduce(function (s, p) { return s + Math.max(0, p.de - p.preco); }, 0);
+    $$('.js-count').forEach(function (el) { el.textContent = ps.length; });
+    $$('.js-total-off').forEach(function (el) { el.textContent = brl(Math.round(total * 100) / 100); });
+    var dp = $('#data-precos'); if (dp) dp.textContent = 'Preços atualizados pela planilha.';
+
+    var comFoto = ps.filter(function (p) { return safeUrl(p.imagem) && off(p) > 0; }).sort(function (a, b) { return off(b) - off(a); });
+
+    // Fechamento: o maior desconto
+    var top = comFoto[0];
+    if (top) {
+      var media = $('.closing-media'); if (media) media.innerHTML = foto(top, 'cta-img');
+      var t = $('#fim-desc'); if (t) t.textContent = top.descricao || top.nome;
+      $('#fim-por').textContent = brl(top.preco); $('#fim-de').textContent = brl(top.de);
+      var l = $('#fim-link'); l.href = safeUrl(top.link); l.textContent = 'Comprar agora';
+      l.dataset.nome = top.nome;
+    }
+    window.__adj.update();
+    return true;
+  }
+
+  function carregarPlanilha() {
+    var script = document.createElement('script');
+    var finalizado = false;
+    var temporizador;
+    function terminar(mensagem) {
+      if (finalizado) return;
+      finalizado = true;
+      clearTimeout(temporizador);
+      script.remove();
+      if (mensagem) $('#data-precos').textContent = mensagem;
+    }
+    window.google = window.google || {};
+    window.google.visualization = window.google.visualization || {};
+    window.google.visualization.Query = window.google.visualization.Query || {};
+    window.google.visualization.Query.setResponse = function (dados) {
+      try {
+        if (!aplicar(produtosDaPlanilha(dados))) throw new Error('Nenhum produto válido foi encontrado na aba ofertas.');
+        terminar('Ofertas carregadas da planilha.');
+      } catch (erro) {
+        terminar('Não foi possível carregar as ofertas da planilha. Confira o acesso público e as colunas Nome, Link e Preço.');
+      }
+    };
+    script.onerror = function () {
+      terminar('Planilha indisponível. Torne-a pública para carregar as ofertas automaticamente.');
+    };
+    script.src = 'https://docs.google.com/spreadsheets/d/' + encodeURIComponent(window.PLANILHA_ID) +
+      '/gviz/tq?tqx=out:json&gid=' + encodeURIComponent(window.PLANILHA_GID);
+    temporizador = setTimeout(function () {
+      terminar('A planilha demorou para responder. Confira se ela está acessível por link.');
+    }, 12000);
+    document.head.appendChild(script);
+  }
+
+  function mostrarAtivos(n) {
+    var el = $('#ao-vivo'); if (!el) return;
+    n = Number(n) || 0;
+    el.hidden = n < 2;
+    if (n >= 2) el.textContent = n + ' pessoas estão vendo estas ofertas agora.';
+  }
+
+  carregarPlanilha();
+  if (API) {
+    fetch(API, { method: 'GET' }).then(function (r) { return r.json(); }).then(function (d) {
+      mostrarAtivos(d.ativos);
+    }).catch(function () { /* mantém a lista embutida */ });
+    setInterval(function () {
+      if (document.hidden) return;
+      fetch(API + '?so=ativos').then(function (r) { return r.json(); }).then(function (d) { mostrarAtivos(d.ativos); }).catch(function () {});
+    }, 60000);
+  }
+
+  /* ---------- 2. Engajamento anônimo ---------- */
+  if (!API) return;
+  var rand = function () { return Math.random().toString(36).slice(2, 10); };
+  var guardar = function (store, k, gerar) {
+    try { var v = store.getItem(k); if (!v) { v = gerar(); store.setItem(k, v); } return v; } catch (e) { return gerar(); }
+  };
+  var visitante = guardar(window.localStorage, 'adj_visitante', function () { return 'v-' + rand(); });
+  var sessao = guardar(window.sessionStorage, 'adj_sessao', function () { return 's-' + rand(); });
+  var dispositivo = window.matchMedia('(max-width: 760px)').matches ? 'celular' : (window.matchMedia('(max-width: 1100px)').matches ? 'tablet' : 'computador');
+  var origem = (function () {
+    var q = new URLSearchParams(location.search).get('utm_source');
+    if (q) return q;
+    try { return document.referrer ? new URL(document.referrer).hostname : 'direto'; } catch (e) { return 'direto'; }
+  })();
+
+  var SECOES = [['#ofertas', 'lista de ofertas'], ['#como', 'como funciona'], ['#duvidas', 'dúvidas'], ['.closing', 'maior desconto'], ['.footer', 'rodapé']];
+  var secao = 'início';
+  if ('IntersectionObserver' in window) {
+    var visivel = {};
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { visivel[e.target.dataset.secao] = e.intersectionRatio; });
+      var melhor = null, r = 0;
+      Object.keys(visivel).forEach(function (k) { if (visivel[k] > r) { r = visivel[k]; melhor = k; } });
+      if (melhor) secao = melhor;
+    }, { threshold: [0, .25, .5, .75, 1] });
+    SECOES.forEach(function (s) { var el = $(s[0]); if (el) { el.dataset.secao = s[1]; io.observe(el); } });
+  }
+
+  function enviar(evento, extra) {
+    var dados = { evento: evento, visitante: visitante, sessao: sessao, dispositivo: dispositivo, origem: origem, secao: secao };
+    if (extra) Object.keys(extra).forEach(function (k) { dados[k] = extra[k]; });
+    var corpo = JSON.stringify(dados);
+    try { if (navigator.sendBeacon && navigator.sendBeacon(API, new Blob([corpo], { type: 'text/plain;charset=utf-8' }))) return; } catch (e) {}
+    fetch(API, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: corpo }).catch(function () {});
+  }
+
+  enviar('visita', { detalhe: location.pathname });
+  var pulso = null;
+  function ligar() { if (!pulso) pulso = setInterval(function () { enviar('ping'); }, 30000); }
+  function desligar() { clearInterval(pulso); pulso = null; }
+  ligar();
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { desligar(); enviar('saida'); } else { enviar('ping'); ligar(); }
+  });
+
+  // Cliques nos botões de compra
+  document.addEventListener('click', function (ev) {
+    var a = ev.target.closest('a[href*="meli.la"]'); if (!a) return;
+    var dono = a.closest('[data-nome]') || a;
+    var nome = dono.dataset.nome || a.textContent.trim();
+    enviar('clique', { produto: nome, link: a.href });
+  });
+
+  // Uso do filtro (agrupado: envia 1,5 s depois da última mudança)
+  var espera = null;
+  function filtroMudou() {
+    clearTimeout(espera);
+    espera = setTimeout(function () {
+      var f = window.__adj.filtro();
+      enviar('filtro', { detalhe: 'categoria ' + (f.categoria || 'todas') + ' · faixa ' + f.faixa + (f.busca ? ' · busca ' + f.busca : '') });
+    }, 1500);
+  }
+  $('#filtro-categoria').addEventListener('change', filtroMudou);
+  $('#filtro-preco').addEventListener('change', filtroMudou);
+  $('#busca-ofertas').addEventListener('input', filtroMudou);
+})();
+
+</script>
+</body>
+</html>
