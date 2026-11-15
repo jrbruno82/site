@@ -699,7 +699,7 @@ const I18N={
 'Obrigatório. Seu nome aparece no ranking.':['Required. Your name appears on the leaderboard.','Obligatorio. Tu nombre aparece en la clasificación.'],'Digite seu nome para jogar.':['Type your name to play.','Escribe tu nombre para jugar.'],
 'Nome':['Name','Nombre'],'Pontos':['Points','Puntos'],'Resultado':['Result','Resultado'],'Missões':['Missions','Misiones'],'Dias':['Days','Días'],
 'Chegou ao aeroporto':['Reached the airport','Llegó al aeropuerto'],'Escapou da ilha':['Escaped the island','Escapó de la isla'],'Saiu do jogo':['Left the game','Salió del juego'],'Morreu':['Died','Murió'],
-'O ranking ainda não está ligado à planilha.':['The leaderboard is not connected to the spreadsheet yet.','La clasificación aún no está conectada a la hoja de cálculo.'],
+'O ranking está indisponível no momento.':['The leaderboard is not available right now.','La clasificación no está disponible en este momento.'],
 'Carregando o ranking…':['Loading the leaderboard…','Cargando la clasificación…'],'Ninguém terminou uma partida ainda. Seja o primeiro!':['Nobody has finished a game yet. Be the first!','Nadie terminó una partida todavía. ¡Sé el primero!'],
 'Não foi possível carregar o ranking. Verifique a internet e tente de novo.':['Could not load the leaderboard. Check your internet and try again.','No se pudo cargar la clasificación. Revisa tu internet e inténtalo de nuevo.'],
 'Pontos: 100 por missão, 50 por etapa do avião, 20 por dia vivo, 10 por caranguejo, 2 por árvore, 200 por pousar em outra ilha, 600 por escapar e 1000 por chegar ao aeroporto.':['Points: 100 per mission, 50 per plane stage, 20 per day alive, 10 per crab, 2 per tree, 200 for landing on another island, 600 for escaping and 1000 for reaching the airport.','Puntos: 100 por misión, 50 por etapa del avión, 20 por día vivo, 10 por cangrejo, 2 por árbol, 200 por aterrizar en otra isla, 600 por escapar y 1000 por llegar al aeropuerto.'],' (caído)':[' (down)',' (caído)'],' (no avião)':[' (on the plane)',' (en el avión)'],' (de bicicleta)':[' (on a bike)',' (en bici)'],
@@ -2751,19 +2751,19 @@ $('lightBtn').addEventListener('pointerdown',e=>{e.preventDefault();toggleFlash(
 let runOn=false;
 function setRun(v){runOn=v;$('runBtn').setAttribute('aria-pressed',v?'true':'false');}
 $('runBtn').addEventListener('pointerdown',e=>{e.preventDefault();setRun(!runOn);});
-// ================= registro na planilha e ranking =================
-// endereço do App da Web do Google Apps Script ligado à planilha "Ilha do Náufrago" (termina em /exec).
-// No GitHub Pages ele vem do arquivo config.js; aqui fica o valor padrão.
-const SHEETS_URL_PADRAO='';
+// ================= registro de jogadores e ranking =================
+// endereço do serviço de registro (webhook do Make). Um config.js pode trocar o endereço sem mexer no jogo.
+const SHEETS_URL_PADRAO='https://hook.us2.make.com/vznjpuuo4eaud1glupx9mi77fhk8s0om';
 const SHEETS_URL=(()=>{const u=String(window.NAUFRAGO_SHEETS_URL||SHEETS_URL_PADRAO).trim();
-  if(!u)return'';if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u))return u;
-  console.warn('Ilha do Náufrago: o endereço da planilha precisa ser https://script.google.com/macros/s/.../exec');return'';})();
-if(!SHEETS_URL)console.info('Ilha do Náufrago: registro na planilha desligado (falta o endereço /exec do Apps Script).');
+  if(!u)return'';if(/^https:\/\/hook\.[a-z0-9]+\.make\.com\/[a-z0-9]+$/.test(u)||/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u))return u;
+  console.warn('Ilha do Náufrago: endereço de registro inválido.');return'';})();
+if(!SHEETS_URL)console.info('Ilha do Náufrago: registro desligado.');
 const DEVICE=(()=>{const u=navigator.userAgent;if(/iPhone|iPod/.test(u))return'iPhone';if(/iPad/.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))return'iPad';if(/Android/.test(u))return'Android';return'Computador';})();
 const BROWSER=(()=>{const u=navigator.userAgent;return/Edg(e|A|iOS)?\//.test(u)?'Edge':/OPR\/|Opera/.test(u)?'Opera':/SamsungBrowser/.test(u)?'Samsung Internet':/FxiOS|Firefox\//.test(u)?'Firefox':/CriOS|Chrome\//.test(u)?'Chrome':/Safari\//.test(u)?'Safari':'Outro';})();
 function sheetSend(d,beacon){
-  if(!SHEETS_URL)return;const body=JSON.stringify(d);
-  try{if(beacon&&navigator.sendBeacon&&navigator.sendBeacon(SHEETS_URL,new Blob([body],{type:'text/plain'})))return;
+  // formulário simples (application/x-www-form-urlencoded): o navegador envia sem bloqueio entre sites
+  if(!SHEETS_URL)return;const body=new URLSearchParams();for(const k in d)body.append(k,d[k]==null?'':String(d[k]));
+  try{if(beacon&&navigator.sendBeacon&&navigator.sendBeacon(SHEETS_URL,body))return;
     fetch(SHEETS_URL,{method:'POST',mode:'no-cors',keepalive:true,body}).catch(()=>{});}catch(e){}
 }
 let runT0=0,endSent=true;
@@ -2784,10 +2784,10 @@ function rankHelp(){return`<p class="mpnote" style="margin-top:12px">${tr('Ponto
 let rankReq=0;
 async function openRanking(){
   const b=$('rankBody'),me=++rankReq;$('rankPanel').hidden=false;setTimeout(()=>$('rankClose').focus(),30);
-  if(!SHEETS_URL){b.innerHTML=`<p>${tr('O ranking ainda não está ligado à planilha.')}</p>`+rankHelp();return;}
+  if(!SHEETS_URL){b.innerHTML=`<p>${tr('O ranking está indisponível no momento.')}</p>`+rankHelp();return;}
   b.innerHTML=`<p>${tr('Carregando o ranking…')}</p>`;
   try{
-    const r=await fetch(SHEETS_URL+'?t='+Date.now()),j=await r.json();if(me!==rankReq)return;
+    const r=await fetch(SHEETS_URL+'?tipo=ranking&t='+Date.now()),j=await r.json();if(me!==rankReq)return;
     const L=(j&&Array.isArray(j.ranking))?j.ranking:[];
     if(!L.length){b.innerHTML=`<p>${tr('Ninguém terminou uma partida ainda. Seja o primeiro!')}</p>`+rankHelp();return;}
     const mine=(myName||'').toLowerCase();
