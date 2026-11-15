@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-title" content="Náufrago">
 <meta name="theme-color" content="#06222b">
 <link rel="manifest" href="manifest.webmanifest">
+<script src="config.js"></script>
 <meta charset="utf-8">
 <title>Ilha do Náufrago</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2751,8 +2752,13 @@ let runOn=false;
 function setRun(v){runOn=v;$('runBtn').setAttribute('aria-pressed',v?'true':'false');}
 $('runBtn').addEventListener('pointerdown',e=>{e.preventDefault();setRun(!runOn);});
 // ================= registro na planilha e ranking =================
-// endereço do App da Web do Google Apps Script ligado à planilha "Ilha do Náufrago" (termina em /exec)
-const SHEETS_URL='';
+// endereço do App da Web do Google Apps Script ligado à planilha "Ilha do Náufrago" (termina em /exec).
+// No GitHub Pages ele vem do arquivo config.js; aqui fica o valor padrão.
+const SHEETS_URL_PADRAO='';
+const SHEETS_URL=(()=>{const u=String(window.NAUFRAGO_SHEETS_URL||SHEETS_URL_PADRAO).trim();
+  if(!u)return'';if(/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u))return u;
+  console.warn('Ilha do Náufrago: o endereço da planilha precisa ser https://script.google.com/macros/s/.../exec');return'';})();
+if(!SHEETS_URL)console.info('Ilha do Náufrago: registro na planilha desligado (falta o endereço /exec do Apps Script).');
 const DEVICE=(()=>{const u=navigator.userAgent;if(/iPhone|iPod/.test(u))return'iPhone';if(/iPad/.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))return'iPad';if(/Android/.test(u))return'Android';return'Computador';})();
 const BROWSER=(()=>{const u=navigator.userAgent;return/Edg(e|A|iOS)?\//.test(u)?'Edge':/OPR\/|Opera/.test(u)?'Opera':/SamsungBrowser/.test(u)?'Samsung Internet':/FxiOS|Firefox\//.test(u)?'Firefox':/CriOS|Chrome\//.test(u)?'Chrome':/Safari\//.test(u)?'Safari':'Outro';})();
 function sheetSend(d,beacon){
