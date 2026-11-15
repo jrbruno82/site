@@ -203,6 +203,25 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
 .slot.sel{border-color:var(--buoy);box-shadow:0 0 0 2px var(--buoy) inset}
 .tool{cursor:pointer}.tool.sel{border-style:solid;border-color:var(--buoy);box-shadow:0 0 0 2px var(--buoy) inset}
 .online{display:grid;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+#screen{padding-top:64px}
+.langsw{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));z-index:2;display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px}
+.langsw button{font:inherit;font-weight:700;font-size:13px;letter-spacing:.04em;background:none;border:0;border-radius:3px;color:var(--sand-dim);padding:5px 10px;cursor:pointer}
+.langsw button[aria-pressed="true"]{background:var(--buoy);color:#1d0d04}
+.langsw button:focus-visible{outline:2px solid var(--sand);outline-offset:1px}
+.rankbtn{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:max(16px,env(safe-area-inset-left,0px));z-index:2;font:inherit;font-weight:700;font-size:13px;letter-spacing:.04em;background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--sand);padding:9px 14px;cursor:pointer}
+.rankbtn:hover{border-color:var(--buoy)}
+.rankbtn:focus-visible{outline:2px solid var(--sand);outline-offset:1px}
+.rankpanel{z-index:30}
+.rankwrap{overflow-x:auto}
+table.rank{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+table.rank th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--sand-dim);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.rank td{padding:7px 8px;border-bottom:1px solid var(--line)}
+table.rank td.n,table.rank th.n{text-align:right}
+table.rank tr:first-child td{color:var(--buoy);font-weight:700}
+table.rank tr.me td{background:rgba(255,106,43,.12)}
+#nameIn.bad{border-color:var(--bad)}
+.byline{margin:-6px 0 14px!important;font-size:15px!important;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sand-dim)}
+@media (max-width:560px){.langsw button{font-size:12px;padding:4px 7px}}
 .btn2{font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;background:transparent;color:var(--sand);border:1px solid var(--sand-dim);border-radius:3px;padding:9px 14px;cursor:pointer}
 .btn2:hover{border-color:var(--sand);background:rgba(240,223,179,.06)}
 .btn2:disabled{opacity:.45;cursor:not-allowed}
@@ -229,7 +248,8 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
 .fh-row{display:flex;gap:18px;font-size:13px;font-weight:600;color:var(--sand-dim);letter-spacing:.06em;text-transform:uppercase}
 .fh-row b{font-family:var(--display);font-weight:400;font-size:22px;color:var(--sand);letter-spacing:0;font-variant-numeric:tabular-nums}
 .fh-dir{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
-#fhArrow{display:block;width:18px;height:20px;background:var(--buoy);clip-path:polygon(50% 0,100% 100%,50% 75%,0 100%);transition:transform .15s linear}
+#fhArrow,#fhArrow2{display:block;width:18px;height:20px;background:var(--buoy);clip-path:polygon(50% 0,100% 100%,50% 75%,0 100%);transition:transform .15s linear}
+#fhArrow2{background:#ffe14a}
 .fh-esc{font-size:13px;color:var(--sand-dim)}
 .fh-keys{font-size:12px;color:var(--sand-dim);display:flex;gap:4px;flex-wrap:wrap;justify-content:center;align-items:center}
 .fsbtn{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:6;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;background:var(--sand);color:#1d0d04;border:0;border-radius:3px;padding:7px 12px;box-shadow:0 2px 0 #8f7f58}
@@ -290,13 +310,13 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
       <div class="stat" id="s-food" style="--c:var(--food)"><span>Comida</span><div class="bar"><i></i></div><span class="num">100</span></div>
       <div class="stat" id="s-water" style="--c:var(--water)"><span>Água</span><div class="bar"><i></i></div><span class="num">100</span></div>
       <div class="stat" id="s-energy" style="--c:var(--energy)"><span>Energia</span><div class="bar"><i></i></div><span class="num">100</span></div>
-      <div class="mprow" id="mpRow" hidden><span>Partida <b id="mpCode"></b></span><span id="mpCount">1/2</span></div>
+      <div class="mprow" id="mpRow" hidden><span><span>Partida</span> <b id="mpCode"></b></span><span id="mpCount">1/2</span></div>
     </section>
 
     <div class="side">
       <div class="mapbox" id="mapBox" title="Abrir mapa (M)"><canvas id="mini" width="200" height="200" aria-label="Mapa explorado"></canvas><div class="markdist" id="markDist" hidden></div></div>
       <button class="mission" id="missionCard" tabindex="-1">
-        <span class="mtag"><span>Missão <span id="mNum">1</span>/<span id="mTot">14</span></span><span>J</span></span>
+        <span class="mtag"><span><span id="mtagTxt">Missão</span> <span id="mNum">1</span>/<span id="mTot">17</span></span><span>J</span></span>
         <h4 id="mTitle"></h4>
         <p id="mDesc"></p>
         <div class="mbar"><i id="mBar"></i></div>
@@ -315,9 +335,9 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
   </div>
 
   <div class="flyhud" id="flyHud" hidden>
-    <div class="fh-row"><span>Altitude <b id="fhAlt">0</b> m</span><span>Velocidade <b id="fhSpd">0</b> km/h</span></div>
+    <div class="fh-row"><span><span>Altitude</span> <b id="fhAlt">0</b> m</span><span><span>Velocidade</span> <b id="fhSpd">0</b> km/h</span></div>
     <div class="fh-dir"><i id="fhArrow"></i><span id="fhTgt">Ilha vizinha</span></div>
-    <div class="fh-esc" id="fhEsc"></div>
+    <div class="fh-dir fh-esc" id="fhEsc"><i id="fhArrow2"></i><span id="fhEscTxt"></span></div>
     <div class="fh-keys" id="fhKeys"><kbd>W</kbd><kbd>S</kbd> descer e subir · <kbd>A</kbd><kbd>D</kbd> virar · <kbd>Shift</kbd> acelerar · <kbd>L</kbd> pousar</div>
     <button class="act" id="landBtn" hidden>Pousar</button>
   </div>
@@ -372,10 +392,15 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
   </section>
 
   <div class="screen" id="screen">
+    <button class="rankbtn" id="rankBtn" type="button">Ranking</button>
+    <div class="langsw" role="group" aria-label="Idioma / Language / Idioma">
+      <button data-l="pt" aria-pressed="true">Português</button><button data-l="en" aria-pressed="false">English</button><button data-l="es" aria-pressed="false">Español</button>
+    </div>
     <div class="intro">
       <div class="story">
         <div class="tag">Diário de bordo · noite do naufrágio</div>
         <h1>Ilha do Náufrago</h1>
+        <p class="byline">by Felipe Bruno</p>
         <p>A tempestade afundou o navio. Você acordou numa praia sem nome, com destroços espalhados pela areia. No meio da ilha existe uma pista de pouso abandonada e a carcaça de um velho monomotor. Conserte o avião e voe para longe.</p>
         <ol class="steps">
           <li><span>1</span><div><strong>Fique vivo.</strong> Comida, água e energia caem com o tempo. Beba nas lagoas, colha frutas, asse carne de caranguejo.</div></li>
@@ -401,9 +426,9 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
       <div class="creator">
         <h2>Seu náufrago</h2>
         <canvas id="preview" aria-label="Prévia do personagem"></canvas>
-        <div class="opt"><label class="lbl" for="nameIn">Seu nome</label><input id="nameIn" maxlength="16" placeholder="Náufrago" autocomplete="off" spellcheck="false"></div>
+        <div class="opt"><label class="lbl" for="nameIn">Seu nome</label><input id="nameIn" maxlength="16" placeholder="Náufrago" autocomplete="off" spellcheck="false" required aria-required="true" aria-describedby="nameNote"><p class="mpnote" id="nameNote">Obrigatório. Seu nome aparece no ranking.</p></div>
         <div class="opt"><span class="lbl">Pele</span><div class="swatches" id="tones"></div></div>
-        <div class="opt"><span class="lbl">Roupa</span><div class="outfits" id="outfits"></div></div>
+        <div class="opt"><span class="lbl">Roupa</span><div class="outfits" id="outfits"></div><p class="mpnote" id="kitNote"></p></div>
         <div id="modes" class="codebox">
           <button class="btn" id="startBtn" disabled>Carregando…</button>
           <div class="online">
@@ -426,8 +451,12 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
     </div>
   </div>
   <div class="screen" id="endScreen" hidden></div>
+  <section class="panel rankpanel" id="rankPanel" hidden aria-label="Ranking">
+    <header><div><h2>Ranking</h2><small>Os melhores náufragos</small></div><button class="x" id="rankClose" aria-label="Fechar">×</button></header>
+    <div class="pbody" id="rankBody"></div>
+  </section>
   <div class="reqbox" id="reqBox" hidden role="alertdialog" aria-label="Pedido de entrada">
-    <p><b id="reqName"></b> quer entrar na sua partida.</p>
+    <p><b id="reqName"></b> <span>quer entrar na sua partida.</span></p>
     <div class="seatbtns"><button class="act" id="reqYes">Permitir (Y)</button><button class="btn2" id="reqNo">Recusar (N)</button></div>
   </div>
   <div class="cine" id="cine" hidden><span id="cineTxt"></span></div>
@@ -438,7 +467,253 @@ kbd{font-family:var(--body);font-weight:700;font-size:11px;border:1px solid var(
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id);
-if(!window.THREE){$('startBtn').textContent='Não foi possível carregar o 3D. Recarregue a página.';return;}
+// ================= idiomas: português (original), inglês e espanhol =================
+let LANG='pt';try{LANG=localStorage.getItem('naufrago-lang')||'';}catch(e){}
+if(!['pt','en','es'].includes(LANG)){const nl=(navigator.language||'pt').slice(0,2);LANG=['en','es'].includes(nl)?nl:'pt';}
+const I18N={
+// tela inicial
+'Diário de bordo · noite do naufrágio':['Logbook · night of the shipwreck','Diario de a bordo · noche del naufragio'],
+'Ilha do Náufrago':['Castaway Island','Isla del Náufrago'],
+'A tempestade afundou o navio. Você acordou numa praia sem nome, com destroços espalhados pela areia. No meio da ilha existe uma pista de pouso abandonada e a carcaça de um velho monomotor. Conserte o avião e voe para longe.':['The storm sank the ship. You woke up on a nameless beach, with wreckage scattered across the sand. In the middle of the island there is an abandoned airstrip and the hull of an old single-engine plane. Fix the plane and fly away.','La tormenta hundió el barco. Despertaste en una playa sin nombre, con restos esparcidos por la arena. En medio de la isla hay una pista abandonada y el casco de una vieja avioneta. Repara el avión y vuela lejos.'],
+'Fique vivo.':['Stay alive.','Mantente vivo.'],
+'Comida, água e energia caem com o tempo. Beba nas lagoas, colha frutas, asse carne de caranguejo.':['Food, water and energy drop over time. Drink at the ponds, pick fruit, roast crab meat.','La comida, el agua y la energía bajan con el tiempo. Bebe en las lagunas, recoge frutas, asa carne de cangrejo.'],
+'Siga as missões.':['Follow the missions.','Sigue las misiones.'],
+'O diário mostra o próximo passo e dá recompensas.':['The journal shows the next step and gives rewards.','El diario muestra el siguiente paso y da recompensas.'],
+'Junte peças.':['Gather parts.','Reúne piezas.'],
+'Caixotes do navio, caixas militares e tambores de combustível estão espalhados pela ilha.':['Ship crates, military crates and fuel drums are scattered around the island.','Cajas del barco, cajas militares y bidones de combustible están repartidos por la isla.'],
+'Monte e decole.':['Build and take off.','Arma y despega.'],
+'No hangar: fuselagem, asas, motor e combustível. Libere a pista e acelere. O avião leva piloto e passageiro.':['At the hangar: fuselage, wings, engine and fuel. Clear the runway and speed up. The plane carries a pilot and passengers.','En el hangar: fuselaje, alas, motor y combustible. Despeja la pista y acelera. El avión lleva piloto y pasajeros.'],
+'Jogue com amigos.':['Play with friends.','Juega con amigos.'],
+'Crie uma partida online para até 6 náufragos, mande o código e sobrevivam juntos no mesmo mundo. Olhe para um amigo e aperte E para dar itens.':['Create an online match for up to 6 castaways, send the code and survive together in the same world. Look at a friend and press E to give items.','Crea una partida en línea para hasta 6 náufragos, envía el código y sobrevivan juntos en el mismo mundo. Mira a un amigo y pulsa E para dar objetos.'],
+'andar':['walk','caminar'],'olhar':['look','mirar'],'Clique':['Click','Clic'],'segurar para agir':['hold to act','mantén para actuar'],'Espaço':['Space','Espacio'],'pular':['jump','saltar'],
+'correr':['run','correr'],'bancada':['workbench','mesa de trabajo'],'diário':['journal','diario'],'bicicleta e dar itens':['bike and give items','bici y dar objetos'],'lanterna':['flashlight','linterna'],
+'segurar item (de novo: comer)':['hold item (again: eat)','sostener objeto (otra vez: comer)'],'mapa':['map','mapa'],
+'Seu náufrago':['Your castaway','Tu náufrago'],'Seu nome':['Your name','Tu nombre'],'Pele':['Skin','Piel'],'Roupa':['Outfit','Ropa'],'Náufrago':['Castaway','Náufrago'],
+'Jogar sozinho':['Play solo','Jugar solo'],'Carregando…':['Loading…','Cargando…'],'Online com um amigo':['Online with friends','En línea con amigos'],'Criar partida':['Create match','Crear partida'],'Entrar':['Join','Entrar'],'CÓDIGO':['CODE','CÓDIGO'],
+'Código da partida':['Match code','Código de la partida'],'Copiar código':['Copy code','Copiar código'],'Código copiado':['Code copied','Código copiado'],'Selecionado: copie com Ctrl+C':['Selected: copy with Ctrl+C','Seleccionado: copia con Ctrl+C'],
+'Mande o código para seu amigo. Ele abre este mesmo jogo, escolhe o náufrago e entra com o código. Pode entrar na ilha antes: ele chega depois, no mesmo mundo.':['Send the code to your friend. They open this same game, pick a castaway and join with the code. You can go to the island first: they arrive later, in the same world.','Envía el código a tu amigo. Abre este mismo juego, elige un náufrago y entra con el código. Puedes entrar a la isla antes: él llega después, al mismo mundo.'],
+'Entrar na ilha':['Enter the island','Entrar en la isla'],'Cancelar partida':['Cancel match','Cancelar partida'],
+'Kit inicial: {0}.':['Starting kit: {0}.','Kit inicial: {0}.'],
+'Só você por enquanto. Cabem {0} náufragos.':['Just you for now. Room for {0} castaways.','Solo tú por ahora. Caben {0} náufragos.'],
+'1 amigo já entrou (cabem {0} náufragos).':['1 friend has joined (room for {0} castaways).','1 amigo ya entró (caben {0} náufragos).'],
+'{0} amigos já entraram (cabem {1} náufragos).':['{0} friends have joined (room for {1} castaways).','{0} amigos ya entraron (caben {1} náufragos).'],
+// avisos do modo online
+'Conectando ao modo online…':['Connecting to online mode…','Conectando al modo en línea…'],
+'Crie uma partida ou digite o código que seu amigo mandou.':['Create a match or type the code your friend sent.','Crea una partida o escribe el código que te envió tu amigo.'],
+'Criando partida…':['Creating match…','Creando partida…'],'Procurando a partida {0}…':['Looking for match {0}…','Buscando la partida {0}…'],
+'Pedido enviado. Esperando quem criou a partida autorizar sua entrada…':['Request sent. Waiting for the match creator to let you in…','Solicitud enviada. Esperando que quien creó la partida autorice tu entrada…'],
+'Quem criou a partida não autorizou sua entrada.':['The match creator did not let you in.','Quien creó la partida no autorizó tu entrada.'],
+'Quem criou a partida não respondeu. Peça para ele autorizar e tente de novo.':['The match creator did not answer. Ask them to accept and try again.','Quien creó la partida no respondió. Pídele que te autorice e inténtalo de nuevo.'],
+'Nenhuma partida aberta com o código {0}. Confira o código com seu amigo.':['No open match with code {0}. Check the code with your friend.','No hay ninguna partida abierta con el código {0}. Revisa el código con tu amigo.'],
+'Entrada autorizada, mas a partida não respondeu. Tente de novo.':['Entry approved, but the match did not answer. Try again.','Entrada autorizada, pero la partida no respondió. Inténtalo de nuevo.'],
+'Essa partida já está cheia ({0} náufragos).':['This match is already full ({0} castaways).','Esta partida ya está llena ({0} náufragos).'],
+'O código tem 5 letras ou números.':['The code has 5 letters or numbers.','El código tiene 5 letras o números.'],
+'Não foi possível conectar com a partida. Verifique a internet; algumas redes de escola ou empresa bloqueiam o modo online.':['Could not connect to the match. Check your internet; some school or work networks block online mode.','No se pudo conectar con la partida. Revisa tu internet; algunas redes de escuela o empresa bloquean el modo en línea.'],
+'Não foi possível entrar. Tente de novo em alguns segundos.':['Could not join. Try again in a few seconds.','No se pudo entrar. Inténtalo de nuevo en unos segundos.'],
+'Não foi possível falar com o servidor de partidas. Verifique a internet e tente de novo.':['Could not reach the match server. Check your internet and try again.','No se pudo contactar el servidor de partidas. Revisa tu internet e inténtalo de nuevo.'],
+'Não foi possível criar a partida. Tente de novo.':['Could not create the match. Try again.','No se pudo crear la partida. Inténtalo de nuevo.'],
+'Não foi possível carregar o modo online. Verifique a internet e recarregue a página.':['Could not load online mode. Check your internet and reload the page.','No se pudo cargar el modo en línea. Revisa tu internet y recarga la página.'],
+'Não foi possível carregar o modo online.':['Could not load online mode.','No se pudo cargar el modo en línea.'],
+'O modo online não está disponível agora.':['Online mode is not available right now.','El modo en línea no está disponible ahora.'],
+'O modo online não está disponível nesta visualização. Entre com sua conta no claude.ai e abra o jogo pelo link.':['Online mode is not available in this view. Sign in to claude.ai and open the game from the link.','El modo en línea no está disponible en esta vista. Inicia sesión en claude.ai y abre el juego desde el enlace.'],
+'O modo online funciona quando o jogo é aberto pelo link do claude.ai.':['Online mode works when the game is opened from the claude.ai link.','El modo en línea funciona cuando el juego se abre desde el enlace de claude.ai.'],
+'quer entrar na sua partida.':['wants to join your match.','quiere entrar en tu partida.'],'Permitir (Y)':['Allow (Y)','Permitir (Y)'],'Recusar (N)':['Decline (N)','Rechazar (N)'],
+// interface do jogo
+'Clique na tela para olhar com o mouse.':['Click the screen to look around with the mouse.','Haz clic en la pantalla para mirar con el ratón.'],
+'Sem mouse preso: arraste para olhar e use':['Without mouse lock: drag to look and use','Sin bloquear el ratón: arrastra para mirar y usa'],'para agir.':['to act.','para actuar.'],
+'Vida':['Health','Vida'],'Comida':['Food','Comida'],'Água':['Water','Agua'],'Energia':['Energy','Energía'],'Partida':['Match','Partida'],'Dia {0}':['Day {0}','Día {0}'],
+'Missão':['Mission','Misión'],'Missão da equipe':['Team mission','Misión del equipo'],'só você':['just you','solo tú'],'{0} de {1} náufragos':['{0} of {1} castaways','{0} de {1} náufragos'],
+'Criar':['Craft','Crear'],'Diário':['Journal','Diario'],'Altitude':['Altitude','Altitud'],'Velocidade':['Speed','Velocidad'],
+'descer e subir ·':['dive and climb ·','bajar y subir ·'],'virar ·':['turn ·','girar ·'],'acelerar ·':['speed up ·','acelerar ·'],'pousar':['land','aterrizar'],
+'Pousar':['Land','Aterrizar'],'Tela cheia':['Full screen','Pantalla completa'],'Pular':['Jump','Saltar'],'Luz':['Light','Luz'],'Correr':['Run','Correr'],'Ação':['Action','Acción'],
+'Bancada':['Workbench','Mesa de trabajo'],'Ferramentas e materiais feitos à mão':['Handmade tools and materials','Herramientas y materiales hechos a mano'],
+'O velho monomotor, peça por peça':['The old single-engine plane, piece by piece','La vieja avioneta, pieza por pieza'],
+'Tela cheia no iPhone':['Full screen on iPhone','Pantalla completa en iPhone'],'Jogue sem as barras do Safari':['Play without Safari\'s bars','Juega sin las barras de Safari'],
+'Mapa':['Map','Mapa'],'Toque no mapa para marcar um destino':['Tap the map to mark a destination','Toca el mapa para marcar un destino'],
+'Você':['You','Tú'],'Amigos':['Friends','Amigos'],'Hangar e avião':['Hangar and plane','Hangar y avión'],'Caixote do navio':['Ship crate','Caja del barco'],'Caixa militar':['Military crate','Caja militar'],
+'Combustível':['Fuel','Combustible'],'Fogueira':['Campfire','Fogata'],'Seu marcador':['Your marker','Tu marcador'],'Apagar marcador':['Clear marker','Borrar marcador'],
+'Toque no mapa para marcar um destino. Áreas escuras ainda não foram exploradas.':['Tap the map to mark a destination. Dark areas have not been explored yet.','Toca el mapa para marcar un destino. Las zonas oscuras aún no se exploraron.'],
+'Marcador a {0} m. Uma coluna amarela marca o lugar na ilha.':['Marker {0} m away. A yellow column marks the spot on the island.','Marcador a {0} m. Una columna amarilla marca el lugar en la isla.'],'Marcador · {0} m':['Marker · {0} m','Marcador · {0} m'],
+'Dar itens':['Give items','Dar objetos'],'Escolha o que passar da sua mochila':['Choose what to hand over from your backpack','Elige qué pasar de tu mochila'],'O caminho até sair da ilha':['The way off the island','El camino para salir de la isla'],
+'Dar para {0}':['Give to {0}','Dar a {0}'],'Você tem {0}.':['You have {0}.','Tienes {0}.'],'Dar 1':['Give 1','Dar 1'],'Dar {0}':['Give {0}','Dar {0}'],'Mochila vazia':['Empty backpack','Mochila vacía'],
+'Junte alguma coisa primeiro.':['Gather something first.','Junta algo primero.'],'Seu parceiro saiu':['Your partner left','Tu compañero salió'],'Ele não está mais na partida.':['They are no longer in the match.','Ya no está en la partida.'],
+'Feito':['Done','Hecho'],'Etapa {0} de 4: {1}':['Stage {0} of 4: {1}','Etapa {0} de 4: {1}'],'Montar {0}':['Build {0}','Montar {0}'],'Decolar':['Take off','Despegar'],
+'Avião pronto, pista bloqueada':['Plane ready, runway blocked','Avión listo, pista bloqueada'],
+'Ainda há {0} obstáculos sobre a pista. Sem uma pista livre, o avião não ganha velocidade para subir.':['There are still {0} obstacles on the runway. Without a clear runway the plane cannot gain speed to climb.','Aún hay {0} obstáculos en la pista. Sin una pista libre, el avión no gana velocidad para subir.'],
+'Pronto para decolar':['Ready for takeoff','Listo para despegar'],
+'Fuselagem, asas, motor e tanque cheio. O avião leva até {0} pessoas: o piloto na frente e os passageiros em fila atrás.':['Fuselage, wings, engine and a full tank. The plane carries up to {0} people: the pilot in front and the passengers in a row behind.','Fuselaje, alas, motor y tanque lleno. El avión lleva hasta {0} personas: el piloto adelante y los pasajeros en fila detrás.'],
+'Todo mundo na ilha precisa embarcar antes da decolagem.':['Everyone on the island must board before takeoff.','Todos en la isla deben subir antes del despegue.'],
+'{0} de {1} lugares ocupados':['{0} of {1} seats taken','{0} de {1} asientos ocupados'],'{0} náufragos nesta ilha':['{0} castaways on this island','{0} náufragos en esta isla'],
+'Embarcar como piloto':['Board as pilot','Subir como piloto'],'Piloto ocupado':['Pilot seat taken','Piloto ocupado'],'Embarcar como passageiro':['Board as passenger','Subir como pasajero'],'Avião cheio':['Plane full','Avión lleno'],
+'Você está no assento do piloto':['You are in the pilot seat','Estás en el asiento del piloto'],'Todos estão a bordo. Quando quiser, acelere pela pista.':['Everyone is on board. Speed down the runway whenever you want.','Todos están a bordo. Cuando quieras, acelera por la pista.'],
+'Esperando o resto do grupo embarcar.':['Waiting for the rest of the group to board.','Esperando que el resto del grupo suba.'],'O vento sopra a favor. Quando quiser, acelere pela pista.':['The wind is in your favor. Speed down the runway whenever you want.','El viento sopla a favor. Cuando quieras, acelera por la pista.'],
+'Desembarcar':['Get off','Bajar'],'Você está no assento {0} de passageiro':['You are in passenger seat {0}','Estás en el asiento de pasajero {0}'],
+'O piloto está a bordo. Segure firme: a decolagem começa quando ele acelerar.':['The pilot is on board. Hold on: takeoff starts when they speed up.','El piloto está a bordo. Agárrate: el despegue empieza cuando acelere.'],
+'Ninguém no assento do piloto ainda. Alguém precisa embarcar como piloto, ou troque de lugar.':['Nobody in the pilot seat yet. Someone must board as pilot, or switch seats.','Nadie en el asiento del piloto aún. Alguien debe subir como piloto, o cambia de lugar.'],
+'Passar para o assento do piloto':['Move to the pilot seat','Pasar al asiento del piloto'],
+'Pousar de volta (L)':['Land back (L)','Aterrizar de vuelta (L)'],'Pousar no aeroporto (L)':['Land at the airport (L)','Aterrizar en el aeropuerto (L)'],'Pousar na {0} (L)':['Land on {0} (L)','Aterrizar en {0} (L)'],
+'Aeroporto do continente · {0} km':['Mainland airport · {0} km','Aeropuerto del continente · {0} km'],
+// ações (o que aparece ao mirar)
+'Cortar árvore':['Chop tree','Talar árbol'],'Cortar árvore (lento sem machado)':['Chop tree (slow without an axe)','Talar árbol (lento sin hacha)'],'Cortar coqueiro':['Chop palm tree','Talar palmera'],
+'Cortar coqueiro (lento sem machado)':['Chop palm tree (slow without an axe)','Talar palmera (lento sin hacha)'],'Quebrar rocha':['Break rock','Romper roca'],'Quebrar rocha (lento sem picareta)':['Break rock (slow without a pickaxe)','Romper roca (lento sin pico)'],
+'Colher frutas ({0})':['Pick fruit ({0})','Recoger frutas ({0})'],'Arbusto sem frutas':['Bush without fruit','Arbusto sin frutas'],'Arrancar capim':['Pull grass','Arrancar hierba'],
+'Recolher tambor de combustível':['Collect fuel drum','Recoger bidón de combustible'],'Abrir caixa militar':['Open military crate','Abrir caja militar'],'Abrir caixote do navio':['Open ship crate','Abrir caja del barco'],'Recolher sucata':['Collect scrap','Recoger chatarra'],
+'Atacar caranguejo':['Attack crab','Atacar cangrejo'],'Atacar caranguejo (uma lança ajuda)':['Attack crab (a spear helps)','Atacar cangrejo (una lanza ayuda)'],'Tocha acesa':['Lit torch','Antorcha encendida'],'Cozinhar {0}':['Cook {0}','Cocinar {0}'],
+'Dormir até o amanhecer':['Sleep until dawn','Dormir hasta el amanecer'],'Fogueira (durma aqui à noite)':['Campfire (sleep here at night)','Fogata (duerme aquí de noche)'],'Colher cogumelos':['Pick mushrooms','Recoger setas'],
+'Pegar ovos do ninho':['Take eggs from the nest','Tomar huevos del nido'],'Pegar a galinha':['Catch the chicken','Atrapar la gallina'],'Painel do piloto':['Pilot panel','Panel del piloto'],'Seu lugar de passageiro':['Your passenger seat','Tu asiento de pasajero'],
+'Montar o avião':['Build the plane','Montar el avión'],'Avião pronto: embarcar':['Plane ready: board','Avión listo: subir'],'Beber e encher o cantil':['Drink and fill the canteen','Beber y llenar la cantimplora'],'Beber água doce':['Drink fresh water','Beber agua dulce'],
+'Pescar (segure)':['Fish (hold)','Pescar (mantén)'],'Água salgada':['Salt water','Agua salada'],'Subir na bicicleta':['Get on the bike','Subir a la bici'],'Descer da bicicleta':['Get off the bike','Bajar de la bici'],
+'Dar item para {0}':['Give item to {0}','Dar objeto a {0}'],'Entrar no terminal do aeroporto':['Enter the airport terminal','Entrar en la terminal del aeropuerto'],'Comer {0}':['Eat {0}','Comer {0}'],'Beber {0}':['Drink {0}','Beber {0}'],
+// mensagens
+'Você está com fome. Coma alguma coisa.':['You are hungry. Eat something.','Tienes hambre. Come algo.'],'Você está morrendo de fome! Coma agora.':['You are starving! Eat now.','¡Te mueres de hambre! Come ya.'],
+'Você está com sede. Beba água.':['You are thirsty. Drink water.','Tienes sed. Bebe agua.'],'Você está morrendo de sede! Beba agora.':['You are dying of thirst! Drink now.','¡Te mueres de sed! Bebe ya.'],
+'Você está cansado. Coma, beba ou durma.':['You are tired. Eat, drink or sleep.','Estás cansado. Come, bebe o duerme.'],'Você está exausto! Descanse junto ao fogo.':['You are exhausted! Rest by the fire.','¡Estás agotado! Descansa junto al fuego.'],
+'A conexão com a partida caiu. Tentando voltar…':['The connection to the match dropped. Trying to get back…','Se cayó la conexión con la partida. Intentando volver…'],
+'A noite chegou. Os caranguejos ficam agressivos. Durma junto a uma fogueira.':['Night has fallen. The crabs get aggressive. Sleep by a campfire.','Llegó la noche. Los cangrejos se vuelven agresivos. Duerme junto a una fogata.'],
+'Carne crua faz mal. Asse na fogueira.':['Raw meat makes you sick. Roast it on the fire.','La carne cruda hace daño. Ásala en la fogata.'],
+'Esse arbusto ainda não deu frutas. Elas voltam com o tempo.':['This bush has no fruit yet. It grows back over time.','Este arbusto aún no dio frutas. Vuelven con el tiempo.'],
+'Fogueira acesa. À noite, durma junto dela.':['Campfire lit. At night, sleep next to it.','Fogata encendida. De noche, duerme junto a ella.'],
+'Longe demais: o combustível não dá. Siga a seta amarela até o continente.':['Too far: there is not enough fuel. Follow the yellow arrow to the mainland.','Demasiado lejos: el combustible no alcanza. Sigue la flecha amarilla hasta el continente.'],
+'Muito baixo! Puxe o nariz para cima.':['Too low! Pull the nose up.','¡Muy bajo! Levanta la nariz.'],
+'Não deu para voltar à partida. Você continua sozinho nesta ilha.':['Could not get back to the match. You keep playing alone on this island.','No se pudo volver a la partida. Sigues solo en esta isla.'],
+'O anfitrião saiu. A ilha continua com você.':['The host left. The island carries on with you.','El anfitrión salió. La isla sigue contigo.'],
+'O velho monomotor cumpriu a missão. A multidão espera vocês no terminal.':['The old plane did its job. The crowd is waiting for you at the terminal.','La vieja avioneta cumplió su misión. La multitud los espera en la terminal.'],
+'Que visão! O avião passou longe da lava. Siga viagem.':['What a sight! The plane stayed clear of the lava. Fly on.','¡Qué vista! El avión pasó lejos de la lava. Sigue el viaje.'],
+'Segure a ação para continuar pescando. Às vezes demora.':['Hold the action to keep fishing. Sometimes it takes a while.','Mantén la acción para seguir pescando. A veces tarda.'],
+'Sem energia para correr. Coma, beba ou durma.':['No energy to run. Eat, drink or sleep.','Sin energía para correr. Come, bebe o duerme.'],
+'Sem machado demora. Abra a bancada (C) quando tiver madeira, pedra e corda.':['It is slow without an axe. Open the workbench (C) once you have wood, stone and rope.','Sin hacha tarda. Abre la mesa de trabajo (C) cuando tengas madera, piedra y cuerda.'],
+'Tocha fincada no chão.':['Torch planted in the ground.','Antorcha clavada en el suelo.'],
+'Traga carne, galinha, peixe ou ovo para cozinhar. À noite, durma aqui até o amanhecer.':['Bring meat, chicken, fish or eggs to cook. At night, sleep here until dawn.','Trae carne, gallina, pescado o huevo para cocinar. De noche, duerme aquí hasta el amanecer.'],
+'Um cantil de coco deixa você levar água na mochila.':['A coconut canteen lets you carry water in your backpack.','Una cantimplora de coco te deja llevar agua en la mochila.'],
+'Uma tocha acesa. Para cozinhar ou dormir, use uma fogueira.':['A lit torch. To cook or sleep, use a campfire.','Una antorcha encendida. Para cocinar o dormir, usa una fogata.'],
+'Vire o celular para jogar deitado, em tela cheia.':['Turn your phone sideways to play in full screen.','Gira el celular para jugar en horizontal, en pantalla completa.'],
+'Você ainda não tem lanterna. Ela está no caixote perto da praia onde você acordou, ou crie uma na bancada.':['You do not have a flashlight yet. There is one in the crate near the beach where you woke up, or craft one at the workbench.','Aún no tienes linterna. Hay una en la caja cerca de la playa donde despertaste, o crea una en la mesa de trabajo.'],
+'Você subiu na bicicleta. Aperte E para descer.':['You got on the bike. Press E to get off.','Subiste a la bici. Pulsa E para bajar.'],
+'Você voltou para a partida.':['You are back in the match.','Volviste a la partida.'],
+'Água do mar só aumenta a sede. Procure uma lagoa de água doce, ou crie uma vara de pesca.':['Sea water only makes you thirstier. Find a freshwater pond, or craft a fishing rod.','El agua de mar solo da más sed. Busca una laguna de agua dulce, o crea una caña de pescar.'],
+'Começou a chover. Ficar na chuva mata um pouco a sede.':['It started raining. Standing in the rain quenches some thirst.','Empezó a llover. Estar bajo la lluvia quita un poco la sed.'],'A chuva parou.':['The rain stopped.','Paró la lluvia.'],
+'Amanheceu. Dia {0} na ilha.':['Morning. Day {0} on the island.','Amaneció. Día {0} en la isla.'],'Você dormiu junto ao fogo. Dia {0}.':['You slept by the fire. Day {0}.','Dormiste junto al fuego. Día {0}.'],
+'Você criou: {0}.':['You crafted: {0}.','Creaste: {0}.'],'Missão da equipe concluída: {0}.':['Team mission complete: {0}.','Misión del equipo completada: {0}.'],' Recompensa para cada um: {0}.':[' Reward for everyone: {0}.',' Recompensa para cada uno: {0}.'],
+'Kit de {0}: você começa com {1}.':['{0} kit: you start with {1}.','Kit de {0}: empiezas con {1}.'],'{0} chegou na ilha.':['{0} arrived on the island.','{0} llegó a la isla.'],'{0} saiu da ilha.':['{0} left the island.','{0} salió de la isla.'],
+'{0} te deu {1} {2}.':['{0} gave you {1} {2}.','{0} te dio {1} {2}.'],'Você deu {0} {1} para {2}.':['You gave {0} {1} to {2}.','Diste {0} {1} a {2}.'],'Seu parceiro montou: {0}.':['Your partner built: {0}.','Tu compañero montó: {0}.'],
+'Segurando {0}.':['Holding {0}.','Sosteniendo {0}.'],'Segurando {0}. Clique na tela (ou Ação) para consumir.':['Holding {0}. Click the screen (or Action) to eat it.','Sosteniendo {0}. Haz clic en la pantalla (o Acción) para consumirlo.'],
+'Missão: {0}. {1}':['Mission: {0}. {1}','Misión: {0}. {1}'],
+'Você chegou na ilha dos seus parceiros. As missões, o mundo e o avião são da equipe toda.':['You arrived on your partners\' island. The missions, the world and the plane belong to the whole team.','Llegaste a la isla de tus compañeros. Las misiones, el mundo y el avión son de todo el equipo.'],
+'Pouso no aeroporto do continente! Uma multidão está aplaudindo vocês. Entrem no terminal.':['Landed at the mainland airport! A crowd is applauding you. Go into the terminal.','¡Aterrizaje en el aeropuerto del continente! Una multitud los aplaude. Entren en la terminal.'],
+'Pouso feito na {0}! Explore, junte suprimentos e, quando quiser, decole de novo.':['Landed on {0}! Explore, gather supplies and take off again whenever you want.','¡Aterrizaste en {0}! Explora, junta provisiones y despega de nuevo cuando quieras.'],
+'Pouso feito de volta na pista.':['Landed back on the runway.','Aterrizaste de vuelta en la pista.'],
+// fim de jogo
+'Diário de bordo · último registro':['Logbook · last entry','Diario de a bordo · último registro'],'Diário de bordo · registro interrompido':['Logbook · entry cut short','Diario de a bordo · registro interrumpido'],
+'Vocês chegaram em casa':['You all made it home','Llegaron a casa'],'Você chegou em casa':['You made it home','Llegaste a casa'],'Vocês escaparam':['You all escaped','Escaparon'],'Você escapou':['You escaped','Escapaste'],'Fim da linha':['End of the line','Fin del camino'],
+'As portas do terminal se abriram e os aplausos ficaram ainda mais altos. Repórteres, famílias e a tripulação de resgate esperavam lá dentro. O velho monomotor, montado peça por peça numa ilha sem nome, virou notícia no mundo inteiro.':['The terminal doors opened and the applause grew even louder. Reporters, families and the rescue crew were waiting inside. The old plane, built piece by piece on a nameless island, made the news all over the world.','Las puertas de la terminal se abrieron y los aplausos sonaron aún más fuerte. Periodistas, familias y el equipo de rescate esperaban adentro. La vieja avioneta, armada pieza por pieza en una isla sin nombre, fue noticia en todo el mundo.'],
+'Nova ilha':['New island','Nueva isla'],'Voltar ao início':['Back to start','Volver al inicio'],'Voltar à ilha':['Back to the island','Volver a la isla'],'Tentar de novo':['Try again','Intentar de nuevo'],'Sair da partida':['Leave match','Salir de la partida'],
+'dia na ilha':['day on the island','día en la isla'],'dias na ilha':['days on the island','días en la isla'],'missões':['missions','misiones'],'árvores':['trees','árboles'],'caranguejos':['crabs','cangrejos'],'avião':['plane','avión'],
+// itens
+'Madeira':['Wood','Madera'],'Troncos para ferramentas, fogueira e a estrutura do avião.':['Logs for tools, campfires and the plane frame.','Troncos para herramientas, fogatas y la estructura del avión.'],
+'Pedra':['Stone','Piedra'],'Lâminas das ferramentas e a base da fogueira.':['Tool blades and the campfire base.','Hojas de herramientas y base de la fogata.'],
+'Fibra':['Fiber','Fibra'],'Capim trançável. Duas fibras viram uma corda na bancada.':['Weavable grass. Two fibers make a rope at the workbench.','Hierba trenzable. Dos fibras hacen una cuerda en la mesa.'],
+'Corda':['Rope','Cuerda'],'Amarra ferramentas e as peças do avião.':['Ties tools and plane parts together.','Ata herramientas y piezas del avión.'],
+'Sucata de metal':['Scrap metal','Chatarra'],'Sucata':['Scrap','Chatarra'],'Chapas e restos de metal. Reforçam a fuselagem e o motor.':['Metal sheets and leftovers. They reinforce the fuselage and engine.','Chapas y restos de metal. Refuerzan el fuselaje y el motor.'],
+'Lona':['Canvas','Lona'],'Lona do navio. Vira o revestimento das asas.':['Canvas from the ship. It becomes the wing covering.','Lona del barco. Se convierte en el forro de las alas.'],
+'Peças de motor':['Engine parts','Piezas de motor'],'Peças':['Parts','Piezas'],'Pistões, velas e engrenagens. Ficam nas caixas militares.':['Pistons, spark plugs and gears. Found in military crates.','Pistones, bujías y engranajes. Están en las cajas militares.'],
+'Galões de gasolina de aviação dos tambores esquecidos.':['Jerrycans of aviation fuel from forgotten drums.','Bidones de gasolina de aviación de tambores olvidados.'],
+'Coco':['Coconut','Coco'],'Mata a fome e a sede. A casca vira cantil.':['Eases hunger and thirst. The shell becomes a canteen.','Quita el hambre y la sed. La cáscara se vuelve cantimplora.'],
+'Frutas silvestres':['Wild berries','Frutas silvestres'],'Frutas':['Berries','Frutas'],'Um punhado de frutas do mato.':['A handful of wild berries.','Un puñado de frutas del monte.'],
+'Carne crua':['Raw meat','Carne cruda'],'Asse na fogueira. Crua faz mal.':['Roast it on the fire. Raw, it makes you sick.','Ásala en la fogata. Cruda hace daño.'],
+'Carne assada':['Roasted meat','Carne asada'],'Alimenta bem e recupera um pouco de vida.':['Very filling and restores some health.','Alimenta bien y recupera algo de vida.'],
+'Água doce':['Fresh water','Agua dulce'],'Encha o cantil numa lagoa.':['Fill the canteen at a pond.','Llena la cantimplora en una laguna.'],
+'Enlatado':['Canned food','Enlatado'],'Comida do navio, ainda boa.':['Food from the ship, still good.','Comida del barco, todavía buena.'],
+'Banana':['Banana','Plátano'],'Às vezes cai das árvores derrubadas.':['Sometimes drops from felled trees.','A veces cae de los árboles talados.'],
+'Cogumelo':['Mushroom','Seta'],'Nasce no chão da mata. Melhor ainda no ensopado.':['Grows on the forest floor. Even better in a stew.','Crece en el suelo del bosque. Mejor aún en el guiso.'],
+'Ovo':['Egg','Huevo'],'Dos ninhos e das galinhas. Cozinhe na fogueira.':['From nests and chickens. Cook it on the fire.','De los nidos y las gallinas. Cocínalo en la fogata.'],
+'Ovo cozido':['Boiled egg','Huevo cocido'],'Rápido e nutritivo.':['Quick and nutritious.','Rápido y nutritivo.'],
+'Galinha':['Chicken','Gallina'],'Asse na fogueira para virar frango.':['Roast it on the fire to make roast chicken.','Ásala en la fogata para hacer pollo.'],
+'Frango assado':['Roast chicken','Pollo asado'],'Frango':['Chicken','Pollo'],'A melhor refeição da ilha.':['The best meal on the island.','La mejor comida de la isla.'],
+'Peixe':['Fish','Pescado'],'Pesque com a vara no mar. Asse na fogueira.':['Catch it with the rod at sea. Roast it on the fire.','Pésca con la caña en el mar. Ásalo en la fogata.'],
+'Peixe assado':['Grilled fish','Pescado asado'],'Leve e saboroso.':['Light and tasty.','Ligero y sabroso.'],
+'Ensopado':['Stew','Guiso'],'Carne, cogumelos e água. Enche a barriga e mata a sede.':['Meat, mushrooms and water. Fills you up and quenches thirst.','Carne, setas y agua. Llena la barriga y quita la sed.'],
+'Salada de frutas':['Fruit salad','Ensalada de frutas'],'Salada':['Salad','Ensalada'],'Frutas e banana. Refresca.':['Berries and banana. Refreshing.','Frutas y plátano. Refresca.'],
+'Curativo':['Bandage','Venda'],'Recupera 30 de vida.':['Restores 30 health.','Recupera 30 de vida.'],
+// ferramentas e receitas
+'Machado de pedra':['Stone axe','Hacha de piedra'],'Picareta':['Pickaxe','Pico'],'Lança':['Spear','Lanza'],'Cantil de coco':['Coconut canteen','Cantimplora de coco'],'Lanterna':['Flashlight','Linterna'],
+'Faca de pedra':['Stone knife','Cuchillo de piedra'],'Vara de pesca':['Fishing rod','Caña de pescar'],'Cesto de palha':['Straw basket','Cesta de paja'],'Tecido de fibra':['Woven fiber','Tejido de fibra'],'Tocha':['Torch','Antorcha'],
+'Fibras trançadas. Vai em quase tudo.':['Braided fibers. Goes into almost everything.','Fibras trenzadas. Va en casi todo.'],
+'Fibras trançadas bem apertado. Vale como lona.':['Tightly woven fibers. Works as canvas.','Fibras bien tejidas. Sirve como lona.'],
+'Derruba árvores três vezes mais rápido.':['Fells trees three times faster.','Tala árboles tres veces más rápido.'],'Quebra rochas três vezes mais rápido.':['Breaks rocks three times faster.','Rompe rocas tres veces más rápido.'],
+'Mata caranguejos num golpe. Eles viram carne.':['Kills crabs in one hit. They become meat.','Mata cangrejos de un golpe. Se vuelven carne.'],'Rende o dobro de carne e de fibras.':['Gives double meat and fiber.','Da el doble de carne y fibra.'],
+'Mire no mar, na beira da praia, e segure a ação para pescar.':['Aim at the sea from the beach and hold the action to fish.','Apunta al mar desde la playa y mantén la acción para pescar.'],'Colha o dobro de frutas nos arbustos.':['Pick double fruit from bushes.','Recoge el doble de frutas en los arbustos.'],
+'Guarda até 5 águas. Encha numa lagoa.':['Holds up to 5 waters. Fill it at a pond.','Guarda hasta 5 aguas. Llénala en una laguna.'],
+'Lâmpada e pilhas do naufrágio presas numa lata. Liga e desliga com F.':['A bulb and batteries from the wreck in a can. Turn it on and off with F.','Bombilla y pilas del naufragio en una lata. Se enciende y apaga con F.'],
+'Fica acesa no chão e ilumina a noite em volta.':['Stays lit on the ground and lights up the night around it.','Queda encendida en el suelo e ilumina la noche alrededor.'],
+'Leve e refrescante.':['Light and refreshing.','Ligera y refrescante.'],'Enche a barriga, mata a sede e cura um pouco.':['Fills you up, quenches thirst and heals a little.','Llena la barriga, quita la sed y cura un poco.'],
+'Assa carne, ilumina a noite e deixa você dormir até o amanhecer.':['Roasts meat, lights the night and lets you sleep until dawn.','Asa carne, ilumina la noche y te deja dormir hasta el amanecer.'],
+// etapas do avião
+'Fuselagem':['Fuselage','Fuselaje'],'Asas':['Wings','Alas'],'Motor':['Engine','Motor'],
+'Costelas de madeira presas com corda e cobertas com chapas de sucata. É o corpo do avião.':['Wooden ribs tied with rope and covered with scrap sheets. The body of the plane.','Costillas de madera atadas con cuerda y cubiertas con chapas de chatarra. Es el cuerpo del avión.'],
+'Longarinas de madeira revestidas com a lona do navio, esticada e amarrada.':['Wooden spars covered with the ship\'s canvas, stretched and tied.','Largueros de madera forrados con la lona del barco, tensada y atada.'],
+'As peças das caixas militares no bloco velho, mais uma hélice talhada em madeira.':['Parts from the military crates on the old block, plus a propeller carved from wood.','Las piezas de las cajas militares en el bloque viejo, más una hélice tallada en madera.'],
+'Três galões de gasolina de aviação no tanque. O suficiente para chegar ao continente.':['Three jerrycans of aviation fuel in the tank. Enough to reach the mainland.','Tres bidones de gasolina de aviación en el tanque. Suficiente para llegar al continente.'],
+// missões
+'Primeiros recursos':['First resources','Primeros recursos'],'Juntem 5 madeiras e 3 pedras. Mire numa árvore ou rocha e segure o clique.':['Gather 5 wood and 3 stone. Aim at a tree or rock and hold the click.','Junten 5 maderas y 3 piedras. Apunta a un árbol o roca y mantén el clic.'],
+'Mãos à obra':['Get to work','Manos a la obra'],'Arranque capim, trance corda na bancada (C) e crie um machado.':['Pull grass, braid rope at the workbench (C) and craft an axe.','Arranca hierba, trenza cuerda en la mesa (C) y crea un hacha.'],
+'Água potável':['Drinking water','Agua potable'],'Encontrem uma lagoa de água doce no interior e bebam. O mar só aumenta a sede.':['Find a freshwater pond inland and drink. The sea only makes you thirstier.','Encuentren una laguna de agua dulce en el interior y beban. El mar solo da más sed.'],
+'Fogo no acampamento':['Campfire','Fuego en el campamento'],'Acendam uma fogueira. Ela cozinha e deixa vocês dormirem à noite.':['Light a campfire. It cooks food and lets you sleep at night.','Enciendan una fogata. Cocina y les deja dormir de noche.'],
+'Caçada na praia':['Beach hunt','Caza en la playa'],'Cacem 2 caranguejos. Uma lança resolve com um golpe.':['Hunt 2 crabs. A spear does it in one hit.','Cacen 2 cangrejos. Una lanza lo resuelve de un golpe.'],
+'Restos do navio':['Shipwreck remains','Restos del barco'],'Abram 3 caixotes do S.S. Aurora espalhados pelas praias.':['Open 3 S.S. Aurora crates scattered on the beaches.','Abran 3 cajas del S.S. Aurora repartidas por las playas.'],
+'O hangar abandonado':['The abandoned hangar','El hangar abandonado'],'Sigam a bandeira laranja no mapa até o hangar ao lado da velha pista.':['Follow the orange flag on the map to the hangar next to the old runway.','Sigan la bandera naranja del mapa hasta el hangar junto a la vieja pista.'],
+'Pista livre':['Clear runway','Pista libre'],'Árvores e rochas cresceram sobre a pista. Derrubem todas.':['Trees and rocks grew over the runway. Clear them all.','Árboles y rocas crecieron sobre la pista. Quítenlos todos.'],
+'No hangar, montem o corpo do avião com madeira, sucata e corda.':['At the hangar, build the plane body with wood, scrap and rope.','En el hangar, armen el cuerpo del avión con madera, chatarra y cuerda.'],
+'Revistam as asas com a lona dos caixotes do navio.':['Cover the wings with canvas from the ship crates.','Forren las alas con la lona de las cajas del barco.'],
+'Peças perdidas':['Lost parts','Piezas perdidas'],'Encontrem 3 peças de motor nas caixas militares verdes espalhadas pela ilha.':['Find 3 engine parts in the green military crates around the island.','Encuentren 3 piezas de motor en las cajas militares verdes de la isla.'],
+'Instalem o motor e a hélice no hangar.':['Install the engine and propeller at the hangar.','Instalen el motor y la hélice en el hangar.'],
+'Achem 3 tambores vermelhos de gasolina de aviação e abasteçam o avião.':['Find 3 red aviation fuel drums and refuel the plane.','Encuentren 3 bidones rojos de gasolina de aviación y carguen el avión.'],
+'Subam no avião, acelerem pela pista e ganhem altura.':['Board the plane, speed down the runway and climb.','Suban al avión, aceleren por la pista y ganen altura.'],
+'A ilha vizinha':['The neighboring island','La isla vecina'],'Pilotem até a ilha vulcânica no horizonte (sigam a fumaça) e pousem nela.':['Fly to the volcanic island on the horizon (follow the smoke) and land on it.','Vuelen hasta la isla volcánica del horizonte (sigan el humo) y aterricen en ella.'],
+'Rumo ao continente':['To the mainland','Rumbo al continente'],'Voem até o continente (siga a seta amarela no painel de voo) e pousem no aeroporto.':['Fly to the mainland (follow the yellow arrow on the flight panel) and land at the airport.','Vuelen al continente (sigan la flecha amarilla del panel de vuelo) y aterricen en el aeropuerto.'],
+'Festa no aeroporto':['Airport party','Fiesta en el aeropuerto'],'Uma multidão espera vocês. Entrem no terminal do aeroporto.':['A crowd is waiting for you. Go into the airport terminal.','Una multitud los espera. Entren en la terminal del aeropuerto.'],
+// complementos
+'Um parceiro':['A partner','Un compañero'],'Tambor':['Fuel drum','Bidón'],'Novo náufrago':['New castaway','Nuevo náufrago'],'um náufrago':['a castaway','un náufrago'],'Um novo náufrago':['A new castaway','Un nuevo náufrago'],
+'{0} foi autorizado a entrar.':['{0} was let in.','{0} fue autorizado a entrar.'],'Entrada de {0} recusada.':['{0} was not let in.','Entrada de {0} rechazada.'],
+'Sem espaço para a tocha aqui. Vire para um chão livre e seco.':['No room for the torch here. Face clear, dry ground.','No hay espacio para la antorcha aquí. Mira hacia un suelo libre y seco.'],
+'Sem espaço para a fogueira aqui. Vire para um chão livre e seco.':['No room for the campfire here. Face clear, dry ground.','No hay espacio para la fogata aquí. Mira hacia un suelo libre y seco.'],
+'{0} se afastou. Chegue mais perto para entregar.':['{0} moved away. Get closer to hand it over.','{0} se alejó. Acércate para entregar.'],
+'{0} pronta. O avião está tomando forma.':['{0} done. The plane is taking shape.','{0} lista. El avión está tomando forma.'],'Tanque cheio. O motor tosse e pega.':['Tank full. The engine coughs and starts.','Tanque lleno. El motor tose y arranca.'],
+'Você sentou no lugar do piloto.':['You sat in the pilot seat.','Te sentaste en el asiento del piloto.'],'Você sentou no lugar do passageiro.':['You sat in a passenger seat.','Te sentaste en un asiento de pasajero.'],
+'Só você por enquanto.':['Just you for now.','Solo tú por ahora.'],'Toque para segurar na mão.':['Tap to hold it in your hand.','Toca para sostenerlo en la mano.'],
+'Com ele na mão, toque de novo (ou clique na tela) para consumir.':['With it in hand, tap again (or click the screen) to consume it.','Con él en la mano, toca otra vez (o haz clic en la pantalla) para consumirlo.'],'toque para segurar':['tap to hold','toca para sostener'],
+'Ainda há 1 obstáculo sobre a pista. Sem uma pista livre, o avião não ganha velocidade para subir.':['There is still 1 obstacle on the runway. Without a clear runway the plane cannot gain speed to climb.','Aún hay 1 obstáculo en la pista. Sin una pista libre, el avión no gana velocidad para subir.'],
+'1 náufrago nesta ilha':['1 castaway on this island','1 náufrago en esta isla'],'Tom de pele {0}':['Skin tone {0}','Tono de piel {0}'],
+'Áreas escuras ainda não foram exploradas.':['Dark areas have not been explored yet.','Las zonas oscuras aún no se exploraron.'],'Ilha vizinha':['Neighboring island','Isla vecina'],
+'O vulcão está entrando em erupção!':['The volcano is erupting!','¡El volcán está en erupción!'],'A lava desce pela montanha. Lá de cima, vocês estão em segurança.':['Lava flows down the mountain. Up here, you are safe.','La lava baja por la montaña. Desde arriba, están a salvo.'],
+'O monomotor deixou {0} para trás{1}. Depois de horas sobre o mar aberto, as luzes de um porto apareceram no horizonte e as rodas tocaram uma pista de verdade.':['The plane left {0} behind{1}. After hours over the open sea, the lights of a port appeared on the horizon and the wheels touched a real runway.','La avioneta dejó {0} atrás{1}. Tras horas sobre mar abierto, las luces de un puerto aparecieron en el horizonte y las ruedas tocaron una pista de verdad.'],
+'as ilhas':['the islands','las islas'],'a ilha':['the island','la isla'],', com piloto e passageiro a bordo':[', with pilot and passengers on board',', con piloto y pasajeros a bordo'],
+'A ilha venceu você.':['The island beat you.','La isla te venció.'],'Ninguém chegou a ver a fumaça.':['Nobody ever saw the smoke.','Nadie llegó a ver el humo.'],
+'Seu parceiro continua na ilha. Você pode voltar pela praia, de mochila vazia.':['Your partner is still on the island. You can come back on the beach, with an empty backpack.','Tu compañero sigue en la isla. Puedes volver por la playa, con la mochila vacía.'],
+'Carne crua demais. Seu estômago não aguentou.':['Too much raw meat. Your stomach could not take it.','Demasiada carne cruda. Tu estómago no aguantó.'],'A sede venceu você.':['Thirst beat you.','La sed te venció.'],'A fome venceu você.':['Hunger beat you.','El hambre te venció.'],
+'Exaustão. Você precisava dormir.':['Exhaustion. You needed to sleep.','Agotamiento. Necesitabas dormir.'],'Os caranguejos da praia acabaram com você.':['The beach crabs finished you off.','Los cangrejos de la playa acabaron contigo.'],
+'Dentro do claude.ai o celular não deixa o jogo ocupar a tela toda. Para tela cheia, use a versão do GitHub Pages.':['Inside claude.ai the phone does not let the game use the whole screen. For full screen, use the GitHub Pages version.','Dentro de claude.ai el celular no deja que el juego ocupe toda la pantalla. Para pantalla completa, usa la versión de GitHub Pages.'],
+'O navegador não permitiu a tela cheia agora. Toque em "Tela cheia" para tentar de novo.':['The browser did not allow full screen right now. Tap "Full screen" to try again.','El navegador no permitió la pantalla completa ahora. Toca "Pantalla completa" para intentarlo de nuevo.'],
+'Não foi possível carregar o 3D. Recarregue a página.':['Could not load 3D. Reload the page.','No se pudo cargar el 3D. Recarga la página.'],
+'Fechar':['Close','Cerrar'],'Ranking':['Leaderboard','Clasificación'],'Os melhores náufragos':['The best castaways','Los mejores náufragos'],
+'Obrigatório. Seu nome aparece no ranking.':['Required. Your name appears on the leaderboard.','Obligatorio. Tu nombre aparece en la clasificación.'],'Digite seu nome para jogar.':['Type your name to play.','Escribe tu nombre para jugar.'],
+'Nome':['Name','Nombre'],'Pontos':['Points','Puntos'],'Resultado':['Result','Resultado'],'Missões':['Missions','Misiones'],'Dias':['Days','Días'],
+'Chegou ao aeroporto':['Reached the airport','Llegó al aeropuerto'],'Escapou da ilha':['Escaped the island','Escapó de la isla'],'Saiu do jogo':['Left the game','Salió del juego'],'Morreu':['Died','Murió'],
+'O ranking ainda não está ligado à planilha.':['The leaderboard is not connected to the spreadsheet yet.','La clasificación aún no está conectada a la hoja de cálculo.'],
+'Carregando o ranking…':['Loading the leaderboard…','Cargando la clasificación…'],'Ninguém terminou uma partida ainda. Seja o primeiro!':['Nobody has finished a game yet. Be the first!','Nadie terminó una partida todavía. ¡Sé el primero!'],
+'Não foi possível carregar o ranking. Verifique a internet e tente de novo.':['Could not load the leaderboard. Check your internet and try again.','No se pudo cargar la clasificación. Revisa tu internet e inténtalo de nuevo.'],
+'Pontos: 100 por missão, 50 por etapa do avião, 20 por dia vivo, 10 por caranguejo, 2 por árvore, 200 por pousar em outra ilha, 600 por escapar e 1000 por chegar ao aeroporto.':['Points: 100 per mission, 50 per plane stage, 20 per day alive, 10 per crab, 2 per tree, 200 for landing on another island, 600 for escaping and 1000 for reaching the airport.','Puntos: 100 por misión, 50 por etapa del avión, 20 por día vivo, 10 por cangrejo, 2 por árbol, 200 por aterrizar en otra isla, 600 por escapar y 1000 por llegar al aeropuerto.'],' (caído)':[' (down)',' (caído)'],' (no avião)':[' (on the plane)',' (en el avión)'],' (de bicicleta)':[' (on a bike)',' (en bici)'],
+'Você está pilotando. Use o joystick para subir, descer e virar.':['You are flying. Use the joystick to climb, dive and turn.','Estás pilotando. Usa el joystick para subir, bajar y girar.'],
+'Você está pilotando. W desce, S sobe, A e D viram, Shift acelera.':['You are flying. W dives, S climbs, A and D turn, Shift speeds up.','Estás pilotando. W baja, S sube, A y D giran, Shift acelera.'],'Abrir mapa (M)':['Open map (M)','Abrir mapa (M)'],'Idioma':['Language','Idioma'],
+// roupas, kits e ilhas
+'Piloto':['Pilot','Piloto'],'Marinheiro':['Sailor','Marinero'],'Exploradora':['Explorer','Exploradora'],'Mergulhador':['Diver','Buzo'],'Pescador':['Fisher','Pescador'],'Surfista':['Surfer','Surfista'],
+'Executivo':['Executive','Ejecutivo'],'Esportista':['Athlete','Deportista'],'Médica':['Doctor','Médica'],
+'canivete de piloto (Faca de pedra)':['a pilot\'s pocketknife (Stone knife)','una navaja de piloto (Cuchillo de piedra)'],'4 cordas, que todo marinheiro sabe usar':['4 ropes, which every sailor knows how to use','4 cuerdas, que todo marinero sabe usar'],
+'uma lanterna de exploração':['an explorer\'s flashlight','una linterna de exploración'],'um arpão (Lança) para caçar':['a harpoon (Spear) for hunting','un arpón (Lanza) para cazar'],'uma vara de pesca':['a fishing rod','una caña de pescar'],
+'um cantil com 3 águas':['a canteen with 3 waters','una cantimplora con 3 aguas'],'3 enlatados da maleta':['3 cans from the briefcase','3 latas del maletín'],'4 bananas para ter energia':['4 bananas for energy','4 plátanos para tener energía'],'3 curativos da maleta médica':['3 bandages from the medical bag','3 vendas del maletín médico'],
+'Ilha Vulcânica':['Volcanic Island','Isla Volcánica'],'Ilha dos Pinheiros':['Pine Island','Isla de los Pinos'],'Ilha das Dunas':['Dune Island','Isla de las Dunas'],'Aeroporto do Continente':['Mainland Airport','Aeropuerto del Continente'],
+};
+function tr(s,...a){let t=s;if(LANG!=='pt'&&typeof s==='string'){const e=I18N[s];if(e)t=e[LANG==='en'?0:1];}return a.length?String(t).replace(/\{(\d)\}/g,(_,i)=>a[+i]):t;}
+if(!window.THREE){$('startBtn').textContent=tr('Não foi possível carregar o 3D. Recarregue a página.');return;}
 const V3=THREE.Vector3,CL=(v,a,b)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
 const sst=(a,b,x)=>{const t=CL((x-a)/(b-a),0,1);return t*t*(3-2*t);};
 
@@ -512,6 +787,23 @@ const OUTFITS=[
   {n:'Esportista',top:'#c4302b',pants:'#1f2a44',boots:'#f2f2f2',accent:'#f2f2f2',hat:'cap',hatC:'#1f2a44'},
   {n:'Médica',top:'#f2f4f5',pants:'#3f7fa8',boots:'#e9ecee',accent:'#3f7fa8',hat:null},
 ];
+// cada roupa começa com o item da sua profissão (mesma ordem de OUTFITS)
+const KITS=[
+  {tool:'faca',txt:'canivete de piloto (Faca de pedra)'},
+  {items:{corda:4},txt:'4 cordas, que todo marinheiro sabe usar'},
+  {tool:'lanterna',txt:'uma lanterna de exploração'},
+  {tool:'lanca',txt:'um arpão (Lança) para caçar'},
+  {tool:'vara',txt:'uma vara de pesca'},
+  {tool:'cantil',items:{agua:3},txt:'um cantil com 3 águas'},
+  {items:{lata:3},txt:'3 enlatados da maleta'},
+  {items:{banana:4},txt:'4 bananas para ter energia'},
+  {items:{curativo:3},txt:'3 curativos da maleta médica'},
+];
+function giveKit(){
+  const k=KITS[skinSel.outfit];if(!k)return;
+  if(k.tool)P.tools[k.tool]=1;if(k.items)for(const[i,n]of Object.entries(k.items))P.inv[i]=(P.inv[i]|0)+n;
+  invDirty=true;setTimeout(()=>toast(tr('Kit de {0}: você começa com {1}.',tr(OUTFITS[skinSel.outfit].n),tr(k.txt))),3200);
+}
 
 // ================= ruído =================
 function mulberry32(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -673,9 +965,110 @@ const islandSeed=n=>n?(Math.imul(baseSeed^0x9e3779b9,n+1)+n*7919)>>>0:baseSeed;
 function sampleH(H,x,z){const gx=(x+HALF)/CELL,gz=(z+HALF)/CELL;if(gx<0||gz<0||gx>=N||gz>=N)return -12;const ix=gx|0,iz=gz|0,fx=gx-ix,fz=gz-iz,i=iz*(N+1)+ix;const a=H[i],b=H[i+1],c=H[i+N+1],d=H[i+N+2];return a+(b-a)*fx+(c-a)*fz+(a-b-c+d)*fx*fz;}
 function hAt(x,z){return sampleH(HG,x,z);}
 // ilha vizinha vista de longe: mesmo relevo da ilha real, em baixa resolução
+// ================= continente com aeroporto =================
+const CONT_ID=999;let CONT=null;
+// relevo do continente visto de longe (mesma função usada para o avião não atravessar o chão)
+function contLocalH(lx,lz){
+  const e=(lx/760)**2+(lz/470)**2+Math.sin(lx*.011)*.05+Math.cos(lz*.017)*.05;
+  if(e>=1)return -4;
+  if(Math.abs(lx)<160&&Math.abs(lz)<110)return 2;
+  return 2+(1-e)*(10+Math.sin(lx*.013)*8+Math.cos(lz*.019)*7)*Math.min(1,(1-e)*4);
+}
+function contH(x,z){return CONT?contLocalH(x-CONT.x,z-CONT.z):-12;}
+const CONT_MAT={terminal:new THREE.MeshLambertMaterial({color:0xd9dde0}),roof:new THREE.MeshLambertMaterial({color:0x6c7680}),glass:new THREE.MeshPhongMaterial({color:0x5d8aa3,specular:0x99ccee,shininess:80}),
+  asphalt:new THREE.MeshLambertMaterial({color:0x3a3d41}),line:new THREE.MeshBasicMaterial({color:0xf2f2ee}),grass:new THREE.MeshLambertMaterial({color:0x5f9a45}),
+  city:[0xb7b0a5,0xa8b3bd,0xc9bfae,0x8f9aa5].map(c=>new THREE.MeshLambertMaterial({color:c})),tower:new THREE.MeshLambertMaterial({color:0xece9e2})};
+function buildContPreview(){
+  if(!CONT||islandNo===CONT_ID)return;
+  const g=new THREE.Group();g.position.set(CONT.x,0,CONT.z);world.add(g);
+  const geo=new THREE.PlaneGeometry(1700,1100,68,44);geo.rotateX(-Math.PI/2);const p=geo.attributes.position,col=new Float32Array(p.count*3);
+  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),h=contLocalH(x,z);p.setY(i,h);
+    const c=h<0?[.55,.5,.38]:h<2.6&&!(Math.abs(x)<160&&Math.abs(z)<110)?[.86,.78,.56]:Math.abs(z)<9&&Math.abs(x)<80?[.24,.25,.27]:Math.abs(x)<160&&Math.abs(z)<110?[.42,.6,.32]:[.33,.52,.22];
+    col[i*3]=c[0];col[i*3+1]=c[1];col[i*3+2]=c[2];}
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));geo.computeVertexNormals();
+  const m=new THREE.Mesh(geo,new THREE.MeshLambertMaterial({vertexColors:true}));m.userData.own=1;g.add(m);
+  // aeroporto e cidade, simples, para reconhecer de longe
+  mesh(SG.box,CONT_MAT.terminal,60,12,20,0,8,-55,g);mesh(SG.box,CONT_MAT.glass,58,5,20.4,0,6,-55,g);
+  mesh(SG.cyl,CONT_MAT.tower,3,30,3,45,17,-50,g);mesh(SG.cyl,CONT_MAT.glass,5,4,5,45,34,-50,g);
+  for(let i=0;i<26;i++){const bx=-260+(i%13)*40+Math.sin(i)*8,bz=150+Math.floor(i/13)*55,h=12+((i*37)%40);mesh(SG.box,CONT_MAT.city[i%4],22,h,22,bx,2+h/2,bz,g);}
+}
+// o aeroporto onde a aventura termina: pista, terminal, torre, aviões parados e uma multidão aplaudindo
+const CONT_THEME={name:'Aeroporto do Continente',slope:0,mountH:0,mountR:1,rrVar:0,sandTop:-5,sand:[.86,.77,.56],wet:[.68,.6,.43],grassA:[.33,.52,.22],grassB:[.4,.6,.28],rock:[.5,.5,.5],veg:{},leaf:[1,1,1],tuft:[1,1,1]};
+const welcomeTex=canvasTex(1024,160,g=>{g.fillStyle='#ff6a2b';g.fillRect(0,0,1024,160);g.fillStyle='#fff6e0';g.font='bold 92px Impact, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('BEM-VINDOS, NÁUFRAGOS!',512,84);});
+const signTex=canvasTex(512,96,g=>{g.fillStyle='#1f3a6b';g.fillRect(0,0,512,96);g.fillStyle='#fff';g.font='bold 60px Impact, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('AEROPORTO',256,52);});
+function buildContinent(){
+  if(world){scene.remove(world);world.traverse(o=>{if(o.userData.own&&o.geometry)o.geometry.dispose();});}
+  world=new THREE.Group();scene.add(world);
+  islandNo=CONT_ID;THEME=CONT_THEME;worldSeed=777;CONT=null;NB=null;
+  HG=new Float32Array((N+1)*(N+1)).fill(2);ponds=[];
+  RW={dx:1,dz:0,px:0,pz:1,half:60,w:12,h:2,mx:0,mz:-400,mside:1};
+  hangarPos={x:0,z:-62};planeStart={x:-RW.half+10,z:0};spawn={x:planeStart.x,z:6,yaw:Math.PI};
+  objs=[];crabs=[];chickens=[];fires=[];grid=new Map();runwayObs=[];bikes=[];bushIdx=[];inst={};
+  // chão, pista e pátio
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(4000,4000),CONT_MAT.grass);ground.rotation.x=-Math.PI/2;ground.position.y=1.98;ground.receiveShadow=true;ground.userData.own=1;world.add(ground);
+  const flat=(w,d,x,z,mat,y)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat);m.rotation.x=-Math.PI/2;m.position.set(x,y||2.01,z);m.receiveShadow=true;m.userData.own=1;world.add(m);return m;};
+  flat(140,16,0,0,CONT_MAT.asphalt);flat(90,40,0,-32,CONT_MAT.asphalt);
+  for(let i=-6;i<=6;i++)flat(5,.5,i*10,0,CONT_MAT.line,2.02);
+  for(const z of[-7.4,7.4])flat(140,.35,0,z,CONT_MAT.line,2.02);
+  // terminal com vidraça, letreiro e porta
+  const T=new THREE.Group();T.position.set(0,2,-62);world.add(T);
+  mesh(SG.box,CONT_MAT.terminal,60,11,22,0,5.5,0,T);mesh(SG.box,CONT_MAT.glass,56,6,.3,0,4.2,11.05,T);mesh(SG.box,CONT_MAT.roof,63,.8,25,0,11.3,0,T);
+  const sign=new THREE.Mesh(new THREE.PlaneGeometry(16,3),new THREE.MeshBasicMaterial({map:signTex}));sign.position.set(0,9,11.2);sign.userData.own=1;T.add(sign);
+  mesh(SG.box,CONT_MAT.glass,4,4.2,.4,0,2.1,11.3,T);mesh(SG.box,CONT_MAT.roof,6,.4,2.5,0,4.6,12.2,T);
+  // torre de controle
+  mesh(SG.cyl,CONT_MAT.tower,2.2,22,2.2,46,13,-52,world);mesh(SG.cyl,CONT_MAT.glass,3.6,3.5,3.6,46,25.5,-52,world);mesh(SG.cone,CONT_MAT.roof,4,2,4,46,28.3,-52,world);
+  // aviões estacionados
+  for(const[x,z,r]of[[-34,-30,Math.PI*.5],[34,-28,-Math.PI*.5]]){const pl=buildPlane();pl.s[0].visible=false;pl.s[4].visible=false;pl.g.position.set(x,2,z);pl.g.rotation.y=r;pl.g.scale.setScalar(1.15);world.add(pl.g);}
+  // faixa de boas-vindas
+  for(const x of[-11,11])mesh(SG.cyl,CONT_MAT.roof,.15,10,.15,x,7,-36,world);
+  const ban=new THREE.Mesh(new THREE.PlaneGeometry(22,3.4),new THREE.MeshBasicMaterial({map:welcomeTex,side:THREE.DoubleSide}));ban.position.set(0,10.2,-36);ban.userData.own=1;world.add(ban);
+  // multidão aplaudindo
+  const crowd=[];
+  for(let i=0;i<26;i++){const row=Math.floor(i/13),col=i%13,x=-24+col*4+(row?2:0)+(Math.random()-.5),z=-41-row*3.2+(Math.random()-.5);
+    const c=buildCharacter({tone:Math.random()*TONES.length|0,outfit:Math.random()*OUTFITS.length|0});c.traverse(o=>{if(o.isMesh)o.castShadow=false;});
+    c.position.set(x,2,z);world.add(c);crowd.push({g:c,rig:c.userData.rig,ph:Math.random()*6,rate:2.6+Math.random()*1.2,hi:Math.random(),x,z});}
+  world.userData.crowd=crowd;
+  // confete caindo sobre a festa
+  const CN=220,conf=new THREE.InstancedMesh(SG.box,new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}),CN);conf.frustumCulled=false;
+  const cc=new THREE.Color(),cols=[0xff6a2b,0xffe14a,0x5ec8ff,0x8fd16a,0xf06292,0xffffff],cd=[];
+  for(let i=0;i<CN;i++){cc.set(cols[i%cols.length]);conf.setColorAt(i,cc);cd.push({x:(Math.random()-.5)*50,y:2+Math.random()*16,z:-38+(Math.random()-.5)*16,r:Math.random()*6,s:.8+Math.random()*.8});}
+  world.add(conf);world.userData.confetti={m:conf,d:cd};
+  // portas do terminal (entrar encerra a aventura) e paredes para não atravessar
+  const door={kind:'door',x:0,z:-49.5,y:2,r:1.6,hy:1.4,dead:false};objs.push(door);gadd(door);
+  for(let x=-30;x<=30;x+=2){if(Math.abs(x)<3)continue;for(const z of[-51,-73]){const o={kind:'col',x,z,r:1.1,solid:true,dead:false,nointeract:true};objs.push(o);gadd(o);}}
+  for(let z=-73;z<=-51;z+=2)for(const x of[-30,30]){const o={kind:'col',x,z,r:1.1,solid:true,dead:false,nointeract:true};objs.push(o);gadd(o);}
+  {const o={kind:'col',x:46,z:-52,r:2.4,solid:true,dead:false,nointeract:true};objs.push(o);gadd(o);}
+  for(const[x,z]of[[-34,-30],[34,-28]])for(let k=-1;k<=1;k++){const o={kind:'col',x:x+k*2.2*(x<0?1:-1),z,r:1.2,solid:true,dead:false,nointeract:true};objs.push(o);gadd(o);}
+  // o avião da equipe, já pronto, na cabeceira
+  plane=buildPlane();world.add(plane.g);plane.stage=4;syncPlane();
+  plane.g.position.set(planeStart.x,RW.h,planeStart.z);plane.g.rotation.y=Math.atan2(RW.dx,RW.dz);
+  for(let i=-1;i<=2;i++){const o={kind:'planecol',x:planeStart.x+RW.dx*i*2,z:planeStart.z+RW.dz*i*2,r:1,solid:true,dead:false,nointeract:true};objs.push(o);gadd(o);}
+  objs.forEach((o,i)=>o.idx=i);MP.base=objs.length;
+  buildMinimap();for(let x=-150;x<=150;x+=20)for(let z=-150;z<=150;z+=20)reveal(x,z);
+}
+function updateCrowd(dt,tm){
+  const crowd=world.userData.crowd,conf=world.userData.confetti;if(!crowd)return;
+  for(const p of crowd){
+    // palmas de gente: braços à frente do peito, cotovelos dobrados, as mãos se juntam rápido e se afastam devagar.
+    // de vez em quando a pessoa para de bater palma e comemora com os braços para cima
+    const u=(tm*p.rate+p.ph)%1,gap=Math.pow(Math.sin(u*Math.PI),.6),cheer=Math.sin(tm*.35+p.ph*3)>.88;
+    const wave=Math.sin(tm*6+p.ph);
+    for(const s of['L','R']){const r=p.rig[s],sd=s==='L'?1:-1;
+      if(cheer){r.sh.rotation.x=-2.75+wave*sd*.12;r.sh.rotation.y=0;r.sh.rotation.z=sd*.35;r.elb.rotation.x=-.35-Math.max(0,wave*sd)*.4;}
+      else{r.sh.rotation.x=-.42-p.hi*.3;r.sh.rotation.y=-sd*(.74-.4*gap);r.sh.rotation.z=sd*.08;r.elb.rotation.x=-1.25-p.hi*.15;}
+      r.hip.rotation.x=0;r.knee.rotation.x=0;}
+    // corpo acompanha: um pequeno pulo na comemoração, um leve balanço no ritmo das palmas
+    p.g.position.y=2+(cheer?Math.max(0,Math.sin(tm*7+p.ph))*.18:(1-gap)*.02);
+    p.g.rotation.x=cheer?0:-.04*(1-gap);
+    if(P){const want=Math.atan2(P.x-p.x,P.z-p.z);let d=want-p.g.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));p.g.rotation.y+=d*Math.min(1,dt*2);}}
+  if(conf){for(let i=0;i<conf.d.length;i++){const c=conf.d[i];c.y-=dt*(1.2+c.s);c.r+=dt*4;c.x+=Math.sin(tm+i)*dt*.6;if(c.y<2.05){c.y=14+Math.random()*6;c.x=(Math.random()-.5)*50;}
+    _p.set(c.x,c.y,c.z);_e.set(c.r,c.r*.7,0);_q.setFromEuler(_e);_s.set(.12*c.s,.02,.08*c.s);_m.compose(_p,_q,_s);conf.m.setMatrixAt(i,_m);}conf.m.instanceMatrix.needsUpdate=true;}
+}
+function enterTerminal(){if(state!=='play')return;net('arr');state='won';closePanel();if(document.pointerLockElement)document.exitPointerLock();showEnd(true);}
 function buildNeighbor(){
   const id=islandNo+1,s=islandSeed(id),r0=mulberry32((worldSeed^0x5bd1e995)>>>0);
   const ang=r0()*Math.PI*2,dist=1150,nx=Math.cos(ang)*dist,nz=Math.sin(ang)*dist;
+  CONT={x:Math.cos(ang+2.3)*2300,z:Math.sin(ang+2.3)*2300};
   const save={HG,RW,hangarPos,planeStart,ponds,THEME};
   THEME=themeOf(id);const NTH=THEME;
   genTerrain(mulberry32(s));
@@ -704,6 +1097,7 @@ function buildNeighbor(){
   // mastro laranja do hangar, visível do alto
   const pole=mesh(SG.cyl,MAT.buoy,.25,26,.25,hp2.x,sampleH(H2,hp2.x,hp2.z)+13,hp2.z,g);pole.castShadow=false;
   NB={id,x:nx,z:nz,H:H2,name:NTH.name,volc:NTH.lava?{x:nx+nmx,z:nz+nmz,y:sampleH(H2,nmx,nmz),H:H2,ox:nx,oz:nz,r:NTH.crater,key:'nb'+id}:null};
+  buildContPreview();
 }
 const slopeAt=(x,z)=>Math.hypot(hAt(x+1,z)-hAt(x-1,z),hAt(x,z+1)-hAt(x,z-1))/2;
 function rwLocal(x,z){return{a:x*RW.dx+z*RW.dz,p:x*RW.px+z*RW.pz};}
@@ -1068,6 +1462,7 @@ function burst(x,y,z,col,n){const c=new THREE.Color(col);for(let i=0;i<n;i++){co
 const skinSel={tone:2,outfit:0};
 try{const s=JSON.parse(localStorage.getItem('naufrago-skin')||'null');if(s&&TONES[s.tone]&&OUTFITS[s.outfit])Object.assign(skinSel,s);}catch(e){}
 function topMat(o){return o.stripes?new THREE.MeshLambertMaterial({map:(()=>{const t=stripeTex(o.stripes[0],o.stripes[1]);t.repeat.set(1,3);return t;})()}):new THREE.MeshLambertMaterial({color:o.top});}
+const SMILE_GEO=new THREE.TorusGeometry(.058,.013,6,14,Math.PI),SMILE_MAT=new THREE.MeshBasicMaterial({color:0x5a1a14});
 // corpo articulado: quadril → coxa → joelho → canela/bota; ombro → braço → mão
 function buildCharacter(sel,firstPerson){
   const O=OUTFITS[sel.outfit],root=new THREE.Group(),rig={};
@@ -1077,10 +1472,14 @@ function buildCharacter(sel,firstPerson){
     mesh(SG.box,pants,.22,.46,.24,0,-.22,0,hip);
     const knee=new THREE.Group();knee.position.set(0,-.44,0);hip.add(knee);
     mesh(SG.box,pants,.2,.4,.22,0,-.2,0,knee);mesh(SG.box,boots,.24,.16,.34,0,-.47,.05,knee);
-    const sh=new THREE.Group();sh.position.set(s*.37,1.75,0);sh.rotation.z=s*.1;root.add(sh);
-    mesh(SG.box,top,.16,.55,.18,0,-.27,0,sh);const hand=new THREE.Group();hand.position.set(0,-.63,0);sh.add(hand);mesh(SG.box,skin,.13,.16,.14,0,0,0,hand);
+    // ombro → braço → cotovelo → antebraço → mão (o ombro gira primeiro para a frente e depois para dentro)
+    const sh=new THREE.Group();sh.position.set(s*.37,1.75,0);sh.rotation.order='YXZ';sh.rotation.z=s*.1;root.add(sh);
+    mesh(SG.box,top,.16,.32,.18,0,-.15,0,sh);
+    const elb=new THREE.Group();elb.position.set(0,-.3,0);sh.add(elb);
+    mesh(SG.box,top,.15,.3,.17,0,-.14,0,elb);
+    const hand=new THREE.Group();hand.position.set(0,-.33,0);elb.add(hand);mesh(SG.box,skin,.13,.16,.14,0,0,0,hand);
     if(firstPerson)sh.visible=false;
-    rig[s<0?'R':'L']={hip,knee,sh,hand};
+    rig[s<0?'R':'L']={hip,knee,sh,elb,hand};
   }
   // cabeça e o resto ficam num grupo à parte, para sumirem na visão em primeira pessoa
   const g=new THREE.Group();root.add(g);if(firstPerson)g.visible=false;
@@ -1099,6 +1498,8 @@ function buildCharacter(sel,firstPerson){
   const head=mesh(SG.sph,skin,.19,.21,.19,0,2.06,0,g);head.castShadow=true;
   mesh(SG.box,new THREE.MeshBasicMaterial({color:'#1a1a1a'}),.04,.03,.02,-.07,2.08,.18,g);mesh(SG.box,new THREE.MeshBasicMaterial({color:'#1a1a1a'}),.04,.03,.02,.07,2.08,.18,g);
   mesh(SG.sph,hair,.2,.12,.2,0,2.17,-.02,g);
+  // sorriso
+  const smile=new THREE.Mesh(SMILE_GEO,SMILE_MAT);smile.position.set(0,2.02,.186);smile.rotation.set(-.15,0,Math.PI);g.add(smile);
   if(O.hat==='cap'){mesh(SG.sph,hatM,.21,.13,.21,0,2.19,0,g);mesh(SG.box,new THREE.MeshPhongMaterial({color:'#9fc2cc',shininess:90}),.3,.06,.06,0,2.2,.17,g);}
   if(O.hat==='sailor'){mesh(SG.cyl,hatM,.2,.1,.2,0,2.25,0,g);mesh(SG.cyl,new THREE.MeshLambertMaterial({color:'#1f3a6b'}),.205,.03,.205,0,2.21,0,g);}
   if(O.hat==='safari'){mesh(SG.cyl,hatM,.34,.03,.34,0,2.2,0,g);mesh(SG.sph,hatM,.19,.14,.19,0,2.24,0,g);}
@@ -1116,8 +1517,10 @@ function animateRig(rig,ph,amp,mode,holding){
     if(mode==='bike'){th=-1.05+.45*Math.sin(ph+o);kn=1.25+.45*Math.cos(ph+o);ar=-.85;}
     else if(mode==='sit'){th=-1.5;kn=1.5;ar=-.35;}
     else{const s=Math.sin(ph+o);th=-s*.55*amp;kn=(Math.max(0,Math.cos(ph+o))*.95+.06)*amp;ar=s*.5*amp;}
-    r.hip.rotation.x=th;r.knee.rotation.x=kn;
-    r.sh.rotation.x=side==='R'&&holding?-.55+ar*.15:ar;}
+    r.hip.rotation.x=th;r.knee.rotation.x=kn;r.sh.rotation.y=0;
+    const hold=side==='R'&&holding;r.sh.rotation.x=hold?-.55+ar*.15:ar;
+    // o cotovelo dobra mais quando o braço vai para a frente, como num passo de verdade
+    r.elb.rotation.x=hold?-.45:mode==='bike'?-.2:mode==='sit'?-.7:-.12-Math.max(0,-ar)*.7;}
 }
 // modelo 3D de cada item para segurar na mão
 const HOLD_CACHE={};
@@ -1220,8 +1623,9 @@ try{pvR=new THREE.WebGLRenderer({canvas:pv,antialias:true,alpha:true});pvR.setPi
 function refreshPreview(){if(!pvR)return;if(pvChar)pvScene.remove(pvChar);pvChar=buildCharacter(skinSel);pvScene.add(pvChar);}
 function renderPreview(t){if(!pvR)return;const w=pv.clientWidth,h=pv.clientHeight;if(!w||!h)return;if(pv.width!==Math.round(w*pvR.getPixelRatio())){pvR.setSize(w,h,false);pvCam.aspect=w/h;pvCam.updateProjectionMatrix();}if(pvChar){pvChar.rotation.y=t*.6;animateRig(pvChar.userData.rig,t*5,.75,'walk');}pvR.render(pvScene,pvCam);}
 function buildCreator(){
-  $('tones').innerHTML=TONES.map((c,i)=>`<button class="swatch" style="background:${c}" data-i="${i}" aria-label="Tom de pele ${i+1}" aria-pressed="${i===skinSel.tone}"></button>`).join('');
-  $('outfits').innerHTML=OUTFITS.map((o,i)=>`<button class="outfit" data-i="${i}" aria-pressed="${i===skinSel.outfit}"><i style="background:${o.stripes?`repeating-linear-gradient(0deg,${o.stripes[0]} 0 3px,${o.stripes[1]} 3px 6px)`:o.top};box-shadow:inset 0 -5px 0 ${o.accent}"></i>${o.n}</button>`).join('');
+  $('tones').innerHTML=TONES.map((c,i)=>`<button class="swatch" style="background:${c}" data-i="${i}" aria-label="${tr('Tom de pele {0}',i+1)}" aria-pressed="${i===skinSel.tone}"></button>`).join('');
+  $('kitNote').textContent=tr('Kit inicial: {0}.',tr(KITS[skinSel.outfit].txt));
+  $('outfits').innerHTML=OUTFITS.map((o,i)=>`<button class="outfit" data-i="${i}" title="Kit: ${tr(KITS[i].txt)}" aria-pressed="${i===skinSel.outfit}"><i style="background:${o.stripes?`repeating-linear-gradient(0deg,${o.stripes[0]} 0 3px,${o.stripes[1]} 3px 6px)`:o.top};box-shadow:inset 0 -5px 0 ${o.accent}"></i>${tr(o.n)}</button>`).join('');
   $('tones').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{skinSel.tone=+b.dataset.i;saveSkin();}));
   $('outfits').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{skinSel.outfit=+b.dataset.i;saveSkin();}));
 }
@@ -1255,11 +1659,11 @@ function pushRequest(req){
   if(REQ.some(r=>r.id===req.id)||(reqCur&&reqCur.id===req.id))return;
   REQ.push(req);showReq();
 }
-function showReq(){if(reqCur||!REQ.length)return;reqCur=REQ.shift();$('reqName').textContent=reqCur.nm||'Um novo náufrago';$('reqBox').hidden=false;}
+function showReq(){if(reqCur||!REQ.length)return;reqCur=REQ.shift();$('reqName').textContent=reqCur.nm||tr('Um novo náufrago');$('reqBox').hidden=false;}
 function answerReq(ok){
   if(!reqCur)return;const r=reqCur;reqCur=null;$('reqBox').hidden=true;
   if(ok&&r.tok)MP.approvedToks.add(r.tok);r.answer(ok);
-  toast(ok?`${r.nm||'Novo náufrago'} foi autorizado a entrar.`:`Entrada de ${r.nm||'um náufrago'} recusada.`);showReq();
+  toast(ok?tr('{0} foi autorizado a entrar.',r.nm||tr('Novo náufrago')):tr('Entrada de {0} recusada.',r.nm||tr('um náufrago')));showReq();
 }
 function cancelReq(id){const i=REQ.findIndex(r=>r.id===id);if(i>=0)REQ.splice(i,1);if(reqCur&&reqCur.id===id){reqCur=null;$('reqBox').hidden=true;showReq();}}
 $('reqYes').addEventListener('click',()=>answerReq(true));$('reqNo').addEventListener('click',()=>answerReq(false));
@@ -1283,7 +1687,7 @@ let myName='';try{myName=cleanName(localStorage.getItem('naufrago-nome'));}catch
 $('nameIn').value=myName;
 $('nameIn').addEventListener('input',()=>{myName=cleanName($('nameIn').value);try{localStorage.setItem('naufrago-nome',myName);}catch(e){}});
 function cleanCode(s){return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5);}
-function mpNote(t,err){const n=$('mpNote');n.textContent=t;n.classList.toggle('err',!!err);}
+function mpNote(t,err){const n=$('mpNote');n.textContent=tr(t);n.classList.toggle('err',!!err);}
 function mpButtons(on){$('createBtn').disabled=!on;$('joinBtn').disabled=!on;}
 const sleepMs=ms=>new Promise(res=>setTimeout(res,ms));
 const others=(r=MP.r,code=MP.code)=>{if(!r)return[];return r.peers().filter(p=>!p.sameTab&&p.presence&&p.presence.g===code);};
@@ -1381,7 +1785,7 @@ async function createMatch(){
 }
 async function joinMatch(raw){
   const code=cleanCode(raw);if(code.length!==5){mpNote('O código tem 5 letras ou números.',true);return;}
-  if(!MP.api||MP.busy)return;MP.busy=true;mpButtons(false);mpNote(`Procurando a partida ${code}…`);
+  if(!MP.api||MP.busy)return;MP.busy=true;mpButtons(false);mpNote(tr('Procurando a partida {0}…',code));
   try{
     MP.joining=true;
     try{MP.r=await MP.net.connect(code);}catch(e){MP.r=null;MP.joining=false;throw e;}MP.code=code;
@@ -1395,15 +1799,18 @@ async function joinMatch(raw){
       else if(t>40&&!('accepted' in MP.r))break;}
     MP.joining=false;
     if(ok)for(let t=0;t<20&&!host;t++){await sleepMs(250);list=others().filter(p=>p.presence.role!=='pending');host=list.find(p=>p.presence.role==='host');}
-    if(MP.r.full){mpNote(`Essa partida já está cheia (${MAXP} náufragos).`,true);await leaveMatch();}
+    if(MP.r.full){mpNote(tr('Essa partida já está cheia ({0} náufragos).',MAXP),true);await leaveMatch();}
     else if(no){mpNote('Quem criou a partida não autorizou sua entrada.',true);await leaveMatch();}
     else if(!ok){mpNote(host?'Quem criou a partida não respondeu. Peça para ele autorizar e tente de novo.':`Nenhuma partida aberta com o código ${code}. Confira o código com seu amigo.`,true);await leaveMatch();}
     else if(!host){mpNote('Entrada autorizada, mas a partida não respondeu. Tente de novo.',true);await leaveMatch();}
-    else if(list.length>=MAXP){mpNote(`Essa partida já está cheia (${MAXP} náufragos).`,true);await leaveMatch();}
+    else if(list.length>=MAXP){mpNote(tr('Essa partida já está cheia ({0} náufragos).',MAXP),true);await leaveMatch();}
     else{MP.isHost=false;MP.seq=0;MP.acts=[];MP.seen.clear();MP.wv=0;MP.noHostT=0;
       MP.r.presence({g:MP.code,role:'guest',sk:[skinSel.tone,skinSel.outfit],seat:0,tok:myTok}).catch(()=>{});
       newGame(seedOf(MP.code));
-      const hi=host.presence.is|0;if(hi>0&&hi<1000){islandNo=hi;buildWorld(islandSeed(hi));for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}plane.stage=4;syncPlane();newPlayer();reveal(P.x,P.z);reveal(hangarPos.x,hangarPos.z);}
+      const hi=host.presence.is|0;
+      if(hi===CONT_ID){buildContinent();newPlayer();}
+      else if(hi>0&&hi<1000){islandNo=hi;buildWorld(islandSeed(hi));for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}plane.stage=4;syncPlane();newPlayer();reveal(P.x,P.z);reveal(hangarPos.x,hangarPos.z);}
+      msSync=false;const hw=host.presence.w;if(hw&&Number.isInteger(hw.mi))setMission(hw.mi,true);msSync=true;
       const ja=Math.random()*Math.PI*2,jr=1.8+Math.random()*2;if(okPos(P.x+Math.cos(ja)*jr,P.z+Math.sin(ja)*jr)){P.x+=Math.cos(ja)*jr;P.z+=Math.sin(ja)*jr;P.fy=hAt(P.x,P.z);}
       mpNote('');start();}
   }catch(e){
@@ -1425,12 +1832,13 @@ function net(type,...a){
 }
 function packDead(){const n=MP.base,b=new Uint8Array(Math.ceil(n/8));for(let i=0;i<n;i++){const o=objs[i];if(o.dead||o.falling!==undefined)b[i>>3]|=1<<(i&7);}let s='';for(const x of b)s+=String.fromCharCode(x);return btoa(s);}
 function snapshot(){
-  return{v:++MP.wv,is:islandNo,rn:+rainTarget.toFixed(2),t:+tod.toFixed(4),d:day,gt:Math.round(gt),st:plane.stage,dd:packDead(),b:bushIdx.map(i=>objs[i].dead?0:objs[i].berries).join(''),
+  return{v:++MP.wv,is:islandNo,mi,rn:+rainTarget.toFixed(2),t:+tod.toFixed(4),d:day,gt:Math.round(gt),st:plane.stage,dd:packDead(),b:bushIdx.map(i=>objs[i].dead?0:objs[i].berries).join(''),
     f:fires.slice(-20).map(f=>f.torch?[+f.x.toFixed(1),+f.z.toFixed(1),1]:[+f.x.toFixed(1),+f.z.toFixed(1)])};
 }
 function applyWorld(w){
   if(!w||typeof w!=='object'||w.v===MP.lastW||(w.is|0)!==islandNo)return;MP.lastW=w.v;
   if(Number.isFinite(w.rn))rainTarget=CL(w.rn,0,1);
+  if(Number.isInteger(w.mi)&&w.mi>mi){setMission(w.mi,!msSync);}msSync=true;
   if(Number.isFinite(w.t)&&Math.abs(w.t-tod)>.003)tod=CL(w.t,0,.9999);
   if(Number.isInteger(w.d)&&w.d>0)day=w.d;if(Number.isFinite(w.gt))gt=w.gt;
   if(Number.isInteger(w.st)&&w.st>plane.stage&&w.st<=4){plane.stage=w.st;syncPlane();}
@@ -1448,7 +1856,7 @@ function applyAct(a,pe){
     const[, ,to,k,n]=a;
     if(MP.me&&to===MP.me.peer&&typeof k==='string'&&Object.prototype.hasOwnProperty.call(ITEMS,k)&&Number.isInteger(n)&&n>0&&n<=999){
       P.inv[k]=(P.inv[k]|0)+n;invDirty=true;const R=pe&&MP.remotes.get(pe.peer);
-      toast(`${R?nameOf(R):'Um parceiro'} te deu ${n} ${ITEMS[k].n}.`);floatAt(camAhead(1.4),`+${n} ${shortN(k)}`,'#8fd16a');}
+      toast(tr('{0} te deu {1} {2}.',R?nameOf(R):tr('Um parceiro'),n,ITEMS[k].n));floatAt(camAhead(1.4),`+${n} ${shortN(k)}`,'#8fd16a');}
     return;
   }
   if(!Array.isArray(a)||typeof a[1]!=='string')return;const[,t,x,y]=a;const o=Number.isInteger(x)&&x>=0&&x<MP.base?objs[x]:null;
@@ -1458,7 +1866,7 @@ function applyAct(a,pe){
     case'k':if(o&&!o.dead){if(o.obj){o.dead=true;o.obj.visible=false;o.back=Infinity;}else kill(o,o.runway?Infinity:110);}break;
     case'b':if(o&&o.kind==='bush'&&o.berries>0){o.berries--;setBerries(o);}break;
     case'f':case'tc':if(Number.isFinite(x)&&Number.isFinite(y)&&Math.abs(x)<HALF&&Math.abs(y)<HALF&&!fires.some(f=>Math.hypot(f.x-x,f.z-y)<.8)){makeFire(x,y,t==='tc');if(MP.isHost)MP.wDirty=true;}break;
-    case's':if(Number.isInteger(x)&&x>plane.stage&&x<=4){plane.stage=x;syncPlane();if(MP.isHost)MP.wDirty=true;toast(`Seu parceiro montou: ${STAGES[x-1].n}.`);if(panel==='hangar')buildHangarPanel();}break;
+    case's':if(Number.isInteger(x)&&x>plane.stage&&x<=4){plane.stage=x;syncPlane();if(MP.isHost)MP.wDirty=true;toast(tr('Seu parceiro montou: {0}.',STAGES[x-1].n));if(panel==='hangar')buildHangarPanel();}break;
     case'z':if(MP.isHost){tod=0;day++;MP.wDirty=true;}break;
     case'tk':if(P&&P.seat&&state==='play')startTakeoff();break;
     case'bm':{const b=bikes[x];if(b&&b.rider!=='me')b.rider='remote';break;}
@@ -1490,20 +1898,20 @@ function processPeers(dt){
     else if(maxSeq<last)MP.seen.set(pe.peer,maxSeq);
     updateRemote(pe,pr,dt);
   }
-  for(const[k,R]of MP.remotes)if(!seen.has(k)){if(R.g)scene.remove(R.g);R.el.remove();MP.remotes.delete(k);if(R.bikeRef&&R.bikeRef.rider==='remote'){R.bikeRef.rider=null;R.bikeRef.x=R.x;R.bikeRef.z=R.z;placeBike(R.bikeRef);}if(state==='play')toast(`${nameOf(R)} saiu da ilha.`);}
+  for(const[k,R]of MP.remotes)if(!seen.has(k)){if(R.g)scene.remove(R.g);R.el.remove();MP.remotes.delete(k);if(R.bikeRef&&R.bikeRef.rider==='remote'){R.bikeRef.rider=null;R.bikeRef.x=R.x;R.bikeRef.z=R.z;placeBike(R.bikeRef);}if(state==='play')toast(tr('{0} saiu da ilha.',nameOf(R)));}
   MP.me=me;MP.count=count+1;
   // na sala do claude.ai, pedidos de quem já saiu somem da fila
   if(MP.isHost&&!('accepted' in MP.r)){for(const r of REQ.slice())if(!present.has(r.id))cancelReq(r.id);if(reqCur&&!present.has(reqCur.id))cancelReq(reqCur.id);}
   if(MP.isHost){if(host&&me&&host.peer<me.peer){MP.isHost=false;MP.noHostT=0;}}
   else if(host){MP.noHostT=0;if(world&&state!=='title')applyWorld(host.presence.w);}
   else if(state==='play'){MP.noHostT+=dt;if(MP.noHostT>4){MP.isHost=true;MP.wDirty=true;toast('O anfitrião saiu. A ilha continua com você.');}}
-  if(state==='title'&&!$('codeBox').hidden)$('waitList').textContent=count?`${count===1?'1 amigo já entrou':`${count} amigos já entraram`} (cabem ${MAXP} náufragos).`:`Só você por enquanto. Cabem ${MAXP} náufragos.`;
+  if(state==='title'&&!$('codeBox').hidden)$('waitList').textContent=count===1?tr('1 amigo já entrou (cabem {0} náufragos).',MAXP):count?tr('{0} amigos já entraram (cabem {1} náufragos).',count,MAXP):tr('Só você por enquanto. Cabem {0} náufragos.',MAXP);
 }
 function updateRemote(pe,pr,dt){
   let R=MP.remotes.get(pe.peer);
   const sk=Array.isArray(pr.sk)?[CL(pr.sk[0]|0,0,TONES.length-1),CL(pr.sk[1]|0,0,OUTFITS.length-1)]:[2,0],key=sk.join();
   const nm=cleanName(pr.nm);
-  if(!R){const el=document.createElement('div');el.className='ptag';$('floats').appendChild(el);R={peer:pe.peer,by:pe.by,nm,el,x:0,y:0,z:0,yaw:0,tx:0,ty:0,tz:0,tyaw:0,first:true,seat:0,sk};MP.remotes.set(pe.peer,R);if(state==='play')toast(`${nameOf(R)} chegou na ilha.`);}
+  if(!R){const el=document.createElement('div');el.className='ptag';$('floats').appendChild(el);R={peer:pe.peer,by:pe.by,nm,el,x:0,y:0,z:0,yaw:0,tx:0,ty:0,tz:0,tyaw:0,first:true,seat:0,sk};MP.remotes.set(pe.peer,R);if(state==='play')toast(tr('{0} chegou na ilha.',nameOf(R)));}
   R.nm=nm;
   if(R.key!==key){if(R.g)scene.remove(R.g);R.g=buildCharacter({tone:sk[0],outfit:sk[1]});scene.add(R.g);R.key=key;R.sk=sk;}
   const p=pr.p;
@@ -1511,6 +1919,7 @@ function updateRemote(pe,pr,dt){
   const k=Math.min(1,dt*10),ox=R.x,oz=R.z;R.x+=(R.tx-R.x)*k;R.y+=(R.ty-R.y)*k;R.z+=(R.tz-R.z)*k;
   let dy=R.tyaw-R.yaw;dy=Math.atan2(Math.sin(dy),Math.cos(dy));R.yaw+=dy*k;
   R.seat=Number.isInteger(pr.seat)&&pr.seat>=1&&pr.seat<=MAXP?pr.seat:0;R.fl=pr.fl===1;
+  R.ms=Array.isArray(pr.ms)?pr.ms.slice(0,MS_KEYS.length):null;
   if(Array.isArray(p)&&Number.isFinite(p[4]))R.pitch=CL(p[4],-1.5,1.5);R.dead=pr.dead===1;R.act=pr.a===1;R.is=pr.is|0;
   const pl=pr.pl;if(Array.isArray(pl)&&pl.length===6&&pl.every(Number.isFinite))R.pl=pl;else R.pl=null;
   const spd=Math.hypot(R.x-ox,R.z-oz)/Math.max(dt,1e-3);R.ph=(R.ph||0)+Math.min(dt*spd,1)*(pr.bk?2.6:4.4);
@@ -1527,7 +1936,7 @@ function updateRemote(pe,pr,dt){
   if(hk!==R.holdKey||R.holdG!==R.g){if(R.holdM&&R.holdM.parent)R.holdM.parent.remove(R.holdM);R.holdKey=hk;R.holdG=R.g;R.holdM=hk?itemMesh(hk):null;
     if(R.holdM){R.holdM.position.set(0,-.06,.08);R.holdM.rotation.x=Math.PI/2;R.g.userData.rig.R.hand.add(R.holdM);}}
   if(show)animateRig(R.g.userData.rig,R.ph,R.amp,bk?'bike':'walk',!!R.holdKey);
-  R.el.textContent=nameOf(R)+(R.dead?' (caído)':R.seat?' (no avião)':bk?' (de bicicleta)':'');
+  R.el.textContent=nameOf(R)+tr(R.dead?' (caído)':R.seat?' (no avião)':bk?' (de bicicleta)':'');
   if(!here){R.el.style.opacity=0;return;}
   if(!show&&!R.seat){R.el.style.opacity=0;return;}
   const hp=R.seat?seatWorld(R.seat,1.6):_v.set(R.x,R.y+2.55,R.z);_v.copy(hp).project(camera);
@@ -1538,7 +1947,7 @@ function updateRemote(pe,pr,dt){
 function sendPresence(now){
   if(!MP.r||now<MP.sendT)return;MP.sendT=now+100;
   const pr={g:MP.code,role:MP.isHost?'host':'guest',sk:[skinSel.tone,skinSel.outfit],nm:myName,acts:MP.acts};
-  pr.is=islandNo;pr.tok=myTok;
+  pr.is=islandNo;pr.tok=myTok;if(P&&stats)pr.ms=myMS();
   if(MP.isHost){pr.ok=[...MP.okPeers].slice(-12);pr.no=[...MP.noPeers].slice(-12);}
   if(P&&state!=='title'){pr.p=[+P.x.toFixed(2),+P.fy.toFixed(2),+P.z.toFixed(2),+P.yaw.toFixed(2),+P.pitch.toFixed(2)];pr.fl=flashOn&&P.tools.lanterna&&!P.seat?1:0;pr.hd=P.show&&!P.seat?P.show:null;pr.a=P.act>0?1:0;pr.seat=P.seat|0;pr.hp=P.hp|0;pr.dead=state==='dead'?1:0;pr.bk=P.bike?P.bike.i+1:0;
     pr.pl=state==='fly'&&P.seat===1?[FL.x,FL.y,FL.z,FL.yaw,FL.pitch,FL.roll].map(v=>+v.toFixed(2)):null;}
@@ -1549,36 +1958,44 @@ const remoteSeated=()=>[...MP.remotes.values()].filter(R=>R.seat&&!R.dead);
 const allAboard=()=>[...MP.remotes.values()].every(R=>R.seat||R.dead||R.is!==islandNo);
 
 // ================= missões =================
+// as missões são da equipe: o progresso soma o que cada náufrago fez
+const MS_KEYS=['madeira','pedra','pecas','machado','bebeu','fogo','caranguejo','navio','hangar','ilhas','voou','continente'];
+function myMS(){const g=stats.got||{};return[g.madeira|0,g.pedra|0,g.pecas|0,P&&P.tools.machado?1:0,stats.drank?1:0,stats.fires|0,stats.crabs|0,stats.ship|0,stats.hangar?1:0,stats.islands|0,stats.flown?1:0,stats.continent?1:0];}
+function team(){const t=myMS();for(const R of MP.remotes.values())if(Array.isArray(R.ms))R.ms.forEach((v,i)=>{if(i<t.length&&Number.isFinite(v))t[i]+=CL(v,0,999);});
+  const o={};MS_KEYS.forEach((k,i)=>o[k]=t[i]);return o;}
 const M=[
-  {t:'Primeiros recursos',d:'Junte 5 madeiras e 3 pedras. Mire numa árvore ou rocha e segure o clique.',p:()=>[Math.min(stats.got.madeira|0,5)+Math.min(stats.got.pedra|0,3),8],r:{corda:2}},
-  {t:'Mãos à obra',d:'Arranque capim, trance corda na bancada (C) e crie um machado.',p:()=>[P.tools.machado?1:0,1],r:{frutas:2}},
-  {t:'Água potável',d:'Encontre uma lagoa de água doce no interior e beba. O mar só aumenta a sede.',p:()=>[stats.drank?1:0,1],r:{coco:1}},
-  {t:'Fogo no acampamento',d:'Acenda uma fogueira. Ela assa carne e deixa você dormir à noite.',p:()=>[stats.fires?1:0,1],r:{lata:1}},
-  {t:'Caçada na praia',d:'Cace 2 caranguejos. Uma lança resolve com um golpe.',p:()=>[Math.min(stats.crabs,2),2],r:{assada:1}},
-  {t:'Restos do navio',d:'Abra 3 caixotes do S.S. Aurora espalhados pelas praias.',p:()=>[Math.min(stats.ship,3),3],r:{sucata:2}},
-  {t:'O hangar abandonado',d:'Siga a bandeira laranja no mapa até o hangar ao lado da velha pista.',p:()=>[stats.hangar?1:0,1],r:{corda:2}},
-  {t:'Pista livre',d:'Árvores e rochas cresceram sobre a pista. Derrube todas.',p:()=>{const n=runwayObs.length;return[n-runwayObs.filter(o=>!o.dead).length,n];},r:{sucata:2}},
-  {t:'Fuselagem',d:'No hangar, monte o corpo do avião com madeira, sucata e corda.',p:()=>[plane.stage>=1?1:0,1],r:{lata:1}},
-  {t:'Asas',d:'Revista as asas com a lona dos caixotes do navio.',p:()=>[plane.stage>=2?1:0,1],r:{frutas:2}},
-  {t:'Peças perdidas',d:'Encontre 3 peças de motor nas caixas militares verdes espalhadas pela ilha.',p:()=>[Math.min(stats.got.pecas|0,3),3],r:{sucata:1}},
-  {t:'Motor',d:'Instale o motor e a hélice no hangar.',p:()=>[plane.stage>=3?1:0,1]},
-  {t:'Combustível',d:'Ache 3 tambores vermelhos de gasolina de aviação e abasteça o avião.',p:()=>[plane.stage>=4?1:0,1]},
-  {t:'Decolar',d:'Suba no avião, acelere pela pista e ganhe altura.',p:()=>[stats.flown?1:0,1]},
-  {t:'A ilha vizinha',d:'Pilote até a ilha vulcânica no horizonte (siga a fumaça) e pouse nela.',p:()=>[stats.islands?1:0,1],r:{lata:2}},
-  {t:'Rumo ao continente',d:'Decole outra vez e voe para longe, mais de 2,5 km mar adentro, até avistar o continente.',p:()=>[0,1]},
+  {t:'Primeiros recursos',d:'Juntem 5 madeiras e 3 pedras. Mire numa árvore ou rocha e segure o clique.',p:T=>[Math.min(T.madeira,5)+Math.min(T.pedra,3),8],r:{corda:2}},
+  {t:'Mãos à obra',d:'Arranque capim, trance corda na bancada (C) e crie um machado.',p:T=>[T.machado?1:0,1],r:{frutas:2}},
+  {t:'Água potável',d:'Encontrem uma lagoa de água doce no interior e bebam. O mar só aumenta a sede.',p:T=>[T.bebeu?1:0,1],r:{coco:1}},
+  {t:'Fogo no acampamento',d:'Acendam uma fogueira. Ela cozinha e deixa vocês dormirem à noite.',p:T=>[T.fogo?1:0,1],r:{lata:1}},
+  {t:'Caçada na praia',d:'Cacem 2 caranguejos. Uma lança resolve com um golpe.',p:T=>[Math.min(T.caranguejo,2),2],r:{assada:1}},
+  {t:'Restos do navio',d:'Abram 3 caixotes do S.S. Aurora espalhados pelas praias.',p:T=>[Math.min(T.navio,3),3],r:{sucata:2}},
+  {t:'O hangar abandonado',d:'Sigam a bandeira laranja no mapa até o hangar ao lado da velha pista.',p:T=>[T.hangar?1:0,1],r:{corda:2}},
+  {t:'Pista livre',d:'Árvores e rochas cresceram sobre a pista. Derrubem todas.',p:()=>{const n=runwayObs.length;return[n-runwayObs.filter(o=>!o.dead).length,n];},r:{sucata:2}},
+  {t:'Fuselagem',d:'No hangar, montem o corpo do avião com madeira, sucata e corda.',p:()=>[plane.stage>=1?1:0,1],r:{lata:1}},
+  {t:'Asas',d:'Revistam as asas com a lona dos caixotes do navio.',p:()=>[plane.stage>=2?1:0,1],r:{frutas:2}},
+  {t:'Peças perdidas',d:'Encontrem 3 peças de motor nas caixas militares verdes espalhadas pela ilha.',p:T=>[Math.min(T.pecas,3),3],r:{sucata:1}},
+  {t:'Motor',d:'Instalem o motor e a hélice no hangar.',p:()=>[plane.stage>=3?1:0,1]},
+  {t:'Combustível',d:'Achem 3 tambores vermelhos de gasolina de aviação e abasteçam o avião.',p:()=>[plane.stage>=4?1:0,1]},
+  {t:'Decolar',d:'Subam no avião, acelerem pela pista e ganhem altura.',p:T=>[T.voou?1:0,1]},
+  {t:'A ilha vizinha',d:'Pilotem até a ilha vulcânica no horizonte (sigam a fumaça) e pousem nela.',p:T=>[T.ilhas?1:0,1],r:{lata:2}},
+  {t:'Rumo ao continente',d:'Voem até o continente (siga a seta amarela no painel de voo) e pousem no aeroporto.',p:T=>[T.continente?1:0,1],r:{frango:1}},
+  {t:'Festa no aeroporto',d:'Uma multidão espera vocês. Entrem no terminal do aeroporto.',p:()=>[0,1]},
 ];
-let mShown='';
+let mShown='',msSync=false;
+function rewardMission(m,quiet){
+  let rw='';if(m.r){for(const[k,v]of Object.entries(m.r))P.inv[k]=(P.inv[k]|0)+v;rw=tr(' Recompensa para cada um: {0}.',Object.entries(m.r).map(([k,v])=>`${v} ${ITEMS[k].n}`).join(', '));invDirty=true;}
+  if(!quiet){toast(tr('Missão da equipe concluída: {0}.',m.t)+rw);const card=$('missionCard');card.classList.remove('flash');void card.offsetWidth;card.classList.add('flash');}
+}
+// só quem criou a partida (ou quem joga sozinho) avança a missão; os outros seguem pelo mundo compartilhado
+function setMission(n,quiet){n=CL(n|0,0,M.length-1);while(mi<n){rewardMission(M[mi],quiet);mi++;}if(panel==='journal')buildJournal();}
 function checkMission(){
-  if(mi>=M.length)return;const m=M[mi];const[c,n]=m.p();
-  if(c>=n&&mi<M.length-1){
-    let rw='';if(m.r){for(const[k,v]of Object.entries(m.r))P.inv[k]=(P.inv[k]|0)+v;rw=' Recompensa: '+Object.entries(m.r).map(([k,v])=>`${v} ${ITEMS[k].n}`).join(', ')+'.';invDirty=true;}
-    toast(`Missão concluída: ${m.t}.${rw}`);mi++;const card=$('missionCard');card.classList.remove('flash');void card.offsetWidth;card.classList.add('flash');
-    if(panel==='journal')buildJournal();return;
-  }
+  if(mi>=M.length)return;const m=M[mi],T=team();const[c,n]=m.p(T);
+  if(c>=n&&mi<M.length-1&&(!MP.r||MP.isHost)){setMission(mi+1);MP.wDirty=true;return;}
   const s=`${mi}|${c}|${n}`;if(s!==mShown){mShown=s;$('mNum').textContent=mi+1;$('mTot').textContent=M.length;$('mTitle').textContent=m.t;$('mDesc').textContent=m.d;$('mBar').style.width=(n?c/n*100:0)+'%';}
 }
 function buildJournal(){
-  $('jlist').innerHTML=M.map((m,i)=>{const st=i<mi?'done':i===mi?'cur':'lock';let bar='';if(i===mi){const[c,n]=m.p();bar=`<div class="mbar"><i style="width:${n?c/n*100:0}%"></i></div>`;}
+  const T=team();$('jlist').innerHTML=M.map((m,i)=>{const st=i<mi?'done':i===mi?'cur':'lock';let bar='';if(i===mi){const[c,n]=m.p(T);bar=`<div class="mbar"><i style="width:${n?c/n*100:0}%"></i></div>`;}
     return`<li class="${st}"><span class="n">${i<mi?'✓':i+1}</span><div><h3>${m.t}</h3>${i<=mi?`<p>${m.d}</p>`:''}${bar}</div></li>`;}).join('');
 }
 
@@ -1588,9 +2005,9 @@ function setBar(k,v){const b=bars[k],w=CL(v,0,100)|0;if(b.w===w)return;b.w=w;b.i
 let hudClock='';
 function hud(){setBar('hp',P.hp);setBar('food',P.food);setBar('water',P.water);setBar('energy',P.energy);
   const h=hour(),hh=Math.floor(h),mm=Math.floor((h-hh)*6)*10,s=`${day}|${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-  if(s!==hudClock){hudClock=s;$('dayN').textContent=`Dia ${day}`;$('clock').textContent=s.split('|')[1];$('sun').className=isNight()?'moon':'';}}
+  if(s!==hudClock){hudClock=s;$('dayN').textContent=tr('Dia {0}',day);$('clock').textContent=s.split('|')[1];$('sun').className=isNight()?'moon':'';}}
 let toastTimer=0;
-function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),3800);}
+function toast(msg){const el=$('toast');el.textContent=tr(msg);el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),3800);}
 const has=need=>Object.entries(need).every(([k,v])=>(P.inv[k]|0)>=v);
 const take=need=>{for(const[k,v]of Object.entries(need))P.inv[k]-=v;invDirty=true;};
 const shortN=k=>ITEMS[k].s||ITEMS[k].n;
@@ -1600,11 +2017,11 @@ function renderInv(){
   if(P.hold&&ITEMS[P.hold]&&(P.inv[P.hold]|0)<=0)P.hold=null;
   for(const k of ORDER){const c=P.inv[k]|0;if(c<=0)continue;slotKeys.push(k);const n=slotKeys.length;
     const b=document.createElement('button');b.className='slot'+(ITEMS[k].eat?' food':'')+(P.hold===k?' sel':'');b.tabIndex=-1;
-    b.title=`${ITEMS[k].n}: ${ITEMS[k].d} Toque para segurar na mão.${ITEMS[k].eat?' Com ele na mão, toque de novo (ou clique na tela) para consumir.':''}`;
+    b.title=`${ITEMS[k].n}: ${ITEMS[k].d} ${tr('Toque para segurar na mão.')}${ITEMS[k].eat?' '+tr('Com ele na mão, toque de novo (ou clique na tela) para consumir.'):''}`;
     b.innerHTML=`<img alt="${ITEMS[k].n}" src="${icon(k)}"><b>${c}</b>${n<=9?`<kbd>${n}</kbd>`:''}`;
     b.addEventListener('click',()=>{b.blur();selectHold(k,true);});el.appendChild(b);}
-  if(!slotKeys.length)el.innerHTML='<span class="empty">Mochila vazia</span>';
-  const tl=$('tools');tl.innerHTML=Object.keys(TOOLS).filter(t=>P.tools[t]).map(t=>`<div class="tool${P.hold===t?' sel':''}" data-t="${t}" title="${TOOLS[t]}: toque para segurar"><img alt="${TOOLS[t]}" src="${icon(t)}"></div>`).join('');
+  if(!slotKeys.length)el.innerHTML=`<span class="empty">${tr('Mochila vazia')}</span>`;
+  const tl=$('tools');tl.innerHTML=Object.keys(TOOLS).filter(t=>P.tools[t]).map(t=>`<div class="tool${P.hold===t?' sel':''}" data-t="${t}" title="${TOOLS[t]}: ${tr('toque para segurar')}"><img alt="${TOOLS[t]}" src="${icon(t)}"></div>`).join('');
   tl.querySelectorAll('[data-t]').forEach(d=>d.addEventListener('click',()=>selectHold(d.dataset.t,false)));
   if(panel==='craft')buildCraft();if(panel==='hangar')buildHangarPanel();if(panel==='give')buildGive();
 }
@@ -1612,53 +2029,55 @@ function renderInv(){
 function selectHold(k,fromSlot){
   if(state!=='play')return;
   if(P.hold===k){if(fromSlot&&ITEMS[k]&&ITEMS[k].eat){useItem(k);return;}P.hold=null;}
-  else{P.hold=k;const nm=ITEMS[k]?ITEMS[k].n:TOOLS[k];toast(ITEMS[k]&&ITEMS[k].eat?`Segurando ${nm}. Clique na tela (ou Ação) para consumir.`:`Segurando ${nm}.`);}
+  else{P.hold=k;const nm=ITEMS[k]?ITEMS[k].n:TOOLS[k];toast(ITEMS[k]&&ITEMS[k].eat?tr('Segurando {0}. Clique na tela (ou Ação) para consumir.',nm):tr('Segurando {0}.',nm));}
   invDirty=true;
 }
 function useItem(k){
   if(state!=='play')return;const it=ITEMS[k];if(!it.eat){toast(`${it.n}: ${it.d}`);return;}if((P.inv[k]|0)<=0)return;
   P.inv[k]--;const e=it.eat;if(e.food)P.food=Math.min(100,P.food+e.food);if(e.water)P.water=Math.min(100,P.water+e.water);
+  // comer e beber também devolvem energia
+  const en=Math.round((e.food||0)*.45+(e.water||0)*.35);if(en>0){P.energy=Math.min(100,P.energy+en);floatAt(camAhead(1.3).add(_v.set(0,-.25,0)),`+${en} ${tr('Energia')}`,'#e8d44d');}
   if(e.hp){P.hp=Math.min(100,P.hp+e.hp);if(e.hp<0){hurtT=.3;cause='Carne crua demais. Seu estômago não aguentou.';toast('Carne crua faz mal. Asse na fogueira.');}}
   floatAt(camAhead(1.2),it.n,'#8fd16a');invDirty=true;
 }
 function buildCraft(){
   const list=$('craftList');
-  list.innerHTML=RECIPES.map(r=>{const done=r.tool&&P.tools[r.id],ok=has(r.need);return`<li class="row ${done?'done':''}"><img src="${icon(r.id)}" alt=""><div><h3>${r.n}</h3><p>${r.d}</p><div class="reqs">${reqHTML(r.need)}</div></div><button class="act" data-id="${r.id}" ${!ok||done?'disabled':''}>${done?'Feito':'Criar'}</button></li>`;}).join('');
+  list.innerHTML=RECIPES.map(r=>{const done=r.tool&&P.tools[r.id],ok=has(r.need);return`<li class="row ${done?'done':''}"><img src="${icon(r.id)}" alt=""><div><h3>${r.n}</h3><p>${r.d}</p><div class="reqs">${reqHTML(r.need)}</div></div><button class="act" data-id="${r.id}" ${!ok||done?'disabled':''}>${tr(done?'Feito':'Criar')}</button></li>`;}).join('');
   list.querySelectorAll('button[data-id]').forEach(b=>b.addEventListener('click',()=>craft(b.dataset.id)));
 }
 function craft(id){
   const r=RECIPES.find(x=>x.id===id);if(!r||!has(r.need)||(r.tool&&P.tools[id]))return;
   if(r.place){const torch=r.place==='torch',dd=torch?1.6:2.2,fx=P.x-Math.sin(P.yaw)*dd,fz=P.z-Math.cos(P.yaw)*dd,h=hAt(fx,fz);
-    if(h<.3||ponds.some(p=>Math.hypot(p.x-fx,p.z-fz)<p.r+1)||near(fx,fz,3,[]).some(o=>!o.dead&&(o.solid||o.kind==='bush')&&Math.hypot(o.x-fx,o.z-fz)<o.r+(torch?.5:1.1))){toast(`Sem espaço para a ${torch?'tocha':'fogueira'} aqui. Vire para um chão livre e seco.`);return;}
+    if(h<.3||ponds.some(p=>Math.hypot(p.x-fx,p.z-fz)<p.r+1)||near(fx,fz,3,[]).some(o=>!o.dead&&(o.solid||o.kind==='bush')&&Math.hypot(o.x-fx,o.z-fz)<o.r+(torch?.5:1.1))){toast(torch?'Sem espaço para a tocha aqui. Vire para um chão livre e seco.':'Sem espaço para a fogueira aqui. Vire para um chão livre e seco.');return;}
     take(r.need);
     if(torch){const fo=makeFire(fx,fz,true);net('tc',+fo.x.toFixed(1),+fo.z.toFixed(1));toast('Tocha fincada no chão.');}
     else{const fo=makeFire(fx,fz);net('f',+fo.x.toFixed(1),+fo.z.toFixed(1));stats.fires++;toast('Fogueira acesa. À noite, durma junto dela.');}}
-  else{take(r.need);if(r.tool)P.tools[id]=1;if(r.give)for(const[k,v]of Object.entries(r.give))P.inv[k]=(P.inv[k]|0)+v;toast(`Você criou: ${r.n}.`);}
+  else{take(r.need);if(r.tool)P.tools[id]=1;if(r.give)for(const[k,v]of Object.entries(r.give))P.inv[k]=(P.inv[k]|0)+v;toast(tr('Você criou: {0}.',r.n));}
   stats.crafted[id]=(stats.crafted[id]|0)+1;invDirty=true;renderInv();
 }
 function buildHangarPanel(){
   const st=plane.stage;$('stages').innerHTML=STAGES.map((b,i)=>`<li class="${i<st?'done':i===st?'cur':''}">${b.n}</li>`).join('');
   const body=$('hangarBody');
   if(st<STAGES.length){const b=STAGES[st];
-    body.innerHTML=`<h3>Etapa ${st+1} de 4: ${b.n}</h3><p>${b.d}</p><div class="reqs">${reqHTML(b.need)}</div><button class="act" id="buildBtn" ${has(b.need)?'':'disabled'}>Montar ${b.n.toLowerCase()}</button>`;
-    $('buildBtn').addEventListener('click',()=>{if(!has(b.need))return;take(b.need);plane.stage++;syncPlane();net('s',plane.stage);burst(plane.g.position.x,RW.h+1.5,plane.g.position.z,'#c9b28a',14);toast(plane.stage<4?`${b.n} pronta. O avião está tomando forma.`:'Tanque cheio. O motor tosse e pega.');renderInv();});
+    body.innerHTML=`<h3>${tr('Etapa {0} de 4: {1}',st+1,b.n)}</h3><p>${b.d}</p><div class="reqs">${reqHTML(b.need)}</div><button class="act" id="buildBtn" ${has(b.need)?'':'disabled'}>${tr('Montar {0}',b.n.toLowerCase())}</button>`;
+    $('buildBtn').addEventListener('click',()=>{if(!has(b.need))return;take(b.need);plane.stage++;syncPlane();net('s',plane.stage);burst(plane.g.position.x,RW.h+1.5,plane.g.position.z,'#c9b28a',14);toast(plane.stage<4?tr('{0} pronta. O avião está tomando forma.',b.n):'Tanque cheio. O motor tosse e pega.');renderInv();});
   }else{
     const left=runwayObs.filter(o=>!o.dead).length;
-    if(left){body.innerHTML=`<h3>Avião pronto, pista bloqueada</h3><p>Ainda há ${left} ${left===1?'obstáculo':'obstáculos'} sobre a pista. Sem uma pista livre, o avião não ganha velocidade para subir.</p><button class="act" disabled>Decolar</button>`;return;}
+    if(left){body.innerHTML=`<h3>${tr('Avião pronto, pista bloqueada')}</h3><p>${left===1?tr('Ainda há 1 obstáculo sobre a pista. Sem uma pista livre, o avião não ganha velocidade para subir.'):tr('Ainda há {0} obstáculos sobre a pista. Sem uma pista livre, o avião não ganha velocidade para subir.',left)}</p><button class="act" disabled>${tr('Decolar')}</button>`;return;}
     const rs=remoteSeated(),pilotTaken=rs.some(R=>R.seat===1),online=MP.remotes.size>0;
     const aboard=rs.length+(P.seat?1:0),group=aboard+[...MP.remotes.values()].filter(R=>!R.seat&&!R.dead&&R.is===islandNo).length+(P.seat?0:1);
-    const freePass=freeSeat(2),count=`<p><b>${aboard} de ${MAXP}</b> lugares ocupados${online?` · ${group} ${group===1?'náufrago':'náufragos'} nesta ilha`:''}.</p>`;
+    const freePass=freeSeat(2),count=`<p><b>${tr('{0} de {1} lugares ocupados',aboard,MAXP)}</b>${online?` · ${group===1?tr('1 náufrago nesta ilha'):tr('{0} náufragos nesta ilha',group)}`:''}.</p>`;
     let html;
     if(!P.seat){
-      html=`<h3>Pronto para decolar</h3><p>Fuselagem, asas, motor e tanque cheio. O avião leva até ${MAXP} pessoas: o piloto na frente e os passageiros em fila atrás.${online?' Todo mundo na ilha precisa embarcar antes da decolagem.':''}</p>${count}
-        <div class="seatbtns"><button class="act" id="seat1" ${pilotTaken?'disabled':''}>${pilotTaken?'Piloto ocupado':'Embarcar como piloto'}</button><button class="btn2" id="seat2" ${freePass?'':'disabled'}>${freePass?'Embarcar como passageiro':'Avião cheio'}</button></div>`;
+      html=`<h3>${tr('Pronto para decolar')}</h3><p>${tr('Fuselagem, asas, motor e tanque cheio. O avião leva até {0} pessoas: o piloto na frente e os passageiros em fila atrás.',MAXP)}${online?' '+tr('Todo mundo na ilha precisa embarcar antes da decolagem.'):''}</p>${count}
+        <div class="seatbtns"><button class="act" id="seat1" ${pilotTaken?'disabled':''}>${tr(pilotTaken?'Piloto ocupado':'Embarcar como piloto')}</button><button class="btn2" id="seat2" ${freePass?'':'disabled'}>${tr(freePass?'Embarcar como passageiro':'Avião cheio')}</button></div>`;
     }else if(P.seat===1){
       const ready=allAboard();
-      html=`<h3>Você está no assento do piloto</h3><p>${online?(ready?'Todos estão a bordo. Quando quiser, acelere pela pista.':'Esperando o resto do grupo embarcar.'):'O vento sopra a favor. Quando quiser, acelere pela pista.'}</p>${count}
-        <div class="seatbtns"><button class="act" id="flyBtn" ${ready?'':'disabled'}>Decolar</button><button class="btn2" id="unseat">Desembarcar</button></div>`;
+      html=`<h3>${tr('Você está no assento do piloto')}</h3><p>${tr(online?(ready?'Todos estão a bordo. Quando quiser, acelere pela pista.':'Esperando o resto do grupo embarcar.'):'O vento sopra a favor. Quando quiser, acelere pela pista.')}</p>${count}
+        <div class="seatbtns"><button class="act" id="flyBtn" ${ready?'':'disabled'}>${tr('Decolar')}</button><button class="btn2" id="unseat">${tr('Desembarcar')}</button></div>`;
     }else{
-      html=`<h3>Você está no assento ${P.seat-1} de passageiro</h3><p>${pilotTaken?'O piloto está a bordo. Segure firme: a decolagem começa quando ele acelerar.':'Ninguém no assento do piloto ainda. Alguém precisa embarcar como piloto, ou troque de lugar.'}</p>${count}
-        <div class="seatbtns"><button class="btn2" id="unseat">Desembarcar</button>${pilotTaken?'':'<button class="btn2" id="seat1">Passar para o assento do piloto</button>'}</div>`;
+      html=`<h3>${tr('Você está no assento {0} de passageiro',P.seat-1)}</h3><p>${tr(pilotTaken?'O piloto está a bordo. Segure firme: a decolagem começa quando ele acelerar.':'Ninguém no assento do piloto ainda. Alguém precisa embarcar como piloto, ou troque de lugar.')}</p>${count}
+        <div class="seatbtns"><button class="btn2" id="unseat">${tr('Desembarcar')}</button>${pilotTaken?'':`<button class="btn2" id="seat1">${tr('Passar para o assento do piloto')}</button>`}</div>`;
     }
     body.innerHTML=html;
     $('seat1')?.addEventListener('click',()=>takeSeat(1));$('seat2')?.addEventListener('click',()=>{const n=freeSeat(2);if(n)takeSeat(n);});
@@ -1671,19 +2090,19 @@ let giveTo=null;
 function openGive(R){giveTo=R;openPanel('give');}
 function buildGive(){
   const R=giveTo,list=$('giveList');
-  if(!R||!MP.remotes.has(R.peer)){list.innerHTML='<li class="row"><div><h3>Seu parceiro saiu</h3><p>Ele não está mais na partida.</p></div></li>';return;}
-  $('giveTitle').textContent=`Dar para ${nameOf(R)}`;
+  if(!R||!MP.remotes.has(R.peer)){list.innerHTML=`<li class="row"><div><h3>${tr('Seu parceiro saiu')}</h3><p>${tr('Ele não está mais na partida.')}</p></div></li>`;return;}
+  $('giveTitle').textContent=tr('Dar para {0}',nameOf(R));
   const ks=ORDER.filter(k=>(P.inv[k]|0)>0);
-  if(!ks.length){list.innerHTML='<li class="row"><div><h3>Mochila vazia</h3><p>Junte alguma coisa primeiro.</p></div></li>';return;}
-  list.innerHTML=ks.map(k=>{const c=P.inv[k];return`<li class="row"><img src="${icon(k)}" alt=""><div><h3>${ITEMS[k].n}</h3><p>Você tem ${c}.</p></div><div class="seatbtns"><button class="btn2" data-k="${k}" data-n="1">Dar 1</button>${c>1?`<button class="act" data-k="${k}" data-n="${c}">Dar ${c}</button>`:''}</div></li>`;}).join('');
+  if(!ks.length){list.innerHTML=`<li class="row"><div><h3>${tr('Mochila vazia')}</h3><p>${tr('Junte alguma coisa primeiro.')}</p></div></li>`;return;}
+  list.innerHTML=ks.map(k=>{const c=P.inv[k];return`<li class="row"><img src="${icon(k)}" alt=""><div><h3>${ITEMS[k].n}</h3><p>${tr('Você tem {0}.',c)}</p></div><div class="seatbtns"><button class="btn2" data-k="${k}" data-n="1">${tr('Dar 1')}</button>${c>1?`<button class="act" data-k="${k}" data-n="${c}">${tr('Dar {0}',c)}</button>`:''}</div></li>`;}).join('');
   list.querySelectorAll('button[data-k]').forEach(b=>b.addEventListener('click',()=>giveItem(b.dataset.k,+b.dataset.n)));
 }
 function giveItem(k,n){
   const R=giveTo;if(!R||!MP.remotes.has(R.peer)||!ITEMS[k])return buildGive();
-  if(Math.hypot(R.x-P.x,R.z-P.z)>8){toast(`${nameOf(R)} se afastou. Chegue mais perto para entregar.`);return;}
+  if(Math.hypot(R.x-P.x,R.z-P.z)>8){toast(tr('{0} se afastou. Chegue mais perto para entregar.',nameOf(R)));return;}
   n=Math.min(n|0,P.inv[k]|0);if(n<=0)return;
   P.inv[k]-=n;invDirty=true;net('gv',R.peer,k,n);
-  toast(`Você deu ${n} ${ITEMS[k].n} para ${nameOf(R)}.`);buildGive();renderInv();
+  toast(tr('Você deu {0} {1} para {2}.',n,ITEMS[k].n,nameOf(R)));buildGive();renderInv();
 }
 function freeSeat(from){const used=new Set(remoteSeated().map(R=>R.seat));if(P.seat)used.add(P.seat);for(let n=from;n<=MAXP;n++)if(!used.has(n))return n;return 0;}
 function takeSeat(n){if(remoteSeated().some(R=>R.seat===n))return;if(P.bike)dismountBike();P.seat=n;P.pitch=0;P.yaw=Math.atan2(-RW.dx,-RW.dz);toast(n===1?'Você sentou no lugar do piloto.':'Você sentou no lugar do passageiro.');buildHangarPanel();}
@@ -1724,17 +2143,18 @@ function findTarget(){
   if(P.hold&&ITEMS[P.hold]&&ITEMS[P.hold].eat&&(P.inv[P.hold]|0)>0)return{kind:'eat',k:P.hold};
   return null;
 }
-function label(o){
+function label(o){return tr(label0(o));}
+function label0(o){
   switch(o.kind){
     case'tree':case'pine':return P.tools.machado?'Cortar árvore':'Cortar árvore (lento sem machado)';
     case'palm':return P.tools.machado?'Cortar coqueiro':'Cortar coqueiro (lento sem machado)';
     case'rock':return P.tools.picareta?'Quebrar rocha':'Quebrar rocha (lento sem picareta)';
-    case'bush':return o.berries>0?`Colher frutas (${o.berries})`:'Arbusto sem frutas';
+    case'bush':return o.berries>0?tr('Colher frutas ({0})',o.berries):'Arbusto sem frutas';
     case'capim':return'Arrancar capim';
     case'crate':return o.type==='drum'?'Recolher tambor de combustível':o.type==='army'?'Abrir caixa militar':'Abrir caixote do navio';
     case'scrap':return'Recolher sucata';
     case'crab':return P.tools.lanca?'Atacar caranguejo':'Atacar caranguejo (uma lança ajuda)';
-    case'fire':{if(o.torch)return'Tocha acesa';const c=cookable();return c?`Cozinhar ${ITEMS[c].n.toLowerCase()}`:isNight()?'Dormir até o amanhecer':'Fogueira (durma aqui à noite)';}
+    case'fire':{if(o.torch)return'Tocha acesa';const c=cookable();return c?tr('Cozinhar {0}',ITEMS[c].n.toLowerCase()):isNight()?'Dormir até o amanhecer':'Fogueira (durma aqui à noite)';}
     case'mush':return'Colher cogumelos';
     case'nest':return'Pegar ovos do ninho';
     case'chicken':return'Pegar a galinha';
@@ -1743,8 +2163,9 @@ function label(o){
     case'sea':return P.tools.vara?'Pescar (segure)':'Água salgada';
     case'bike':return'Subir na bicicleta';
     case'ride':return'Descer da bicicleta';
-    case'player':return`Dar item para ${nameOf(o.R)}`;
-    case'eat':return`${o.k==='agua'?'Beber':'Comer'} ${ITEMS[o.k].n.toLowerCase()}`;
+    case'player':return tr('Dar item para {0}',nameOf(o.R));
+    case'door':return'Entrar no terminal do aeroporto';
+    case'eat':return tr(o.k==='agua'?'Beber {0}':'Comer {0}',ITEMS[o.k].n.toLowerCase());
   }return'';
 }
 function hitObj(o,dmg,col){o.hp-=dmg;o.shake=.25;o.hitT=1.5;setInst(o);burst(o.x,(o.y||0)+(o.hy||1),o.z,col,6);}
@@ -1770,7 +2191,7 @@ function doAction(){
     case'scrap':P.cd=.35;P.act=.2;give('sucata',1,o);net('k',o.idx);o.dead=true;o.obj.visible=false;o.back=Infinity;break;
     case'crate':{P.cd=.45;P.act=.2;const got=[];
       for(const[k,v]of Object.entries(o.loot||{})){if(k==='tool'){if(!P.tools[v]){P.tools[v]=1;got.push(TOOLS[v]);floatAt(new V3(o.x,o.y+1,o.z),'+'+TOOLS[v],'#ff6a2b');}else{give('agua',2,o);got.push('2 Água doce');}}else{give(k,v,o);got.push(`${v} ${ITEMS[k].n}`);}}
-      toast(`${o.type==='drum'?'Tambor':o.type==='army'?'Caixa militar':'Caixote do navio'}: ${got.join(', ')}.`);
+      toast(`${tr(o.type==='drum'?'Tambor':o.type==='army'?'Caixa militar':'Caixote do navio')}: ${got.join(', ')}.`);
       burst(o.x,o.y+.4,o.z,o.type==='drum'?'#a32d24':'#8b5e34',10);net('k',o.idx);o.dead=true;o.obj.visible=false;o.back=Infinity;stats.crates++;if(o.type==='ship')stats.ship++;invDirty=true;break;}
     case'crab':{P.cd=.42;o.hp-=P.tools.lanca?3:1;o.hurt=.25;o.angry=8;const d=Math.hypot(o.x-P.x,o.z-P.z)||1;o.x+=(o.x-P.x)/d*1.2;o.z+=(o.z-P.z)/d*1.2;burst(o.x,o.y+.25,o.z,'#e0603a',5);
       if(o.hp<=0){world.remove(o.obj);crabs.splice(crabs.indexOf(o),1);give('carne',P.tools.faca?2:1,o);stats.crabs++;}break;}
@@ -1779,8 +2200,9 @@ function doAction(){
       const raw=cookable();
       if(raw){P.inv[raw]--;give(COOK[raw],1,o);burst(o.x,o.y+.6,o.z,'#ffb23a',6);}
       else if(isNight())sleep();else toast('Traga carne, galinha, peixe ou ovo para cozinhar. À noite, durma aqui até o amanhecer.');break;}
-    case'plane':P.act=0;actHeld=false;openPanel('hangar');break;
-    case'pond':P.cd=.7;P.act=0;P.water=Math.min(100,P.water+25);stats.drank++;floatAt(camAhead(1.5),'+25 Água','#4fc0e0');
+    case'plane':P.act=0;actHeld=false;if(islandNo===CONT_ID){toast('O velho monomotor cumpriu a missão. A multidão espera vocês no terminal.');break;}openPanel('hangar');break;
+    case'door':P.act=0;actHeld=false;enterTerminal();break;
+    case'pond':P.cd=.7;P.act=0;P.water=Math.min(100,P.water+25);P.energy=Math.min(100,P.energy+8);stats.drank++;floatAt(camAhead(1.5),`+25 ${tr('Água')} · +8 ${tr('Energia')}`,'#4fc0e0');
       if(P.tools.cantil){const f=5-(P.inv.agua|0);if(f>0)give('agua',f,{x:camera.position.x,y:camera.position.y-1,z:camera.position.z});}
       else if(!hinted.cantil){hinted.cantil=1;toast('Um cantil de coco deixa você levar água na mochila.');}break;
     case'sea':
@@ -1792,13 +2214,13 @@ function doAction(){
 // o primeiro alimento cru da mochila que dá para cozinhar (prefere o que está na mão)
 function cookable(){if(P.hold&&COOK[P.hold]&&(P.inv[P.hold]|0)>0)return P.hold;for(const k of Object.keys(COOK))if((P.inv[k]|0)>0)return k;return null;}
 function kill(o,respawn){o.dead=true;o.back=gt+respawn;setInst(o);if(o.kind==='bush')setBerries(o);MP.wDirty=true;}
-function sleep(){fadeT=1.8;tod=0;day++;net('z');P.energy=100;P.food=Math.max(5,P.food-18);P.water=Math.max(5,P.water-25);P.hp=Math.min(100,P.hp+15);actHeld=false;toast(`Você dormiu junto ao fogo. Dia ${day}.`);}
+function sleep(){fadeT=1.8;tod=0;day++;net('z');P.energy=100;P.food=Math.max(5,P.food-18);P.water=Math.max(5,P.water-25);P.hp=Math.min(100,P.hp+15);actHeld=false;toast(tr('Você dormiu junto ao fogo. Dia {0}.',day));}
 function hurt(n,why){P.hp-=n;hurtT=.4;cause=why;}
 
 // ================= atualização =================
 function okPos(x,z){if(Math.abs(x)>HALF-5||Math.abs(z)>HALF-5)return false;if(hAt(x,z)<-1.2)return false;for(const p of ponds)if(Math.hypot(x-p.x,z-p.z)<p.r*.85)return false;return true;}
 function update(dt){
-  gt+=dt;tod+=dt/DAY;if(tod>=1){tod-=1;day++;toast(`Amanheceu. Dia ${day} na ilha.`);}
+  gt+=dt;tod+=dt/DAY;if(tod>=1){tod-=1;day++;toast(tr('Amanheceu. Dia {0} na ilha.',day));}
   if(hour()>=19&&hour()<20&&nightToastDay!==day){nightToastDay=day;toast('A noite chegou. Os caranguejos ficam agressivos. Durma junto a uma fogueira.');}
   // movimento
   let f=-joy.y,s=joy.x;
@@ -1828,6 +2250,12 @@ function update(dt){
   if(!MP.r||MP.isHost)weatherTick(dt);
   if(rainLvl>.3&&!underRoof())P.water=Math.min(100,P.water+dt*.45*rainLvl);
   P.food=Math.max(0,P.food-dt*.2);P.water=Math.max(0,P.water-dt*.29);P.energy=Math.max(0,P.energy-dt*(P.moving?.11:.05));
+  // avisos de fome, sede e cansaço (repetem só depois que o jogador se recupera)
+  const warn=(v,key,lo,crit,msg,critMsg)=>{const w=P.warns||(P.warns={});
+    if(v<crit&&w[key]!==2){w[key]=2;toast(tr(critMsg));}else if(v<lo&&!w[key]){w[key]=1;toast(tr(msg));}else if(v>lo+15)w[key]=0;};
+  warn(P.food,'f',25,8,'Você está com fome. Coma alguma coisa.','Você está morrendo de fome! Coma agora.');
+  warn(P.water,'w',25,8,'Você está com sede. Beba água.','Você está morrendo de sede! Beba agora.');
+  warn(P.energy,'e',18,5,'Você está cansado. Coma, beba ou durma.','Você está exausto! Descanse junto ao fogo.');
   const nearFire=fires.some(o=>Math.hypot(o.x-P.x,o.z-P.z)<5);if(nearFire&&!P.moving)P.energy=Math.min(100,P.energy+dt*.7);
   if(P.water<=0){P.hp-=dt*1.4;cause='A sede venceu você.';}
   if(P.food<=0){P.hp-=dt*1.1;if(P.water>0)cause='A fome venceu você.';}
@@ -1888,7 +2316,7 @@ function drawMini(){
   const px=mx(P.x),pz=mx(P.z),a=Math.atan2(-Math.cos(P.yaw),-Math.sin(P.yaw));
   if(mark)diamond(mctx,mx(mark.x),mx(mark.z),6);
   mctx.save();mctx.translate(px,pz);mctx.rotate(a);mctx.fillStyle='#fff';mctx.beginPath();mctx.moveTo(9,0);mctx.lineTo(-6,6);mctx.lineTo(-3,0);mctx.lineTo(-6,-6);mctx.closePath();mctx.fill();mctx.strokeStyle='#ff6a2b';mctx.lineWidth=1.5;mctx.stroke();mctx.restore();
-  const md=mark?Math.round(Math.hypot(mark.x-P.x,mark.z-P.z)):0,mt=mark?`Marcador · ${md} m`:'';
+  const md=mark?Math.round(Math.hypot(mark.x-P.x,mark.z-P.z)):0,mt=mark?tr('Marcador · {0} m',md):'';
   if(mt!==markTxt){markTxt=mt;$('markDist').hidden=!mark;$('markDist').textContent=mt;}
 }
 function diamond(g,x,y,r){g.save();g.translate(x,y);g.rotate(Math.PI/4);g.fillStyle='#ffe14a';g.strokeStyle='#1d0d04';g.lineWidth=2;g.fillRect(-r/1.4,-r/1.4,r*1.4,r*1.4);g.strokeRect(-r/1.4,-r/1.4,r*1.4,r*1.4);g.restore();}
@@ -1900,7 +2328,7 @@ markBeacon.visible=false;scene.add(markBeacon);
 function setMark(m){mark=m;markBeacon.visible=!!m;if(m)markBeacon.position.set(m.x,Math.max(0,hAt(m.x,m.z))+30,m.z);$('clearMark').hidden=!m;}
 function drawBigMap(){
   const c=$('bigMap'),g=c.getContext('2d'),W=c.width,S=W/SIZE,mx=v=>(v+HALF)*S;
-  $('mapTitle').textContent=THEME.name;
+  $('mapTitle').textContent=tr(THEME.name);
   g.imageSmoothingEnabled=false;g.drawImage(miniBase,0,0,W,W);
   g.strokeStyle='rgba(240,223,179,.08)';g.lineWidth=1;for(let i=0;i<=SIZE;i+=40){g.beginPath();g.moveTo(mx(i-HALF),0);g.lineTo(mx(i-HALF),W);g.moveTo(0,mx(i-HALF));g.lineTo(W,mx(i-HALF));g.stroke();}
   const sq=(x,z,col,r)=>{g.fillStyle=col;g.fillRect(mx(x)-r,mx(z)-r,r*2,r*2);g.strokeStyle='#f0dfb3';g.lineWidth=1.5;g.strokeRect(mx(x)-r,mx(z)-r,r*2,r*2);};
@@ -1914,7 +2342,7 @@ function drawBigMap(){
     g.lineWidth=3;g.strokeStyle='rgba(6,30,38,.9)';g.strokeText(nameOf(R),x,z-12);g.fillStyle='#f0dfb3';g.fillText(nameOf(R),x,z-12);}
   if(mark){diamond(g,mx(mark.x),mx(mark.z),9);g.strokeStyle='rgba(255,225,74,.6)';g.setLineDash([6,6]);g.lineWidth=2;g.beginPath();g.moveTo(mx(P.x),mx(P.z));g.lineTo(mx(mark.x),mx(mark.z));g.stroke();g.setLineDash([]);}
   const a=Math.atan2(-Math.cos(P.yaw),-Math.sin(P.yaw));g.save();g.translate(mx(P.x),mx(P.z));g.rotate(a);g.fillStyle='#fff';g.beginPath();g.moveTo(14,0);g.lineTo(-9,9);g.lineTo(-4,0);g.lineTo(-9,-9);g.closePath();g.fill();g.strokeStyle='#ff6a2b';g.lineWidth=2.5;g.stroke();g.restore();
-  $('mapInfo').textContent=mark?`Marcador a ${Math.round(Math.hypot(mark.x-P.x,mark.z-P.z))} m. Uma coluna amarela marca o lugar na ilha.`:'Toque no mapa para marcar um destino. Áreas escuras ainda não foram exploradas.';
+  $('mapInfo').textContent=mark?tr('Marcador a {0} m. Uma coluna amarela marca o lugar na ilha.',Math.round(Math.hypot(mark.x-P.x,mark.z-P.z))):tr('Toque no mapa para marcar um destino. Áreas escuras ainda não foram exploradas.');
 }
 $('bigMap').addEventListener('pointerdown',e=>{
   const c=$('bigMap'),r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*SIZE-HALF,z=(e.clientY-r.top)/r.height*SIZE-HALF;
@@ -1946,7 +2374,7 @@ function updateSky(tm,focus){
   hemi.intensity=.22+.5*dl+flash*1.4;hemi.color.copy(_c2).lerp(C_('#cfe8ff'),.5);
   vmAmb.intensity=.3+.5*dl+flash;vmDir.intensity=(.15+.75*dl)*(1-rainLvl*.5);
   const air=state==='fly'||state==='takeoff'?1:0;
-  scene.fog.near=lerp(18,45,dl)*(1-rainLvl*.5)+air*120;scene.fog.far=lerp(120,280,dl)*(1-rainLvl*.4)+air*1500*(1-rainLvl*.5);
+  scene.fog.near=lerp(18,45,dl)*(1-rainLvl*.5)+air*120;scene.fog.far=lerp(120,280,dl)*(1-rainLvl*.4)+air*2600*(1-rainLvl*.5);
   // fogueiras e luzes
   const fl=fires.slice().sort((a,b)=>Math.hypot(a.x-focus.x,a.z-focus.z)-Math.hypot(b.x-focus.x,b.z-focus.z));
   fireLights.forEach((l,i)=>{const f=fl[i];if(f&&Math.hypot(f.x-focus.x,f.z-focus.z)<60){l.position.set(f.x,f.y+(f.torch?1.9:1),f.z);l.intensity=(1.6+Math.sin(tm*13+i)*.25+Math.sin(tm*7.3)*.2)*(.45+.55*(1-dl))*(f.torch?.7:1);}else l.intensity=0;});
@@ -1989,10 +2417,10 @@ function updateRain(dt){
 
 // ================= lanterna =================
 let flashOn=false,dayL=1;
-const torch=new THREE.SpotLight(0xfff1d0,0,40,.42,.55,1.4);scene.add(torch,torch.target);
+const torch=new THREE.SpotLight(0xfff4dc,0,70,.5,.45,1);scene.add(torch,torch.target);
 const beamGeo=new THREE.ConeGeometry(2.2,11,18,1,true);beamGeo.rotateX(-Math.PI/2);beamGeo.translate(0,0,5.5);
 const beamMat=new THREE.MeshBasicMaterial({color:0xfff0c0,transparent:true,opacity:.07,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false});
-const remoteTorches=[0,1,2].map(()=>{const l=new THREE.SpotLight(0xfff1d0,0,32,.42,.6,1.4);scene.add(l,l.target);return l;});
+const remoteTorches=[0,1,2].map(()=>{const l=new THREE.SpotLight(0xfff4dc,0,55,.48,.5,1);scene.add(l,l.target);return l;});
 function toggleFlash(){
   if(state!=='play')return;
   if(!P.tools.lanterna){toast('Você ainda não tem lanterna. Ela está no caixote perto da praia onde você acordou, ou crie uma na bancada.');return;}
@@ -2000,14 +2428,14 @@ function toggleFlash(){
 }
 function updateFlash(){
   const on=flashOn&&state==='play'&&!P.seat&&P.tools.lanterna;
-  const dark=1-dayL*.88;torch.intensity=on?2.4*dark:0;
+  const dark=1-dayL*.8;torch.intensity=on?6*dark:0;
   if(on){camera.getWorldDirection(_dir);torch.position.copy(camera.position).addScaledVector(_dir,.3);torch.position.y-=.25;torch.target.position.copy(camera.position).addScaledVector(_dir,12);}
   if(vm&&vm.lamp){vm.lamp.visible=on;vm.L.arm.rotation.x=on?.35:.1;}
   // lanternas dos parceiros: luz e um feixe visível
   const lit=[...MP.remotes.values()].filter(R=>R.fl&&R.g&&R.g.visible).sort((a,b)=>Math.hypot(a.x-P.x,a.z-P.z)-Math.hypot(b.x-P.x,b.z-P.z));
   remoteTorches.forEach((l,i)=>{const R=lit[i];if(!R){l.intensity=0;return;}
     const fx=Math.sin(R.yaw+Math.PI),fz=Math.cos(R.yaw+Math.PI),cp=Math.cos(R.pitch||0),sp=Math.sin(R.pitch||0);
-    l.position.set(R.x+fx*.4,R.y+1.4,R.z+fz*.4);l.target.position.set(R.x+fx*cp*12,R.y+1.4+sp*12,R.z+fz*cp*12);l.intensity=2*dark;});
+    l.position.set(R.x+fx*.4,R.y+1.4,R.z+fz*.4);l.target.position.set(R.x+fx*cp*12,R.y+1.4+sp*12,R.z+fz*cp*12);l.intensity=4.5*dark;});
   beamMat.opacity=.02+.07*(1-dayL);
   for(const R of MP.remotes.values()){if(!R.g)continue;
     if(!R.beam){R.beam=new THREE.Mesh(beamGeo,beamMat);R.beam.position.set(-.3,1.35,.25);R.beam.renderOrder=5;R.g.add(R.beam);}
@@ -2020,7 +2448,7 @@ function animateWorld(dt,tm){
   updateFlash();
   if(water){water.position.x=Math.round(camera.position.x/40)*40;water.position.z=Math.round(camera.position.z/40)*40;}
   if(++waterFrame%2===0&&water){const p=water.geometry.attributes.position,wx=water.position.x,wz=water.position.z,amp=1+rainLvl*.8;for(let i=0;i<p.count;i++){const x=waterBase[i*3]+wx,z=waterBase[i*3+2]+wz;p.array[i*3+1]=(Math.sin(x*.07+tm*.9)*.14+Math.cos(z*.06+tm*1.1)*.12)*amp;}p.needsUpdate=true;water.geometry.computeVertexNormals();}
-  updateRain(dt);updateBirds(dt,tm);
+  updateRain(dt);updateBirds(dt,tm);updateCrowd(dt,tm);
   const fl=world.userData.flag;if(fl){const p=fl.geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i);p.setZ(i,Math.sin(x*2.2-tm*5)*.18*(x+1.2)/2.4);}p.needsUpdate=true;}
   for(const c of crabs){c.y=hAt(c.x,c.z);c.obj.position.set(c.x,c.y,c.z);c.legs.forEach((l,i)=>l.rotation.y=Math.sin(c.ph+i*1.7)*.35);c.mat.emissive.setRGB(c.hurt>0?.6:0,c.hurt>0?.5:0,c.hurt>0?.4:0);}
   for(let i=0;i<PCOUNT;i++){const p=pdata[i];if(p.life<=0)continue;p.life-=dt;p.vy-=12*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;const s=p.life>0?.05*Math.min(1,p.life*2):0;_p.set(p.x,p.y,p.z);_q.identity();_s.set(s,s,s);_m.compose(_p,_q,_s);parts.setMatrixAt(i,_m);}
@@ -2061,16 +2489,16 @@ function updateTakeoff(dt){
 // ================= voo livre =================
 const FL={x:0,y:0,z:0,yaw:0,pitch:0,roll:0,v:40,warn:0};
 let landOpt=null,flyHudT=0;
-const ESCAPE_DIST=2600;
+const FAR_LIMIT=3400;
 function enterFlight(){
   state='fly';stats.flown=1;
   Object.assign(FL,{x:plane.g.position.x,y:plane.g.position.y,z:plane.g.position.z,yaw:Math.atan2(RW.dx,RW.dz),pitch:tk.pitch,roll:0,v:tk.v,warn:0});
   $('flyHud').hidden=false;$('fhKeys').hidden=P.seat!==1;
-  if(isTouch&&P.seat===1){$('touch').hidden=false;$('jumpBtn').hidden=true;$('lightBtn').hidden=true;$('actBtn').textContent='Pousar';}
+  if(isTouch&&P.seat===1){$('touch').hidden=false;$('jumpBtn').hidden=true;$('lightBtn').hidden=true;$('actBtn').textContent=tr('Pousar');}
   toast(P.seat===1?(isTouch?'Você está pilotando. Use o joystick para subir, descer e virar.':'Você está pilotando. W desce, S sobe, A e D viram, Shift acelera.'):'Seu parceiro está pilotando. Aproveite a vista.');
 }
 function nbH(x,z){if(!NB)return -12;return sampleH(NB.H,x-NB.x,z-NB.z);}
-const groundAt=(x,z)=>Math.max(hAt(x,z),nbH(x,z),0);
+const groundAt=(x,z)=>Math.max(hAt(x,z),nbH(x,z),contH(x,z),0);
 // ================= erupção do vulcão (cena de cinema, sem perigo para o avião) =================
 let cut=null;const seenVolc=new Set();
 const LAVA_FLOW=new THREE.MeshBasicMaterial({color:0xff4a12}),LAVA_BALL=new THREE.MeshBasicMaterial({color:0xff7a22}),ASH=new THREE.MeshLambertMaterial({color:0x6a645e,transparent:true,opacity:.5,depthWrite:false,fog:false});
@@ -2097,7 +2525,7 @@ function buildEruption(v){
 function startCut(v){
   seenVolc.add(v.key);
   cut={t:0,v,a:Math.atan2(FL.z-v.z,FL.x-v.x),dir:1,y0:Math.max(FL.y,v.y+95),er:buildEruption(v)};
-  $('cine').hidden=false;$('cineTxt').textContent='O vulcão está entrando em erupção!';$('flyHud').hidden=true;$('touch').hidden=true;
+  $('cine').hidden=false;$('cineTxt').textContent=tr('O vulcão está entrando em erupção!');$('flyHud').hidden=true;$('touch').hidden=true;
 }
 function updateCut(dt){
   const c=cut,v=c.v,e=c.er;c.t+=dt;
@@ -2122,7 +2550,7 @@ function updateCut(dt){
   e.balls.instanceMatrix.needsUpdate=true;
   for(const f of e.flows){const p=CL((c.t-2-f.delay)/7,0,1);f.geo.setDrawRange(0,Math.floor(f.count*p/6)*6);}
   e.ash.forEach((s,i)=>{const p=CL((c.t-1.2-i*.2)/5,0,1);s.scale.setScalar(.01+p*(4+i*.9));s.position.y+=dt*(c.t>1.2?4+i*.3:0);});
-  if(c.t>6)$('cineTxt').textContent='A lava desce pela montanha. Lá de cima, vocês estão em segurança.';
+  if(c.t>6)$('cineTxt').textContent=tr('A lava desce pela montanha. Lá de cima, vocês estão em segurança.');
   if(c.t>12.5){cut=null;$('cine').hidden=true;$('flyHud').hidden=false;if(isTouch&&P.seat===1)$('touch').hidden=false;
     for(const f of e.flows)f.geo.setDrawRange(0,f.count);toast('Que visão! O avião passou longe da lava. Siga viagem.');}
 }
@@ -2142,7 +2570,9 @@ function updateFly(dt){
     const gr=groundAt(FL.x,FL.z)+3;
     if(FL.y<gr){FL.y=gr;FL.pitch=Math.max(FL.pitch,.12);if(!FL.warn){FL.warn=1;toast('Muito baixo! Puxe o nariz para cima.');}}else if(FL.y>gr+8)FL.warn=0;
     FL.y=Math.min(FL.y,420);
-    if(Math.hypot(FL.x,FL.z)>ESCAPE_DIST){net('esc');state='won';showEnd(true);return;}
+    // longe demais: o combustível não dá, o avião faz a curva de volta sozinho
+    const far=Math.hypot(FL.x,FL.z)>FAR_LIMIT&&!(CONT&&Math.hypot(FL.x-CONT.x,FL.z-CONT.z)<1500);
+    if(far){const back=Math.atan2(-FL.x,-FL.z);let d=back-FL.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));FL.yaw+=CL(d,-1,1)*dt*.8;if(!FL.farWarn){FL.farWarn=1;toast('Longe demais: o combustível não dá. Siga a seta amarela até o continente.');}}else FL.farWarn=0;
   }else{
     const R=[...MP.remotes.values()].find(r=>r.seat===1&&r.pl);
     if(R){const p=R.pl,k=Math.min(1,dt*6);FL.x+=(p[0]-FL.x)*k;FL.y+=(p[1]-FL.y)*k;FL.z+=(p[2]-FL.z)*k;let d=p[3]-FL.yaw;d=Math.atan2(Math.sin(d),Math.cos(d));FL.yaw+=d*k;FL.pitch+=(p[4]-FL.pitch)*k;FL.roll+=(p[5]-FL.roll)*k;}
@@ -2153,47 +2583,56 @@ function updateFly(dt){
   _v.set(FL.x-fx*16,FL.y+4.5,FL.z-fz*16);camera.position.lerp(_v,Math.min(1,dt*4));camera.lookAt(FL.x+fx*8,FL.y+1.2,FL.z+fz*8);
   // pouso possível?
   landOpt=null;
-  for(const isl of[{id:islandNo,x:0,z:0},NB?{id:NB.id,x:NB.x,z:NB.z}:null])if(isl&&Math.hypot(FL.x-isl.x,FL.z-isl.z)<260&&FL.y<200){landOpt=isl.id;break;}
+  for(const isl of[{id:islandNo,x:0,z:0,r:260},NB?{id:NB.id,x:NB.x,z:NB.z,r:260}:null,CONT?{id:CONT_ID,x:CONT.x,z:CONT.z,r:520}:null])if(isl&&Math.hypot(FL.x-isl.x,FL.z-isl.z)<isl.r&&FL.y<240){landOpt=isl.id;break;}
   for(const v of volcanoes())if(!seenVolc.has(v.key)&&Math.hypot(FL.x-v.x,FL.z-v.z)<560){startCut(v);break;}
   flyHudT-=dt;if(flyHudT<=0){flyHudT=.15;updateFlyHud();}
 }
 function updateFlyHud(){
   $('fhAlt').textContent=Math.round(FL.y);$('fhSpd').textContent=Math.round(FL.v*3.6);
   const tg=NB?{x:NB.x,z:NB.z,n:NB.name}:null,dist=tg?Math.hypot(tg.x-FL.x,tg.z-FL.z):0;
-  if(tg){const rel=Math.atan2(tg.x-FL.x,tg.z-FL.z)-FL.yaw;$('fhArrow').style.transform=`rotate(${-Math.atan2(Math.sin(rel),Math.cos(rel))}rad)`;$('fhTgt').textContent=`${tg.n} · ${(dist/1000).toFixed(1).replace('.',',')} km`;}
-  const home=Math.hypot(FL.x,FL.z);$('fhEsc').textContent=`Continente: voe para longe (${(Math.max(0,ESCAPE_DIST-home)/1000).toFixed(1).replace('.',',')} km)`;
+  if(tg){const rel=Math.atan2(tg.x-FL.x,tg.z-FL.z)-FL.yaw;$('fhArrow').style.transform=`rotate(${-Math.atan2(Math.sin(rel),Math.cos(rel))}rad)`;$('fhTgt').textContent=`${tr(tg.n)} · ${(dist/1000).toFixed(1).replace('.',LANG==='en'?'.':',')} km`;}
+  $('fhEsc').hidden=!CONT;
+  if(CONT){const rel=Math.atan2(CONT.x-FL.x,CONT.z-FL.z)-FL.yaw;$('fhArrow2').style.transform=`rotate(${-Math.atan2(Math.sin(rel),Math.cos(rel))}rad)`;
+    $('fhEscTxt').textContent=tr('Aeroporto do continente · {0} km',(Math.hypot(CONT.x-FL.x,CONT.z-FL.z)/1000).toFixed(1).replace('.',LANG==='en'?'.':','));}
   const can=P.seat===1&&landOpt!==null;$('landBtn').hidden=!can;
-  if(can)$('landBtn').textContent=landOpt===islandNo?'Pousar de volta (L)':`Pousar na ${NB.name} (L)`;
+  if(can)$('landBtn').textContent=tr(landOpt===islandNo?'Pousar de volta (L)':landOpt===CONT_ID?'Pousar no aeroporto (L)':'Pousar na {0} (L)',tr(NB.name));
 }
 function tryLand(){if(state==='fly'&&!cut&&P.seat===1&&landOpt!==null)landAt(landOpt,false);}
 function landAt(id,remote){
   if(!remote)net('land',id);
   const newIsland=id!==islandNo;cut=null;$('cine').hidden=true;
-  fadeT=2;$('flyHud').hidden=true;$('landBtn').hidden=true;$('jumpBtn').hidden=false;$('lightBtn').hidden=false;$('actBtn').textContent='Ação';
+  fadeT=2;$('flyHud').hidden=true;$('landBtn').hidden=true;$('jumpBtn').hidden=false;$('lightBtn').hidden=false;$('actBtn').textContent=tr('Ação');
+  const toCont=id===CONT_ID;
   if(newIsland){
-    islandNo=id;buildWorld(islandSeed(id));
-    for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}
-    plane.stage=4;syncPlane();buildMinimap();reveal(planeStart.x,planeStart.z);reveal(hangarPos.x,hangarPos.z);
-    MP.lastW=0;MP.pending.clear();MP.wDirty=true;stats.islands=(stats.islands|0)+1;stats.hangar=true;
+    if(toCont){buildContinent();stats.continent=1;}
+    else{islandNo=id;buildWorld(islandSeed(id));
+      for(const o of runwayObs){o.dead=true;o.back=Infinity;setInst(o);}
+      plane.stage=4;syncPlane();buildMinimap();reveal(planeStart.x,planeStart.z);reveal(hangarPos.x,hangarPos.z);stats.islands=(stats.islands|0)+1;stats.hangar=true;}
+    MP.lastW=0;MP.pending.clear();MP.wDirty=true;
     if(P.bike)P.bike=null;setMark(null);
   }
   plane.g.position.set(planeStart.x,RW.h,planeStart.z);plane.g.rotation.set(0,Math.atan2(RW.dx,RW.dz),0);
   P.yaw=Math.atan2(-RW.dx,-RW.dz);P.pitch=0;
   const s=seatWorld(P.seat||1);P.x=s.x;P.z=s.z;P.fy=s.y;
+  // no aeroporto, todo mundo desce do avião ao lado da pista, de frente para a multidão
+  if(islandNo===CONT_ID){const sn=P.seat||1;P.seat=0;P.x=planeStart.x+6+sn*1.6;P.z=-9;P.fy=2;P.yaw=Math.atan2(-(0-P.x),-(-45-P.z));}
   state='play';$('hud').classList.remove('off');if(isTouch)$('touch').hidden=false;keys.clear();actHeld=false;
   buildViewmodel();renderInv();requestLock();updateLockHint();
-  toast(newIsland?`Pouso feito na ${THEME.name}! Explore, junte suprimentos e, quando quiser, decole de novo.`:'Pouso feito de volta na pista.');
+  toast(toCont?'Pouso no aeroporto do continente! Uma multidão está aplaudindo vocês. Entrem no terminal.':newIsland?`Pouso feito na ${THEME.name}! Explore, junte suprimentos e, quando quiser, decole de novo.`:'Pouso feito de volta na pista.');
 }
 
 // ================= fim de jogo =================
 function die(){if(P.bike)dismountBike();state='dead';closePanel();if(document.pointerLockElement)document.exitPointerLock();$('hud').classList.add('off');$('touch').hidden=true;showEnd(false);}
 function showEnd(won){
   const s=$('endScreen'),online=!!MP.r;
-  const tally=`<div class="tally"><div><b>${day}</b><span>${day===1?'dia':'dias'} na ilha</span></div><div><b>${mi}</b><span>missões</span></div><div><b>${stats.trees}</b><span>árvores</span></div><div><b>${stats.crabs}</b><span>caranguejos</span></div><div><b>${plane.stage}/4</b><span>avião</span></div></div>`;
+  logEnd(won?(islandNo===CONT_ID?'Chegou ao aeroporto':'Escapou da ilha'):`Morreu (${cause||'A ilha venceu você.'})`,won);
+  const tally=`<div class="tally"><div><b>${day}</b><span>${tr(day===1?'dia na ilha':'dias na ilha')}</span></div><div><b>${mi}</b><span>${tr('missões')}</span></div><div><b>${stats.trees}</b><span>${tr('árvores')}</span></div><div><b>${stats.crabs}</b><span>${tr('caranguejos')}</span></div><div><b>${plane.stage}/4</b><span>${tr('avião')}</span></div></div>`;
   const duo=won&&tk.duo;cut=null;$('cine').hidden=true;$('flyHud').hidden=true;$('hud').classList.add('off');$('touch').hidden=true;
   s.innerHTML=won
-    ?`<div class="card"><div class="tag">Diário de bordo · último registro</div><h1>${duo?'Vocês escaparam':'Você escapou'}</h1><p>O monomotor deixou ${stats.islands?'as ilhas':'a ilha'} para trás${duo?', com piloto e passageiro a bordo':''}. Depois de horas sobre o mar aberto, as luzes de um porto apareceram no horizonte e as rodas tocaram uma pista de verdade.</p>${tally}<button class="btn" data-go>${online?'Voltar ao início':'Nova ilha'}</button></div>`
-    :`<div class="card"><div class="tag">Diário de bordo · registro interrompido</div><h1>Fim da linha</h1><p>${cause||'A ilha venceu você.'} ${online?'Seu parceiro continua na ilha. Você pode voltar pela praia, de mochila vazia.':'Ninguém chegou a ver a fumaça.'}</p>${tally}<button class="btn" data-go>${online?'Voltar à ilha':'Tentar de novo'}</button>${online?'<p style="margin-top:14px"><button class="link" data-quit>Sair da partida</button></p>':''}</div>`;
+    ?(islandNo===CONT_ID
+      ?`<div class="card"><div class="tag">${tr('Diário de bordo · último registro')}</div><h1>${tr(MP.remotes.size?'Vocês chegaram em casa':'Você chegou em casa')}</h1><p>${tr('As portas do terminal se abriram e os aplausos ficaram ainda mais altos. Repórteres, famílias e a tripulação de resgate esperavam lá dentro. O velho monomotor, montado peça por peça numa ilha sem nome, virou notícia no mundo inteiro.')}</p>${tally}<button class="btn" data-go>${tr(online?'Voltar ao início':'Nova ilha')}</button></div>`
+      :`<div class="card"><div class="tag">${tr('Diário de bordo · último registro')}</div><h1>${tr(duo?'Vocês escaparam':'Você escapou')}</h1><p>${tr('O monomotor deixou {0} para trás{1}. Depois de horas sobre o mar aberto, as luzes de um porto apareceram no horizonte e as rodas tocaram uma pista de verdade.',tr(stats.islands?'as ilhas':'a ilha'),duo?tr(', com piloto e passageiro a bordo'):'')}</p>${tally}<button class="btn" data-go>${tr(online?'Voltar ao início':'Nova ilha')}</button></div>`)
+    :`<div class="card"><div class="tag">${tr('Diário de bordo · registro interrompido')}</div><h1>${tr('Fim da linha')}</h1><p>${tr(cause||'A ilha venceu você.')} ${tr(online?'Seu parceiro continua na ilha. Você pode voltar pela praia, de mochila vazia.':'Ninguém chegou a ver a fumaça.')}</p>${tally}<button class="btn" data-go>${tr(online?'Voltar à ilha':'Tentar de novo')}</button>${online?`<p style="margin-top:14px"><button class="link" data-quit>${tr('Sair da partida')}</button></p>`:''}</div>`;
   s.hidden=false;
   s.querySelector('[data-go]').addEventListener('click',()=>{
     if(online&&!won){respawn();return;}
@@ -2202,19 +2641,21 @@ function showEnd(won){
   s.querySelector('[data-quit]')?.addEventListener('click',()=>{leaveMatch();backToTitle();});
   setTimeout(()=>s.querySelector('[data-go]')?.focus(),60);
 }
-function respawn(){const keepMi=mi;newPlayer();mi=keepMi;mShown='';P.x+=(Math.random()-.5)*3;$('endScreen').hidden=true;start(true);}
+function respawn(){const keepMi=mi;newPlayer();mi=keepMi;endSent=false;mShown='';P.x+=(Math.random()-.5)*3;$('endScreen').hidden=true;start(true);}
 function backToTitle(){state='title';$('endScreen').hidden=true;$('hud').classList.add('off');$('touch').hidden=true;$('codeBox').hidden=true;$('modes').hidden=false;$('screen').hidden=false;newGame();}
 function newGame(seed){baseSeed=seed==null?(Math.random()*2147483647)>>>0:seed;islandNo=0;setMark(null);rainTarget=0;rainLvl=0;rainPlan={day:-1,start:0,end:0,amt:0};buildWorld(baseSeed);resetRun();newPlayer();syncPlane();reveal(P.x,P.z);reveal(hangarPos.x,hangarPos.z);mShown='';}
 function start(again){
   state='play';if(!again&&(!MP.r||MP.isHost))tod=2/24;$('screen').hidden=true;$('endScreen').hidden=true;$('hud').classList.remove('off');if(isTouch)$('touch').hidden=false;keys.clear();actHeld=false;
   $('mpRow').hidden=!MP.r;if(MP.r)$('mpCode').textContent=MP.code;
-  buildViewmodel();renderInv();checkMission();requestLock();updateLockHint();updateFsBtn();
-  if(!again)setTimeout(()=>toast(MP.r&&!MP.isHost?'Você chegou na ilha do seu parceiro. As missões são suas; o mundo e o avião são dos dois.':`Missão: ${M[0].t}. ${M[0].d}`),500);
+  giveKit();buildViewmodel();renderInv();checkMission();requestLock();updateLockHint();updateFsBtn();
+  if(!again)logEntry();
+  if(!again)setTimeout(()=>toast(MP.r&&!MP.isHost?'Você chegou na ilha dos seus parceiros. As missões, o mundo e o avião são da equipe toda.':tr('Missão: {0}. {1}',M[mi].t,M[mi].d)),500);
+  $('mtagTxt').textContent=tr(MP.r?'Missão da equipe':'Missão');
 }
 
 // ================= entrada =================
 const isTouch=matchMedia('(pointer: coarse)').matches||'ontouchstart' in window;
-if(isTouch)$('pkey').textContent='Ação';
+if(isTouch)$('pkey').textContent=tr('Ação');
 // tela cheia com o celular deitado
 const fsEl=document.documentElement,fsReq=fsEl.requestFullscreen||fsEl.webkitRequestFullscreen,canFS=!!fsReq;
 const isFS=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
@@ -2239,9 +2680,11 @@ function updateFsBtn(){
   if(isTouch&&state==='play'&&!landscape()&&!portraitHinted){portraitHinted=true;toast('Vire o celular para jogar deitado, em tela cheia.');}}
 // tenta sozinho ao soltar o dedo na tela (até falhar duas vezes); o botão continua sempre disponível
 document.addEventListener('touchend',e=>{if(isTouch&&!isIOS&&canFS&&fsFails<2&&landscape()&&!isFS()&&state==='play'&&!(e.target.closest&&e.target.closest('#fsBtn')))goFS(false);},true);
-$('iosfsBody').innerHTML=window.claude?
-  '<p>Dentro do claude.ai o iPhone não deixa o jogo ocupar a tela toda. Para jogar em tela cheia, abra a versão do jogo no GitHub Pages pelo Safari e instale na Tela de Início, como explicado abaixo.</p><ol class="steps"><li><span>1</span><div>No Safari, toque no botão <strong>Compartilhar</strong>.</div></li><li><span>2</span><div>Escolha <strong>Adicionar à Tela de Início</strong>.</div></li><li><span>3</span><div>Abra o jogo pelo novo ícone e vire o iPhone.</div></li></ol>':
-  '<p>O Safari do iPhone não deixa sites ocuparem a tela toda. Instalando o jogo na Tela de Início, ele abre sem as barras do navegador.</p><ol class="steps"><li><span>1</span><div>Toque no botão <strong>Compartilhar</strong> do Safari (o quadrado com a seta para cima).</div></li><li><span>2</span><div>Escolha <strong>Adicionar à Tela de Início</strong> e confirme.</div></li><li><span>3</span><div>Abra o jogo pelo novo ícone e vire o iPhone. Ele abre em tela cheia.</div></li></ol>';
+const IOS_TXT={pt:['<p>Dentro do claude.ai o iPhone não deixa o jogo ocupar a tela toda. Para jogar em tela cheia, abra a versão do jogo no GitHub Pages pelo Safari e instale na Tela de Início, como explicado abaixo.</p><ol class="steps"><li><span>1</span><div>No Safari, toque no botão <strong>Compartilhar</strong>.</div></li><li><span>2</span><div>Escolha <strong>Adicionar à Tela de Início</strong>.</div></li><li><span>3</span><div>Abra o jogo pelo novo ícone e vire o iPhone.</div></li></ol>','<p>O Safari do iPhone não deixa sites ocuparem a tela toda. Instalando o jogo na Tela de Início, ele abre sem as barras do navegador.</p><ol class="steps"><li><span>1</span><div>Toque no botão <strong>Compartilhar</strong> do Safari (o quadrado com a seta para cima).</div></li><li><span>2</span><div>Escolha <strong>Adicionar à Tela de Início</strong> e confirme.</div></li><li><span>3</span><div>Abra o jogo pelo novo ícone e vire o iPhone. Ele abre em tela cheia.</div></li></ol>'],
+  en:['<p>Inside claude.ai the iPhone does not let the game use the whole screen. To play in full screen, open the GitHub Pages version of the game in Safari and add it to your Home Screen, as shown below.</p><ol class="steps"><li><span>1</span><div>In Safari, tap the <strong>Share</strong> button.</div></li><li><span>2</span><div>Choose <strong>Add to Home Screen</strong>.</div></li><li><span>3</span><div>Open the game from the new icon and turn the iPhone sideways.</div></li></ol>','<p>Safari on iPhone does not let websites use the whole screen. Once the game is on your Home Screen, it opens without the browser bars.</p><ol class="steps"><li><span>1</span><div>Tap Safari\'s <strong>Share</strong> button (the square with the up arrow).</div></li><li><span>2</span><div>Choose <strong>Add to Home Screen</strong> and confirm.</div></li><li><span>3</span><div>Open the game from the new icon and turn the iPhone sideways. It opens in full screen.</div></li></ol>'],
+  es:['<p>Dentro de claude.ai el iPhone no deja que el juego ocupe toda la pantalla. Para jugar en pantalla completa, abre la versión del juego en GitHub Pages con Safari y agrégala a la pantalla de inicio, como se explica abajo.</p><ol class="steps"><li><span>1</span><div>En Safari, toca el botón <strong>Compartir</strong>.</div></li><li><span>2</span><div>Elige <strong>Agregar a inicio</strong>.</div></li><li><span>3</span><div>Abre el juego desde el nuevo icono y gira el iPhone.</div></li></ol>','<p>Safari en el iPhone no deja que los sitios ocupen toda la pantalla. Si instalas el juego en la pantalla de inicio, se abre sin las barras del navegador.</p><ol class="steps"><li><span>1</span><div>Toca el botón <strong>Compartir</strong> de Safari (el cuadrado con la flecha hacia arriba).</div></li><li><span>2</span><div>Elige <strong>Agregar a inicio</strong> y confirma.</div></li><li><span>3</span><div>Abre el juego desde el nuevo icono y gira el iPhone. Se abre en pantalla completa.</div></li></ol>']};
+function setIosTxt(){$('iosfsBody').innerHTML=IOS_TXT[LANG][window.claude?0:1];}
+setIosTxt();
 // sem zoom por toque duplo ou pinça (iPhone)
 let lastTouchEnd=0;
 document.addEventListener('touchend',e=>{const now=Date.now();if(now-lastTouchEnd<350&&!(e.target.closest&&e.target.closest('input,.panel .rows,.jlist')))e.preventDefault();lastTouchEnd=now;},{passive:false});
@@ -2254,7 +2697,7 @@ $('fsBtn').addEventListener('click',()=>goFS(true));
 function requestLock(){if(isTouch||state!=='play'||panel||document.pointerLockElement)return;try{const r=cv.requestPointerLock();if(r&&r.catch)r.catch(()=>{});}catch(e){}}
 document.addEventListener('pointerlockchange',()=>{locked=document.pointerLockElement===cv;if(!locked){actHeld=false;}updateLockHint();});
 document.addEventListener('pointerlockerror',updateLockHint);
-function updateLockHint(){$('lockhint').hidden=isTouch||locked||state!=='play'||!!panel;$('pkey').textContent=isTouch?'Ação':locked?'Clique':'E';}
+function updateLockHint(){$('lockhint').hidden=isTouch||locked||state!=='play'||!!panel;$('pkey').textContent=tr(isTouch?'Ação':locked?'Clique':'E');}
 let drag=null;
 cv.addEventListener('pointerdown',e=>{
   if(state!=='play'||panel)return;
@@ -2271,6 +2714,7 @@ cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',end
 addEventListener('mouseup',e=>{if(e.button===0)actHeld=false;});
 function look(dx,dy,s){P.yaw-=dx*s;P.pitch=CL(P.pitch-dy*s,-1.45,1.45);}
 addEventListener('keydown',e=>{
+  if(e.code==='Escape'&&!$('rankPanel').hidden){closeRanking();return;}
   if(reqCur&&(e.code==='KeyY'||e.code==='KeyN')&&!(e.target&&e.target.tagName==='INPUT')){e.preventDefault();answerReq(e.code==='KeyY');return;}
   if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')&&state==='title')return;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(e.code))e.preventDefault();
@@ -2306,21 +2750,100 @@ $('lightBtn').addEventListener('pointerdown',e=>{e.preventDefault();toggleFlash(
 let runOn=false;
 function setRun(v){runOn=v;$('runBtn').setAttribute('aria-pressed',v?'true':'false');}
 $('runBtn').addEventListener('pointerdown',e=>{e.preventDefault();setRun(!runOn);});
-function startSolo(){if(MP.r){leaveMatch();newGame();}start();}
+// ================= registro na planilha e ranking =================
+// endereço do App da Web do Google Apps Script ligado à planilha "Ilha do Náufrago" (termina em /exec)
+const SHEETS_URL='';
+const DEVICE=(()=>{const u=navigator.userAgent;if(/iPhone|iPod/.test(u))return'iPhone';if(/iPad/.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))return'iPad';if(/Android/.test(u))return'Android';return'Computador';})();
+const BROWSER=(()=>{const u=navigator.userAgent;return/Edg(e|A|iOS)?\//.test(u)?'Edge':/OPR\/|Opera/.test(u)?'Opera':/SamsungBrowser/.test(u)?'Samsung Internet':/FxiOS|Firefox\//.test(u)?'Firefox':/CriOS|Chrome\//.test(u)?'Chrome':/Safari\//.test(u)?'Safari':'Outro';})();
+function sheetSend(d,beacon){
+  if(!SHEETS_URL)return;const body=JSON.stringify(d);
+  try{if(beacon&&navigator.sendBeacon&&navigator.sendBeacon(SHEETS_URL,new Blob([body],{type:'text/plain'})))return;
+    fetch(SHEETS_URL,{method:'POST',mode:'no-cors',keepalive:true,body}).catch(()=>{});}catch(e){}
+}
+let runT0=0,endSent=true;
+const modeTxt=()=>MP.r?'Com amigos':'Sozinho';
+function logEntry(){runT0=Date.now();endSent=false;
+  sheetSend({tipo:'entrada',nome:myName,pele:'Tom '+(skinSel.tone+1),roupa:OUTFITS[skinSel.outfit].n,modo:modeTxt(),codigo:MP.r?MP.code:'',navegador:BROWSER,dispositivo:DEVICE,idioma:LANG});}
+// pontos: missões, avião, dias vivo, caça e corte, e um bônus por escapar
+function runScore(won){return mi*100+plane.stage*50+Math.max(0,day-1)*20+(stats.crabs|0)*10+(stats.trees|0)*2+(stats.islands?200:0)+(won?(islandNo===CONT_ID?1000:600):0);}
+function logEnd(resultado,won,beacon){
+  if(endSent||!stats)return;endSent=true;
+  sheetSend({tipo:'fim',nome:myName,modo:modeTxt(),codigo:MP.r?MP.code:'',resultado,pontos:runScore(won),dias:day,missoes:mi,arvores:stats.trees|0,caranguejos:stats.crabs|0,
+    aviao:plane.stage,ilhas:stats.islands|0,minutos:Math.round((Date.now()-runT0)/60000),roupa:OUTFITS[skinSel.outfit].n,navegador:BROWSER,dispositivo:DEVICE},beacon);}
+// fechar a aba no meio da partida também conta como fim
+addEventListener('pagehide',()=>{if(!endSent&&state!=='title')logEnd('Saiu do jogo',false,true);});
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const resTxt=r=>tr(/^Morreu/.test(r||'')?'Morreu':r||'');
+function rankHelp(){return`<p class="mpnote" style="margin-top:12px">${tr('Pontos: 100 por missão, 50 por etapa do avião, 20 por dia vivo, 10 por caranguejo, 2 por árvore, 200 por pousar em outra ilha, 600 por escapar e 1000 por chegar ao aeroporto.')}</p>`;}
+let rankReq=0;
+async function openRanking(){
+  const b=$('rankBody'),me=++rankReq;$('rankPanel').hidden=false;setTimeout(()=>$('rankClose').focus(),30);
+  if(!SHEETS_URL){b.innerHTML=`<p>${tr('O ranking ainda não está ligado à planilha.')}</p>`+rankHelp();return;}
+  b.innerHTML=`<p>${tr('Carregando o ranking…')}</p>`;
+  try{
+    const r=await fetch(SHEETS_URL+'?t='+Date.now()),j=await r.json();if(me!==rankReq)return;
+    const L=(j&&Array.isArray(j.ranking))?j.ranking:[];
+    if(!L.length){b.innerHTML=`<p>${tr('Ninguém terminou uma partida ainda. Seja o primeiro!')}</p>`+rankHelp();return;}
+    const mine=(myName||'').toLowerCase();
+    b.innerHTML=`<div class="rankwrap"><table class="rank"><thead><tr><th class="n">#</th><th>${tr('Nome')}</th><th class="n">${tr('Pontos')}</th><th>${tr('Resultado')}</th><th class="n">${tr('Missões')}</th><th class="n">${tr('Dias')}</th></tr></thead><tbody>`+
+      L.map((x,i)=>`<tr${mine&&String(x.nome).toLowerCase()===mine?' class="me"':''}><td class="n">${i+1}</td><td>${esc(x.nome)}</td><td class="n">${x.pontos|0}</td><td>${esc(resTxt(x.resultado))}</td><td class="n">${x.missoes|0}</td><td class="n">${x.dias|0}</td></tr>`).join('')+
+      `</tbody></table></div>`+rankHelp();
+  }catch(e){if(me===rankReq)b.innerHTML=`<p>${tr('Não foi possível carregar o ranking. Verifique a internet e tente de novo.')}</p>`;}
+}
+function closeRanking(){$('rankPanel').hidden=true;$('rankBtn').focus();}
+$('rankBtn').addEventListener('click',openRanking);$('rankClose').addEventListener('click',closeRanking);
+// o nome é obrigatório para jogar
+function needName(){
+  myName=cleanName($('nameIn').value);const ok=!!myName;
+  $('nameIn').classList.toggle('bad',!ok);$('nameNote').classList.toggle('err',!ok);
+  $('nameNote').textContent=tr(ok?'Obrigatório. Seu nome aparece no ranking.':'Digite seu nome para jogar.');
+  if(!ok)$('nameIn').focus();return ok;
+}
+$('nameIn').addEventListener('input',()=>{if(cleanName($('nameIn').value)&&$('nameIn').classList.contains('bad'))needName();});
+function startSolo(){if(!needName())return;if(MP.r){leaveMatch();newGame();}start();}
 $('startBtn').addEventListener('click',startSolo);
-$('createBtn').addEventListener('click',createMatch);
-$('joinForm').addEventListener('submit',e=>{e.preventDefault();joinMatch($('codeIn').value);});
+$('createBtn').addEventListener('click',()=>{if(needName())createMatch();});
+$('joinForm').addEventListener('submit',e=>{e.preventDefault();if(needName())joinMatch($('codeIn').value);});
 $('codeIn').addEventListener('input',()=>{const v=cleanCode($('codeIn').value);if(v!==$('codeIn').value)$('codeIn').value=v;});
 $('enterBtn').addEventListener('click',()=>start());
 $('cancelBtn').addEventListener('click',()=>{leaveMatch();$('codeBox').hidden=true;$('modes').hidden=false;newGame();});
-$('copyBtn').addEventListener('click',()=>{const c=MP.code||'';const done=()=>{$('copyBtn').textContent='Código copiado';setTimeout(()=>$('copyBtn').textContent='Copiar código',1800);};
+$('copyBtn').addEventListener('click',()=>{const c=MP.code||'';const done=()=>{$('copyBtn').textContent=tr('Código copiado');setTimeout(()=>$('copyBtn').textContent=tr('Copiar código'),1800);};
   try{navigator.clipboard.writeText(c).then(done,()=>selectCode());}catch(e){selectCode();}});
-function selectCode(){const r=document.createRange();r.selectNodeContents($('codeShow'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('copyBtn').textContent='Selecionado: copie com Ctrl+C';}
+function selectCode(){const r=document.createRange();r.selectNodeContents($('codeShow'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('copyBtn').textContent=tr('Selecionado: copie com Ctrl+C');}
+
+// ================= idioma escolhido =================
+// guarda o texto original (português) dos dados do jogo para traduzir de novo a cada troca
+const I18N_DATA=[];
+for(const k in ITEMS)I18N_DATA.push([ITEMS[k],'n'],[ITEMS[k],'s'],[ITEMS[k],'d']);
+for(const r of RECIPES)I18N_DATA.push([r,'n'],[r,'d']);
+for(const b of STAGES)I18N_DATA.push([b,'n'],[b,'d']);
+for(const m of M)I18N_DATA.push([m,'t'],[m,'d']);
+for(const k in TOOLS)I18N_DATA.push([TOOLS,k]);
+for(const e of I18N_DATA)e.push(e[0][e[1]]);
+function i18nDom(){
+  const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){const p=n.parentNode;if(!p||p.tagName==='SCRIPT'||p.tagName==='STYLE')continue;
+    const raw=n.nodeValue,o=n._o||raw.trim();if(!o||!I18N[o])continue;n._o=o;n.nodeValue=raw.match(/^\s*/)[0]+tr(o)+raw.match(/\s*$/)[0];}
+  for(const el of document.querySelectorAll('[placeholder],[title],[aria-label]'))for(const a of['placeholder','title','aria-label']){
+    if(!el.hasAttribute(a))continue;const key='_i18n_'+a,o=el[key]||el.getAttribute(a);if(!I18N[o])continue;el[key]=o;el.setAttribute(a,tr(o));}
+}
+function applyLang(){
+  document.documentElement.lang=LANG==='pt'?'pt-BR':LANG;
+  for(const[o,k,v]of I18N_DATA)if(v!=null)o[k]=tr(v);
+  i18nDom();setIosTxt();buildCreator();
+  document.querySelectorAll('.langsw button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===LANG?'true':'false'));
+  if(!$('startBtn').disabled)$('startBtn').textContent=tr('Jogar sozinho');
+  $('mtagTxt').textContent=tr(MP.r?'Missão da equipe':'Missão');
+  hudClock='';mShown='';invDirty=true;updateLockHint();
+}
+document.querySelectorAll('.langsw button').forEach(b=>b.addEventListener('click',()=>{
+  LANG=b.dataset.l;try{localStorage.setItem('naufrago-lang',LANG);}catch(e){}applyLang();}));
 
 // ================= laço =================
 buildCreator();refreshPreview();resize();
 newGame();
-$('startBtn').disabled=false;$('startBtn').textContent='Jogar sozinho';
+$('startBtn').disabled=false;$('startBtn').textContent=tr('Jogar sozinho');
+applyLang();
 let last=performance.now();const focus=new V3();
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;const tm=now/1000;
