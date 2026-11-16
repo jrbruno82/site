@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Achados do Júnior</title>
+<title>Super Descontos</title>
 
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Encontre bons achados do Mercado Livre. Busque produtos e compare preços numa seleção independente.">
@@ -503,6 +503,7 @@ html, body { overflow-anchor: none; }
 .item-body { align-content: start; gap: 10px; padding: 18px; }
 .item-name { min-height: 2.5em; font-size: 1rem; line-height: 1.3; }
 .item-name a:hover { color: #547863; }
+.owner-mark { display: inline-block; width: 12px; height: 2px; margin: 0 6px 2px 0; border-radius: 2px; background: var(--owner-color); vertical-align: middle; }
 .item-price { gap: 5px 9px; }
 .item-price strong { color: #355f49; font-size: 1.35rem; letter-spacing: -.03em; }
 .item-price s { color: #919b94; font-size: .84rem; }
@@ -517,8 +518,6 @@ html, body { overflow-anchor: none; }
   font-weight: 800;
   line-height: 1.3;
 }
-.product-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.product-toolbar .summary { flex: 1; margin: 0; }
 .sort-field { display: grid; gap: 5px; min-width: 190px; }
 .sort-field label { color: #52645a; font-size: .75rem; font-weight: 800; }
 .sort-field select {
@@ -531,55 +530,6 @@ html, body { overflow-anchor: none; }
   font: inherit;
   font-size: .86rem;
 }
-.content-tabs { display: flex; gap: 8px; margin-top: 40px; border-bottom: 1px solid #e6e9e2; scroll-margin-top: 170px; }
-.content-tab {
-  padding: 12px 18px;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  background: transparent;
-  color: #6a7970;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-}
-.content-tab[aria-selected="true"] { border-color: #547a61; color: #29463e; }
-.coupon-status { margin-top: 28px; color: #68776e; }
-.coupon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
-.coupon-card {
-  position: relative;
-  display: grid;
-  align-content: start;
-  gap: 14px;
-  min-width: 0;
-  overflow: hidden;
-  padding: 22px;
-  border: 1px solid #e0e8dc;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #fff 0%, #f5f8f2 100%);
-  box-shadow: 0 9px 24px rgba(37, 53, 44, .06);
-}
-.coupon-card::before, .coupon-card::after {
-  position: absolute;
-  top: 50%;
-  width: 18px;
-  height: 18px;
-  border: 1px solid #e0e8dc;
-  border-radius: 50%;
-  background: var(--bg);
-  content: "";
-  transform: translateY(-50%);
-}
-.coupon-card::before { left: -10px; }
-.coupon-card::after { right: -10px; }
-.coupon-discount { color: #355f49; font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 900; letter-spacing: -.06em; line-height: 1; }
-.coupon-name { color: #52645a; font-size: .86rem; font-weight: 700; }
-.coupon-rule { height: 1px; border-top: 1px dashed #d4dfd1; }
-.coupon-details { display: grid; gap: 9px; margin: 0; }
-.coupon-details div { display: grid; grid-template-columns: minmax(86px, .7fr) minmax(0, 1.3fr); gap: 10px; font-size: .82rem; line-height: 1.4; }
-.coupon-details dt { color: #7a887f; }
-.coupon-details dd { margin: 0; color: #354940; font-weight: 700; overflow-wrap: anywhere; }
-.coupon-activate { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; margin-top: auto; border-radius: 11px; background: #29463e; color: #fff; font-size: .88rem; font-weight: 800; text-decoration: none; transition: background .2s, transform .2s; }
-.coupon-activate:hover { transform: translateY(-1px); background: #3c6754; }
 .item-text { min-height: 4.4em; color: #6c7871; font-size: .88rem; line-height: 1.5; }
 .buy {
   display: flex;
@@ -645,7 +595,6 @@ html, body { overflow-anchor: none; }
   .panel { min-height: 470px; }
   .offers-head, .controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .coupon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .step-1, .step-2, .step-3 { min-height: 245px; padding: 24px; }
   .closing { grid-template-columns: repeat(12, minmax(0, 1fr)); }
@@ -672,11 +621,6 @@ html, body { overflow-anchor: none; }
   .offers { padding-top: 74px; }
   .offers-head { grid-template-columns: minmax(0, 1fr); gap: 18px; }
   .offers-head h2 { font-size: clamp(2.2rem, 9vw, 3.2rem); }
-  .product-toolbar { align-items: stretch; flex-direction: column; }
-  .sort-field { min-width: 0; }
-  .coupon-grid { grid-template-columns: minmax(0, 1fr); }
-  .content-tabs { margin-top: 28px; scroll-margin-top: 220px; }
-  .content-tab { flex: 1; padding-inline: 10px; }
   .controls {
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
@@ -752,7 +696,7 @@ html, body { overflow-anchor: none; }
 .header-controls {
   width: 100%;
   max-width: 1440px;
-  grid-template-columns: minmax(240px, 1.5fr) minmax(180px, 1fr) minmax(180px, 1fr);
+  grid-template-columns: minmax(240px, 1.5fr) repeat(4, minmax(130px, 1fr));
   gap: 12px;
   margin: 0 auto;
   padding: 0 var(--gut-r) 12px var(--gut-l);
@@ -765,9 +709,13 @@ html, body { overflow-anchor: none; }
 }
 .header-controls .search-field { grid-column: auto; }
 .header-controls .filter-field { min-width: 0; gap: 4px; }
-.header-controls .filter-field label { font-size: .72rem; white-space: nowrap; }
+.header-controls .filter-field label,
+.header-controls .sort-field label { font-size: .72rem; white-space: nowrap; }
+.header-controls .sort-field { min-width: 0; gap: 4px; }
+.header-controls .sort-field select { width: 100%; }
 .header-controls .filter-field input,
-.header-controls .filter-field select { min-height: 38px; padding: 5px 10px; font-size: .82rem; }
+.header-controls .filter-field select,
+.header-controls .sort-field select { min-height: 38px; padding: 5px 10px; font-size: .82rem; }
 .header-controls .search-wrap input { padding-left: 34px; }
 .header-controls .search-wrap > span { left: 11px; font-size: 1.2rem; }
 .summary { grid-column: auto; margin: 22px 0 0; padding: 12px 16px; border: 1px solid #e8ebe4; border-radius: 12px; background: #f5f6f1; font-size: .9rem; }
@@ -780,7 +728,7 @@ html, body { overflow-anchor: none; }
   .site-header .nav-links { gap: 15px; }
   .site-header .nav-links a { font-size: .82rem; }
   .header-controls {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 9px;
     padding-bottom: 10px;
   }
@@ -788,16 +736,17 @@ html, body { overflow-anchor: none; }
 @media (max-width: 640px) {
   .offers, #como, #duvidas, .closing { scroll-margin-top: 200px; }
   .site-header .nav { min-height: 60px; }
-  .site-header .nav .btn { padding: .58em .9em; font-size: .8rem; }
   .header-controls {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 7px 9px;
     padding: 0 12px 9px;
   }
   .header-controls .search-field { grid-column: 1 / -1; }
-  .header-controls .filter-field label { font-size: .68rem; }
+  .header-controls .filter-field label,
+  .header-controls .sort-field label { font-size: .68rem; }
   .header-controls .filter-field input,
-  .header-controls .filter-field select { min-height: 36px; font-size: .78rem; }
+  .header-controls .filter-field select,
+  .header-controls .sort-field select { min-height: 36px; font-size: .78rem; }
   .summary { margin-top: 16px; }
 }
 </style>
@@ -806,9 +755,8 @@ html, body { overflow-anchor: none; }
 <body>
 <div class="site-header">
   <nav class="nav wrap" aria-label="Principal">
-    <a class="wordmark" href="#topo" id="topo"><span class="brand-mark" aria-hidden="true">A</span><span>Achados <span>do Júnior</span></span></a>
-    <div class="nav-links"><a href="#ofertas">Explorar ofertas</a><a href="#cupons" data-aba="cupons">Cupons</a><a href="#duvidas">Como funciona</a></div>
-    <a class="btn" href="#ofertas">Ver ofertas</a>
+    <a class="wordmark" href="#topo" id="topo"><span class="brand-mark" aria-hidden="true">S</span><span>Super Descontos</span></a>
+    <div class="nav-links"><a href="#duvidas">Como funciona</a></div>
   </nav>
   <div class="controls header-controls wrap">
     <div class="filter-field search-field">
@@ -816,9 +764,15 @@ html, body { overflow-anchor: none; }
       <div class="search-wrap"><span aria-hidden="true">⌕</span><input type="search" id="busca-ofertas" placeholder="Ex.: casa, beleza, presente..." autocomplete="off"><button type="button" class="clear-filters" id="limpar-filtros">Limpar</button></div>
     </div>
     <div class="filter-field">
-      <label for="filtro-categoria">Categoria</label>
+      <label for="filtro-categoria">Categoria do produto</label>
       <select id="filtro-categoria">
         <option value="">Todas as categorias</option>
+      </select>
+    </div>
+    <div class="filter-field">
+      <label for="filtro-tipo-oferta">Tipo oferta</label>
+      <select id="filtro-tipo-oferta">
+        <option value="">Todos os tipos</option>
       </select>
     </div>
     <div class="filter-field">
@@ -831,6 +785,10 @@ html, body { overflow-anchor: none; }
         <option value="200-500">De R$ 200 a R$ 500</option>
         <option value="500+">Acima de R$ 500</option>
       </select>
+    </div>
+    <div class="sort-field">
+      <label for="ordenar-produtos">Ordenar por</label>
+      <select id="ordenar-produtos"><option value="recomendados">Recomendados</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option></select>
     </div>
   </div>
 </div>
@@ -884,15 +842,7 @@ html, body { overflow-anchor: none; }
       <div><p class="section-kicker">Escolhas que facilitam o dia</p></div>
       <p></p>
     </div>
-    <div class="content-tabs" role="tablist" aria-label="Ofertas e cupons">
-      <button class="content-tab" id="tab-produtos" type="button" role="tab" aria-selected="true" aria-controls="painel-produtos">Ofertas</button>
-      <button class="content-tab" id="tab-cupons" type="button" role="tab" aria-selected="false" aria-controls="painel-cupons">Cupons</button>
-    </div>
-    <div id="painel-produtos" role="tabpanel" aria-labelledby="tab-produtos">
-    <div class="product-toolbar">
-      <p class="summary" id="resumo" aria-live="polite"><strong class="num">20 ofertas</strong> encontradas, somando <strong class="num js-total-off">R$ 942,03</strong> de desconto.</p>
-      <div class="sort-field"><label for="ordenar-produtos">Ordenar por</label><select id="ordenar-produtos"><option value="recomendados">Recomendados</option><option value="menor-preco">Menor preço</option><option value="maior-preco">Maior preço</option></select></div>
-    </div>
+    <p class="summary" id="resumo" aria-live="polite"><strong class="num">20 ofertas</strong> encontradas, somando <strong class="num js-total-off">R$ 942,03</strong> de desconto.</p>
     <p class="note"><span aria-hidden="true">♡</span> Seleção independente. Ao comprar, você finaliza com segurança no Mercado Livre.</p>
     
 <section class="cat" data-grupo="bf" aria-labelledby="g-bf">
@@ -1088,11 +1038,6 @@ html, body { overflow-anchor: none; }
 </li></ul>
 </section>
     <p class="empty" id="vazio" hidden>Nenhuma oferta encontrada com esses filtros. Ajuste a busca, a categoria ou a faixa de preço.</p>
-</div>
-<section id="painel-cupons" role="tabpanel" aria-labelledby="tab-cupons" hidden>
-  <p class="coupon-status" id="status-cupons" role="status" aria-live="polite">Carregando cupons válidos...</p>
-  <div class="coupon-grid" id="lista-cupons"></div>
-</section>
   </section>
 
   <section class="steps" id="como" aria-label="Como comprar">
@@ -1105,11 +1050,9 @@ html, body { overflow-anchor: none; }
     <h2 id="duvidas-h">Antes de comprar</h2>
     <div class="faq-list">
       <details id="q1"><summary>Comprar por este link custa mais caro?<span class="chev" aria-hidden="true"></span></summary><p>Não. O preço é o do anúncio no Mercado Livre. Quando você compra por um link desta página, o Mercado Livre me paga uma comissão, e isso não muda nada no seu valor.</p></details>
-      <details id="q2"><summary>Os preços podem mudar?<span class="chev" aria-hidden="true"></span></summary><p>Podem. Conferi todos em 12/11/2026, mas na Black Friday os preços e os estoques mudam rápido. O valor que vale é o que aparece no anúncio na hora da compra.</p></details>
+      <details id="q2"><summary>Os preços podem mudar?<span class="chev" aria-hidden="true"></span></summary><p>Podem. Na Black Friday, os preços e os estoques mudam rápido. O valor que vale é o que aparece no anúncio na hora da compra.</p></details>
       <details id="q3"><summary>Quem entrega e dá a garantia?<span class="chev" aria-hidden="true"></span></summary><p>O Mercado Livre e o vendedor de cada anúncio, como em qualquer compra no site. Prazos, frete, troca e devolução aparecem no anúncio antes de você pagar.</p></details>
-      <details id="q4"><summary>Como você escolheu essas ofertas?<span class="chev" aria-hidden="true"></span></summary><p>Passei por quase 500 produtos da central de afiliados do Mercado Livre e fiquei só com os que têm a etiqueta Black Friday, Oferta imperdível ou Mais vendido e com preço até R$ 300. Depois comparei o preço atual com o anterior de cada um.</p></details>
       <details id="q5"><summary>Quando é a Black Friday?<span class="chev" aria-hidden="true"></span></summary><p>Em 27 de novembro de 2026. Muitas ofertas já estão valendo antes disso, e algumas acabam quando o estoque acaba.</p></details>
-      <details id="q6"><summary>Onde vejo as próximas ofertas?<span class="chev" aria-hidden="true"></span></summary><p>No meu Instagram, <a href="https://www.instagram.com/junior.bruno82/" target="_blank" rel="noopener">@junior.bruno82</a>. Comente QUERO nos posts que eu mando o link no direct.</p></details>
     </div>
   </section>
 
@@ -1127,11 +1070,10 @@ html, body { overflow-anchor: none; }
 <footer class="footer wrap">
   <div class="foot-top">
     <nav class="foot-links" aria-label="Rodapé"><a href="#ofertas">Ofertas</a><a href="#duvidas">Dúvidas</a></nav>
-    <a class="foot-links" href="https://www.instagram.com/junior.bruno82/" target="_blank" rel="noopener" style="text-decoration:none;font-weight:600">Instagram @junior.bruno82</a>
   </div>
   <div>
-    <p class="foot-name">Achados do Júnior</p>
-    <p class="legal">Links de afiliado do Mercado Livre: recebo uma comissão quando você compra, sem custo a mais para você. Preços conferidos em 12/11/2026 e sujeitos a alteração. Esta é uma página independente, sem vínculo oficial com o Mercado Livre. Fotos dos produtos: anúncios do Mercado Livre. Produtos sem foto aparecem em ilustração. Este site registra visitas e cliques de forma anônima, sem nome, e-mail ou IP, só para medir o interesse nas ofertas.</p>
+    <p class="foot-name">Super Descontos</p>
+    <p class="legal">Links de afiliado do Mercado Livre: recebo uma comissão quando você compra, sem custo a mais para você. Esta é uma página independente, sem vínculo oficial com o Mercado Livre. Fotos dos produtos: anúncios do Mercado Livre. Produtos sem foto aparecem em ilustração. Para análise das ofertas, registramos dispositivo, navegador, produtos clicados e filtros selecionados.</p>
   </div>
 </footer>
 
@@ -1145,27 +1087,11 @@ html, body { overflow-anchor: none; }
   var resumo = document.getElementById('resumo');
   var vazio = document.getElementById('vazio');
   var categoria = document.getElementById('filtro-categoria');
+  var tipoOferta = document.getElementById('filtro-tipo-oferta');
   var faixa = document.getElementById('filtro-preco');
   var busca = document.getElementById('busca-ofertas');
   var limpar = document.getElementById('limpar-filtros');
   var ordenar = document.getElementById('ordenar-produtos');
-  var tabs = {
-    produtos: document.getElementById('tab-produtos'),
-    cupons: document.getElementById('tab-cupons')
-  };
-  var paineis = {
-    produtos: document.getElementById('painel-produtos'),
-    cupons: document.getElementById('painel-cupons')
-  };
-  function selecionarAba(aba, navegar) {
-    Object.keys(tabs).forEach(function (nome) {
-      var ativo = nome === aba;
-      tabs[nome].setAttribute('aria-selected', ativo ? 'true' : 'false');
-      tabs[nome].tabIndex = ativo ? 0 : -1;
-      paineis[nome].hidden = !ativo;
-    });
-    if (navegar) document.querySelector('.content-tabs').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
-  }
   function ordenarProdutos() {
     var listaProdutos = document.getElementById('lista-produtos');
     if (!listaProdutos) return;
@@ -1190,8 +1116,10 @@ html, body { overflow-anchor: none; }
     listaInicial.setAttribute('aria-label', 'Produtos disponíveis');
     categoriasIniciais.forEach(function (grupo) {
       var nomeCategoria = grupo.querySelector('h3').textContent.trim();
+      var tipos = { bf: 'Black Friday', oi: 'Oferta imperdível', mv: 'Mais vendido' };
       [].slice.call(grupo.querySelectorAll('.item')).forEach(function (item) {
         item.dataset.categoria = nomeCategoria;
+        item.dataset.tipoOferta = tipos[item.dataset.tipo] || 'Outros';
         var etiqueta = document.createElement('span');
         etiqueta.className = 'category-badge';
         etiqueta.textContent = nomeCategoria;
@@ -1209,6 +1137,13 @@ html, body { overflow-anchor: none; }
       opcao.textContent = nome;
       categoria.appendChild(opcao);
     });
+    var tiposIniciais = [].slice.call(listaInicial.querySelectorAll('.item')).map(function (item) { return item.dataset.tipoOferta; }).filter(function (nome, indice, todos) { return todos.indexOf(nome) === indice; });
+    tiposIniciais.forEach(function (nome) {
+      var opcao = document.createElement('option');
+      opcao.value = nome;
+      opcao.textContent = nome;
+      tipoOferta.appendChild(opcao);
+    });
   }
   function dentroDaFaixa(preco) {
     var valor = faixa.value.split('-');
@@ -1225,6 +1160,7 @@ html, body { overflow-anchor: none; }
       var descricao = it.dataset.descricao || (it.querySelector('.item-text') || {}).textContent || '';
       var texto = (it.dataset.nome + ' ' + descricao).toLocaleLowerCase('pt-BR');
       var ok = (!categoria.value || it.dataset.categoria === categoria.value) &&
+        (!tipoOferta.value || it.dataset.tipoOferta === tipoOferta.value) &&
         dentroDaFaixa(+it.dataset.preco) &&
         (!termo || texto.indexOf(termo) >= 0);
       it.hidden = !ok;
@@ -1255,6 +1191,7 @@ html, body { overflow-anchor: none; }
   }
 
   categoria.addEventListener('change', update);
+  tipoOferta.addEventListener('change', update);
   faixa.addEventListener('change', update);
   busca.addEventListener('focus', function () {
     if (window.scrollY > 0) {
@@ -1272,6 +1209,7 @@ html, body { overflow-anchor: none; }
     var x = window.scrollX, y = window.scrollY;
     busca.value = '';
     categoria.value = '';
+    tipoOferta.value = '';
     faixa.value = 'todos';
     update();
     window.requestAnimationFrame(function () {
@@ -1279,28 +1217,13 @@ html, body { overflow-anchor: none; }
     });
   });
   ordenar.addEventListener('change', ordenarProdutos);
-  tabs.produtos.addEventListener('click', function () { selecionarAba('produtos'); });
-  tabs.cupons.addEventListener('click', function () { selecionarAba('cupons'); });
-  document.querySelectorAll('[data-aba="cupons"]').forEach(function (link) {
-    link.addEventListener('click', function (event) {
-      event.preventDefault();
-      selecionarAba('cupons', true);
-    });
-  });
-  document.querySelector('[role="tablist"]').addEventListener('keydown', function (event) {
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-    event.preventDefault();
-    selecionarAba(event.key === 'ArrowRight' ? 'cupons' : 'produtos');
-    tabs[event.key === 'ArrowRight' ? 'cupons' : 'produtos'].focus();
-  });
-  selecionarAba('produtos');
   ordenarProdutos();
   update();
 
   // Hooks for the spreadsheet loader (site version)
   window.__adj = {
     update: update,
-    filtro: function () { return { categoria: categoria.value, faixa: faixa.value, busca: busca.value.trim() }; },
+    filtro: function () { return { categoria: categoria.value, tipoOferta: tipoOferta.value, faixa: faixa.value, busca: busca.value.trim() }; },
     resetFiltros: update,
     ordenarProdutos: ordenarProdutos
   };
@@ -1309,7 +1232,7 @@ html, body { overflow-anchor: none; }
 
 <script>
 /* ==========================================================================
-   Achados do Júnior: produtos da aba ofertas + registro opcional de engajamento.
+   Super Descontos: produtos da aba ofertas + registro opcional de engajamento.
    ========================================================================== */
 window.PLANILHA_ID = '152quu_L0RTHjXzne_ZTRVpWHCMKzbxQ_KGUcfrvZMyY';
 window.PLANILHA_GID = '0';
@@ -1350,7 +1273,8 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
       imagem: ['imagem', 'foto', 'urlimagem', 'linkimagem'],
       descricao: ['descricao', 'descricaosite', 'detalhe', 'especificacao'],
       tipo: ['tipo', 'tipooferta', 'tipodeoferta', 'oferta', 'grupo'],
-      categoria: ['categoria', 'categorias']
+      categoria: ['categoria', 'categorias', 'categoriadoproduto'],
+      usuario: ['usuario', 'usuarioafiliado', 'username', 'user', 'dono', 'proprietario', 'responsavel', 'vendedor', 'afiliado', 'owner']
     };
     var indices = {};
     Object.keys(aliases).forEach(function (chave) {
@@ -1371,69 +1295,9 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
         imagem: valor('imagem'),
         descricao: valor('descricao'),
         tipo: valor('tipo'),
-        categoria: valor('categoria') || valor('tipo') || 'Outros'
+        categoria: valor('categoria') || valor('tipo') || 'Outros',
+        usuario: valor('usuario')
       };
-    });
-  }
-  function cuponsDaPlanilha(dados) {
-    if (!dados || dados.status !== 'ok' || !dados.table || !dados.table.cols) throw new Error('A planilha não retornou dados válidos.');
-    var cols = dados.table.cols;
-    var linhas = dados.table.rows || [];
-    var aliases = {
-      codigo: ['cupom', 'codigo', 'codigodocupom'],
-      percentual: ['descontopercentual', 'descontoporcento', 'desconto'],
-      valor: ['descontor', 'descontoemreais', 'descontovalor'],
-      onde: ['ondevale', 'ondevalido', 'ondeaplica'],
-      categoria: ['categorianapagina', 'categoria'],
-      minimo: ['compraminima', 'valorminimo'],
-      maximo: ['descontomaximo', 'maximodedesconto'],
-      validade: ['validade', 'datavalidade'],
-      status: ['status'],
-      link: ['linkdocupom', 'link', 'url']
-    };
-    var indices = {};
-    Object.keys(aliases).forEach(function (chave) {
-      indices[chave] = cols.findIndex(function (col) { return aliases[chave].indexOf(campo(col.label || col.id)) >= 0; });
-    });
-    if (indices.status < 0 || indices.link < 0) throw new Error('Confira se a aba cupons tem as colunas Status e Link do cupom.');
-    var celula = function (linha, chave) {
-      var c = indices[chave] >= 0 ? (linha.c || [])[indices[chave]] : null;
-      return c && c.v != null ? c.v : '';
-    };
-    var texto = function (linha, chave) {
-      var c = indices[chave] >= 0 ? (linha.c || [])[indices[chave]] : null;
-      if (!c) return '';
-      if (c.f != null && c.f !== '') return String(c.f).trim();
-      var v = c.v;
-      if (v == null) return '';
-      if (typeof v === 'string') {
-        var data = /^Date\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(v);
-        if (data) return new Date(Number(data[1]), Number(data[2]), Number(data[3])).toLocaleDateString('pt-BR');
-      }
-      return String(v).trim();
-    };
-    var numeroPercentual = function (v) {
-      if (typeof v === 'number') return v > 0 && v <= 1 ? v * 100 : v;
-      var n = precoNumero(String(v || '').replace('%', ''));
-      return n > 0 && n <= 1 ? n * 100 : n;
-    };
-    return linhas.map(function (linha) {
-      var status = texto(linha, 'status');
-      var link = String(celula(linha, 'link') || '').trim();
-      return {
-        codigo: texto(linha, 'codigo'),
-        percentual: numeroPercentual(celula(linha, 'percentual')),
-        valor: precoNumero(celula(linha, 'valor')),
-        onde: texto(linha, 'onde'),
-        categoria: texto(linha, 'categoria'),
-        minimo: precoNumero(celula(linha, 'minimo')),
-        maximo: texto(linha, 'maximo'),
-        validade: texto(linha, 'validade'),
-        status: status,
-        link: /^https:\/\//i.test(link) ? link : ''
-      };
-    }).filter(function (cupom) {
-      return campo(cupom.status) === 'valido' && cupom.link;
     });
   }
   var off = function (p) { return p.de > p.preco ? Math.round((1 - p.preco / p.de) * 100) : 0; };
@@ -1448,12 +1312,27 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
     var k = /tesour/i.test(p.nome) ? 'tesoura' : /pinc/i.test(p.nome) ? 'pincel' : 'padrao';
     return '<span class="' + cls + ' is-drawn">' + ILUSTRA[k] + '</span>';
   }
+  var coresUsuario = { jrbruno82: '#6f8fb7' };
+  function corUsuario(usuario) {
+    var nome = String(usuario || '').trim().toLocaleLowerCase('pt-BR');
+    return coresUsuario[nome] || '';
+  }
+  function mapearCoresUsuarios(produtos) {
+    var nomes = produtos.map(function (p) { return String(p.usuario || '').trim().toLocaleLowerCase('pt-BR'); })
+      .filter(function (nome, indice, todos) { return nome && nome !== 'jrbruno82' && todos.indexOf(nome) === indice; })
+      .sort();
+    nomes.forEach(function (nome, indice) {
+      var matiz = Math.round((18 + indice * 137.508) % 360);
+      coresUsuario[nome] = 'hsl(' + matiz + ' 24% 59%)';
+    });
+  }
   function itemHtml(p) {
     var link = esc(safeUrl(p.link));
+    var cor = corUsuario(p.usuario);
     var de = p.de > p.preco ? ' <s aria-label="Preço anterior">' + brl(p.de) + '</s> <span class="off">' + off(p) + '% off</span>' : '';
-    return '<li class="item go" data-preco="' + p.preco + '" data-de="' + (p.de > p.preco ? p.de : p.preco) + '" data-tipo="' + p.cod + '" data-nome="' + esc(p.nome) + '" data-descricao="' + esc(p.descricao || '') + '" data-categoria="' + esc(p.categoria) + '">' +
+    return '<li class="item go" data-preco="' + p.preco + '" data-de="' + (p.de > p.preco ? p.de : p.preco) + '" data-tipo="' + p.cod + '" data-tipo-oferta="' + esc(p.tipoOferta) + '" data-nome="' + esc(p.nome) + '" data-descricao="' + esc(p.descricao || '') + '" data-categoria="' + esc(p.categoria) + '">' +
       '<a class="item-photo" href="' + link + '" target="_blank" rel="noopener sponsored" tabindex="-1" aria-hidden="true">' + foto(p, 'thumb') + '</a>' +
-      '<div class="item-body"><span class="category-badge">' + esc(p.categoria) + '</span><h4 class="item-name"><a href="' + link + '" target="_blank" rel="noopener sponsored">' + esc(p.nome) + '</a></h4>' +
+      '<div class="item-body"><span class="category-badge">' + esc(p.categoria) + '</span><h4 class="item-name">' + (cor ? '<span class="owner-mark" aria-hidden="true" style="--owner-color:' + cor + '"></span>' : '') + '<a href="' + link + '" target="_blank" rel="noopener sponsored">' + esc(p.nome) + '</a></h4>' +
       '<p class="item-price"><strong>' + brl(p.preco) + '</strong>' + de + '</p>' +
       (p.descricao ? '<p class="item-text">' + esc(p.descricao) + '</p>' : '') +
       '<a class="buy" href="' + link + '" target="_blank" rel="noopener sponsored">Comprar no Mercado Livre <span aria-hidden="true">→</span></a></div></li>';
@@ -1461,10 +1340,11 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
 
   function aplicar(lista) {
     var ps = (lista || []).map(function (p) {
-      return { nome: String(p.nome || ''), link: String(p.link || ''), preco: precoNumero(p.preco), de: precoNumero(p.de), imagem: p.imagem, descricao: p.descricao, categoria: String(p.categoria || 'Outros'), cod: codigo(p.tipo) };
+      return { nome: String(p.nome || ''), link: String(p.link || ''), preco: precoNumero(p.preco), de: precoNumero(p.de), imagem: p.imagem, descricao: p.descricao, categoria: String(p.categoria || 'Outros'), tipoOferta: String(p.tipo || 'Outros'), usuario: String(p.usuario || ''), cod: codigo(p.tipo) };
     }).filter(function (p) { return p.nome && safeUrl(p.link) && p.preco > 0; });
     if (!ps.length) return false;
 
+    mapearCoresUsuarios(ps);
     $$('.cat').forEach(function (c) { c.remove(); });
     var vazio = $('#vazio');
     var listaProdutos = $('#lista-produtos');
@@ -1481,6 +1361,8 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
     var categorias = $('#filtro-categoria');
     var listaCategorias = ps.map(function (p) { return p.categoria; }).filter(function (c, i, todos) { return todos.indexOf(c) === i; }).sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
     categorias.innerHTML = '<option value="">Todas as categorias</option>' + listaCategorias.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+    var tiposOferta = ps.map(function (p) { return p.tipoOferta; }).filter(function (tipo, i, todos) { return todos.indexOf(tipo) === i; }).sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
+    $('#filtro-tipo-oferta').innerHTML = '<option value="">Todos os tipos</option>' + tiposOferta.map(function (tipo) { return '<option value="' + esc(tipo) + '">' + esc(tipo) + '</option>'; }).join('');
     window.__adj.resetFiltros();
 
     // Números do topo
@@ -1535,130 +1417,47 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
     document.head.appendChild(script);
   }
 
-  function cupomHtml(cupom) {
-    var destaque = cupom.percentual > 0
-      ? Math.round(cupom.percentual) + '% OFF'
-      : (cupom.valor > 0 ? brl(cupom.valor) + ' OFF' : 'Cupom disponível');
-    var limite = precoNumero(cupom.maximo) > 0 ? brl(precoNumero(cupom.maximo)) : cupom.maximo || 'Não informado';
-    var minimo = cupom.minimo > 0 ? '<div><dt>Compra mínima</dt><dd>' + esc(brl(cupom.minimo)) + '</dd></div>' : '';
-    return '<article class="coupon-card">' +
-      '<div class="coupon-discount">' + esc(destaque) + '</div>' +
-      '<p class="coupon-name">' + esc(cupom.codigo || 'Cupom Mercado Livre') + '</p>' +
-      '<div class="coupon-rule" aria-hidden="true"></div>' +
-      '<dl class="coupon-details">' +
-      '<div><dt>Onde vale</dt><dd>' + esc(cupom.onde || 'Consulte as condições no anúncio') + '</dd></div>' +
-      '<div><dt>Categoria</dt><dd>' + esc(cupom.categoria || 'Não informada') + '</dd></div>' +
-      '<div><dt>Desconto máximo</dt><dd>' + esc(limite) + '</dd></div>' +
-      '<div><dt>Validade</dt><dd>' + esc(cupom.validade || 'Sem data informada') + '</dd></div>' +
-      minimo + '</dl>' +
-      '<a class="coupon-activate" href="' + esc(cupom.link) + '" target="_blank" rel="noopener sponsored" aria-label="Ativar cupom ' + esc(cupom.codigo || '') + '">Ativar cupom <span aria-hidden="true">→</span></a>' +
-      '</article>';
-  }
-  function carregarCupons() {
-    var script = document.createElement('script');
-    var finalizado = false;
-    var temporizador;
-    var status = $('#status-cupons');
-    function terminar(mensagem) {
-      if (finalizado) return;
-      finalizado = true;
-      clearTimeout(temporizador);
-      script.remove();
-      status.textContent = mensagem;
-    }
-    window.__adjCuponsResponse = function (dados) {
-      try {
-        var cupons = cuponsDaPlanilha(dados);
-        $('#lista-cupons').innerHTML = cupons.map(cupomHtml).join('');
-        terminar(cupons.length
-          ? 'Encontramos ' + cupons.length + (cupons.length === 1 ? ' cupom válido.' : ' cupons válidos.')
-          : 'Nenhum cupom válido disponível no momento.');
-      } catch (erro) {
-        terminar('Não foi possível carregar os cupons. Confira se a aba cupons está pública e contém os campos de status e link.');
-      }
-    };
-    script.onerror = function () {
-      terminar('A planilha de cupons está indisponível. Tente novamente mais tarde.');
-    };
-    script.src = 'https://docs.google.com/spreadsheets/d/' + encodeURIComponent(window.PLANILHA_ID) +
-      '/gviz/tq?tqx=' + encodeURIComponent('out:json;responseHandler:__adjCuponsResponse') +
-      '&sheet=' + encodeURIComponent('cupons');
-    temporizador = setTimeout(function () {
-      terminar('A planilha de cupons demorou para responder. Confira se está acessível por link.');
-    }, 12000);
-    document.head.appendChild(script);
-  }
-
-  function mostrarAtivos(n) {
-    var el = $('#ao-vivo'); if (!el) return;
-    n = Number(n) || 0;
-    el.hidden = n < 2;
-    if (n >= 2) el.textContent = n + ' pessoas estão vendo estas ofertas agora.';
-  }
-
   carregarPlanilha();
-  carregarCupons();
-  if (API) {
-    fetch(API, { method: 'GET' }).then(function (r) { return r.json(); }).then(function (d) {
-      mostrarAtivos(d.ativos);
-    }).catch(function () { /* mantém a lista embutida */ });
-    setInterval(function () {
-      if (document.hidden) return;
-      fetch(API + '?so=ativos').then(function (r) { return r.json(); }).then(function (d) { mostrarAtivos(d.ativos); }).catch(function () {});
-    }, 60000);
-  }
 
-  /* ---------- 2. Engajamento anônimo ---------- */
+  /* ---------- 2. Registro de acessos ---------- */
   if (!API) return;
-  var rand = function () { return Math.random().toString(36).slice(2, 10); };
-  var guardar = function (store, k, gerar) {
-    try { var v = store.getItem(k); if (!v) { v = gerar(); store.setItem(k, v); } return v; } catch (e) { return gerar(); }
-  };
-  var visitante = guardar(window.localStorage, 'adj_visitante', function () { return 'v-' + rand(); });
-  var sessao = guardar(window.sessionStorage, 'adj_sessao', function () { return 's-' + rand(); });
   var dispositivo = window.matchMedia('(max-width: 760px)').matches ? 'celular' : (window.matchMedia('(max-width: 1100px)').matches ? 'tablet' : 'computador');
-  var origem = (function () {
-    var q = new URLSearchParams(location.search).get('utm_source');
-    if (q) return q;
-    try { return document.referrer ? new URL(document.referrer).hostname : 'direto'; } catch (e) { return 'direto'; }
+  var navegador = (function () {
+    var agente = navigator.userAgent || '';
+    if (/Edg\//.test(agente)) return 'Edge';
+    if (/OPR\//.test(agente)) return 'Opera';
+    if (/Chrome\//.test(agente)) return 'Chrome';
+    if (/Firefox\//.test(agente)) return 'Firefox';
+    if (/Safari\//.test(agente)) return 'Safari';
+    return 'Outro';
   })();
-
-  var SECOES = [['#ofertas', 'lista de ofertas'], ['#como', 'como funciona'], ['#duvidas', 'dúvidas'], ['.closing', 'maior desconto'], ['.footer', 'rodapé']];
-  var secao = 'início';
-  if ('IntersectionObserver' in window) {
-    var visivel = {};
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { visivel[e.target.dataset.secao] = e.intersectionRatio; });
-      var melhor = null, r = 0;
-      Object.keys(visivel).forEach(function (k) { if (visivel[k] > r) { r = visivel[k]; melhor = k; } });
-      if (melhor) secao = melhor;
-    }, { threshold: [0, .25, .5, .75, 1] });
-    SECOES.forEach(function (s) { var el = $(s[0]); if (el) { el.dataset.secao = s[1]; io.observe(el); } });
+  function camposAcesso(produto) {
+    var filtros = window.__adj.filtro();
+    var seletorFaixa = document.getElementById('filtro-preco');
+    return {
+      produto_clicado: produto || '',
+      categoria_selecionada: filtros.categoria || 'Todas',
+      faixa_preco: filtros.faixa === 'todos' ? 'Todas' : seletorFaixa.options[seletorFaixa.selectedIndex].text,
+      tipo_oferta_selecionado: filtros.tipoOferta || 'Todos'
+    };
   }
-
   function enviar(evento, extra) {
-    var dados = { evento: evento, visitante: visitante, sessao: sessao, dispositivo: dispositivo, origem: origem, secao: secao };
+    var dados = { evento: evento, dispositivo: dispositivo, navegador: navegador };
     if (extra) Object.keys(extra).forEach(function (k) { dados[k] = extra[k]; });
     var corpo = JSON.stringify(dados);
     try { if (navigator.sendBeacon && navigator.sendBeacon(API, new Blob([corpo], { type: 'text/plain;charset=utf-8' }))) return; } catch (e) {}
     fetch(API, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: corpo }).catch(function () {});
   }
 
-  enviar('visita', { detalhe: location.pathname });
-  var pulso = null;
-  function ligar() { if (!pulso) pulso = setInterval(function () { enviar('ping'); }, 30000); }
-  function desligar() { clearInterval(pulso); pulso = null; }
-  ligar();
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) { desligar(); enviar('saida'); } else { enviar('ping'); ligar(); }
-  });
+  enviar('visita', camposAcesso(''));
 
   // Cliques nos botões de compra
   document.addEventListener('click', function (ev) {
     var a = ev.target.closest('a[href*="meli.la"]'); if (!a) return;
     var dono = a.closest('[data-nome]') || a;
     var nome = dono.dataset.nome || a.textContent.trim();
-    enviar('clique', { produto: nome, link: a.href });
+    var dadosClique = camposAcesso(nome);
+    enviar('clique', dadosClique);
   });
 
   // Uso do filtro (agrupado: envia 1,5 s depois da última mudança)
@@ -1666,11 +1465,12 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
   function filtroMudou() {
     clearTimeout(espera);
     espera = setTimeout(function () {
-      var f = window.__adj.filtro();
-      enviar('filtro', { detalhe: 'categoria ' + (f.categoria || 'todas') + ' · faixa ' + f.faixa + (f.busca ? ' · busca ' + f.busca : '') });
+      var dadosFiltro = camposAcesso('');
+      enviar('filtro', dadosFiltro);
     }, 1500);
   }
   $('#filtro-categoria').addEventListener('change', filtroMudou);
+  $('#filtro-tipo-oferta').addEventListener('change', filtroMudou);
   $('#filtro-preco').addEventListener('change', filtroMudou);
   $('#busca-ofertas').addEventListener('input', filtroMudou);
   $('#limpar-filtros').addEventListener('click', filtroMudou);
