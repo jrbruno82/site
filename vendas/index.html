@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Super Descontos</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%2320342f'/%3E%3Cg transform='translate(10 10) scale(0.84) rotate(-14 64 64)'%3E%3Cpath d='M46 20 H106 Q120 20 120 34 V94 Q120 108 106 108 H46 L8 64 Z' fill='%23e6a14a'/%3E%3Ccircle cx='63' cy='46' r='10' fill='none' stroke='%2320342f' stroke-width='9'/%3E%3Ccircle cx='97' cy='82' r='10' fill='none' stroke='%2320342f' stroke-width='9'/%3E%3Cline x1='101' y1='36' x2='59' y2='92' stroke='%2320342f' stroke-width='11' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E">
 
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Encontre bons achados do Mercado Livre. Busque produtos e compare preços numa seleção independente.">
@@ -749,13 +750,35 @@ html, body { overflow-anchor: none; }
   .header-controls .sort-field select { min-height: 36px; font-size: .78rem; }
   .summary { margin-top: 16px; }
 }
+
+/* Logo Super Descontos: etiqueta inclinada com %, nas cores do site. */
+.logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.logo-mark { width: 46px; height: 46px; flex: none; transition: transform .25s var(--ease); }
+.logo:hover .logo-mark { transform: rotate(-6deg) scale(1.05); }
+.lg-tag { fill: var(--accent); }
+.lg-pct { fill: none; stroke: var(--ink); stroke-width: 7.5; }
+.lg-bar { stroke-width: 9; stroke-linecap: round; }
+.logo-text { display: flex; flex-direction: column; gap: 1px; }
+.logo-super { font-size: .72rem; font-weight: 800; font-stretch: 125%; letter-spacing: .36em; line-height: 1; color: var(--accent); }
+.logo-nome { font-size: 1.5rem; font-weight: 900; font-stretch: 112%; letter-spacing: -.035em; line-height: .92; color: var(--ink); }
+.foot-logo { gap: clamp(14px, 2vw, 26px); color: var(--field-1-ink); }
+.foot-logo .logo-mark { width: clamp(72px, 9vw, 132px); height: clamp(72px, 9vw, 132px); }
+.foot-logo .lg-pct { stroke: var(--field-1); }
+.foot-logo .logo-super { font-size: clamp(1rem, 1.9vw, 1.7rem); }
+.foot-logo .logo-nome { font-size: clamp(2.5rem, 6vw, 5.4rem); color: var(--field-1-ink); }
+@media (max-width: 640px) {
+  .logo { gap: 8px; }
+  .logo-mark { width: 38px; height: 38px; }
+  .logo-super { font-size: .62rem; }
+  .logo-nome { font-size: 1.22rem; }
+}
 </style>
 
 </head>
 <body>
 <div class="site-header">
   <nav class="nav wrap" aria-label="Principal">
-    <a class="wordmark" href="#topo" id="topo"><span class="brand-mark" aria-hidden="true">S</span><span>Super Descontos</span></a>
+    <a class="logo" href="index.html" id="topo" aria-label="Super Descontos, atualizar a página"><svg class="logo-mark" viewBox="0 0 128 128" aria-hidden="true"><defs><mask id="logo-furo-topo"><rect width="128" height="128" fill="#fff"/><g transform="rotate(-14 64 64)"><circle cx="30" cy="64" r="7" fill="#000"/></g></mask></defs><g mask="url(#logo-furo-topo)"><g transform="rotate(-14 64 64)"><path class="lg-tag" d="M46 20 H106 Q120 20 120 34 V94 Q120 108 106 108 H46 L8 64 Z"/><circle class="lg-pct" cx="63" cy="46" r="9.5"/><circle class="lg-pct" cx="97" cy="82" r="9.5"/><line class="lg-pct lg-bar" x1="101" y1="36" x2="59" y2="92"/></g></g></svg><span class="logo-text" aria-hidden="true"><span class="logo-super">SUPER</span><span class="logo-nome">DESCONTOS</span></span></a>
     <div class="nav-links"><a href="#duvidas">Como funciona</a></div>
   </nav>
   <div class="controls header-controls wrap">
@@ -1072,7 +1095,7 @@ html, body { overflow-anchor: none; }
     <nav class="foot-links" aria-label="Rodapé"><a href="#ofertas">Ofertas</a><a href="#duvidas">Dúvidas</a></nav>
   </div>
   <div>
-    <p class="foot-name">Super Descontos</p>
+    <p class="logo foot-logo" role="img" aria-label="Super Descontos"><svg class="logo-mark" viewBox="0 0 128 128" aria-hidden="true"><defs><mask id="logo-furo-rodape"><rect width="128" height="128" fill="#fff"/><g transform="rotate(-14 64 64)"><circle cx="30" cy="64" r="7" fill="#000"/></g></mask></defs><g mask="url(#logo-furo-rodape)"><g transform="rotate(-14 64 64)"><path class="lg-tag" d="M46 20 H106 Q120 20 120 34 V94 Q120 108 106 108 H46 L8 64 Z"/><circle class="lg-pct" cx="63" cy="46" r="9.5"/><circle class="lg-pct" cx="97" cy="82" r="9.5"/><line class="lg-pct lg-bar" x1="101" y1="36" x2="59" y2="92"/></g></g></svg><span class="logo-text" aria-hidden="true"><span class="logo-super">SUPER</span><span class="logo-nome">DESCONTOS</span></span></p>
     <p class="legal">Links de afiliado do Mercado Livre: recebo uma comissão quando você compra, sem custo a mais para você. Esta é uma página independente, sem vínculo oficial com o Mercado Livre. Fotos dos produtos: anúncios do Mercado Livre. Produtos sem foto aparecem em ilustração. Para análise das ofertas, registramos dispositivo, navegador, produtos clicados e filtros selecionados.</p>
   </div>
 </footer>
@@ -1115,7 +1138,7 @@ html, body { overflow-anchor: none; }
     listaInicial.id = 'lista-produtos';
     listaInicial.setAttribute('aria-label', 'Produtos disponíveis');
     categoriasIniciais.forEach(function (grupo) {
-      var nomeCategoria = grupo.querySelector('h3').textContent.trim();
+      var nomeCategoria = 'Outros';
       var tipos = { bf: 'Black Friday', oi: 'Oferta imperdível', mv: 'Mais vendido' };
       [].slice.call(grupo.querySelectorAll('.item')).forEach(function (item) {
         item.dataset.categoria = nomeCategoria;
@@ -1236,10 +1259,11 @@ html, body { overflow-anchor: none; }
    ========================================================================== */
 window.PLANILHA_ID = '152quu_L0RTHjXzne_ZTRVpWHCMKzbxQ_KGUcfrvZMyY';
 window.PLANILHA_GID = '0';
-window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
+window.PLANILHA_API = '';
 
 (function () {
-  var API = /^https:\/\/script\.google(usercontent)?\.com\//.test(window.PLANILHA_API) ? window.PLANILHA_API : '';
+  var API = /^https:\/\/(?:script\.google(?:usercontent)?\.com|hook(?:\.[a-z0-9-]+)?\.make\.com)\//.test(window.PLANILHA_API) ? window.PLANILHA_API : '';
+  if (!API) console.error('Registro desativado: configure PLANILHA_API com a URL do Apps Script ou do webhook do Make.');
   var brl = function (v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace(/ /g, ' '); };
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var safeUrl = function (u) { u = String(u || '').trim(); return /^https:\/\//.test(u) || /^data:image\//.test(u) ? u : ''; };
@@ -1295,7 +1319,7 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
         imagem: valor('imagem'),
         descricao: valor('descricao'),
         tipo: valor('tipo'),
-        categoria: valor('categoria') || valor('tipo') || 'Outros',
+        categoria: String(valor('categoria') || '').trim() || 'Outros',
         usuario: valor('usuario')
       };
     });
@@ -1476,6 +1500,21 @@ window.PLANILHA_API = 'COLE_AQUI_A_URL_DO_APPS_SCRIPT';
   $('#limpar-filtros').addEventListener('click', filtroMudou);
 })();
 
+</script>
+<script>
+// Logo do cabeçalho: recarrega a página do zero, voltando ao topo e sem filtros.
+(function () {
+  var logo = document.getElementById('topo');
+  if (!logo) return;
+  logo.addEventListener('click', function (ev) {
+    if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.button !== 0) return; // abrir em nova aba continua funcionando
+    ev.preventDefault();
+    try { history.scrollRestoration = 'manual'; } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    window.scrollTo(0, 0);
+    location.reload();
+  });
+})();
 </script>
 </body>
 </html>
