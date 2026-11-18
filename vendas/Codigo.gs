@@ -80,9 +80,25 @@ function doPost(e) {
   try {
     const ss = SpreadsheetApp.getActive();
     if (evento !== 'ping') {
-      ss.getSheetByName(ABA_LOG).appendRow([
-        agora, registro.visitante, registro.sessao, evento,
-        registro.produto, registro.link, registro.detalhe, registro.dispositivo, registro.origem,
+      const abaLog = ss.getSheetByName(ABA_LOG) || ss.insertSheet(ABA_LOG);
+      if (abaLog.getLastRow() === 0) {
+        abaLog.getRange(1, 1, 1, 10).setValues([[
+          'Data', 'Hora', 'Sessão', 'Evento', 'Navegador', 'Dispositivo',
+          'Produto', 'Link', 'Detalhe', 'Origem'
+        ]]);
+      }
+      const fuso = ss.getSpreadsheetTimeZone() || Session.getScriptTimeZone();
+      abaLog.appendRow([
+        Utilities.formatDate(agora, fuso, 'dd/MM/yyyy'),
+        Utilities.formatDate(agora, fuso, 'HH:mm:ss'),
+        registro.sessao,
+        evento,
+        limpar_(d.navegador, 40),
+        registro.dispositivo,
+        registro.produto,
+        registro.link,
+        registro.detalhe,
+        registro.origem,
       ]);
     }
     atualizarAoVivo_(ss.getSheetByName(ABA_AO_VIVO), registro, evento, agora);

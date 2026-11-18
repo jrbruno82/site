@@ -4,12 +4,14 @@
  * e informe a URL da implantação em PLANILHA_API nos dois arquivos HTML.
  */
 var PLANILHA_ID = '152quu_L0RTHjXzne_ZTRVpWHCMKzbxQ_KGUcfrvZMyY';
-var ABA_ACESSOS = 'acessos';
+var ABA_ACESSOS = 'Engajamento';
 var COLUNAS_ACESSOS = [
-  'Data e hora',
+  'Data',
+  'Hora',
+  'Sessão',
   'Evento',
-  'Dispositivo',
   'Navegador',
+  'Dispositivo',
   'Produto clicado',
   'Categoria selecionada',
   'Faixa de preço',
@@ -47,11 +49,15 @@ function doPost(e) {
     if (aba.getLastRow() === 0) {
       aba.getRange(1, 1, 1, COLUNAS_ACESSOS.length).setValues([COLUNAS_ACESSOS]);
     }
+    var agora = new Date();
+    var fuso = planilha.getSpreadsheetTimeZone() || Session.getScriptTimeZone();
     aba.appendRow([
-      new Date(),
+      Utilities.formatDate(agora, fuso, 'dd/MM/yyyy'),
+      Utilities.formatDate(agora, fuso, 'HH:mm:ss'),
+      texto_(dados.sessao, 80),
       evento,
-      texto_(dados.dispositivo, 40),
       texto_(dados.navegador, 40),
+      texto_(dados.dispositivo, 40),
       produto,
       texto_(dados.categoria_selecionada, 120),
       texto_(dados.faixa_preco, 80),

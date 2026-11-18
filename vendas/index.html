@@ -1476,6 +1476,18 @@ window.PLANILHA_API = '';
     if (/Safari\//.test(agente)) return 'Safari';
     return 'Outro';
   })();
+  var sessao = (function () {
+    var chave = 'superdescontos_sessao';
+    try {
+      var existente = sessionStorage.getItem(chave);
+      if (existente) return existente;
+      var nova = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2));
+      sessionStorage.setItem(chave, nova);
+      return nova;
+    } catch (erro) {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    }
+  })();
   function camposAcesso(produto) {
     var filtros = window.__adj.filtro();
     var seletorFaixa = document.getElementById('filtro-preco');
@@ -1487,7 +1499,7 @@ window.PLANILHA_API = '';
     };
   }
   function enviar(evento, extra) {
-    var dados = { evento: evento, dispositivo: dispositivo, navegador: navegador };
+    var dados = { evento: evento, sessao: sessao, dispositivo: dispositivo, navegador: navegador };
     if (extra) Object.keys(extra).forEach(function (k) { dados[k] = extra[k]; });
     var corpo = JSON.stringify(dados);
     try { if (navigator.sendBeacon && navigator.sendBeacon(API, new Blob([corpo], { type: 'text/plain;charset=utf-8' }))) return; } catch (e) {}
